@@ -4,4 +4,5 @@ while (true) {
   const input = prompt("//") || "";
   const tokens = new Tokenizer(input);
   console.log(tokens.getNextToken());
+  console.log(tokens.getNextToken());
 }

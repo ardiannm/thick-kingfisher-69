@@ -39,19 +39,19 @@ export class Tokenizer {
 
   getNextToken(): Token {
     if (this.testNextChar("+")) {
-      return new Plus(this.getNextChar(), this.pointer, this.pointer + 1);
+      return new Plus(this.getNextChar(), this.pointer);
     }
 
     if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
       while (/[a-zA-Z]/.test(this.getChar())) identifier += this.getNextChar();
-      return new Identifier(identifier, this.pointer, this.pointer + 1);
+      return new Identifier(identifier, this.pointer);
     }
 
     if (/[0-9]/.test(this.getChar())) {
       let number = "";
       while (/[0-9]/.test(this.getChar())) number += this.getNextChar();
-      return new Number(number, this.pointer, this.pointer + 1);
+      return new Number(number, this.pointer);
     }
 
     if (/\s/.test(this.getChar())) {
@@ -59,6 +59,6 @@ export class Tokenizer {
       return this.getNextToken();
     }
 
-    return new Error(this.getNextChar(), this.pointer, this.pointer + 1);
+    return new Error(this.getNextChar(), this.pointer);
   }
 }
