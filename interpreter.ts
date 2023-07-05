@@ -1,16 +1,16 @@
-import { Node } from './node-definition'
-import { BinaryNode } from './nodes/binary'
-import { CellNode } from './nodes/cell'
-import { ErrorNode } from './nodes/error'
-import { NumberNode } from './nodes/number'
-import { RangeNode } from './nodes/range'
-import { UnaryNode } from './nodes/unary'
-import { ErrorValue } from './values/error'
-import { NumberValue } from './values/number'
-import { ReferenceValue } from './values/reference'
-import { toLetter, toNumber } from './services'
-import { RuntimeValue } from './values/value'
-import { MoveNode } from './nodes/move.range'
+import { Node } from './node-definition.ts'
+import { BinaryNode } from './nodes/binary.ts'
+import { CellNode } from './nodes/cell.ts'
+import { ErrorNode } from './nodes/error.ts'
+import { NumberNode } from './nodes/number.ts'
+import { RangeNode } from './nodes/range.ts'
+import { UnaryNode } from './nodes/unary.ts'
+import { ErrorValue } from './values/error.ts'
+import { NumberValue } from './values/number.ts'
+import { ReferenceValue } from './values/reference.ts'
+import { toLetter, toNumber } from './services.ts'
+import { RuntimeValue } from './values/value.ts'
+import { MoveNode } from './nodes/move.range.ts'
 
 export function Interpreter() {
   function evaluate<N extends Node>(node: N): RuntimeValue {
@@ -56,7 +56,7 @@ export function Interpreter() {
   }
 
   function evaluateRange(node: RangeNode): ReferenceValue {
-    let value = new ReferenceValue(0, 0, 0, 0)
+    const value = new ReferenceValue(0, 0, 0, 0)
     // By convention all undefined properties will be kept at zero, as there is row zero or column zero
     if (node.left.row) value.top = parseFloat(node.left.row)
     if (node.right.row) value.bottom = parseFloat(node.right.row)

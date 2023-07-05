@@ -1,4 +1,4 @@
-import { toLetter } from '../services'
+import { toLetter } from '../services.ts'
 
 export class ReferenceValue {
   constructor(

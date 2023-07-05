@@ -1,18 +1,18 @@
-import { ColonToken } from "./tokens/colon";
-import { CloseParenthesisToken } from "./tokens/close.paranthesis";
-import { DivisionToken } from "./tokens/division";
-import { ErrorToken } from "./tokens/error";
-import { IdentifierToken } from "./tokens/identifier";
-import { MinusToken } from "./tokens/minus";
-import { MultiplicationToken } from "./tokens/multiplication";
-import { NumberToken } from "./tokens/number";
-import { OpenParenthesisToken } from "./tokens/open.paranthesis";
-import { PlusToken } from "./tokens/plus";
-import { Token } from "./token-definition";
-import { AmpersandToken } from "./tokens/ampersand";
-import { DotToken } from "./tokens/dot";
+import { ColonToken } from "./definitions/tokens/colon.ts";
+import { CloseParenthesisToken } from "./definitions/tokens/close.paranthesis.ts";
+import { DivisionToken } from "./definitions/tokens/division.ts";
+import { ErrorToken } from "./definitions/tokens/error.ts";
+import { IdentifierToken } from "./definitions/tokens/identifier.ts";
+import { MinusToken } from "./definitions/tokens/minus.ts";
+import { MultiplicationToken } from "./definitions/tokens/multiplication.ts";
+import { NumberToken } from "./definitions/tokens/number.ts";
+import { OpenParenthesisToken } from "./definitions/tokens/open.paranthesis.ts";
+import { PlusToken } from "./definitions/tokens/plus.ts";
+import { Token } from "./definitions/token-definition.ts";
+import { AmpersandToken } from "./definitions/tokens/ampersand.ts";
+import { DotToken } from "./definitions/tokens/dot.ts";
 
-export function Lexer(input: string) {
+export function Tokenizer(input: string) {
   let pointer = 0;
   const inputValue = input;
 
