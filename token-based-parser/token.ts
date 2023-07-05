@@ -1,11 +1,11 @@
 export class Token {
   public class = this.constructor.name;
   public repr: string;
-  public startsAt: number;
-  public endsAt: number;
-  constructor(repr: string, startsAt: number, endsAt: number) {
+  public starts: number;
+  public ends: number;
+  constructor(repr: string, starts: number, ends: number) {
     this.repr = repr;
-    this.startsAt = startsAt;
-    this.endsAt = endsAt;
+    this.starts = starts;
+    this.ends = ends;
   }
 }
