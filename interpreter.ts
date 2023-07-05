@@ -1,4 +1,4 @@
-import { Node } from "./definitions/node-definition.ts";
+import { Node } from "./definitions/node.definition.ts";
 import { BinaryNode } from "./definitions/nodes/binary.ts";
 import { CellNode } from "./definitions/nodes/cell.ts";
 import { ErrorNode } from "./definitions/nodes/error.ts";

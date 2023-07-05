@@ -1,3 +1,3 @@
-import { Token } from "../token-definition.ts";
+import { Token } from "../token.definition.ts";
 
 export class MultiplicationToken extends Token {}

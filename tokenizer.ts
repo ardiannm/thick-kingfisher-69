@@ -8,13 +8,13 @@ import { MultiplicationToken } from "./definitions/tokens/multiplication.ts";
 import { NumberToken } from "./definitions/tokens/number.ts";
 import { OpenParenthesisToken } from "./definitions/tokens/open.paranthesis.ts";
 import { PlusToken } from "./definitions/tokens/plus.ts";
-import { Token } from "./definitions/token-definition.ts";
+import { Token } from "./definitions/token.definition.ts";
 import { AmpersandToken } from "./definitions/tokens/ampersand.ts";
 import { DotToken } from "./definitions/tokens/dot.ts";
 
 export class Tokenizer {
   private pointer = 0;
-  constructor(public input: string) {  }
+  constructor(public input: string) {}
 
   getChar(): string {
     return this.input.charAt(this.pointer);
@@ -84,17 +84,13 @@ export class Tokenizer {
 
     if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
-      while (/[a-zA-Z]/.test(this.getChar())) {
-        identifier += this.getNextChar();
-      }
+      while (/[a-zA-Z]/.test(this.getChar())) identifier += this.getNextChar();
       return new IdentifierToken(identifier);
     }
 
     if (/[0-9]/.test(this.getChar())) {
       let number = "";
-      while (/[0-9]/.test(this.getChar())) {
-        number += this.getNextChar();
-      }
+      while (/[0-9]/.test(this.getChar())) number += this.getNextChar();
       return new NumberToken(number);
     }
 
@@ -102,6 +98,7 @@ export class Tokenizer {
       while (/\s/.test(this.getChar())) this.getNextChar();
       return this.getNextToken();
     }
+
     return new ErrorToken(this.getNextChar());
   }
 }
