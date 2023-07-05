@@ -1,12 +1,15 @@
+import { Division } from "./division.ts";
 import { Error } from "./error.ts";
 import { Identifier } from "./identifier.ts";
+import { Minus } from "./minus.ts";
+import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
 import { Plus } from "./plus.ts";
 import { Token } from "./token.ts";
 
 export class Tokenizer {
   private pointer = 0;
-  constructor(public input: string) {}
+  constructor(public input: string) { }
 
   private getChar(): string {
     return this.input.charAt(this.pointer);
@@ -40,6 +43,18 @@ export class Tokenizer {
   getNextToken(): Token {
     if (this.testNextChar("+")) {
       return new Plus(this.getNextChar(), this.pointer);
+    }
+
+    if (this.testNextChar("-")) {
+      return new Minus(this.getNextChar(), this.pointer);
+    }
+
+    if (this.testNextChar("*")) {
+      return new Multiplication(this.getNextChar(), this.pointer);
+    }
+
+    if (this.testNextChar("/")) {
+      return new Division(this.getNextChar(), this.pointer);
     }
 
     if (/[a-zA-Z]/.test(this.getChar())) {
