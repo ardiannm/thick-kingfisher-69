@@ -12,98 +12,96 @@ import { Token } from "./definitions/token-definition.ts";
 import { AmpersandToken } from "./definitions/tokens/ampersand.ts";
 import { DotToken } from "./definitions/tokens/dot.ts";
 
-export function Tokenizer(input: string) {
-  let pointer = 0;
-  const inputValue = input;
+export class Tokenizer {
+  private pointer = 0;
+  constructor(public input: string) {  }
 
-  function getChar() {
-    return inputValue.charAt(pointer);
+  getChar(): string {
+    return this.input.charAt(this.pointer);
   }
 
-  function advancePointer() {
-    pointer++;
+  advancePointer(): void {
+    this.pointer++;
   }
 
-  function hasMoreTokens() {
-    return inputValue.length - pointer > 0;
+  hasMoreTokens(): boolean {
+    return this.input.length - this.pointer > 0;
   }
 
-  function testNextChar(character: string) {
-    return getChar() == character;
+  testNextChar(character: string): boolean {
+    return this.getChar() === character;
   }
 
-  function getNextChar() {
-    const character = getChar();
-    advancePointer();
+  getNextChar(): string {
+    const character = this.getChar();
+    this.advancePointer();
     return character;
   }
 
-  function peekToken() {
-    const start = pointer;
-    const token = getNextToken();
-    pointer = start;
+  peekToken(): Token {
+    const start = this.pointer;
+    const token = this.getNextToken();
+    this.pointer = start;
     return token;
   }
 
-  function getNextToken(): Token {
-    if (testNextChar("+")) {
-      return new PlusToken(getNextChar());
+  getNextToken(): Token {
+    if (this.testNextChar("+")) {
+      return new PlusToken(this.getNextChar());
     }
 
-    if (testNextChar("-")) {
-      return new MinusToken(getNextChar());
+    if (this.testNextChar("-")) {
+      return new MinusToken(this.getNextChar());
     }
 
-    if (testNextChar("*")) {
-      return new MultiplicationToken(getNextChar());
+    if (this.testNextChar("*")) {
+      return new MultiplicationToken(this.getNextChar());
     }
 
-    if (testNextChar("/")) {
-      return new DivisionToken(getNextChar());
+    if (this.testNextChar("/")) {
+      return new DivisionToken(this.getNextChar());
     }
 
-    if (testNextChar(":")) {
-      return new ColonToken(getNextChar());
+    if (this.testNextChar(":")) {
+      return new ColonToken(this.getNextChar());
     }
 
-    if (testNextChar("(")) {
-      return new OpenParenthesisToken(getNextChar());
+    if (this.testNextChar("(")) {
+      return new OpenParenthesisToken(this.getNextChar());
     }
 
-    if (testNextChar(")")) {
-      return new CloseParenthesisToken(getNextChar());
+    if (this.testNextChar(")")) {
+      return new CloseParenthesisToken(this.getNextChar());
     }
 
-    if (testNextChar("&")) {
-      return new AmpersandToken(getNextChar());
+    if (this.testNextChar("&")) {
+      return new AmpersandToken(this.getNextChar());
     }
 
-    if (testNextChar(".")) {
-      return new DotToken(getNextChar());
+    if (this.testNextChar(".")) {
+      return new DotToken(this.getNextChar());
     }
 
-    if (/[a-zA-Z]/.test(getChar())) {
+    if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
-      while (/[a-zA-Z]/.test(getChar())) {
-        identifier += getNextChar();
+      while (/[a-zA-Z]/.test(this.getChar())) {
+        identifier += this.getNextChar();
       }
       return new IdentifierToken(identifier);
     }
 
-    if (/[0-9]/.test(getChar())) {
+    if (/[0-9]/.test(this.getChar())) {
       let number = "";
-      while (/[0-9]/.test(getChar())) {
-        number += getNextChar();
+      while (/[0-9]/.test(this.getChar())) {
+        number += this.getNextChar();
       }
       return new NumberToken(number);
     }
 
-    if (/\s/.test(getChar())) {
-      while (/\s/.test(getChar())) getNextChar();
-      return getNextToken();
+    if (/\s/.test(this.getChar())) {
+      while (/\s/.test(this.getChar())) this.getNextChar();
+      return this.getNextToken();
     }
-    return new ErrorToken(getNextChar());
+    return new ErrorToken(this.getNextChar());
   }
-
-  return { hasMoreTokens, getNextToken, peekToken };
 }
