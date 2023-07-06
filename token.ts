@@ -11,3 +11,4 @@ export class Token {
     this.metadata = new Metadata(ends - this.font.length, ends);
   }
 }
+
