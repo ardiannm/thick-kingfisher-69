@@ -1,4 +1,3 @@
-import { Token } from "./token.ts";
+import { Particle } from "./particle.ts";
 
-
-export class Plus extends Token {}
+export class Plus extends Particle {}

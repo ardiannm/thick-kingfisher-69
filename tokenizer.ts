@@ -5,9 +5,9 @@ import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
+import { Particle } from "./particle.ts";
 import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
-import { Token } from "./token.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -35,14 +35,14 @@ export class Tokenizer {
     return character;
   }
 
-  peekToken(): Token {
+  peekToken(): Particle {
     const start = this.pointer;
     const token = this.getNextToken();
     this.pointer = start;
     return token;
   }
 
-  getNextToken(): Token {
+  getNextToken(): Particle {
     if (this.testNextChar("+")) {
       return new Plus(this.getNextChar());
     }

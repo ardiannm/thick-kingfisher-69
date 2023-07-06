@@ -1,3 +1,3 @@
-import { Token } from "./token.ts";
+import { Particle } from "./particle.ts";
 
-export class OpenParenthesis extends Token {}
+export class OpenParenthesis extends Particle {}
