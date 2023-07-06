@@ -7,6 +7,9 @@ import { Multiplication } from "./multiplication.ts";
 import { Division } from "./division.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
 import { Unary } from "./unary.ts";
+import { Quote } from "./quote.ts";
+import { DoubleQuoteString } from "./double.quote.string.ts";
+import { String } from "./string.ts";
 
 export class Parser extends Tokenizer {
   constructor(public input: string) {
@@ -50,13 +53,25 @@ export class Parser extends Tokenizer {
     return this.parseParanthesis();
   }
 
-
   private parseParanthesis(): Expression {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
       const expression = this.parseAddition();
       this.getNextToken();
       return expression;
+    }
+    return this.parseString();
+  }
+
+  private parseString() {
+    if (this.peekToken() instanceof Quote) {
+      let value = this.getNextToken().value;
+      while (this.hasMoreTokens()) {
+        const token = this.getNextToken();
+        value += token.value;
+        if (token instanceof Quote) break
+      }
+      return new DoubleQuoteString(new String(value));
     }
     return this.parseIdentifierOrNumber();
   }
