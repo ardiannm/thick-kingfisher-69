@@ -4,10 +4,10 @@ export class Metadata {
 
 export class Token {
   public class = this.constructor.name;
-  public repr: string;
+  public font: string;
   public metadata: Metadata;
-  constructor(repr: string, ends: number) {
-    this.repr = repr;
-    this.metadata = new Metadata(ends - this.repr.length, ends);
+  constructor(font: string, ends: number) {
+    this.font = font;
+    this.metadata = new Metadata(ends - this.font.length, ends);
   }
 }

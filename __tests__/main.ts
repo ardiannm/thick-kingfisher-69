@@ -1,10 +1,8 @@
-import { Tokenizer } from "../token-based-parser/tokenizer.ts";
+import { Parser } from "../parser.ts";
 
 while (true) {
   const input = prompt("//") || "";
-  const tokens = new Tokenizer(input);
-
-  console.log(tokens.getNextToken());
-  console.log(tokens.getNextToken());
-
+  const parser = new Parser(input)
+  const tree = parser.parse()
+  console.log(tree);
 }
