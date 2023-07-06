@@ -42,38 +42,31 @@ export class Tokenizer {
 
   getNextToken(): Token {
     if (this.testNextChar("+")) {
-      return new Plus(this.getNextChar(), this.pointer);
+      return new Plus(this.getNextChar());
     }
-
     if (this.testNextChar("-")) {
-      return new Minus(this.getNextChar(), this.pointer);
+      return new Minus(this.getNextChar());
     }
-
     if (this.testNextChar("*")) {
-      return new Multiplication(this.getNextChar(), this.pointer);
+      return new Multiplication(this.getNextChar());
     }
-
     if (this.testNextChar("/")) {
-      return new Division(this.getNextChar(), this.pointer);
+      return new Division(this.getNextChar());
     }
-
     if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
       while (/[a-zA-Z]/.test(this.getChar())) identifier += this.getNextChar();
-      return new Identifier(identifier, this.pointer);
+      return new Identifier(identifier);
     }
-
     if (/[0-9]/.test(this.getChar())) {
       let number = "";
       while (/[0-9]/.test(this.getChar())) number += this.getNextChar();
-      return new Number(number, this.pointer);
+      return new Number(number);
     }
-
     if (/\s/.test(this.getChar())) {
       while (/\s/.test(this.getChar())) this.getNextChar();
       return this.getNextToken();
     }
-
-    return new Error(this.getNextChar(), this.pointer);
+    return new Error(this.getNextChar());
   }
 }
