@@ -4,6 +4,7 @@ import { Identifier } from "./identifier.ts";
 import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
+import { OpenParenthesis } from "./open.parenthesis.ts";
 import { Plus } from "./plus.ts";
 import { Token } from "./token.ts";
 
@@ -52,6 +53,9 @@ export class Tokenizer {
     }
     if (this.testNextChar("/")) {
       return new Division(this.getNextChar());
+    }
+    if (this.testNextChar("(")) {
+      return new OpenParenthesis(this.getNextChar());
     }
     if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
