@@ -5,7 +5,8 @@ import { Plus } from "./plus.ts";
 import { Number } from "./number.ts";
 import { Identifier } from "./identifier.ts";
 import { Binary } from "./binary.ts";
+import { Unary } from "./unary.ts";
 
 export type IdentifierOrNumber = Identifier | Number
 export type Operator = Plus | Minus | Division | Multiplication
-export type Expression = IdentifierOrNumber | Binary
+export type Expression = IdentifierOrNumber | Binary | Unary

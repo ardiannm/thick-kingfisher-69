@@ -6,6 +6,7 @@ import { Expression, IdentifierOrNumber } from "./language.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Division } from "./division.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
+import { Unary } from "./unary.ts";
 
 export class Parser extends Tokenizer {
   constructor(public input: string) {
@@ -26,18 +27,31 @@ export class Parser extends Tokenizer {
   }
 
   private parseMultiplication() {
-    let left = this.parseParanthesis() as Expression;
+    let left = this.parseUnary();
     while (
       this.peekToken() instanceof Plus || this.peekToken() instanceof Minus
     ) {
       const operator = this.getNextToken();
-      const right = this.parseParanthesis();
+      const right = this.parseUnary();
       left = new Binary(operator, left, right);
     }
     return left;
   }
 
-  private parseParanthesis() {
+  private parseUnary(): Expression {
+    if (
+      this.peekToken() instanceof Plus ||
+      this.peekToken() instanceof Minus
+    ) {
+      const operator = this.getNextToken();
+      const right = this.parseUnary();
+      return new Unary(operator, right);
+    }
+    return this.parseParanthesis();
+  }
+
+
+  private parseParanthesis(): Expression {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
       const expression = this.parseAddition();
