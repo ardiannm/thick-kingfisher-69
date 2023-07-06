@@ -1,6 +1,6 @@
 export class Token {
   token = this.constructor.name
-    .replace(/([A-Z])/g, "_$1")
+    .replace(/([A-Z])/g, ".$1")
     .toLowerCase()
-    .replace(/^_/, "");
+    .replace(/^\./, "");
 }

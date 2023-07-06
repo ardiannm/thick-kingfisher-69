@@ -1,3 +1,4 @@
+import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
 import { Error } from "./error.ts";
 import { Identifier } from "./identifier.ts";
@@ -57,6 +58,9 @@ export class Tokenizer {
     }
     if (this.testNextChar("(")) {
       return new OpenParenthesis(this.getNextChar());
+    }
+    if (this.testNextChar(")")) {
+      return new CloseParenthesis(this.getNextChar());
     }
     if (this.testNextChar("\"")) {
       return new Quote(this.getNextChar());

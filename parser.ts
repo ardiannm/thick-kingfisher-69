@@ -10,6 +10,7 @@ import { DoubleQuoteString } from "./double.quote.string.ts";
 import { String } from "./string.ts";
 import { BinaryOperation } from "./binary.operation.ts";
 import { UnaryOperation } from "./unary.operation.ts";
+import { Parenthesis } from "./parenthesis.ts";
 
 export class Parser extends Tokenizer {
   constructor(public input: string) {
@@ -18,10 +19,7 @@ export class Parser extends Tokenizer {
 
   parseAddition() {
     let left = this.parseMultiplication() as Expression;
-    while (
-      this.peekToken() instanceof Multiplication ||
-      this.peekToken() instanceof Division
-    ) {
+    while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken();
       const right = this.parseMultiplication();
       left = new BinaryOperation(left, operator, right);
@@ -31,9 +29,7 @@ export class Parser extends Tokenizer {
 
   private parseMultiplication() {
     let left = this.parseUnary();
-    while (
-      this.peekToken() instanceof Plus || this.peekToken() instanceof Minus
-    ) {
+    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
       const right = this.parseUnary();
       left = new BinaryOperation(left, operator, right);
@@ -42,10 +38,7 @@ export class Parser extends Tokenizer {
   }
 
   private parseUnary(): Expression {
-    if (
-      this.peekToken() instanceof Plus ||
-      this.peekToken() instanceof Minus
-    ) {
+    if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
       const right = this.parseUnary();
       return new UnaryOperation(operator, right);
@@ -55,10 +48,10 @@ export class Parser extends Tokenizer {
 
   private parseParanthesis(): Expression {
     if (this.peekToken() instanceof OpenParenthesis) {
-      this.getNextToken();
+      const begin = this.getNextToken();
       const expression = this.parseAddition();
-      this.getNextToken();
-      return expression;
+      const end = this.getNextToken();
+      return new Parenthesis(begin, expression, end);
     }
     return this.parseString();
   }
