@@ -65,13 +65,15 @@ export class Parser extends Tokenizer {
 
   private parseString() {
     if (this.peekToken() instanceof Quote) {
-      let value = this.getNextToken().value;
+      const begin = this.getNextToken()
+      let value = "";
       while (this.hasMoreTokens()) {
-        const token = this.getNextToken();
-        value += token.value;
-        if (token instanceof Quote) break
+        if (this.peekToken() instanceof Quote) break
+        value += this.getNextToken().value;
       }
-      return new DoubleQuoteString(new String(value));
+      const string = new String(value)
+      const end = this.getNextToken()
+      return new DoubleQuoteString(begin, string, end);
     }
     return this.parseIdentifierOrNumber();
   }
