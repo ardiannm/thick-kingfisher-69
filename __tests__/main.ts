@@ -7,5 +7,5 @@ while (true) {
   const tree = parser.parseAddition();
   console.log(tree);
   const highlighter = new Highlighter();
-  console.log(highlighter.generate(tree));
+  console.log(highlighter.generate(tree).toString());
 }
