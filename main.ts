@@ -4,7 +4,7 @@ import { loggerLog } from "./log.ts";
 while (true) {
   const input = prompt("//") || "";
   const highlighter = new Highlighter(input);
-  const io = highlighter.toString({ keepStructure: true, keepFields: true });
+  const io = highlighter.toString();
 
   loggerLog(io);
 }

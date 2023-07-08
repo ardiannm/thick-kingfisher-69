@@ -1,7 +1,7 @@
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
-import { Error } from "./error.ts";
 import { Identifier } from "./identifier.ts";
+import { Illegal } from "./illegal.ts";
 import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
@@ -9,10 +9,20 @@ import { OpenParenthesis } from "./open.parenthesis.ts";
 import { Particle } from "./particle.ts";
 import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
+import { WhiteSpace } from "./white.space.ts";
 
 export class Tokenizer {
   private pointer = 0;
-  constructor(public input: string) { }
+  private whiteSpace = false;
+  constructor(public input: string) {}
+
+  keepWhiteSpace() {
+    this.whiteSpace = true;
+  }
+
+  ignoreWhiteSpace() {
+    this.whiteSpace = false;
+  }
 
   private getChar(): string {
     return this.input.charAt(this.pointer);
@@ -62,7 +72,7 @@ export class Tokenizer {
     if (this.testNextChar(")")) {
       return new CloseParenthesis(this.getNextChar());
     }
-    if (this.testNextChar("\"")) {
+    if (this.testNextChar('"')) {
       return new Quote(this.getNextChar());
     }
     if (/[a-zA-Z]/.test(this.getChar())) {
@@ -76,9 +86,11 @@ export class Tokenizer {
       return new Number(number);
     }
     if (/\s/.test(this.getChar())) {
-      while (/\s/.test(this.getChar())) this.getNextChar();
+      let whiteSpace = "";
+      while (/\s/.test(this.getChar())) whiteSpace += this.getNextChar();
+      if (this.whiteSpace) return new WhiteSpace(whiteSpace);
       return this.getNextToken();
     }
-    return new Error(this.getNextChar());
+    return new Illegal(this.getNextChar());
   }
 }

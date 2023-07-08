@@ -59,12 +59,14 @@ export class Parser extends Tokenizer {
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken();
+      this.keepWhiteSpace();
       let value = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Quote) break;
         value += this.getNextToken().value;
       }
       const string = new String(value);
+      this.ignoreWhiteSpace();
       const end = this.getNextToken();
       return new DoubleQuoteString(begin, string, end);
     }
