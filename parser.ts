@@ -13,7 +13,7 @@ import { UnaryOperation } from "./unary.operation.ts";
 import { Parenthesis } from "./parenthesis.ts";
 
 export class Parser extends Tokenizer {
-  constructor(public input: string) {
+  constructor(public override input: string) {
     super(input);
   }
 

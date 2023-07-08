@@ -1,7 +1,5 @@
-import { html as prettify } from "https://cdn.skypack.dev/js-beautify";
-
-export const loggerLog = (text: string, directory = "dev/index.html") => {
-  const io = prettify(text, { indent_size: 2, indent_with_tabs: false });
-  Deno.writeFileSync(directory, new TextEncoder().encode(io));
-  console.log(io);
+export const loggerLog = <T>(text: T, directory = "dev/index.json") => {
+  const bytes = new TextEncoder().encode(JSON.stringify(text, null, 3));
+  Deno.writeFileSync(directory, bytes);
+  return text;
 };
