@@ -14,11 +14,13 @@ export class Highlighter extends Parser {
   }
 
   private generate(token: Token, id = ""): void {
+    if (token instanceof Particle) {
+      const span = new Span(id, sha1(id), token.token, token.value);
+      this.spans.push(span);
+      return;
+    }
     Object.entries(token).forEach(([_, v]) => {
-      if (v instanceof Particle) this.spans.push(new Span(id, v.token, v.value));
-      if (v instanceof Token) {
-        this.generate(v, sha1(token.token));
-      }
+      if (v instanceof Token) this.generate(v, sha1(id));
     });
   }
 }

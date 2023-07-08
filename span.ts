@@ -1,3 +1,3 @@
 export class Span {
-  constructor(public id: string, public scope = "program", public content: string) {}
+  constructor(public root: string, public id: string, public token = "program", public value: string) {}
 }
