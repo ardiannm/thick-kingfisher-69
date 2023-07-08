@@ -3,6 +3,8 @@ import { Particle } from "./particle.ts";
 import { Span } from "./span.ts";
 import { Token } from "./token.ts";
 
+type Options = { keepStructure?: boolean; keepFields?: boolean };
+
 export class Highlighter extends Parser {
   private token: Token;
   private flat: Array<string> = [];
@@ -11,9 +13,9 @@ export class Highlighter extends Parser {
     this.token = this.parseAddition();
   }
 
-  toString(options = { simple: true }) {
-    if (options.simple) {
-      this.generateSimple(this.token);
+  toString(options: Options = { keepStructure: false, keepFields: true }) {
+    if (!options.keepStructure) {
+      this.generateSimple(this.token, options.keepFields);
       return this.flat.join("\n");
     }
     const span = this.generate(this.token);
@@ -31,14 +33,15 @@ export class Highlighter extends Parser {
     );
   }
 
-  private generateSimple(token: Token): void {
+  private generateSimple(token: Token, keepFields = false): void {
     Object.entries(token).forEach(([k, v]) => {
       if (v instanceof Particle) {
-        const scope = `${token.token} ${k} ${v.token}`.replace(/\./g, "-");
+        const include = keepFields ? k : "";
+        const scope = `${token.token} ${include} ${v.token}`.replace(/\s+/g, " ").replace(/\./g, "-");
         const span = `<span class="${scope}">${v.value}</span>`;
         this.flat.push(span);
       }
-      if (v instanceof Token) this.generateSimple(v);
+      if (v instanceof Token) this.generateSimple(v, keepFields);
     });
   }
 }
