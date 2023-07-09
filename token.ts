@@ -1,3 +1,3 @@
 export class Token {
-  public token = this.constructor.name.replace(/([A-Z])/g, ".$1").replace(/^\./, "");
+  public token = this.constructor.name.replace(/([A-Z])/g, " $1").trim();
 }

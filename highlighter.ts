@@ -1,26 +1,27 @@
 import { Parser } from "./parser.ts";
 import { Primitive } from "./primitive.ts";
-import { Span } from "./span.ts";
+import { TokenGraph } from "./token.graph.ts";
 import { Token } from "./token.ts";
 
-import sha1 from "https://cdn.skypack.dev/sha1";
+import { loggerLog } from "./logger.ts";
 
 export class Highlighter extends Parser {
-  public spans: Array<Span> = [];
-
   constructor(public override input: string) {
     super(input);
-    this.generate(this.parseAddition());
   }
 
-  private generate(token: Token, id = ""): void {
-    if (token instanceof Primitive) {
-      const span = new Span(id, sha1(id), token.token, token.value);
-      this.spans.push(span);
-      return;
-    }
-    Object.entries(token).forEach(([_, v]) => {
-      if (v instanceof Token) this.generate(v, sha1(id));
-    });
+  generate() {
+    const tree = this.do(this.parseAddition());
+    loggerLog(tree);
+  }
+
+  private do(obj: Token, origin = "", prop = ""): TokenGraph {
+    if (obj instanceof Primitive) return new TokenGraph(`${origin} ${prop} ${obj.token}`.toLowerCase().replace(/[^a-zA-Z]/g, " "), obj.value);
+    return new TokenGraph(
+      obj.token.toLowerCase().replace(/[^a-zA-Z]/g, " "),
+      Object.entries(obj)
+        .filter(([_prop, o]) => o instanceof Token)
+        .map(([_prop, o]) => this.do(o, obj.token, _prop))
+    );
   }
 }
