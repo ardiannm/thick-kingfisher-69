@@ -1,3 +1,5 @@
+import { format } from "./format.ts";
+
 export class Token {
-  public token = this.constructor.name.replace(/([A-Z])/g, " $1").trim();
+  public token = format(this.constructor.name);
 }
