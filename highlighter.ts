@@ -3,7 +3,6 @@ import { Primitive } from "./primitive.ts";
 import { TokenGraph } from "./token.graph.ts";
 import { Token } from "./token.ts";
 
-import { loggerLog } from "./logger.ts";
 import { format } from "./format.ts";
 
 export class Highlighter extends Parser {
@@ -12,8 +11,7 @@ export class Highlighter extends Parser {
   }
 
   generate() {
-    const tree = this.do(this.parseAddition());
-    loggerLog(tree);
+    return this.do(this.parseAddition());
   }
 
   private do(obj: Token, origin = "", prop = ""): TokenGraph {

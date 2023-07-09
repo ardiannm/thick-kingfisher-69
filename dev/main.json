@@ -9,22 +9,22 @@
           "subTokens": "1"
         },
         {
-          "token": "-binary-operation- operator- -multiplication",
-          "subTokens": "*"
+          "token": "-binary-operation- operator- -plus",
+          "subTokens": "+"
         },
         {
           "token": "-binary-operation- right- -number",
-          "subTokens": "1"
+          "subTokens": "3"
         }
       ]
     },
     {
-      "token": "-binary-operation- operator- -division",
-      "subTokens": "/"
+      "token": "-binary-operation- operator- -plus",
+      "subTokens": "+"
     },
     {
       "token": "-binary-operation- right- -number",
-      "subTokens": "2"
+      "subTokens": "4"
     }
   ]
 }
