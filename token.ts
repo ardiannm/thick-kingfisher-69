@@ -9,9 +9,9 @@ export class Token {
 
     const properties = Object.entries(this)
       .filter(([_k, v]) => v instanceof Token)
-      .map(([k, v]) => `${indentation}\t${k} -> ${v.prettyPrint(indentation + "\t")}`)
+      .map(([k, v]) => `${indentation}    ${k} -> ${v.prettyPrint(indentation + "    ")}`)
       .join("\n");
 
-    return `${indentation}(${this.constructor.name} ->\n${properties}\n${indentation})`;
+    return `(${this.constructor.name} ->\n${properties}\n${indentation})`;
   }
 }
