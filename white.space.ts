@@ -1,3 +1,3 @@
-import { Particle } from "./particle.ts";
+import { Primitive } from "./primitive.ts";
 
-export class WhiteSpace extends Particle {}
+export class WhiteSpace extends Primitive {}

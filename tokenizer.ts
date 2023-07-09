@@ -1,3 +1,4 @@
+import { Primitive } from "./primitive.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
 import { Identifier } from "./identifier.ts";
@@ -6,7 +7,6 @@ import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
-import { Particle } from "./particle.ts";
 import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
 import { WhiteSpace } from "./white.space.ts";
@@ -46,14 +46,14 @@ export class Tokenizer {
     return character;
   }
 
-  peekToken(): Particle {
+  peekToken(): Primitive {
     const start = this.pointer;
     const token = this.getNextToken();
     this.pointer = start;
     return token;
   }
 
-  getNextToken(): Particle {
+  getNextToken(): Primitive {
     if (this.testNextChar("+")) {
       return new Plus(this.getNextChar());
     }

@@ -1,5 +1,5 @@
 import { Parser } from "./parser.ts";
-import { Particle } from "./particle.ts";
+import { Primitive } from "./primitive.ts";
 import { Span } from "./span.ts";
 import { Token } from "./token.ts";
 
@@ -14,7 +14,7 @@ export class Highlighter extends Parser {
   }
 
   private generate(token: Token, id = ""): void {
-    if (token instanceof Particle) {
+    if (token instanceof Primitive) {
       const span = new Span(id, sha1(id), token.token, token.value);
       this.spans.push(span);
       return;

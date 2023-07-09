@@ -1,6 +1,6 @@
 import { Token } from "./token.ts";
 
-export class Particle extends Token {
+export class Primitive extends Token {
   public value: string;
   constructor(value: string) {
     super();

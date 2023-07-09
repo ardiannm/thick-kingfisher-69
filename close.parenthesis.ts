@@ -1,3 +1,3 @@
-import { Particle } from "./particle.ts";
+import { Primitive } from "./primitive.ts";
 
-export class CloseParenthesis extends Particle {}
+export class CloseParenthesis extends Primitive {}
