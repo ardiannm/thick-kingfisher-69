@@ -1,4 +1,3 @@
 dev/*.*
 !dev/.gitkeep
-!dev/main.json
 **/*.exe
