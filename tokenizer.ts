@@ -2,7 +2,7 @@ import { Primitive } from "./primitive.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
 import { Identifier } from "./identifier.ts";
-import { Illegal } from "./illegal.ts";
+import { Unknown } from "./unknown.ts";
 import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
@@ -96,6 +96,7 @@ export class Tokenizer {
       if (this.whiteSpace) return new WhiteSpace(whiteSpace);
       return this.getNextToken();
     }
-    return new Illegal(this.getNextChar());
+    this.getNextChar();
+    return new Unknown();
   }
 }
