@@ -57,7 +57,7 @@ export class Parser extends Tokenizer {
     return this.parseParanthesis();
   }
 
-  private parseParanthesis(): Expression {
+  private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       const begin = this.getNextToken();
       const expression = this.parseAddition();
