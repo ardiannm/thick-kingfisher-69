@@ -10,5 +10,5 @@ while (true) {
   const parser = new Parser(input);
   const tokens = parser.parseAddition();
   console.log(tokens.prettyPrint());
-  console.log("\n\n")
+  console.log("\n\n");
 }

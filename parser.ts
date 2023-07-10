@@ -11,6 +11,7 @@ import { String } from "./string.ts";
 import { BinaryOperation } from "./binary.operation.ts";
 import { UnaryOperation } from "./unary.operation.ts";
 import { Parenthesis } from "./parenthesis.ts";
+import { Power } from "./power.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
@@ -28,10 +29,20 @@ export class Parser extends Tokenizer {
   }
 
   private parseMultiplication() {
-    let left = this.parseUnary();
+    let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken();
-      const right = this.parseUnary();
+      const right = this.parsePower();
+      left = new BinaryOperation(left, operator, right);
+    }
+    return left;
+  }
+
+  private parsePower(): Expression {
+    let left = this.parseUnary();
+    if (this.peekToken() instanceof Power) {
+      const operator = this.getNextToken();
+      const right = this.parsePower();
       left = new BinaryOperation(left, operator, right);
     }
     return left;

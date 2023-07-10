@@ -10,6 +10,7 @@ import { OpenParenthesis } from "./open.parenthesis.ts";
 import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
 import { WhiteSpace } from "./white.space.ts";
+import { Power } from "./power.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -61,7 +62,11 @@ export class Tokenizer {
       return new Minus(this.getNextChar());
     }
     if (this.testNextChar("*")) {
-      return new Multiplication(this.getNextChar());
+      const multiply = this.getNextChar();
+      if (this.testNextChar("*")) {
+        return new Power(multiply + this.getNextChar());
+      }
+      return new Multiplication(multiply);
     }
     if (this.testNextChar("/")) {
       return new Division(this.getNextChar());

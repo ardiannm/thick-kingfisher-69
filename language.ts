@@ -8,7 +8,8 @@ import { DoubleQuoteString } from "./double.quote.string.ts";
 import { BinaryOperation } from "./binary.operation.ts";
 import { UnaryOperation } from "./unary.operation.ts";
 import { Parenthesis } from "./parenthesis.ts";
+import { Power } from "./power.ts";
 
-export type IdentifierOrNumber = Identifier | Number
-export type Operator = Plus | Minus | Division | Multiplication
-export type Expression = IdentifierOrNumber | BinaryOperation | UnaryOperation | DoubleQuoteString | Parenthesis
+export type IdentifierOrNumber = Identifier | Number;
+export type Operator = Plus | Minus | Division | Multiplication | Power;
+export type Expression = IdentifierOrNumber | BinaryOperation | UnaryOperation | DoubleQuoteString | Parenthesis;
