@@ -4,14 +4,13 @@ import { Primitive } from "./primitive.ts";
 export class Token {
   public token = format(this.constructor.name);
 
-  prettyPrint(indentation = "") {
+  prettyPrint(indentation = "--") {
     if (this instanceof Primitive) return `${this.value}`;
 
     const properties = Object.entries(this)
       .filter(([_k, v]) => v instanceof Token)
-      .map(([k, v]) => `${indentation}${k} ${v.prettyPrint(`${indentation} |  `)}`)
-      .join("\n");
+      .map(([k, v]) => `${indentation} ${k} ${v.prettyPrint(`${indentation}--`)}`);
 
-    return `\n${properties}\n\n${indentation}${this.token}\n`;
+    return `\n${properties.join("\n")}`;
   }
 }
