@@ -5,7 +5,7 @@ export class Token {
   public token = format(this.constructor.name);
 
   prettyPrint(indentation = "") {
-    if (this instanceof Primitive) return `${this.value}`;
+    if (this instanceof Primitive) return `${this.value || "EOF"}`;
 
     const properties = Object.entries(this)
       .filter(([_k, v]) => v instanceof Token)

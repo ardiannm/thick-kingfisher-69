@@ -2,7 +2,6 @@ import { Primitive } from "./primitive.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
 import { Identifier } from "./identifier.ts";
-import { Unknown } from "./unknown.ts";
 import { Minus } from "./minus.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Number } from "./number.ts";
@@ -11,6 +10,8 @@ import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
 import { WhiteSpace } from "./white.space.ts";
 import { Power } from "./power.ts";
+import { EOF } from "./eof.ts";
+import { Illegal } from "./illegal.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -96,7 +97,9 @@ export class Tokenizer {
       if (this.whiteSpace) return new WhiteSpace(whiteSpace);
       return this.getNextToken();
     }
-    this.getNextChar();
-    return new Unknown();
+    if (this.hasMoreTokens()) {
+      return new Illegal(this.getNextChar());
+    }
+    return new EOF();
   }
 }
