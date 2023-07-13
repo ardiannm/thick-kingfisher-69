@@ -1,3 +1,3 @@
 export class Highlight {
-  constructor(public token: string, public subTokens: Array<Highlight> | string) {}
+  constructor(public foreground: string, public scope: Array<string>) {}
 }

@@ -1,23 +1,25 @@
 import { Parser } from "./parser.ts";
-import { Primitive } from "./primitive.ts";
 import { Highlight } from "./highlight.ts";
 import { Token } from "./token.ts";
+import { Primitive } from "./primitive.ts";
 
 export class Highlighter extends Parser {
+  private tokens = Array<Highlight>();
+
   constructor(public override input: string) {
     super(input);
   }
 
   generate() {
-    return this.do(this.parseAddition());
+    this.do(this.parseAddition());
+    return this.tokens;
   }
 
-  private do(obj: Token, _origin = "", _prop = ""): Highlight {
-    if (obj instanceof Primitive) return new Highlight(`${_prop} ${obj.token}`, obj.value);
-    const subTokens = Object.entries(obj).filter(([_prop, o]) => o instanceof Token);
-    return new Highlight(
-      obj.token,
-      subTokens.map(([_prop, o]) => this.do(o, obj.token, _prop))
-    );
+  private do(obj: Token, origin = ["meta"]) {
+    if (obj instanceof Primitive) return this.tokens.push(new Highlight(obj.value, [...origin, obj.token]));
+
+    Object.entries(obj)
+      .filter(([_k, v]) => v instanceof Token)
+      .map(([_k, v]) => this.do(v, [...origin, obj.token, _k]));
   }
 }
