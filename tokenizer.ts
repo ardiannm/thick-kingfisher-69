@@ -11,7 +11,7 @@ import { Quote } from "./quote.ts";
 import { WhiteSpace } from "./white.space.ts";
 import { Power } from "./power.ts";
 import { EOF } from "./eof.ts";
-import { Illegal } from "./illegal.ts";
+import { Invalid } from "./invalid.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -98,7 +98,7 @@ export class Tokenizer {
       return this.getNextToken();
     }
     if (this.hasMoreTokens()) {
-      return new Illegal(this.getNextChar());
+      return new Invalid(this.getNextChar());
     }
     return new EOF();
   }

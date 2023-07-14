@@ -1,11 +1,10 @@
-import { Highlighter } from "./highlighter.ts";
+import { Parser } from "./parser.ts";
 
 while (true) {
   const input = prompt("//") || "";
-  const tree = new Highlighter(input);
-  const scopes = tree.generate();
+  const tree = new Parser(input).parseAddition();
 
-  console.log(scopes);
+  console.log(tree);
 
   console.log("\n\n");
 }

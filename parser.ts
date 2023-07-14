@@ -74,7 +74,7 @@ export class Parser extends Tokenizer {
       let value = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Quote) break;
-        value += this.getNextToken().value;
+        value += this.getNextToken().literal;
       }
       const string = new String(value);
       this.ignoreWhiteSpace();

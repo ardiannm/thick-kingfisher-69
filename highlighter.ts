@@ -16,10 +16,10 @@ export class Highlighter extends Parser {
   }
 
   private do(obj: Token, origin = ["meta"]): void {
-    if (obj instanceof Primitive) this.tokens.push(new Highlight(obj.value, [...origin, obj.token]));
+    if (obj instanceof Primitive) this.tokens.push(new Highlight(obj.literal, [...origin, obj.type]));
 
     Object.entries(obj)
       .filter(([_k, v]) => v instanceof Token)
-      .map(([_k, v]) => this.do(v, [...origin, obj.token, _k]));
+      .map(([_k, v]) => this.do(v, [...origin, obj.type, _k]));
   }
 }

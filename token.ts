@@ -2,10 +2,10 @@ import { format } from "./format.ts";
 import { Primitive } from "./primitive.ts";
 
 export class Token {
-  public token = format(this.constructor.name);
+  public type = format(this.constructor.name);
 
   toString(indentation = "") {
-    if (this instanceof Primitive) return `${this.value || "EOF"}`;
+    if (this instanceof Primitive) return `${this.literal || "EOF"}`;
 
     const properties = Object.entries(this)
       .filter(([_k, v]) => v instanceof Token)
