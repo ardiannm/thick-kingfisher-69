@@ -1,3 +1,3 @@
 import { Primitive } from "./primitive.ts";
 
-export class EOF extends Primitive {}
+export class Dot extends Primitive {}

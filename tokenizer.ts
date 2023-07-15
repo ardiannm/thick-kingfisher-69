@@ -12,6 +12,7 @@ import { WhiteSpace } from "./white.space.ts";
 import { Power } from "./power.ts";
 import { EOF } from "./eof.ts";
 import { Invalid } from "./invalid.ts";
+import { Dot } from "./dot.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -81,6 +82,9 @@ export class Tokenizer {
     if (this.testNextChar('"')) {
       return new Quote(this.getNextChar());
     }
+    if (this.testNextChar(".")) {
+      return new Dot(this.getNextChar());
+    }
     if (/[a-zA-Z]/.test(this.getChar())) {
       let identifier = "";
       while (/[a-zA-Z]/.test(this.getChar())) identifier += this.getNextChar();
@@ -100,6 +104,6 @@ export class Tokenizer {
     if (this.hasMoreTokens()) {
       return new Invalid(this.getNextChar());
     }
-    return new EOF();
+    return new EOF("~~~");
   }
 }

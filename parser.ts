@@ -1,7 +1,7 @@
 import { Tokenizer } from "./tokenizer.ts";
 import { Plus } from "./plus.ts";
 import { Minus } from "./minus.ts";
-import { Expression, IdentifierOrNumber } from "./language.ts";
+import { Expression } from "./language.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Division } from "./division.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
@@ -12,6 +12,8 @@ import { BinaryOperation } from "./binary.operation.ts";
 import { UnaryOperation } from "./unary.operation.ts";
 import { Parenthesis } from "./parenthesis.ts";
 import { Power } from "./power.ts";
+import { Number } from "./number.ts";
+import { Dot } from "./dot.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
@@ -85,10 +87,19 @@ export class Parser extends Tokenizer {
       const end = this.getNextToken();
       return new DoubleQuoteString(begin, string, end);
     }
-    return this.parseIdentifierOrNumber();
+    return this.parseNumber();
   }
 
-  private parseIdentifierOrNumber(): IdentifierOrNumber {
+  private parseNumber() {
+    const left = this.parseIdentifier();
+    if (left instanceof Number && this.peekToken() instanceof Dot) {
+      left.literal = left.literal + this.getNextToken() + this.getNextToken();
+      return left;
+    }
+    return left;
+  }
+
+  private parseIdentifier() {
     return this.getNextToken();
   }
 }
