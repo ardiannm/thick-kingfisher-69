@@ -18,7 +18,11 @@ export class Parser extends Tokenizer {
     super(input);
   }
 
-  parseAddition() {
+  parse() {
+    return this.parseAddition();
+  }
+
+  private parseAddition() {
     let left = this.parseMultiplication() as Expression;
     while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
