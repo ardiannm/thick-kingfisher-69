@@ -1,4 +1,3 @@
-// import { Parser } from "https://deno.land/x/amparser@v0.0.3/mod.ts";
 import { Interpreter } from "./interpreter.ts";
 import { Parser } from "./mod.ts";
 
