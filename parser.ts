@@ -93,7 +93,7 @@ export class Parser extends Tokenizer {
   private parseNumber() {
     const left = this.parseIdentifier();
     if (left instanceof Number && this.peekToken() instanceof Dot) {
-      left.literal = left.literal + this.getNextToken() + this.getNextToken();
+      left.literal = left.literal + this.getNextToken().literal + this.getNextToken().literal;
       return left;
     }
     return left;

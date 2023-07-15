@@ -6,6 +6,7 @@ while (true) {
   console.log();
   const input = prompt(">>") || "";
   const token = new Parser(input).parse();
+  console.log(token);
 
   const interpreter = new Interpreter();
   const value = interpreter.evaluate(token);
