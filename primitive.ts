@@ -1,9 +1,7 @@
 import { Token } from "./token.ts";
 
 export class Primitive extends Token {
-  public literal: string;
-  constructor(literal: string) {
+  constructor(public literal: string) {
     super();
-    this.literal = literal;
   }
 }
