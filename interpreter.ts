@@ -25,7 +25,7 @@ export class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new RuntimeError(`Can't perform math operations between "${token.left.type}" and "${token.right.type}" types`);
+      return new RuntimeError(`Can't perform math operations between "${token.left.type}" and "${token.right.type}" tokens`);
     }
 
     switch (true) {

@@ -1,6 +1,7 @@
-import { Parser, Interpreter } from "https://deno.land/x/amparser@v0.04/mod.ts";
-// import { Interpreter } from "./interpreter.ts";
-// import { Parser } from "./mod.ts";
+// import { Parser, Interpreter } from "https://deno.land/x/amparser@v0.04/mod.ts";
+
+import { Interpreter } from "../interpreter.ts";
+import { Parser } from "../mod.ts";
 
 while (true) {
   console.log();
