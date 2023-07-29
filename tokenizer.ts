@@ -10,7 +10,7 @@ import { Plus } from "./plus.ts";
 import { Quote } from "./quote.ts";
 import { WhiteSpace } from "./white.space.ts";
 import { Power } from "./power.ts";
-import { Void } from "./void.ts";
+import { None } from "./none.ts";
 import { Invalid } from "./invalid.ts";
 import { Dot } from "./dot.ts";
 
@@ -104,6 +104,6 @@ export class Tokenizer {
     if (this.hasMoreTokens()) {
       return new Invalid(this.getNextChar());
     }
-    return new Void();
+    return new None("");
   }
 }
