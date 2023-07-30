@@ -15,7 +15,7 @@ import { Power } from "./power.ts";
 import { None } from "./none.ts";
 import { Invalid } from "./invalid.ts";
 import { Dot } from "./dot.ts";
-import { Constructor, assert } from "./constructor.ts";
+import { Constructor, checkInstance } from "./constructor.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -62,7 +62,7 @@ export class Tokenizer {
   }
 
   public peekToken(classConstructor: Constructor<any>): boolean {
-    return assert(this.peekPrimitive(), classConstructor);
+    return checkInstance(this.peekPrimitive(), classConstructor);
   }
 
   parsePrimitive(): Primitive {

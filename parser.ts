@@ -14,7 +14,7 @@ import { Power } from "./power.ts";
 import { Number } from "./number.ts";
 import { Dot } from "./dot.ts";
 import { Token } from "./token.ts";
-import { Constructor, assert } from "./constructor.ts";
+import { Constructor, checkInstance } from "./constructor.ts";
 import { Expression } from "./expression.ts";
 
 export class Parser extends Tokenizer {
@@ -23,7 +23,7 @@ export class Parser extends Tokenizer {
   }
 
   private expectToken<T extends Token>(token: T, classConstructor: Constructor<T>, message?: string): T {
-    if (!assert(token, classConstructor) && message) this.errors.push(message);
+    if (!checkInstance(token, classConstructor) && message) this.errors.push(message);
     return token;
   }
 
@@ -103,8 +103,8 @@ export class Parser extends Tokenizer {
 
   private parseNumber() {
     const left = this.parseIdentifier();
-    if (assert(left, Number) && this.peekToken(Dot)) {
-      left.literal = left.literal + this.parsePrimitive().literal + this.parsePrimitive().literal;
+    if (checkInstance(left, Number) && this.peekToken(Dot)) {
+      left.literal = left.literal + this.parsePrimitive().literal + this.expectToken(this.parsePrimitive(), Number, "Invalid floating point number format.").literal;
       return left;
     }
     return left;
