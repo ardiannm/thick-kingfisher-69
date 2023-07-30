@@ -16,13 +16,14 @@ import { Dot } from "./dot.ts";
 import { Token } from "./token.ts";
 import { Constructor, checkInstance } from "./constructor.ts";
 import { Expression } from "./expression.ts";
+import { CloseParenthesis } from "./close.parenthesis.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
     super(input);
   }
 
-  private expectToken<T extends Token>(token: T, classConstructor: Constructor<T>, message?: string): T {
+  private expect<T extends Token>(token: T, classConstructor: Constructor<T>, message?: string): T {
     if (!checkInstance(token, classConstructor) && message) this.errors.push(message);
     return token;
   }
@@ -38,7 +39,7 @@ export class Parser extends Tokenizer {
       const right = this.parseMultiplication();
 
       // assert right hand side expression
-      this.expectToken(right, Expression, "Invalid right hand side expression in binary operation.");
+      this.expect(right, Expression, "Invalid right hand side expression in binary operation.");
 
       left = new BinaryOperation(left, operator, right);
     }
@@ -78,7 +79,7 @@ export class Parser extends Tokenizer {
     if (this.peekToken(OpenParenthesis)) {
       const begin = this.parsePrimitive();
       const expression = this.parseAddition();
-      const end = this.parsePrimitive();
+      const end = this.expect(this.parsePrimitive(), CloseParenthesis, "Missing a closing ')' in parenthesis expression.");
       return new Parenthesis(begin, expression, end);
     }
     return this.parseString();
@@ -95,7 +96,7 @@ export class Parser extends Tokenizer {
       }
       const string = new String(value);
       this.ignoreWhiteSpace();
-      const end = this.expectToken(this.parsePrimitive(), Quote, "Missing '\"' in the end of string.");
+      const end = this.expect(this.parsePrimitive(), Quote, "Missing '\"' in the end of string.");
       return new DoubleQuoteString(begin, string, end);
     }
     return this.parseNumber();
@@ -104,7 +105,7 @@ export class Parser extends Tokenizer {
   private parseNumber() {
     const left = this.parseIdentifier();
     if (checkInstance(left, Number) && this.peekToken(Dot)) {
-      left.literal = left.literal + this.parsePrimitive().literal + this.expectToken(this.parsePrimitive(), Number, "Invalid floating point number format.").literal;
+      left.literal = left.literal + this.parsePrimitive().literal + this.expect(this.parsePrimitive(), Number, "Invalid floating point number format.").literal;
       return left;
     }
     return left;

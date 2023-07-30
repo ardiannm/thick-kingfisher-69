@@ -1,6 +1,6 @@
-import { Token } from "./token.ts";
+import { Expression } from "./expression.ts";
 
-export class Primitive extends Token {
+export class Primitive extends Expression {
   constructor(public literal: string) {
     super();
   }

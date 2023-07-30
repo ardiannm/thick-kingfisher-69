@@ -10,6 +10,7 @@ import { RuntimeValue } from "./runtime.value.ts";
 import { Number } from "./number.ts";
 import { UnaryOperation } from "./unary.operation.ts";
 import { Parser } from "./mod.ts";
+import { Parenthesis } from "./parenthesis.ts";
 
 export class Interpreter extends Parser {
   //
@@ -25,6 +26,7 @@ export class Interpreter extends Parser {
     if (token instanceof BinaryOperation) return this.evaluateBinary(token);
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof UnaryOperation) return this.evaluateUnary(token);
+    if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     return new RuntimeError(`Token type "${token.type}" has not been implemented for interpretation.`);
   }
 
@@ -67,5 +69,9 @@ export class Interpreter extends Parser {
       default:
         return new RuntimeNumber(+right.value);
     }
+  }
+
+  private evaluateParenthesis(token: Parenthesis) {
+    return this.evaluate(token.expression);
   }
 }
