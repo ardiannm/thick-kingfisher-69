@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import { Primitive } from "./primitive.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { Division } from "./division.ts";
@@ -14,7 +16,6 @@ import { None } from "./none.ts";
 import { Invalid } from "./invalid.ts";
 import { Dot } from "./dot.ts";
 import { Constructor, assert } from "./constructor.ts";
-import { Token } from "./token.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -53,22 +54,18 @@ export class Tokenizer {
     return character;
   }
 
-  peekToken(): Primitive {
+  private peekPrimitive(): Primitive {
     const start = this.pointer;
-    const token = this.getNextToken();
+    const token = this.parsePrimitive();
     this.pointer = start;
     return token;
   }
 
-  public testToken(instance: Token, classConstructor: Constructor) {
-    return assert(instance, classConstructor);
+  public peekToken(classConstructor: Constructor<any>): boolean {
+    return assert(this.peekPrimitive(), classConstructor);
   }
 
-  public testPeekToken(classConstructor: Constructor): boolean {
-    return this.testToken(this.peekToken(), classConstructor);
-  }
-
-  getNextToken(): Primitive {
+  parsePrimitive(): Primitive {
     if (this.testNextChar("+")) {
       return new Plus(this.getNextChar());
     }
@@ -111,7 +108,7 @@ export class Tokenizer {
       let whiteSpace = "";
       while (/\s/.test(this.getChar())) whiteSpace += this.getNextChar();
       if (this.whiteSpace) return new WhiteSpace(whiteSpace);
-      return this.getNextToken();
+      return this.parsePrimitive();
     }
     if (this.hasMoreTokens()) {
       return new Invalid(this.getNextChar());

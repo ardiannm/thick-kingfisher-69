@@ -14,7 +14,7 @@ import { Power } from "./power.ts";
 import { Number } from "./number.ts";
 import { Dot } from "./dot.ts";
 import { Token } from "./token.ts";
-import { Constructor } from "./constructor.ts";
+import { Constructor, assert } from "./constructor.ts";
 import { Expression } from "./expression.ts";
 
 export class Parser extends Tokenizer {
@@ -22,9 +22,8 @@ export class Parser extends Tokenizer {
     super(input);
   }
 
-  private expectToken(classConstructor: Constructor, message?: string) {
-    const token = this.getNextToken();
-    if (!this.testToken(token, classConstructor) && message) this.errors.push(message);
+  private expectToken<T extends Token>(token: T, classConstructor: Constructor<T>, message?: string): T {
+    if (!assert(token, classConstructor) && message) this.errors.push(message);
     return token;
   }
 
@@ -34,12 +33,12 @@ export class Parser extends Tokenizer {
 
   private parseAddition() {
     let left = this.parseMultiplication();
-    while (this.testPeekToken(Plus) || this.testPeekToken(Minus)) {
-      const operator = this.getNextToken();
+    while (this.peekToken(Plus) || this.peekToken(Minus)) {
+      const operator = this.parsePrimitive();
       const right = this.parseMultiplication();
 
       // assert right hand side expression
-      this.expectToken(Token);
+      this.expectToken(right, Expression, "Invalid right hand side expression in binary operation.");
 
       left = new BinaryOperation(left, operator, right);
     }
@@ -48,8 +47,8 @@ export class Parser extends Tokenizer {
 
   private parseMultiplication() {
     let left = this.parsePower();
-    while (this.testPeekToken(Multiplication) || this.testPeekToken(Division)) {
-      const operator = this.getNextToken();
+    while (this.peekToken(Multiplication) || this.peekToken(Division)) {
+      const operator = this.parsePrimitive();
       const right = this.parsePower();
       left = new BinaryOperation(left, operator, right);
     }
@@ -58,8 +57,8 @@ export class Parser extends Tokenizer {
 
   private parsePower(): Expression {
     let left = this.parseUnary();
-    if (this.testPeekToken(Power)) {
-      const operator = this.getNextToken();
+    if (this.peekToken(Power)) {
+      const operator = this.parsePrimitive();
       const right = this.parsePower();
       left = new BinaryOperation(left, operator, right);
     }
@@ -67,8 +66,8 @@ export class Parser extends Tokenizer {
   }
 
   private parseUnary(): Expression {
-    if (this.testPeekToken(Plus) || this.testPeekToken(Minus)) {
-      const operator = this.getNextToken();
+    if (this.peekToken(Plus) || this.peekToken(Minus)) {
+      const operator = this.parsePrimitive();
       const right = this.parseUnary();
       return new UnaryOperation(operator, right);
     }
@@ -76,27 +75,27 @@ export class Parser extends Tokenizer {
   }
 
   private parseParanthesis() {
-    if (this.testPeekToken(OpenParenthesis)) {
-      const begin = this.getNextToken();
+    if (this.peekToken(OpenParenthesis)) {
+      const begin = this.parsePrimitive();
       const expression = this.parseAddition();
-      const end = this.getNextToken();
+      const end = this.parsePrimitive();
       return new Parenthesis(begin, expression, end);
     }
     return this.parseString();
   }
 
   private parseString() {
-    if (this.testPeekToken(Quote)) {
-      const begin = this.getNextToken();
+    if (this.peekToken(Quote)) {
+      const begin = this.parsePrimitive();
       this.keepWhiteSpace();
       let value = "";
       while (this.hasMoreTokens()) {
-        if (this.testPeekToken(Quote)) break;
-        value += this.getNextToken().literal;
+        if (this.peekToken(Quote)) break;
+        value += this.parsePrimitive().literal;
       }
       const string = new String(value);
       this.ignoreWhiteSpace();
-      const end = this.expectToken(Quote, "Missing '\"' in the end of string.");
+      const end = this.expectToken(this.parsePrimitive(), Quote, "Missing '\"' in the end of string.");
       return new DoubleQuoteString(begin, string, end);
     }
     return this.parseNumber();
@@ -104,15 +103,15 @@ export class Parser extends Tokenizer {
 
   private parseNumber() {
     const left = this.parseIdentifier();
-    if (this.testToken(left, Number) && this.testPeekToken(Dot)) {
-      left.literal = left.literal + this.getNextToken().literal + this.getNextToken().literal;
+    if (assert(left, Number) && this.peekToken(Dot)) {
+      left.literal = left.literal + this.parsePrimitive().literal + this.parsePrimitive().literal;
       return left;
     }
     return left;
   }
 
   private parseIdentifier() {
-    const token = this.getNextToken();
+    const token = this.parsePrimitive();
     return token;
   }
 }

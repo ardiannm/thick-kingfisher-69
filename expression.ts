@@ -1,3 +1,3 @@
 import { Token } from "./token.ts";
 
-export abstract class Expression extends Token {}
+export class Expression extends Token {}

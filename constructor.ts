@@ -1,5 +1,7 @@
-export type Constructor = new (...args: any[]) => any;
+// deno-lint-ignore-file no-explicit-any
 
-export function assert(instance: any, classConstructor: Constructor): boolean {
+export type Constructor<T> = new (...args: any[]) => T;
+
+export function assert<T>(instance: T, classConstructor: Constructor<T>): boolean {
   return instance instanceof classConstructor;
 }
