@@ -26,7 +26,7 @@ export class Parser extends Tokenizer {
 
   private parseAddition() {
     let left = this.parseMultiplication() as Expression;
-    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
+    while (this.testPeekToken(Plus) || this.testPeekToken(Minus)) {
       const operator = this.getNextToken();
       const right = this.parseMultiplication();
       left = new BinaryOperation(left, operator, right);
@@ -36,7 +36,7 @@ export class Parser extends Tokenizer {
 
   private parseMultiplication() {
     let left = this.parsePower();
-    while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
+    while (this.testPeekToken(Multiplication) || this.testPeekToken(Division)) {
       const operator = this.getNextToken();
       const right = this.parsePower();
       left = new BinaryOperation(left, operator, right);
@@ -46,7 +46,7 @@ export class Parser extends Tokenizer {
 
   private parsePower(): Expression {
     let left = this.parseUnary();
-    if (this.peekToken() instanceof Power) {
+    if (this.testPeekToken(Power)) {
       const operator = this.getNextToken();
       const right = this.parsePower();
       left = new BinaryOperation(left, operator, right);
@@ -55,7 +55,7 @@ export class Parser extends Tokenizer {
   }
 
   private parseUnary(): Expression {
-    if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
+    if (this.testPeekToken(Plus) || this.testPeekToken(Minus)) {
       const operator = this.getNextToken();
       const right = this.parseUnary();
       return new UnaryOperation(operator, right);
@@ -64,7 +64,7 @@ export class Parser extends Tokenizer {
   }
 
   private parseParanthesis() {
-    if (this.peekToken() instanceof OpenParenthesis) {
+    if (this.testPeekToken(OpenParenthesis)) {
       const begin = this.getNextToken();
       const expression = this.parseAddition();
       const end = this.getNextToken();
@@ -74,12 +74,12 @@ export class Parser extends Tokenizer {
   }
 
   private parseString() {
-    if (this.peekToken() instanceof Quote) {
+    if (this.testPeekToken(Quote)) {
       const begin = this.getNextToken();
       this.keepWhiteSpace();
       let value = "";
       while (this.hasMoreTokens()) {
-        if (this.peekToken() instanceof Quote) break;
+        if (this.testPeekToken(Quote)) break;
         value += this.getNextToken().literal;
       }
       const string = new String(value);
@@ -92,7 +92,7 @@ export class Parser extends Tokenizer {
 
   private parseNumber() {
     const left = this.parseIdentifier();
-    if (left instanceof Number && this.peekToken() instanceof Dot) {
+    if (this.testToken(left, Number) && this.testPeekToken(Dot)) {
       left.literal = left.literal + this.getNextToken().literal + this.getNextToken().literal;
       return left;
     }
@@ -100,6 +100,7 @@ export class Parser extends Tokenizer {
   }
 
   private parseIdentifier() {
-    return this.getNextToken();
+    const token = this.getNextToken();
+    return token;
   }
 }

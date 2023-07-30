@@ -13,6 +13,8 @@ import { Power } from "./power.ts";
 import { None } from "./none.ts";
 import { Invalid } from "./invalid.ts";
 import { Dot } from "./dot.ts";
+import { Constructor, assert } from "./constructor.ts";
+import { Token } from "./token.ts";
 
 export class Tokenizer {
   private pointer = 0;
@@ -54,6 +56,14 @@ export class Tokenizer {
     const token = this.getNextToken();
     this.pointer = start;
     return token;
+  }
+
+  public testToken(instance: Token, classConstructor: Constructor) {
+    return assert(instance, classConstructor);
+  }
+
+  public testPeekToken(classConstructor: Constructor): boolean {
+    return this.testToken(this.peekToken(), classConstructor);
   }
 
   getNextToken(): Primitive {
