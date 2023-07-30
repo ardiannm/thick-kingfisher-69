@@ -1,11 +1,8 @@
-import { Expression, Operator } from "./language.ts";
-import { Token } from "./token.ts";
+import { Expression } from "./expression.ts";
+import { Operator } from "./operator.ts";
 
-export class UnaryOperation extends Token {
-  constructor(
-    public operator: Operator,
-    public right: Expression,
-  ) {
+export class UnaryOperation extends Expression {
+  constructor(public operator: Operator, public right: Expression) {
     super();
   }
 }

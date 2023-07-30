@@ -1,12 +1,8 @@
-import { Expression, Operator } from "./language.ts";
-import { Token } from "./token.ts";
+import { Expression } from "./expression.ts";
+import { Operator } from "./operator.ts";
 
-export class BinaryOperation extends Token {
-  constructor(
-    public left: Expression,
-    public operator: Operator,
-    public right: Expression,
-  ) {
-    super()
+export class BinaryOperation extends Expression {
+  constructor(public left: Expression, public operator: Operator, public right: Expression) {
+    super();
   }
 }

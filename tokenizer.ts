@@ -68,12 +68,6 @@ export class Tokenizer {
     return this.testToken(this.peekToken(), classConstructor);
   }
 
-  public expectToken(classConstructor: Constructor, message?: string) {
-    const token = this.getNextToken();
-    if (!this.testToken(token, classConstructor) && message) this.errors.push(message);
-    return token;
-  }
-
   getNextToken(): Primitive {
     if (this.testNextChar("+")) {
       return new Plus(this.getNextChar());

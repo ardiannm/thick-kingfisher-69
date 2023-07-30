@@ -1,7 +1,6 @@
 import { Tokenizer } from "./tokenizer.ts";
 import { Plus } from "./plus.ts";
 import { Minus } from "./minus.ts";
-import { Expression } from "./language.ts";
 import { Multiplication } from "./multiplication.ts";
 import { Division } from "./division.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
@@ -14,10 +13,19 @@ import { Parenthesis } from "./parenthesis.ts";
 import { Power } from "./power.ts";
 import { Number } from "./number.ts";
 import { Dot } from "./dot.ts";
+import { Token } from "./token.ts";
+import { Constructor } from "./constructor.ts";
+import { Expression } from "./expression.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
     super(input);
+  }
+
+  private expectToken(classConstructor: Constructor, message?: string) {
+    const token = this.getNextToken();
+    if (!this.testToken(token, classConstructor) && message) this.errors.push(message);
+    return token;
   }
 
   parse() {
@@ -25,10 +33,14 @@ export class Parser extends Tokenizer {
   }
 
   private parseAddition() {
-    let left = this.parseMultiplication() as Expression;
+    let left = this.parseMultiplication();
     while (this.testPeekToken(Plus) || this.testPeekToken(Minus)) {
       const operator = this.getNextToken();
       const right = this.parseMultiplication();
+
+      // assert right hand side expression
+      this.expectToken(Token);
+
       left = new BinaryOperation(left, operator, right);
     }
     return left;

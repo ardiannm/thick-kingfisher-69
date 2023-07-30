@@ -1,3 +1,3 @@
-import { Primitive } from "./primitive.ts";
+import { Operator } from "./operator.ts";
 
-export class Power extends Primitive {}
+export class Power extends Operator {}
