@@ -19,6 +19,8 @@ import { Token } from "./token.ts";
 export class Tokenizer {
   private pointer = 0;
   private whiteSpace = false;
+  public errors = new Array<string>();
+
   constructor(public input: string) {}
 
   keepWhiteSpace() {
@@ -64,6 +66,12 @@ export class Tokenizer {
 
   public testPeekToken(classConstructor: Constructor): boolean {
     return this.testToken(this.peekToken(), classConstructor);
+  }
+
+  public expectToken(classConstructor: Constructor, message?: string) {
+    const token = this.getNextToken();
+    if (!this.testToken(token, classConstructor) && message) this.errors.push(message);
+    return token;
   }
 
   getNextToken(): Primitive {

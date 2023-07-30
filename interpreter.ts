@@ -9,13 +9,23 @@ import { RuntimeNumber } from "./runtime.number.ts";
 import { RuntimeValue } from "./runtime.value.ts";
 import { Number } from "./number.ts";
 import { UnaryOperation } from "./unary.operation.ts";
+import { Parser } from "./mod.ts";
 
-export class Interpreter {
+export class Interpreter extends Parser {
+  //
+
+  public run() {
+    const tree = this.parse();
+    if (this.errors.length) return { ParserErrors: this.errors };
+    const runtime = this.evaluate(tree);
+    return runtime;
+  }
+
   evaluate<T extends Token>(token: T): RuntimeValue {
     if (token instanceof BinaryOperation) return this.evaluateBinary(token);
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof UnaryOperation) return this.evaluateUnary(token);
-    return new RuntimeError(`Token type "${token.type}" has not been implemented for interpretation`);
+    return new RuntimeError(`Token type "${token.type}" has not been implemented for interpretation.`);
   }
 
   private evaluateNumber(token: Number) {
@@ -27,7 +37,7 @@ export class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new RuntimeError(`Can't perform binary operations between "${token.left.type}" and "${token.right.type}" tokens`);
+      return new RuntimeError(`Can't perform binary operations between "${token.left.type}" and "${token.right.type}" tokens.`);
     }
 
     switch (true) {

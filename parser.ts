@@ -84,7 +84,7 @@ export class Parser extends Tokenizer {
       }
       const string = new String(value);
       this.ignoreWhiteSpace();
-      const end = this.getNextToken();
+      const end = this.expectToken(Quote, "Missing '\"' in the end of string.");
       return new DoubleQuoteString(begin, string, end);
     }
     return this.parseNumber();
