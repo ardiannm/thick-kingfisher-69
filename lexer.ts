@@ -1,5 +1,6 @@
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { ExclamationMark } from "./exclamation.mark.ts";
+import { Number } from "./number.ts";
 import { Identifier } from "./identifier.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
 import { QuestionMark } from "./question.mark.ts";
@@ -29,6 +30,12 @@ export class Lexer {
     return new Identifier(value);
   }
 
+  private getNumber() {
+    let value = "";
+    while (/[0-9]/.test(this.character())) value += this.nextCharacter();
+    return new Number(value);
+  }
+
   public getNextToken(): Token {
     if (this.character() == "(") return new OpenParenthesis(this.character());
     if (this.character() == ")") return new CloseParenthesis(this.character());
@@ -37,6 +44,10 @@ export class Lexer {
 
     if (/[a-zA-Z]/.test(this.character())) {
       return this.getIdentifier();
+    }
+
+    if (/[0-9]/.test(this.character())) {
+      return this.getNumber();
     }
 
     throw "Invalid character found in the program";
