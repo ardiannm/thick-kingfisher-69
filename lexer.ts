@@ -7,6 +7,8 @@ import { QuestionMark } from "./question.mark.ts";
 import { Token } from "./token.ts";
 import { Plus } from "./plus.ts";
 import { Minus } from "./minus.ts";
+import { Division } from "./division.ts";
+import { Multiplication } from "./multiplication.ts";
 
 export class Lexer {
   private pointer = 0;
@@ -50,6 +52,8 @@ export class Lexer {
 
     if (this.character() == "+") return new Plus(this.character());
     if (this.character() == "-") return new Minus(this.character());
+    if (this.character() == "*") return new Multiplication(this.character());
+    if (this.character() == "/") return new Division(this.character());
 
     // identifiers
 
