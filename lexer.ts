@@ -1,20 +1,20 @@
-import { CloseParenthesis } from "./close.parenthesis.ts";
-import { ExclamationMark } from "./exclamation.mark.ts";
-import { Number } from "./number.ts";
-import { Identifier } from "./identifier.ts";
-import { OpenParenthesis } from "./open.parenthesis.ts";
-import { QuestionMark } from "./question.mark.ts";
-import { Plus } from "./plus.ts";
-import { Minus } from "./minus.ts";
-import { Division } from "./division.ts";
-import { Multiplication } from "./multiplication.ts";
-import { EOF } from "./eof.ts";
-import { Space } from "./space.ts";
-import { Token } from "./token.ts";
-import { Quote } from "./quote.ts";
-import { Invalid } from "./invalid.ts";
-import { LogError } from "./log.error.ts";
-import { WarningError } from "./warning.error.ts";
+import CloseParenthesis from "./close.parenthesis.ts";
+import ExclamationMark from "./exclamation.mark.ts";
+import Number from "./number.ts";
+import Identifier from "./identifier.ts";
+import OpenParenthesis from "./open.parenthesis.ts";
+import QuestionMark from "./question.mark.ts";
+import Plus from "./plus.ts";
+import Minus from "./minus.ts";
+import Division from "./division.ts";
+import Multiplication from "./multiplication.ts";
+import Space from "./space.ts";
+import Token from "./token.ts";
+import Quote from "./quote.ts";
+import Invalid from "./invalid.ts";
+import EOF from "./eof.ts";
+import LogError from "./log.error.ts";
+import WarningError from "./warning.error.ts";
 
 export default class Lexer {
   public errors = new Array<LogError>();

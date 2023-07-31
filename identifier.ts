@@ -1,3 +1,3 @@
-import { Value } from "./value.ts";
+import Value from "./value.ts";
 
-export class Identifier extends Value {}
+export default class Identifier extends Value {}

@@ -1,6 +1,6 @@
-import { Expression } from "./expression.ts";
+import Expression from "./expression.ts";
 
-export class Value extends Expression {
+export default class Value extends Expression {
   constructor(public raw: string) {
     super();
   }

@@ -1,3 +1,3 @@
-import { SpecialCharacter } from "./special.character.ts";
+import SpecialCharacter from "./special.character.ts";
 
-export class Operator extends SpecialCharacter {}
+export default class Operator extends SpecialCharacter {}

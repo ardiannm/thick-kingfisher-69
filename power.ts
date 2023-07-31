@@ -1,1 +1,1 @@
-export class Power {}
+export default class Power {}

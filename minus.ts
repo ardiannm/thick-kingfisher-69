@@ -1,3 +1,3 @@
-import { Operator } from "./operator.ts";
+import Operator from "./operator.ts";
 
-export class Minus extends Operator {}
+export default class Minus extends Operator {}

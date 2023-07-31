@@ -1,3 +1,3 @@
-import { Value } from "./value.ts";
+import Value from "./value.ts";
 
-export class Number extends Value {}
+export default class Number extends Value {}

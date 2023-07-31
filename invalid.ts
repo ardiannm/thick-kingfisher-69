@@ -1,3 +1,3 @@
-import { Token } from "./token.ts";
+import Token from "./token.ts";
 
-export class Invalid extends Token {}
+export default class Invalid extends Token {}

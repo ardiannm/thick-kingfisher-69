@@ -1,3 +1,3 @@
-import { Operator } from "./operator.ts";
+import Operator from "./operator.ts";
 
-export class Division extends Operator {}
+export default class Division extends Operator {}

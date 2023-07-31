@@ -1,21 +1,20 @@
 import Lexer from "./lexer.ts";
-
-import { ParserError } from "./parser.error.ts";
-import { Value } from "./value.ts";
-import { Plus } from "./plus.ts";
-import { Binary } from "./binary.ts";
-import { Operator } from "./operator.ts";
-import { Expression } from "./expression.ts";
-import { Minus } from "./minus.ts";
-import { Multiplication } from "./multiplication.ts";
-import { Division } from "./division.ts";
-import { Power } from "./power.ts";
-import { Unary } from "./unary.ts";
-import { OpenParenthesis } from "./open.parenthesis.ts";
-import { CloseParenthesis } from "./close.parenthesis.ts";
-import { Parenthesis } from "./parenthesis.ts";
-import { Quote } from "./quote.ts";
-import { DoubleQuoteString } from "./double.quote.string.ts";
+import Value from "./value.ts";
+import Plus from "./plus.ts";
+import Binary from "./binary.ts";
+import Operator from "./operator.ts";
+import Expression from "./expression.ts";
+import Minus from "./minus.ts";
+import Multiplication from "./multiplication.ts";
+import Division from "./division.ts";
+import Power from "./power.ts";
+import Unary from "./unary.ts";
+import OpenParenthesis from "./open.parenthesis.ts";
+import CloseParenthesis from "./close.parenthesis.ts";
+import Parenthesis from "./parenthesis.ts";
+import Quote from "./quote.ts";
+import DoubleQuoteString from "./double.quote.string.ts";
+import ParserError from "./parser.error.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -100,14 +99,14 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
       this.keepSpace();
-      let string = "";
+      let raw = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Quote) break;
-        string += this.nextCharacter();
+        raw += this.nextCharacter();
       }
       this.ignoreSpace();
       const end = this.expect(this.getNextToken(), Quote, "Missing a closing quote '\"' in the end of string");
-      return new DoubleQuoteString(begin, string, end);
+      return new DoubleQuoteString(begin, raw, end);
     }
     return this.parseValue();
   }

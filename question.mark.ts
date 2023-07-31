@@ -1,3 +1,3 @@
-import { SpecialCharacter } from "./special.character.ts";
+import SpecialCharacter from "./special.character.ts";
 
-export class QuestionMark extends SpecialCharacter {}
+export default class QuestionMark extends SpecialCharacter {}
