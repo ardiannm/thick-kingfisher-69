@@ -1,5 +1,3 @@
-export class ParserError {
-  constructor(public message: string) {
-    this.message = `ParserError: ${message}.`;
-  }
-}
+import { LogError } from "./log.error.ts";
+
+export class ParserError extends LogError {}

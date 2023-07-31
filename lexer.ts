@@ -9,10 +9,18 @@ import { Minus } from "./minus.ts";
 import { Division } from "./division.ts";
 import { Multiplication } from "./multiplication.ts";
 import { EOF } from "./eof.ts";
+import { Space } from "./space.ts";
+import { Token } from "./token.ts";
+import { Quote } from "./quote.ts";
+import { Invalid } from "./invalid.ts";
+import { LogError } from "./log.error.ts";
 
 export default class Lexer {
-  constructor(public input: string) {}
+  public errors = new Array<LogError>();
   private pointer = 0;
+  private space = false;
+
+  constructor(public input: string) {}
 
   public hasMoreTokens(): boolean {
     return this.input.length - this.pointer > 0;
@@ -22,22 +30,30 @@ export default class Lexer {
     return this.input.charAt(this.pointer);
   }
 
-  private next() {
+  public nextCharacter() {
     const character = this.character();
     this.pointer++;
     return character;
   }
 
+  public keepSpace() {
+    this.space = true;
+  }
+
+  public ignoreSpace() {
+    this.space = false;
+  }
+
   private getIdentifier() {
-    let value = "";
-    while (/[a-zA-Z]/.test(this.character())) value += this.next();
-    return new Identifier(value);
+    let raw = "";
+    while (/[a-zA-Z]/.test(this.character())) raw += this.nextCharacter();
+    return new Identifier(raw);
   }
 
   private getNumber() {
-    let value = "";
-    while (/[0-9]/.test(this.character())) value += this.next();
-    return new Number(value);
+    let raw = "";
+    while (/[0-9]/.test(this.character())) raw += this.nextCharacter();
+    return new Number(raw);
   }
 
   public peekToken() {
@@ -47,33 +63,49 @@ export default class Lexer {
     return token;
   }
 
-  public getNextToken() {
+  public getNextToken(): Token {
     //
 
-    // special characters
-    if (this.character() == "(") return new OpenParenthesis(this.next());
-    if (this.character() == ")") return new CloseParenthesis(this.next());
-    if (this.character() == "!") return new ExclamationMark(this.next());
-    if (this.character() == "?") return new QuestionMark(this.next());
-
-    // operators
-    if (this.character() == "+") return new Plus(this.next());
-    if (this.character() == "-") return new Minus(this.next());
-    if (this.character() == "*") return new Multiplication(this.next());
-    if (this.character() == "/") return new Division(this.next());
+    const char = this.character();
 
     // identifiers
-    if (/[a-zA-Z]/.test(this.character())) {
+    if (/[a-zA-Z]/.test(char)) {
       return this.getIdentifier();
     }
 
     // numbers
-    if (/[0-9]/.test(this.character())) {
+    if (/[0-9]/.test(char)) {
       return this.getNumber();
     }
 
+    // space
+    if (/\s/.test(char)) {
+      let raw = "";
+      while (/\s/.test(this.character())) raw += this.nextCharacter();
+      if (this.space) return new Space(raw);
+      return this.getNextToken();
+    }
+
+    const next = this.nextCharacter();
+
+    // special characters
+    if (char == "(") return new OpenParenthesis(next);
+    if (char == ")") return new CloseParenthesis(next);
+    if (char == "!") return new ExclamationMark(next);
+    if (char == "?") return new QuestionMark(next);
+    if (char == '"') return new Quote(next);
+
+    // operators
+    if (char == "+") return new Plus(next);
+    if (char == "-") return new Minus(next);
+    if (char == "*") return new Multiplication(next);
+    if (char == "/") return new Division(next);
+
     // invalid characters
-    if (this.hasMoreTokens()) console.log(`Invalid character '${this.pointer}' found in the program`);
+    if (this.hasMoreTokens()) {
+      console.log(`Invalid character '${next}' found in the program at position ${this.pointer}`);
+      return new Invalid();
+    }
 
     // end of file
     return new EOF();

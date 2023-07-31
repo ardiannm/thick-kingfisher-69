@@ -1,6 +1,6 @@
 import { Token } from "./token.ts";
 
-export class Character extends Token {
+export class Space extends Token {
   constructor(public raw: string) {
     super();
   }

@@ -1,1 +1,7 @@
-export class Token {}
+export class Token {
+  public type = this.constructor.name
+    .replace(/[A-Z]/g, (match) => ` ${match}`)
+    .trim()
+    .replace(/[ ]/g, "-")
+    .toLowerCase();
+}
