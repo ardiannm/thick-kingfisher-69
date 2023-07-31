@@ -14,25 +14,26 @@ import { Token } from "./token.ts";
 import { Quote } from "./quote.ts";
 import { Invalid } from "./invalid.ts";
 import { LogError } from "./log.error.ts";
+import { WarningError } from "./warning.error.ts";
 
 export default class Lexer {
   public errors = new Array<LogError>();
-  private pointer = 0;
+  public position = 0;
   private space = false;
 
   constructor(public input: string) {}
 
   public hasMoreTokens(): boolean {
-    return this.input.length - this.pointer > 0;
+    return this.input.length - this.position > 0;
   }
 
   private character() {
-    return this.input.charAt(this.pointer);
+    return this.input.charAt(this.position);
   }
 
   public nextCharacter() {
     const character = this.character();
-    this.pointer++;
+    this.position++;
     return character;
   }
 
@@ -57,10 +58,14 @@ export default class Lexer {
   }
 
   public peekToken() {
-    const start = this.pointer;
+    const start = this.position;
     const token = this.getNextToken();
-    this.pointer = start;
+    this.position = start;
     return token;
+  }
+
+  public logError(error: LogError) {
+    this.errors.push(error);
   }
 
   public getNextToken(): Token {
@@ -103,7 +108,7 @@ export default class Lexer {
 
     // invalid characters
     if (this.hasMoreTokens()) {
-      console.log(`Invalid character '${next}' found in the program at position ${this.pointer}`);
+      this.logError(new WarningError(`Invalid character ${next} found in the program`, this.position));
       return new Invalid();
     }
 

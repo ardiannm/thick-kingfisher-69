@@ -31,14 +31,16 @@ export default class Parser extends Lexer {
 
   private expect<T, R extends T>(token: T, constructor: Constructor<R>, message: string): R {
     if (this.assert(token, constructor)) return token as R;
-    this.errors.push(new ParserError(message));
+    this.logError(new ParserError(message, this.position));
     return token as R;
   }
 
   // parse Program
 
   public parse() {
-    return this.parseAddition();
+    const program = this.parseAddition();
+    if (this.errors.length) console.log(this.errors.map((e) => e.message));
+    return program;
   }
 
   private parseAddition() {

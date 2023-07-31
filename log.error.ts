@@ -1,5 +1,5 @@
 export class LogError {
-  constructor(public message: string) {
-    this.message = `${this.constructor.name}: ${message}.`;
+  constructor(public message: string, public position: number) {
+    this.message = `${this.constructor.name}: ${message}, at position ${position}.`;
   }
 }
