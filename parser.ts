@@ -88,7 +88,8 @@ export default class Parser extends Lexer {
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       const begin = this.getNextToken() as OpenParenthesis;
-      const expression = this.parseAddition();
+
+      const expression = this.expect(this.parseAddition(), Expression, "Parenthesis expression cannot be empty");
       const end = this.expect(this.getNextToken(), CloseParenthesis, "Missing a closing ')' in parenthesis expression");
       return new Parenthesis(begin, expression, end);
     }
