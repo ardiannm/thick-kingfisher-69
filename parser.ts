@@ -112,6 +112,6 @@ export default class Parser extends Lexer {
   }
 
   private parseValue(): Expression {
-    return this.expect(this.getNextToken(), Value, "Token type of either identifier or number expected");
+    return this.expect(this.getNextToken(), Value, "Unexpected end of program");
   }
 }
