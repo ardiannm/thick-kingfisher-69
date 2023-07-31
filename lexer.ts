@@ -5,6 +5,8 @@ import { Identifier } from "./identifier.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
 import { QuestionMark } from "./question.mark.ts";
 import { Token } from "./token.ts";
+import { Plus } from "./plus.ts";
+import { Minus } from "./minus.ts";
 
 export class Lexer {
   private pointer = 0;
@@ -37,19 +39,31 @@ export class Lexer {
   }
 
   public getNextToken(): Token {
+    // special characters
+
     if (this.character() == "(") return new OpenParenthesis(this.character());
     if (this.character() == ")") return new CloseParenthesis(this.character());
     if (this.character() == "!") return new ExclamationMark(this.character());
     if (this.character() == "?") return new QuestionMark(this.character());
 
+    // operators
+
+    if (this.character() == "+") return new Plus(this.character());
+    if (this.character() == "-") return new Minus(this.character());
+
+    // identifiers
+
     if (/[a-zA-Z]/.test(this.character())) {
       return this.getIdentifier();
     }
+
+    // numbers
 
     if (/[0-9]/.test(this.character())) {
       return this.getNumber();
     }
 
-    throw "Invalid character found in the program";
+    console.log("Invalid character found in the program");
+    Deno.exit(0);
   }
 }
