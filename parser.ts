@@ -17,6 +17,7 @@ import { Token } from "./token.ts";
 import { Constructor, checkInstance } from "./constructor.ts";
 import { Expression } from "./expression.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
+import { None } from "./none.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
@@ -24,7 +25,7 @@ export class Parser extends Tokenizer {
   }
 
   private expect<T extends Token>(token: T, classConstructor: Constructor<T>, message?: string): T {
-    if (!checkInstance(token, classConstructor) && message) this.errors.push(message);
+    if (message && (!checkInstance(token, classConstructor) || token instanceof None)) this.errors.push(message);
     return token;
   }
 
@@ -37,10 +38,7 @@ export class Parser extends Tokenizer {
     while (this.peekToken(Plus) || this.peekToken(Minus)) {
       const operator = this.parsePrimitive();
       const right = this.parseMultiplication();
-
-      // assert right hand side expression
-      this.expect(right, Expression, "Invalid right hand side expression in binary operation.");
-
+      this.expect(right, Expression, "Invalid right hand side expression in addition operation");
       left = new BinaryOperation(left, operator, right);
     }
     return left;
@@ -51,6 +49,7 @@ export class Parser extends Tokenizer {
     while (this.peekToken(Multiplication) || this.peekToken(Division)) {
       const operator = this.parsePrimitive();
       const right = this.parsePower();
+      this.expect(right, Expression, "Invalid right hand side expression in multiplication operation");
       left = new BinaryOperation(left, operator, right);
     }
     return left;
@@ -61,6 +60,7 @@ export class Parser extends Tokenizer {
     if (this.peekToken(Power)) {
       const operator = this.parsePrimitive();
       const right = this.parsePower();
+      this.expect(right, Expression, "Invalid right hand side expression in power operation");
       left = new BinaryOperation(left, operator, right);
     }
     return left;
@@ -70,6 +70,7 @@ export class Parser extends Tokenizer {
     if (this.peekToken(Plus) || this.peekToken(Minus)) {
       const operator = this.parsePrimitive();
       const right = this.parseUnary();
+      this.expect(right, Expression, "Invalid right hand side expression in unary operation");
       return new UnaryOperation(operator, right);
     }
     return this.parseParanthesis();
@@ -79,7 +80,7 @@ export class Parser extends Tokenizer {
     if (this.peekToken(OpenParenthesis)) {
       const begin = this.parsePrimitive();
       const expression = this.parseAddition();
-      const end = this.expect(this.parsePrimitive(), CloseParenthesis, "Missing a closing ')' in parenthesis expression.");
+      const end = this.expect(this.parsePrimitive(), CloseParenthesis, "Missing a closing ')' in parenthesis expression");
       return new Parenthesis(begin, expression, end);
     }
     return this.parseString();
@@ -96,7 +97,7 @@ export class Parser extends Tokenizer {
       }
       const string = new String(value);
       this.ignoreWhiteSpace();
-      const end = this.expect(this.parsePrimitive(), Quote, "Missing '\"' in the end of string.");
+      const end = this.expect(this.parsePrimitive(), Quote, "Missing '\"' in the end of string");
       return new DoubleQuoteString(begin, string, end);
     }
     return this.parseNumber();
@@ -105,7 +106,7 @@ export class Parser extends Tokenizer {
   private parseNumber() {
     const left = this.parseIdentifier();
     if (checkInstance(left, Number) && this.peekToken(Dot)) {
-      left.literal = left.literal + this.parsePrimitive().literal + this.expect(this.parsePrimitive(), Number, "Invalid floating point number format.").literal;
+      left.literal = left.literal + this.parsePrimitive().literal + this.expect(this.parsePrimitive(), Number, "Invalid floating point number format").literal;
       return left;
     }
     return left;
