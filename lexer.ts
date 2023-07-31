@@ -4,17 +4,16 @@ import { Number } from "./number.ts";
 import { Identifier } from "./identifier.ts";
 import { OpenParenthesis } from "./open.parenthesis.ts";
 import { QuestionMark } from "./question.mark.ts";
-import { Token } from "./token.ts";
 import { Plus } from "./plus.ts";
 import { Minus } from "./minus.ts";
 import { Division } from "./division.ts";
 import { Multiplication } from "./multiplication.ts";
 
-export class Lexer {
+export default class Lexer {
   private pointer = 0;
   constructor(public input: string) {}
 
-  private hasMoreTokens(): boolean {
+  public hasMoreTokens(): boolean {
     return this.input.length - this.pointer > 0;
   }
 
@@ -40,7 +39,7 @@ export class Lexer {
     return new Number(value);
   }
 
-  public getNextToken(): Token {
+  public getNextToken() {
     // special characters
 
     if (this.character() == "(") return new OpenParenthesis(this.character());
