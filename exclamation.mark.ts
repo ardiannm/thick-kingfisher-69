@@ -1,3 +1,3 @@
 import { SpecialCharacter } from "./special.character.ts";
 
-export class CloseParenthesis extends SpecialCharacter {}
+export class ExclamationMark extends SpecialCharacter {}

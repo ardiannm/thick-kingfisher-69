@@ -1,3 +1,3 @@
-import { Token } from "./token.ts";
+import { Character } from "./character.ts";
 
-export class SpecialCharacter extends Token {}
+export class SpecialCharacter extends Character {}

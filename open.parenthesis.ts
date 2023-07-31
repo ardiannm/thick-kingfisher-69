@@ -1,3 +1,3 @@
-import { Primitive } from "./primitive.ts";
+import { SpecialCharacter } from "./special.character.ts";
 
-export class OpenParenthesis extends Primitive {}
+export class OpenParenthesis extends SpecialCharacter {}
