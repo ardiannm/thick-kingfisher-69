@@ -1,6 +1,12 @@
 import Lexer from "./lexer.ts";
+
 import { ParserError } from "./parser.error.ts";
 import { Value } from "./value.ts";
+import { Plus } from "./plus.ts";
+import { Binary } from "./binary.ts";
+import { Operator } from "./operator.ts";
+import { Expression } from "./expression.ts";
+import { Minus } from "./minus.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -23,10 +29,20 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    if (this.hasMoreTokens()) return this.parseValue();
+    return this.parseAddition();
   }
 
-  private parseValue() {
+  private parseAddition() {
+    let left = this.parseValue();
+    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
+      const operator = this.getNextToken() as Operator;
+      const right = this.expect(this.parseValue(), Expression, "Invalid right hand side expression in addition operation");
+      left = new Binary(left, operator, right);
+    }
+    return left;
+  }
+
+  private parseValue(): Expression {
     return this.expect(this.getNextToken(), Value, "Token type of either identifier or number expected");
   }
 }
