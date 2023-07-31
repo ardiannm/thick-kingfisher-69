@@ -11,6 +11,7 @@ import { Number } from "./number.ts";
 import { UnaryOperation } from "./unary.operation.ts";
 import { Parser } from "./mod.ts";
 import { Parenthesis } from "./parenthesis.ts";
+import { Program } from "./program.ts";
 
 export class Interpreter extends Parser {
   //
@@ -23,15 +24,22 @@ export class Interpreter extends Parser {
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {
+    if (token instanceof Program) return this.evaluateProgram(token);
     if (token instanceof BinaryOperation) return this.evaluateBinary(token);
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof UnaryOperation) return this.evaluateUnary(token);
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
-    return new RuntimeError(`Token type "${token.type}" has not been implemented for interpretation.`);
+    return new RuntimeError(`Token type "${token.constructor.name}" has not been implemented for interpretation.`);
+  }
+
+  private evaluateProgram(token: Program) {
+    let value = new RuntimeValue();
+    token.expressions.forEach((e) => (value = this.evaluate(e)));
+    return value;
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.literal));
+    return new RuntimeNumber(parseFloat(token.value));
   }
 
   private evaluateBinary(token: BinaryOperation) {
@@ -39,7 +47,7 @@ export class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new RuntimeError(`Can't perform binary operations between "${token.left.type}" and "${token.right.type}" tokens.`);
+      return new RuntimeError(`Can't perform binary operations between "${token.left.constructor.name}" and "${token.right.constructor.name}" tokens.`);
     }
 
     switch (true) {
@@ -60,7 +68,7 @@ export class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof RuntimeNumber)) {
-      return new RuntimeError(`Can't perform unary operation over "${token.right.type}" token`);
+      return new RuntimeError(`Can't perform unary operation over "${token.right.constructor.name}" token`);
     }
 
     switch (true) {

@@ -1,3 +1,1 @@
-export class Token {
-  public type = this.constructor.name;
-}
+export class Token {}

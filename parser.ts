@@ -18,6 +18,7 @@ import { Constructor, checkInstance } from "./constructor.ts";
 import { Expression } from "./expression.ts";
 import { CloseParenthesis } from "./close.parenthesis.ts";
 import { None } from "./none.ts";
+import { Program } from "./program.ts";
 
 export class Parser extends Tokenizer {
   constructor(public override input: string) {
@@ -30,7 +31,16 @@ export class Parser extends Tokenizer {
   }
 
   parse() {
-    return this.parseAddition();
+    return this.parseProgram();
+  }
+
+  private parseProgram() {
+    const expressions = new Array<Expression>();
+    while (this.hasMoreTokens()) {
+      const token = this.expect(this.parseAddition(), Expression, "Invalid expression found in the Program");
+      expressions.push(token);
+    }
+    return new Program(expressions);
   }
 
   private parseAddition() {
@@ -93,7 +103,7 @@ export class Parser extends Tokenizer {
       let value = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken(Quote)) break;
-        value += this.parsePrimitive().literal;
+        value += this.parsePrimitive().value;
       }
       const string = new String(value);
       this.ignoreWhiteSpace();
@@ -106,7 +116,7 @@ export class Parser extends Tokenizer {
   private parseNumber() {
     const left = this.parseIdentifier();
     if (checkInstance(left, Number) && this.peekToken(Dot)) {
-      left.literal = left.literal + this.parsePrimitive().literal + this.expect(this.parsePrimitive(), Number, "Invalid floating point number format").literal;
+      left.value = left.value + this.parsePrimitive().value + this.expect(this.parsePrimitive(), Number, "Invalid floating point number format").value;
       return left;
     }
     return left;

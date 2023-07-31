@@ -16,7 +16,7 @@ export class Highlighter extends Parser {
   }
 
   private do(obj: Token, origin = ["meta"]): void {
-    if (obj instanceof Primitive) this.tokens.push(new Highlight(obj.literal, [...origin, obj.type]));
+    if (obj instanceof Primitive) this.tokens.push(new Highlight(obj.value, [...origin, obj.type]));
 
     Object.entries(obj)
       .filter(([_k, v]) => v instanceof Token)
