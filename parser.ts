@@ -16,6 +16,8 @@ import Quote from "./quote.ts";
 import DoubleQuoteString from "./double.quote.string.ts";
 import ParserError from "./parser.error.ts";
 import Program from "./program.ts";
+import IllegalCharacter from "./invalid.ts";
+import WarningError from "./warning.error.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -111,6 +113,10 @@ export default class Parser extends Lexer {
   }
 
   private parseValue() {
-    return this.expect(this.getNextToken(), Value, "Unexpected end of program");
+    const token = this.expect(this.getNextToken(), Value, "Unexpected end of program");
+    if (token instanceof IllegalCharacter) {
+      this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`, this.position));
+    }
+    return token;
   }
 }

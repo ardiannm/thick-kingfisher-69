@@ -18,9 +18,9 @@ export default class Interpreter extends Parser {
 
   public run() {
     const tree = this.parse();
+    console.log(tree);
     if (this.errors.length) return this.errors;
-    const runtime = this.evaluate(tree);
-    return runtime;
+    return this.evaluate(tree);
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {

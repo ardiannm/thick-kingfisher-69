@@ -65,6 +65,7 @@ export default class Lexer {
 
   public logError(error: LogError) {
     this.errors.push(error);
+    return error;
   }
 
   public getNextToken(): Token {
