@@ -11,10 +11,9 @@ import Multiplication from "./multiplication.ts";
 import Space from "./space.ts";
 import Token from "./token.ts";
 import Quote from "./quote.ts";
-import Invalid from "./invalid.ts";
-import EOF from "./eof.ts";
+import IllegalCharacter from "./invalid.ts";
+import Power from "./power.ts";
 import LogError from "./log.error.ts";
-import WarningError from "./warning.error.ts";
 
 export default class Lexer {
   public errors = new Array<LogError>();
@@ -105,14 +104,9 @@ export default class Lexer {
     if (char == "-") return new Minus(next);
     if (char == "*") return new Multiplication(next);
     if (char == "/") return new Division(next);
+    if (char == "^") return new Power(next);
 
     // invalid characters
-    if (this.hasMoreTokens()) {
-      this.logError(new WarningError(`Invalid character ${next} found in the program`, this.position));
-      return new Invalid();
-    }
-
-    // end of file
-    return new EOF();
+    return new IllegalCharacter(next);
   }
 }

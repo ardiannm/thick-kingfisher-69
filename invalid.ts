@@ -1,3 +1,3 @@
-import Token from "./token.ts";
+import Character from "./character.ts";
 
-export default class Invalid extends Token {}
+export default class IllegalCharacter extends Character {}

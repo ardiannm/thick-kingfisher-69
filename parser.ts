@@ -15,6 +15,7 @@ import Parenthesis from "./parenthesis.ts";
 import Quote from "./quote.ts";
 import DoubleQuoteString from "./double.quote.string.ts";
 import ParserError from "./parser.error.ts";
+import Program from "./program.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -41,7 +42,7 @@ export default class Parser extends Lexer {
     while (this.hasMoreTokens()) {
       expressions.push(this.parseAddition());
     }
-    return expressions;
+    return new Program(expressions);
   }
 
   private parseAddition() {
@@ -109,7 +110,7 @@ export default class Parser extends Lexer {
     return this.parseValue();
   }
 
-  private parseValue(): Expression {
+  private parseValue() {
     return this.expect(this.getNextToken(), Value, "Unexpected end of program");
   }
 }
