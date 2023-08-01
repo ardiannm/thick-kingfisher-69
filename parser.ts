@@ -37,7 +37,11 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    return this.parseAddition();
+    const expressions = new Array<Expression>();
+    while (this.hasMoreTokens()) {
+      expressions.push(this.parseAddition());
+    }
+    return expressions;
   }
 
   private parseAddition() {
