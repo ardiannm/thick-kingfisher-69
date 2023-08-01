@@ -37,13 +37,11 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    const program = this.parseAddition();
-    if (this.errors.length) console.log(this.errors.map((e) => e.message));
-    return program;
+    return this.parseAddition();
   }
 
   private parseAddition() {
-    let left = this.parseValue();
+    let left = this.parseMultiplication();
     while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken() as Operator;
       const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side expression in addition operation");
@@ -56,19 +54,17 @@ export default class Parser extends Lexer {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken() as Operator;
-      const right = this.parsePower();
-      this.expect(right, Expression, "Invalid right hand side expression in multiplication operation");
+      const right = this.expect(this.parsePower(), Expression, "Invalid right hand side expression in multiplication operation");
       left = new Binary(left, operator, right);
     }
     return left;
   }
 
-  private parsePower(): Expression {
+  private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
       const operator = this.getNextToken() as Operator;
-      const right = this.parsePower();
-      this.expect(right, Expression, "Invalid right hand side expression in power operation");
+      const right = this.expect(this.parsePower(), Expression, "Invalid right hand side expression in power operation");
       left = new Binary(left, operator, right);
     }
     return left;
@@ -77,8 +73,7 @@ export default class Parser extends Lexer {
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken() as Operator;
-      const right = this.parseUnary();
-      this.expect(right, Expression, "Invalid right hand side expression in unary operation");
+      const right = this.expect(this.parseUnary(), Expression, "Invalid right hand side expression in unary operation");
       return new Unary(operator, right);
     }
     return this.parseParanthesis();
@@ -87,7 +82,6 @@ export default class Parser extends Lexer {
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       const begin = this.getNextToken() as OpenParenthesis;
-
       const expression = this.expect(this.parseAddition(), Expression, "Parenthesis expression cannot be empty");
       const end = this.expect(this.getNextToken(), CloseParenthesis, "Missing a closing ')' in parenthesis expression");
       return new Parenthesis(begin, expression, end);

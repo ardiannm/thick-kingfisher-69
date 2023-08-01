@@ -6,5 +6,11 @@ import Stringify from "../stringify.ts";
 while (true) {
   console.log();
   const input = prompt(">>") || "";
-  console.log(Stringify(new Parser(input).parse()));
+  const parser = new Parser(input);
+  const tree = parser.parse();
+  console.log(Stringify(tree));
+  if (parser.errors.length) {
+    console.log();
+    console.log(parser.errors.map((e) => e.message));
+  }
 }
