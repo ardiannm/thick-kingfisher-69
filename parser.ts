@@ -21,11 +21,11 @@ import WarningError from "./warning.error.ts";
 import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./graeter.than.ts";
-import Tag from "./tag.ts";
 import Component from "./component.ts";
 import OpenTag from "./open.tag.ts";
 import EOF from "./eof.ts";
 import SyntaxError from "./syntax.error.ts";
+import CloseTag from "./close.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -57,7 +57,7 @@ export default class Parser extends Lexer {
 
   private parseComponent() {
     const left = this.parseOpenTag();
-    if (left instanceof Tag) {
+    if (left instanceof OpenTag) {
       const content = this.parseContent() as Component;
       return new Component(left.tagName, [content]);
     }
@@ -68,14 +68,25 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof LessThan) {
       this.getNextToken();
       const left = this.getNextToken() as Identifier;
-      const identifier = this.expect(left, Identifier, `Expecting a name identifier for this tag element but received a '${left.source}' ${left.type} token`);
-      while (!(this.peekToken() instanceof GreaterThan)) {
+      let tagName = "";
+      if (left instanceof Identifier) tagName = left.source;
+      while (!(this.peekToken() instanceof GreaterThan) && !(this.peekToken() instanceof EOF)) {
         this.getNextToken();
       }
       this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
-      return new OpenTag(identifier.source);
+      return new OpenTag(tagName);
     }
     return this.parseAddition();
+  }
+
+  private parseCloseTag() {
+    this.expect(this.getNextToken(), LessThan, "Expecting a '<' for the closing tag");
+    this.expect(this.getNextToken(), Division, "Expecting a '</' for the closing tag");
+    while (!(this.peekToken() instanceof GreaterThan)) {
+      this.getNextToken();
+    }
+    this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
+    return new CloseTag();
   }
 
   private parseContent() {
