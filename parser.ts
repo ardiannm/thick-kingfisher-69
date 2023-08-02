@@ -23,6 +23,7 @@ import Identifier from "./identifier.ts";
 import GreaterThan from "./graeter.than.ts";
 import Tag from "./tag.ts";
 import Component from "./component.ts";
+import OpenTag from "./open.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -55,8 +56,7 @@ export default class Parser extends Lexer {
   private parseComponent() {
     const left = this.parseOpenTag();
     if (left instanceof Tag) {
-      const text = this.parseContent();
-      console.log(text);
+      const text = this.parseContent() as Component;
       return new Component(left.raw, [text]);
     }
     return left;
@@ -67,14 +67,17 @@ export default class Parser extends Lexer {
       this.getNextToken();
       const tagName = this.expect(this.parseValue(), Identifier, "Expecting a name identifier for this tag element");
       this.expect(this.getNextToken(), GreaterThan, `Expecting a closing > for the openning '${tagName.raw}' tag`);
-      return new Tag(tagName.raw);
+      return new OpenTag(tagName.raw);
     }
     return this.parseAddition();
   }
 
   private parseContent() {
     let raw = "";
-    while (this.hasMoreTokens() && !(this.peekToken() instanceof LessThan)) {
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof LessThan) {
+        return this.parseComponent();
+      }
       raw += this.nextCharacter();
     }
     return raw;
