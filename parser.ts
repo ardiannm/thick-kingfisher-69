@@ -24,6 +24,8 @@ import GreaterThan from "./graeter.than.ts";
 import Tag from "./tag.ts";
 import Component from "./component.ts";
 import OpenTag from "./open.tag.ts";
+import EOF from "./eof.ts";
+import SyntaxError from "./syntax.error.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -46,7 +48,7 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    const expressions = new Array<Expression>();
+    const expressions = new Array<Expression>(this.parseComponent());
     while (this.hasMoreTokens()) {
       expressions.push(this.parseComponent());
     }
@@ -65,12 +67,9 @@ export default class Parser extends Lexer {
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       this.getNextToken();
-      const token = this.parseValue();
-      const identifier = this.expect(token, Identifier, `Expecting a name identifier for this tag element but received a '${token.source}' ${token.type} token`);
-      if (this.peekToken() instanceof Division) {
-        this.getNextToken();
-      }
-      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing > for the opening '${identifier.source}' tag`);
+      const left = this.getNextToken() as Identifier;
+      const identifier = this.expect(left, Identifier, `Expecting a name identifier for this tag element but received a '${left.source}' ${left.type} token`);
+      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
       return new OpenTag(identifier.source);
     }
     return this.parseAddition();
@@ -153,10 +152,14 @@ export default class Parser extends Lexer {
   }
 
   private parseValue() {
-    const token = this.expect(this.getNextToken(), Value, "Unexpected end of program");
-    if (token.source && token instanceof IllegalCharacter) {
+    const token = this.expect(this.getNextToken(), Value, "Invalid syntax in the program");
+    if (token instanceof EOF) {
+      this.logError(new SyntaxError(`No syntax was provided. Programming code cannot be empty`, this.position));
+    }
+    if (token instanceof IllegalCharacter) {
       this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`, this.position));
     }
+    console.log(token);
     return token;
   }
 }

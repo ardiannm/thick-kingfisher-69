@@ -16,6 +16,7 @@ import Power from "./power.ts";
 import LogError from "./log.error.ts";
 import LessThan from "./less.than.ts";
 import GreaterThan from "./graeter.than.ts";
+import EOF from "./eof.ts";
 
 export default class Lexer {
   public errors = new Array<LogError>();
@@ -112,6 +113,10 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     // invalid characters
-    return new IllegalCharacter(next);
+    if (this.hasMoreTokens()) {
+      return new IllegalCharacter(next);
+    }
+
+    return new EOF();
   }
 }
