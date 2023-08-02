@@ -54,33 +54,37 @@ export default class Parser extends Lexer {
   }
 
   private parseComponent() {
-    const left = this.parseOpenTag();
+    const left = this.parseTag();
     if (left instanceof Tag) {
-      const text = this.parseContent() as Component;
-      return new Component(left.raw, [text]);
+      const content = this.parseContent() as Component;
+      return new Component(left.tagName, [content]);
     }
     return left;
   }
 
-  private parseOpenTag() {
+  private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       this.getNextToken();
-      const tagName = this.expect(this.parseValue(), Identifier, "Expecting a name identifier for this tag element");
-      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing > for the openning '${tagName.raw}' tag`);
-      return new OpenTag(tagName.raw);
+      const token = this.parseValue();
+      const identifier = this.expect(token, Identifier, `Expecting a name identifier for this tag element but received a '${token.source}' ${token.type} token`);
+      if (this.peekToken() instanceof Division) {
+        this.getNextToken();
+      }
+      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing > for the opening '${identifier.source}' tag`);
+      return new OpenTag(identifier.source);
     }
     return this.parseAddition();
   }
 
   private parseContent() {
-    let raw = "";
+    let source = "";
     while (this.hasMoreTokens()) {
       if (this.peekToken() instanceof LessThan) {
         return this.parseComponent();
       }
-      raw += this.nextCharacter();
+      source += this.nextCharacter();
     }
-    return raw;
+    return source;
   }
 
   private parseAddition() {
@@ -136,22 +140,22 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
       this.keepSpace();
-      let raw = "";
+      let source = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Quote) break;
-        raw += this.nextCharacter();
+        source += this.nextCharacter();
       }
       this.ignoreSpace();
       const end = this.expect(this.getNextToken(), Quote, "Missing a closing quote '\"' in the end of string");
-      return new DoubleQuoteString(begin, raw, end);
+      return new DoubleQuoteString(begin, source, end);
     }
     return this.parseValue();
   }
 
   private parseValue() {
     const token = this.expect(this.getNextToken(), Value, "Unexpected end of program");
-    if (token.raw && token instanceof IllegalCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`, this.position));
+    if (token.source && token instanceof IllegalCharacter) {
+      this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`, this.position));
     }
     return token;
   }

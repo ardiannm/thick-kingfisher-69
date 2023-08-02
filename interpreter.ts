@@ -18,8 +18,8 @@ export default class Interpreter extends Parser {
 
   public run() {
     const tree = this.parse();
-    console.log(JSON.stringify(tree, null, 2));
-    if (this.errors.length) return this.errors;
+    if (this.errors.length) return console.log(this.errors[0]);
+    console.log(tree);
     return this.evaluate(tree);
   }
 
@@ -39,7 +39,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.raw));
+    return new RuntimeNumber(parseFloat(token.source));
   }
 
   private evaluateBinary(token: Binary) {
