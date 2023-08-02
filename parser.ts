@@ -56,7 +56,7 @@ export default class Parser extends Lexer {
   }
 
   private parseComponent() {
-    const left = this.parseTag();
+    const left = this.parseOpenTag();
     if (left instanceof Tag) {
       const content = this.parseContent() as Component;
       return new Component(left.tagName, [content]);
@@ -64,11 +64,14 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  private parseTag() {
+  private parseOpenTag() {
     if (this.peekToken() instanceof LessThan) {
       this.getNextToken();
       const left = this.getNextToken() as Identifier;
       const identifier = this.expect(left, Identifier, `Expecting a name identifier for this tag element but received a '${left.source}' ${left.type} token`);
+      while (!(this.peekToken() instanceof GreaterThan)) {
+        this.getNextToken();
+      }
       this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
       return new OpenTag(identifier.source);
     }
