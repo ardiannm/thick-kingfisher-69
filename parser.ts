@@ -18,6 +18,11 @@ import ParserError from "./parser.error.ts";
 import Program from "./program.ts";
 import IllegalCharacter from "./invalid.ts";
 import WarningError from "./warning.error.ts";
+import LessThan from "./less.than.ts";
+import Identifier from "./identifier.ts";
+import GreaterThan from "./graeter.than.ts";
+import Tag from "./tag.ts";
+import Component from "./component.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -42,9 +47,37 @@ export default class Parser extends Lexer {
   public parse() {
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseAddition());
+      expressions.push(this.parseComponent());
     }
     return new Program(expressions);
+  }
+
+  private parseComponent() {
+    const left = this.parseOpenTag();
+    if (left instanceof Tag) {
+      const text = this.parseContent();
+      console.log(text);
+      return new Component(left.raw, [text]);
+    }
+    return left;
+  }
+
+  private parseOpenTag() {
+    if (this.peekToken() instanceof LessThan) {
+      this.getNextToken();
+      const tagName = this.expect(this.parseValue(), Identifier, "Expecting a name identifier for this tag element");
+      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing > for the openning '${tagName.raw}' tag`);
+      return new Tag(tagName.raw);
+    }
+    return this.parseAddition();
+  }
+
+  private parseContent() {
+    let raw = "";
+    while (this.hasMoreTokens() && !(this.peekToken() instanceof LessThan)) {
+      raw += this.nextCharacter();
+    }
+    return raw;
   }
 
   private parseAddition() {
@@ -114,7 +147,7 @@ export default class Parser extends Lexer {
 
   private parseValue() {
     const token = this.expect(this.getNextToken(), Value, "Unexpected end of program");
-    if (token instanceof IllegalCharacter) {
+    if (token.raw && token instanceof IllegalCharacter) {
       this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`, this.position));
     }
     return token;

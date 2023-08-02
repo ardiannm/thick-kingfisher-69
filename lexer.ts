@@ -14,6 +14,8 @@ import Quote from "./quote.ts";
 import IllegalCharacter from "./invalid.ts";
 import Power from "./power.ts";
 import LogError from "./log.error.ts";
+import LessThan from "./less.than.ts";
+import GreaterThan from "./graeter.than.ts";
 
 export default class Lexer {
   public errors = new Array<LogError>();
@@ -99,6 +101,8 @@ export default class Lexer {
     if (char == "!") return new ExclamationMark(next);
     if (char == "?") return new QuestionMark(next);
     if (char == '"') return new Quote(next);
+    if (char == "<") return new LessThan(next);
+    if (char == ">") return new GreaterThan(next);
 
     // operators
     if (char == "+") return new Plus(next);

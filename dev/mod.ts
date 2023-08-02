@@ -6,5 +6,5 @@ while (true) {
   console.log();
   const input = prompt(">>") || "";
   const interpreter = new Interpreter(input);
-  console.log(interpreter.run());
+  interpreter.run();
 }
