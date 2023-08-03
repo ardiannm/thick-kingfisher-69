@@ -55,7 +55,7 @@ export default class Parser extends Lexer {
   }
 
   private parseComponent() {
-    const left = this.parseOpenTag();
+    const left = this.parseTag();
     if (left instanceof OpenTag) {
       const content = this.parseContent() as Component;
       return new Component(left.tagName, [content]);
@@ -63,18 +63,18 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  private parseOpenTag() {
+  private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       let tagName = "";
       this.getNextToken();
       if (this.peekToken() instanceof Identifier) {
         tagName = (this.getNextToken() as Identifier).source;
         this.parseProperties();
-        return new OpenTag(tagName);
       } else {
         this.expect(this.getNextToken(), GreaterThan, "Invalid name tag");
-        return new OpenTag(tagName);
       }
+      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' for the tag");
+      return new OpenTag(tagName);
     }
     return this.parseAddition();
   }
@@ -83,15 +83,12 @@ export default class Parser extends Lexer {
     while (!(this.peekToken() instanceof GreaterThan) && !(this.peekToken() instanceof EOF)) {
       this.getNextToken();
     }
-    this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' for the tag");
   }
 
   private parseContent() {
     let source = "";
     while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof LessThan) {
-        return this.parseComponent();
-      }
+      if (this.peekToken() instanceof LessThan) return this.parseComponent();
       source += this.nextCharacter();
     }
     return source;
