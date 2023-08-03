@@ -19,7 +19,7 @@ export default class Interpreter extends Parser {
   public run() {
     const tree = this.parse();
     if (this.errors.length) return console.log(this.errors[0]);
-    console.log(tree);
+    console.log(JSON.stringify(tree, null, 2));
     return this.evaluate(tree);
   }
 
