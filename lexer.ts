@@ -113,10 +113,9 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     // invalid characters
-    if (this.hasMoreTokens()) {
-      return new IllegalCharacter(next);
-    }
+    if (next) return new IllegalCharacter(next);
 
+    // end of file
     return new EOF();
   }
 }

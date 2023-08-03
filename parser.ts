@@ -25,7 +25,6 @@ import Component from "./component.ts";
 import OpenTag from "./open.tag.ts";
 import EOF from "./eof.ts";
 import SyntaxError from "./syntax.error.ts";
-import CloseTag from "./close.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -41,7 +40,7 @@ export default class Parser extends Lexer {
 
   private expect<T, R extends T>(token: T, constructor: Constructor<R>, message: string): R {
     if (this.assert(token, constructor)) return token as R;
-    this.logError(new ParserError(message, this.position));
+    this.logError(new ParserError(message));
     return token as R;
   }
 
@@ -66,27 +65,25 @@ export default class Parser extends Lexer {
 
   private parseOpenTag() {
     if (this.peekToken() instanceof LessThan) {
-      this.getNextToken();
-      const left = this.getNextToken() as Identifier;
       let tagName = "";
-      if (left instanceof Identifier) tagName = left.source;
-      while (!(this.peekToken() instanceof GreaterThan) && !(this.peekToken() instanceof EOF)) {
-        this.getNextToken();
+      this.getNextToken();
+      if (this.peekToken() instanceof Identifier) {
+        tagName = (this.getNextToken() as Identifier).source;
+        this.parseProperties();
+        return new OpenTag(tagName);
+      } else {
+        this.expect(this.getNextToken(), GreaterThan, "Invalid name tag");
+        return new OpenTag(tagName);
       }
-      this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
-      return new OpenTag(tagName);
     }
     return this.parseAddition();
   }
 
-  private parseCloseTag() {
-    this.expect(this.getNextToken(), LessThan, "Expecting a '<' for the closing tag");
-    this.expect(this.getNextToken(), Division, "Expecting a '</' for the closing tag");
-    while (!(this.peekToken() instanceof GreaterThan)) {
+  private parseProperties() {
+    while (!(this.peekToken() instanceof GreaterThan) && !(this.peekToken() instanceof EOF)) {
       this.getNextToken();
     }
-    this.expect(this.getNextToken(), GreaterThan, `Expecting a closing '>' token in the tag`);
-    return new CloseTag();
+    this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' for the tag");
   }
 
   private parseContent() {
@@ -167,13 +164,12 @@ export default class Parser extends Lexer {
 
   private parseValue() {
     const token = this.expect(this.getNextToken(), Value, "Invalid syntax in the program");
-    if (token instanceof EOF) {
-      this.logError(new SyntaxError(`No syntax was provided. Programming code cannot be empty`, this.position));
-    }
     if (token instanceof IllegalCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`, this.position));
+      this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
     }
-    console.log(token);
+    if (token instanceof EOF) {
+      this.logError(new SyntaxError(`No syntax was provided. Programming code cannot be empty`));
+    }
     return token;
   }
 }
