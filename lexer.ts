@@ -4,18 +4,18 @@ import Number from "./number.ts";
 import Identifier from "./identifier.ts";
 import OpenParenthesis from "./open.parenthesis.ts";
 import QuestionMark from "./question.mark.ts";
-import Plus from "./plus.ts";
-import Minus from "./minus.ts";
 import Division from "./division.ts";
 import Multiplication from "./multiplication.ts";
 import Space from "./space.ts";
 import Token from "./token.ts";
 import Quote from "./quote.ts";
-import IllegalCharacter from "./invalid.ts";
-import Power from "./power.ts";
 import LogError from "./log.error.ts";
 import LessThan from "./less.than.ts";
 import GreaterThan from "./graeter.than.ts";
+import UnknownCharacter from "./unknown.character.ts";
+import Exponentiation from "./exponentiation.ts";
+import Addition from "./addition.ts";
+import Substraction from "./substraction.ts";
 import EOF from "./eof.ts";
 
 export default class Lexer {
@@ -106,14 +106,14 @@ export default class Lexer {
     if (char == ">") return new GreaterThan(next);
 
     // operators
-    if (char == "+") return new Plus(next);
-    if (char == "-") return new Minus(next);
+    if (char == "+") return new Addition(next);
+    if (char == "-") return new Substraction(next);
     if (char == "*") return new Multiplication(next);
     if (char == "/") return new Division(next);
-    if (char == "^") return new Power(next);
+    if (char == "^") return new Exponentiation(next);
 
     // invalid characters
-    if (next) return new IllegalCharacter(next);
+    if (next) return new UnknownCharacter(next);
 
     // end of file
     return new EOF();

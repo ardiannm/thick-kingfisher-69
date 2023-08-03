@@ -1,24 +1,24 @@
 import Binary from "./binary.ts";
 import Division from "./division.ts";
-import Minus from "./minus.ts";
 import Multiplication from "./multiplication.ts";
 import Number from "./number.ts";
 import Parenthesis from "./parenthesis.ts";
 import Parser from "./parser.ts";
-import Power from "./power.ts";
 import Program from "./program.ts";
 import InterpreterError from "./interpreter.error.ts";
 import RuntimeNumber from "./runtime.number.ts";
 import RuntimeValue from "./runtime.value.ts";
 import Token from "./token.ts";
 import Unary from "./unary.ts";
+import Substraction from "./substraction.ts";
+import Exponentiation from "./exponentiation.ts";
 
 export default class Interpreter extends Parser {
   //
 
   public run() {
     const tree = this.parse();
-    if (this.errors.length) return console.log(this.errors[0]);
+    if (this.errors.length) console.log(this.errors[0]);
     console.log(tree);
     return this.evaluate(tree);
   }
@@ -51,13 +51,13 @@ export default class Interpreter extends Parser {
     }
 
     switch (true) {
-      case token.operator instanceof Minus:
+      case token.operator instanceof Substraction:
         return new RuntimeNumber(left.value - right.value);
       case token.operator instanceof Multiplication:
         return new RuntimeNumber(left.value * right.value);
       case token.operator instanceof Division:
         return new RuntimeNumber(left.value / right.value);
-      case token.operator instanceof Power:
+      case token.operator instanceof Exponentiation:
         return new RuntimeNumber(left.value ** right.value);
       default:
         return new RuntimeNumber(left.value + right.value);
@@ -72,7 +72,7 @@ export default class Interpreter extends Parser {
     }
 
     switch (true) {
-      case token.operator instanceof Minus:
+      case token.operator instanceof Substraction:
         return new RuntimeNumber(-right.value);
       default:
         return new RuntimeNumber(+right.value);
