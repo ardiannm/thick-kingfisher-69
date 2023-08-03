@@ -24,7 +24,8 @@ import GreaterThan from "./graeter.than.ts";
 import Component from "./component.ts";
 import OpenTag from "./open.tag.ts";
 import EOF from "./eof.ts";
-import SyntaxError from "./syntax.error.ts";
+import CloseTag from "./close.tag.ts";
+import LogError from "./log.error.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -38,9 +39,9 @@ export default class Parser extends Lexer {
     return instance instanceof constructor;
   }
 
-  private expect<T, R extends T>(token: T, constructor: Constructor<R>, message: string): R {
+  private expect<T, R extends T>(token: T, constructor: Constructor<R>, error: LogError): R {
     if (this.assert(token, constructor)) return token as R;
-    this.logError(new ParserError(message));
+    this.logError(error);
     return token as R;
   }
 
@@ -65,15 +66,21 @@ export default class Parser extends Lexer {
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
-      let tagName = "";
       this.getNextToken();
+      if (this.peekToken() instanceof Division) {
+        this.getNextToken();
+        this.parseProperties();
+        this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing '>' for the tag"));
+        return new CloseTag();
+      }
+      let tagName = "";
       if (this.peekToken() instanceof Identifier) {
         tagName = (this.getNextToken() as Identifier).source;
         this.parseProperties();
       } else {
-        this.expect(this.getNextToken(), GreaterThan, "Invalid name tag");
+        this.expect(this.getNextToken(), GreaterThan, new ParserError("Invalid name tag"));
       }
-      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' for the tag");
+      this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing '>' for the tag"));
       return new OpenTag(tagName);
     }
     return this.parseAddition();
@@ -98,7 +105,7 @@ export default class Parser extends Lexer {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side expression in addition operation");
+      const right = this.expect(this.parseMultiplication(), Expression, new ParserError("Invalid right hand side expression in addition operation"));
       left = new Binary(left, operator, right);
     }
     return left;
@@ -108,7 +115,7 @@ export default class Parser extends Lexer {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parsePower(), Expression, "Invalid right hand side expression in multiplication operation");
+      const right = this.expect(this.parsePower(), Expression, new ParserError("Invalid right hand side expression in multiplication operation"));
       left = new Binary(left, operator, right);
     }
     return left;
@@ -118,7 +125,7 @@ export default class Parser extends Lexer {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parsePower(), Expression, "Invalid right hand side expression in power operation");
+      const right = this.expect(this.parsePower(), Expression, new ParserError("Invalid right hand side expression in power operation"));
       left = new Binary(left, operator, right);
     }
     return left;
@@ -127,7 +134,7 @@ export default class Parser extends Lexer {
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parseUnary(), Expression, "Invalid right hand side expression in unary operation");
+      const right = this.expect(this.parseUnary(), Expression, new ParserError("Invalid right hand side expression in unary operation"));
       return new Unary(operator, right);
     }
     return this.parseParanthesis();
@@ -136,8 +143,8 @@ export default class Parser extends Lexer {
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       const begin = this.getNextToken() as OpenParenthesis;
-      const expression = this.expect(this.parseAddition(), Expression, "Parenthesis expression cannot be empty");
-      const end = this.expect(this.getNextToken(), CloseParenthesis, "Missing a closing ')' in parenthesis expression");
+      const expression = this.expect(this.parseAddition(), Expression, new ParserError("Parenthesis expression cannot be empty"));
+      const end = this.expect(this.getNextToken(), CloseParenthesis, new ParserError("Missing a closing ')' in parenthesis expression"));
       return new Parenthesis(begin, expression, end);
     }
     return this.parseString();
@@ -153,20 +160,18 @@ export default class Parser extends Lexer {
         source += this.nextCharacter();
       }
       this.ignoreSpace();
-      const end = this.expect(this.getNextToken(), Quote, "Missing a closing quote '\"' in the end of string");
+      const end = this.expect(this.getNextToken(), Quote, new ParserError("Missing a closing quote '\"' in the end of string"));
       return new DoubleQuoteString(begin, source, end);
     }
     return this.parseValue();
   }
 
   private parseValue() {
-    const token = this.expect(this.getNextToken(), Value, "Invalid syntax in the program");
+    const token = this.expect(this.getNextToken(), Value, new ParserError("Invalid syntax in the program"));
     if (token instanceof IllegalCharacter) {
       this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
     }
-    if (token instanceof EOF) {
-      this.logError(new SyntaxError(`No syntax was provided. Programming code cannot be empty`));
-    }
+    if (token instanceof EOF) this.logError(new ParserError(`Unexpected end of Program`));
     return token;
   }
 }
