@@ -1,5 +1,6 @@
 import Lexer from "./lexer.ts";
 import UnknownCharacter from "./unknown.character.ts";
+import EOF from "./eof.ts";
 import Value from "./value.ts";
 import Binary from "./binary.ts";
 import Operator from "./operator.ts";
@@ -19,7 +20,10 @@ import LogError from "./log.error.ts";
 import Substraction from "./substraction.ts";
 import Addition from "./addition.ts";
 import Exponentiation from "./exponentiation.ts";
-import EOF from "./eof.ts";
+import LessThan from "./less.than.ts";
+import Identifier from "./identifier.ts";
+import GreaterThan from "./graeter.than.ts";
+import Tag from "./tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -42,11 +46,31 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    const expressions = new Array<Expression>(this.parseAddition());
+    const expressions = new Array<Expression>(this.parseTag());
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseAddition());
+      expressions.push(this.parseTag());
     }
     return new Program(expressions);
+  }
+
+  private parseTag() {
+    if (this.peekToken() instanceof LessThan) {
+      this.getNextToken();
+      let tagName = new Identifier("");
+      if (this.peekToken() instanceof Identifier) {
+        tagName = this.getNextToken() as Identifier;
+      }
+      const properties = this.parseProperties();
+      this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing parenthesis"));
+      return new Tag(tagName, properties);
+    }
+    return this.parseAddition();
+  }
+
+  private parseProperties() {
+    let source = "";
+    while (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) source += this.getNextCharacter();
+    return source;
   }
 
   private parseAddition() {
@@ -110,7 +134,7 @@ export default class Parser extends Lexer {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
         if (token instanceof Quote) break;
-        source += this.nextCharacter();
+        source += this.getNextCharacter();
       }
       this.ignoreSpace();
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));

@@ -33,7 +33,7 @@ export default class Lexer {
     return this.input.charAt(this.position);
   }
 
-  public nextCharacter() {
+  public getNextCharacter() {
     const character = this.character();
     this.position++;
     return character;
@@ -49,13 +49,13 @@ export default class Lexer {
 
   private getIdentifier() {
     let raw = "";
-    while (/[a-zA-Z]/.test(this.character())) raw += this.nextCharacter();
+    while (/[a-zA-Z]/.test(this.character())) raw += this.getNextCharacter();
     return new Identifier(raw);
   }
 
   private getNumber() {
     let raw = "";
-    while (/[0-9]/.test(this.character())) raw += this.nextCharacter();
+    while (/[0-9]/.test(this.character())) raw += this.getNextCharacter();
     return new Number(raw);
   }
 
@@ -89,12 +89,12 @@ export default class Lexer {
     // space
     if (/\s/.test(char)) {
       let raw = "";
-      while (/\s/.test(this.character())) raw += this.nextCharacter();
+      while (/\s/.test(this.character())) raw += this.getNextCharacter();
       if (this.space) return new Space(raw);
       return this.getNextToken();
     }
 
-    const next = this.nextCharacter();
+    const next = this.getNextCharacter();
 
     // special characters
     if (char == "(") return new OpenParenthesis(next);
