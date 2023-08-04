@@ -20,10 +20,11 @@ export default class Interpreter extends Parser {
     const tree = this.parse();
     if (this.logger.errors.length) {
       console.log();
-      this.logger.errors.map((e) => console.log(e.message));
+      console.log(this.logger.errors);
     }
     if (this.logger.warnings.length) {
-      this.logger.warnings.map((e) => console.log(e.message));
+      console.log();
+      console.log(this.logger.warnings);
     }
     console.log();
     console.log(tree);

@@ -63,6 +63,7 @@ export default class Parser extends Lexer {
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       const startsAt = this.position;
+      console.log(startsAt);
       this.getNextToken();
       const info = new TokenInfo(startsAt, startsAt);
       const tagName = new Identifier("", info);
@@ -73,15 +74,14 @@ export default class Parser extends Lexer {
       }
       if (this.peekToken() instanceof Identifier) tagName.raw = (this.getNextToken() as Identifier).raw;
       const properties = this.parseProperties();
-      const message = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
         if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"));
-        this.expect(this.getNextToken(), GreaterThan, message);
+        this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
         info.endsAt = this.position;
         return new UniTag(tagName, properties, info);
       }
-      this.expect(this.getNextToken(), GreaterThan, message);
+      this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
       info.endsAt = this.position;
       if (hasDivision) return new ClosingTag(tagName, properties, info);
       return new OpenTag(tagName, properties, info);
@@ -105,7 +105,8 @@ export default class Parser extends Lexer {
       }
     }
     const properties = this.input.substring(startsAt, this.position);
-    return new TagProperties(properties, new TokenInfo(startsAt, this.position));
+    const info = new TokenInfo(startsAt, this.position);
+    return new TagProperties(properties, info);
   }
 
   private parseAddition() {
@@ -115,7 +116,8 @@ export default class Parser extends Lexer {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      left = new Binary(left, operator, right, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      left = new Binary(left, operator, right, info);
     }
     return left;
   }
@@ -127,7 +129,8 @@ export default class Parser extends Lexer {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      left = new Binary(left, operator, right, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      left = new Binary(left, operator, right, info);
     }
     return left;
   }
@@ -139,7 +142,8 @@ export default class Parser extends Lexer {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      left = new Binary(left, operator, right, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      left = new Binary(left, operator, right, info);
     }
     return left;
   }
@@ -149,7 +153,8 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
       const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.type} operation`));
-      return new Unary(operator, right, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      return new Unary(operator, right, info);
     }
     return this.parseParanthesis();
   }
@@ -157,13 +162,14 @@ export default class Parser extends Lexer {
   private parseParanthesis() {
     const startsAt = this.position;
     if (this.peekToken() instanceof OpenParenthesis) {
-      const openning = this.getNextToken() as OpenParenthesis;
+      const openning = this.getNextToken();
       const expression = this.expect(this.parseAddition(), Expression, new ParserError("No expression has been provided within parenthesis"));
-      if (!(expression instanceof ClosingParenthesis)) {
-        this.logError(new ParserError("Missing a closing parenthesis"));
+      const closing = this.getNextToken();
+      if (expression instanceof Expression && !(expression instanceof ClosingParenthesis)) {
+        this.expect(closing, ClosingParenthesis, new ParserError("Expecting a closing parenthesis"));
       }
-      const closing = this.getNextToken() as ClosingParenthesis;
-      return new Parenthesis(openning, expression, closing, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      return new Parenthesis(openning as OpenParenthesis, expression, closing as ClosingParenthesis, info);
     }
     return this.parseString();
   }
@@ -176,14 +182,15 @@ export default class Parser extends Lexer {
       const startsAt = this.position;
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
-        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
+        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Unknown chacater '${token.raw}' found while parsing`));
         if (token instanceof Quote) break;
         raw += this.getNext();
       }
       this.ignoreSpace();
       const endsAt = this.position;
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));
-      return new String(begin, raw, end, new TokenInfo(startsAt, endsAt));
+      const info = new TokenInfo(startsAt, endsAt);
+      return new String(begin, raw, end, info);
     }
     return this.parseValue();
   }
@@ -191,10 +198,10 @@ export default class Parser extends Lexer {
   private parseValue() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
+      this.logError(new WarningError(`Unknown chacater '${token.raw}' found while parsing`));
     }
     if (token instanceof EOF) {
-      this.logError(new ParserError(`Unexpected end of Program`));
+      this.logError(new ParserError(`Unexpected end of program while parsing`));
     }
     return this.expect(token, Value, new ParserError("Expecting a valid value in the program"));
   }
