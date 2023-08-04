@@ -26,6 +26,7 @@ import GreaterThan from "./greater.than.ts";
 import OpenTag from "./open.tag.ts";
 import CloseTag from "./close.tag.ts";
 import TokenInfo from "./token.info.ts";
+import TagProperties from "./tag.properties.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -62,6 +63,8 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof LessThan) {
       const startsAt = this.position;
       let open = true;
+      let tagName = new Identifier("", new TokenInfo(startsAt, startsAt));
+      let properties = new TagProperties("", new TokenInfo(startsAt, startsAt));
       this.getNextToken();
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
@@ -69,26 +72,28 @@ export default class Parser extends Lexer {
       }
       const message = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Identifier) {
-        const token = this.getNextToken() as Identifier;
-        const properties = this.parseProperties();
+        tagName = this.getNextToken() as Identifier;
+        properties = this.parseProperties();
         this.expect(this.getNextToken(), GreaterThan, message);
-        if (open) return new OpenTag(token, properties, new TokenInfo(startsAt, this.position));
-        return new CloseTag(token.string, properties);
+        if (open) return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
+        return new CloseTag(tagName, properties, new TokenInfo(startsAt, this.position));
       }
+      properties = new TagProperties(properties.string, new TokenInfo(startsAt, this.position));
       this.expect(this.getNextToken(), GreaterThan, message);
-      if (open) return new OpenTag(new Identifier("", new TokenInfo(startsAt + 1, startsAt + 1)), "", new TokenInfo(startsAt, this.position));
-      return new CloseTag();
+      if (open) return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
+      return new CloseTag(tagName, properties, new TokenInfo(startsAt, this.position));
     }
     return this.parseAddition();
   }
 
   private parseProperties() {
     let properties = "";
+    const startsAt = this.position;
     while (this.hasMoreTokens()) {
       if (this.peekToken() instanceof GreaterThan) break;
       properties += this.getNextChar();
     }
-    return properties;
+    return new TagProperties(properties, new TokenInfo(startsAt, this.position));
   }
 
   private parseAddition() {
