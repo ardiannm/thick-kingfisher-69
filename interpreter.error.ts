@@ -1,3 +1,3 @@
-export default class InterpreterError {
-  constructor(public message: string) {}
-}
+import LogError from "./log.error.ts";
+
+export default class InterpreterError extends LogError {}

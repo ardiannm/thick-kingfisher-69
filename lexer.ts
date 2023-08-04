@@ -11,7 +11,7 @@ import Token from "./token.ts";
 import Quote from "./quote.ts";
 import LogError from "./log.error.ts";
 import LessThan from "./less.than.ts";
-import GreaterThan from "./graeter.than.ts";
+import GreaterThan from "./greater.than.ts";
 import UnknownCharacter from "./unknown.character.ts";
 import Exponentiation from "./exponentiation.ts";
 import Addition from "./addition.ts";
@@ -28,14 +28,14 @@ export default class Lexer {
   constructor(public input: string) {}
 
   public hasMoreTokens(): boolean {
-    return !(this.getNextToken() instanceof EOF);
+    return !(this.peekToken() instanceof EOF);
   }
 
   private character() {
     return this.input.charAt(this.position);
   }
 
-  public getNextCharacter() {
+  public getNextChar() {
     const character = this.character();
     this.position++;
     return character;
@@ -51,13 +51,13 @@ export default class Lexer {
 
   private getIdentifier() {
     let raw = "";
-    while (/[a-zA-Z]/.test(this.character())) raw += this.getNextCharacter();
+    while (/[a-zA-Z]/.test(this.character())) raw += this.getNextChar();
     return new Identifier(raw);
   }
 
   private getNumber() {
     let raw = "";
-    while (/[0-9]/.test(this.character())) raw += this.getNextCharacter();
+    while (/[0-9]/.test(this.character())) raw += this.getNextChar();
     return new Number(raw);
   }
 
@@ -95,12 +95,12 @@ export default class Lexer {
 
     if (/\s/.test(char)) {
       let source = "";
-      while (/\s/.test(this.character())) source += this.getNextCharacter();
+      while (/\s/.test(this.character())) source += this.getNextChar();
       if (this.space) return new Space(source);
       return this.getNextToken();
     }
 
-    const next = this.getNextCharacter();
+    const next = this.getNextChar();
 
     if (char == "(") return new OpenParenthesis(next);
     if (char == ")") return new CloseParenthesis(next);

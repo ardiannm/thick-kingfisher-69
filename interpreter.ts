@@ -18,8 +18,14 @@ export default class Interpreter extends Parser {
 
   public run() {
     const tree = this.parse();
-    if (this.logger.errors) console.log(this.logger.errors);
-    if (this.logger.warnings) console.log(this.logger.warnings);
+    if (this.logger.errors.length) {
+      console.log();
+      this.logger.errors.map((e) => console.log(e.message));
+    }
+    if (this.logger.warnings.length) {
+      this.logger.warnings.map((e) => console.log(e.message));
+    }
+    console.log();
     console.log(tree);
     return this.evaluate(tree);
   }
@@ -40,7 +46,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.source));
+    return new RuntimeNumber(parseFloat(token.raw));
   }
 
   private evaluateBinary(token: Binary) {

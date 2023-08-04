@@ -47,7 +47,7 @@ export default class Parser extends Lexer {
   // parse Program
 
   public parse() {
-    const expressions = new Array<Expression>(this.parseTag());
+    const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) expressions.push(this.parseTag());
     return new Program(expressions);
   }
@@ -60,15 +60,15 @@ export default class Parser extends Lexer {
         this.getNextToken();
         open = false;
       }
-      const errorMessage = new ParserError(`Expecting a closing '>' token for the tag`);
+      const message = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Identifier) {
         const token = this.getNextToken() as Identifier;
         const properties = this.parseProperties();
-        this.expect(this.getNextToken(), GreaterThan, errorMessage);
-        if (open) return new OpenTag(token, properties);
-        return new CloseTag(token, properties);
+        this.expect(this.getNextToken(), GreaterThan, message);
+        if (open) return new OpenTag(token.raw, properties);
+        return new CloseTag(token.raw, properties);
       }
-      this.expect(this.getNextToken(), GreaterThan, errorMessage);
+      this.expect(this.getNextToken(), GreaterThan, message);
       if (open) return new OpenTag();
       return new CloseTag();
     }
@@ -76,9 +76,10 @@ export default class Parser extends Lexer {
   }
 
   private parseProperties() {
-    const properties = new Array<Identifier>();
-    while (this.peekToken() instanceof Identifier) {
-      properties.push(this.expect(this.getNextToken(), Identifier, new ParserError(`Ivalid property for the tag`)) as Identifier);
+    let properties = "";
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof GreaterThan) break;
+      properties += this.getNextChar();
     }
     return properties;
   }
@@ -139,23 +140,23 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
       this.keepSpace();
-      let source = "";
+      let raw = "";
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
-        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
+        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
         if (token instanceof Quote) break;
-        source += this.getNextCharacter();
+        raw += this.getNextChar();
       }
       this.ignoreSpace();
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));
-      return new String(begin, source, end);
+      return new String(begin, raw, end);
     }
     return this.parseValue();
   }
 
   private parseValue() {
     const token = this.getNextToken();
-    if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
+    if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
     if (token instanceof EOF) this.logError(new ParserError(`Unexpected end of Program`));
     return this.expect(token, Value, new ParserError("Expecting a valid value in the program"));
   }
