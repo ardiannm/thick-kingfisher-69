@@ -67,7 +67,7 @@ export default class Lexer {
   }
 
   public logError(error: LogError) {
-    this.errors = [error, ...this.errors];
+    this.errors.push(error);
     return error;
   }
 

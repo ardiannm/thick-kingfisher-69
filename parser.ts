@@ -24,7 +24,6 @@ import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./graeter.than.ts";
 import Tag from "./tag.ts";
-import Space from "./space.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -48,38 +47,32 @@ export default class Parser extends Lexer {
 
   public parse() {
     const expressions = new Array<Expression>(this.parseTag());
-    while (this.hasMoreTokens()) {
-      expressions.push(this.parseTag());
-    }
+    while (this.hasMoreTokens()) expressions.push(this.parseTag());
     return new Program(expressions);
   }
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       this.getNextToken();
-      let tagName = new Identifier("");
+      const errorMessage = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Identifier) {
-        tagName = this.getNextToken() as Identifier;
+        const token = this.getNextToken() as Identifier;
+        const properties = this.parseProperties();
+        this.expect(this.getNextToken(), GreaterThan, errorMessage);
+        return new Tag(token, properties);
       }
-      const properties = this.parseProperties();
-      console.log(this.peekToken());
-      this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing '>' token"));
-      return new Tag(tagName, properties);
+      this.expect(this.getNextToken(), GreaterThan, errorMessage);
+      return new Tag();
     }
     return this.parseAddition();
   }
 
   private parseProperties() {
-    let source = "";
-    if (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) {
-      this.keepSpace();
-      this.expect(this.getNextToken(), Space, new ParserError("Tag name and tag properties must be seperate"));
-      this.ignoreSpace();
+    const properties = new Array<Identifier>();
+    while (this.peekToken() instanceof Identifier) {
+      properties.push(this.expect(this.getNextToken(), Identifier, new ParserError(`Ivalid property for the tag`)) as Identifier);
     }
-    while (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) {
-      source += this.getNextCharacter();
-    }
-    return source;
+    return properties;
   }
 
   private parseAddition() {
