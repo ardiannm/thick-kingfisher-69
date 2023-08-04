@@ -52,16 +52,16 @@ export default class Lexer {
 
   private getIdentifier() {
     const startsAt = this.position;
-    let raw = "";
-    while (/[a-zA-Z]/.test(this.character())) raw += this.getNextChar();
-    return new Identifier(raw, new TokenInfo(startsAt, this.position));
+    let string = "";
+    while (/[a-zA-Z]/.test(this.character())) string += this.getNextChar();
+    return new Identifier(string, new TokenInfo(startsAt, this.position));
   }
 
   private getNumber() {
     const startsAt = this.position;
-    let raw = "";
-    while (/[0-9]/.test(this.character())) raw += this.getNextChar();
-    return new Number(raw, new TokenInfo(startsAt, this.position));
+    let string = "";
+    while (/[0-9]/.test(this.character())) string += this.getNextChar();
+    return new Number(string, new TokenInfo(startsAt, this.position));
   }
 
   public peekToken() {
@@ -98,9 +98,9 @@ export default class Lexer {
     }
 
     if (/\s/.test(char)) {
-      let source = "";
-      while (/\s/.test(this.character())) source += this.getNextChar();
-      if (this.space) return new Space(source, new TokenInfo(startsAt, this.position));
+      let string = "";
+      while (/\s/.test(this.character())) string += this.getNextChar();
+      if (this.space) return new Space(string, new TokenInfo(startsAt, this.position));
       return this.getNextToken();
     }
 

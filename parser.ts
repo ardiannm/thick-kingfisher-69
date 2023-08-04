@@ -60,6 +60,7 @@ export default class Parser extends Lexer {
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
+      const startsAt = this.position;
       let open = true;
       this.getNextToken();
       if (this.peekToken() instanceof Division) {
@@ -71,11 +72,11 @@ export default class Parser extends Lexer {
         const token = this.getNextToken() as Identifier;
         const properties = this.parseProperties();
         this.expect(this.getNextToken(), GreaterThan, message);
-        if (open) return new OpenTag(token.raw, properties);
-        return new CloseTag(token.raw, properties);
+        if (open) return new OpenTag(token, properties, new TokenInfo(startsAt, this.position));
+        return new CloseTag(token.string, properties);
       }
       this.expect(this.getNextToken(), GreaterThan, message);
-      if (open) return new OpenTag();
+      if (open) return new OpenTag(new Identifier("", new TokenInfo(startsAt + 1, startsAt + 1)), "", new TokenInfo(startsAt, this.position));
       return new CloseTag();
     }
     return this.parseAddition();
@@ -150,19 +151,19 @@ export default class Parser extends Lexer {
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
-      let raw = "";
+      let string = "";
       this.keepSpace();
       const startsAt = this.position;
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
-        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
+        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.string}' found while parsing`));
         if (token instanceof Quote) break;
-        raw += this.getNextChar();
+        string += this.getNextChar();
       }
       this.ignoreSpace();
       const endsAt = this.position;
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));
-      return new String(begin, raw, end, new TokenInfo(startsAt, endsAt));
+      return new String(begin, string, end, new TokenInfo(startsAt, endsAt));
     }
     return this.parseValue();
   }
@@ -170,7 +171,7 @@ export default class Parser extends Lexer {
   private parseValue() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
+      this.logError(new WarningError(`Illegal chacater '${token.string}' found while parsing`));
     }
     if (token instanceof EOF) {
       this.logError(new ParserError(`Unexpected end of Program`));
