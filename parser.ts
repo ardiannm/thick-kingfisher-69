@@ -63,12 +63,10 @@ export default class Parser extends Lexer {
       const errorMessage = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Identifier) {
         const token = this.getNextToken() as Identifier;
-        if (open) {
-          const properties = this.parseProperties();
-          return new OpenTag(token, properties);
-        }
+        const properties = this.parseProperties();
         this.expect(this.getNextToken(), GreaterThan, errorMessage);
-        return new CloseTag(token);
+        if (open) return new OpenTag(token, properties);
+        return new CloseTag(token, properties);
       }
       this.expect(this.getNextToken(), GreaterThan, errorMessage);
       if (open) return new OpenTag();
