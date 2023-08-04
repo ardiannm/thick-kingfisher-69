@@ -24,6 +24,7 @@ import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./graeter.than.ts";
 import Tag from "./tag.ts";
+import Space from "./space.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -61,7 +62,8 @@ export default class Parser extends Lexer {
         tagName = this.getNextToken() as Identifier;
       }
       const properties = this.parseProperties();
-      this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing parenthesis"));
+      console.log(this.peekToken());
+      this.expect(this.getNextToken(), GreaterThan, new ParserError("Expecting a closing '>' token"));
       return new Tag(tagName, properties);
     }
     return this.parseAddition();
@@ -69,7 +71,14 @@ export default class Parser extends Lexer {
 
   private parseProperties() {
     let source = "";
-    while (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) source += this.getNextCharacter();
+    if (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) {
+      this.keepSpace();
+      this.expect(this.getNextToken(), Space, new ParserError("Tag name and tag properties must be seperate"));
+      this.ignoreSpace();
+    }
+    while (this.hasMoreTokens() && !(this.peekToken() instanceof GreaterThan)) {
+      source += this.getNextCharacter();
+    }
     return source;
   }
 
