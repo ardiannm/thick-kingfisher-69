@@ -18,7 +18,8 @@ export default class Interpreter extends Parser {
 
   public run() {
     const tree = this.parse();
-    if (this.errors.length) console.log(this.errors);
+    if (this.logger.errors) console.log(this.logger.errors);
+    if (this.logger.warnings) console.log(this.logger.warnings);
     console.log(tree);
     return this.evaluate(tree);
   }

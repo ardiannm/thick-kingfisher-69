@@ -22,7 +22,7 @@ import Addition from "./addition.ts";
 import Exponentiation from "./exponentiation.ts";
 import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
-import GreaterThan from "./graeter.than.ts";
+import GreaterThan from "./greater.than.ts";
 import OpenTag from "./open.tag.ts";
 import CloseTag from "./close.tag.ts";
 
@@ -154,11 +154,9 @@ export default class Parser extends Lexer {
   }
 
   private parseValue() {
-    const token = this.expect(this.getNextToken(), Value, new ParserError("Expecting a valid value in the program"));
-    if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
-    }
+    const token = this.getNextToken();
+    if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.source}' found while parsing`));
     if (token instanceof EOF) this.logError(new ParserError(`Unexpected end of Program`));
-    return token;
+    return this.expect(token, Value, new ParserError("Expecting a valid value in the program"));
   }
 }

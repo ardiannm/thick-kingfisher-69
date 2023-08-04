@@ -17,16 +17,18 @@ import Exponentiation from "./exponentiation.ts";
 import Addition from "./addition.ts";
 import Substraction from "./substraction.ts";
 import EOF from "./eof.ts";
+import WarningError from "./warning.error.ts";
+import ParserError from "./parser.error.ts";
 
 export default class Lexer {
-  public errors = new Array<LogError>();
+  public logger = { errors: new Array<LogError>(), warnings: new Array<WarningError>() };
   public position = 0;
   private space = false;
 
   constructor(public input: string) {}
 
   public hasMoreTokens(): boolean {
-    return this.input.length - this.position > 0;
+    return !(this.getNextToken() instanceof EOF);
   }
 
   private character() {
@@ -67,36 +69,39 @@ export default class Lexer {
   }
 
   public logError(error: LogError) {
-    this.errors.push(error);
+    switch (true) {
+      case error instanceof WarningError: {
+        this.logger.warnings.push(error);
+        break;
+      }
+      case error instanceof ParserError: {
+        this.logger.errors.push(error);
+        break;
+      }
+    }
     return error;
   }
 
   public getNextToken(): Token {
-    //
-
     const char = this.character();
 
-    // identifiers
     if (/[a-zA-Z]/.test(char)) {
       return this.getIdentifier();
     }
 
-    // numbers
     if (/[0-9]/.test(char)) {
       return this.getNumber();
     }
 
-    // space
     if (/\s/.test(char)) {
-      let raw = "";
-      while (/\s/.test(this.character())) raw += this.getNextCharacter();
-      if (this.space) return new Space(raw);
+      let source = "";
+      while (/\s/.test(this.character())) source += this.getNextCharacter();
+      if (this.space) return new Space(source);
       return this.getNextToken();
     }
 
     const next = this.getNextCharacter();
 
-    // special characters
     if (char == "(") return new OpenParenthesis(next);
     if (char == ")") return new CloseParenthesis(next);
     if (char == "!") return new ExclamationMark(next);
@@ -105,17 +110,14 @@ export default class Lexer {
     if (char == "<") return new LessThan(next);
     if (char == ">") return new GreaterThan(next);
 
-    // operators
     if (char == "+") return new Addition(next);
     if (char == "-") return new Substraction(next);
     if (char == "*") return new Multiplication(next);
     if (char == "/") return new Division(next);
     if (char == "^") return new Exponentiation(next);
 
-    // invalid characters
     if (next) return new UnknownCharacter(next);
 
-    // end of file
     return new EOF();
   }
 }
