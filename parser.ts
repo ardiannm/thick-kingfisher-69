@@ -9,7 +9,6 @@ import Multiplication from "./multiplication.ts";
 import Division from "./division.ts";
 import Unary from "./unary.ts";
 import OpenParenthesis from "./open.parenthesis.ts";
-import CloseParenthesis from "./close.parenthesis.ts";
 import Parenthesis from "./parenthesis.ts";
 import Quote from "./quote.ts";
 import String from "./string.ts";
@@ -23,11 +22,12 @@ import Exponentiation from "./exponentiation.ts";
 import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./greater.than.ts";
-import OpenTag from "./open.tag.ts";
-import CloseTag from "./close.tag.ts";
 import TokenInfo from "./token.info.ts";
 import TagProperties from "./tag.properties.ts";
 import UniTag from "./uni.tag.ts";
+import ClosingTag from "./closing.tag.ts";
+import OpenTag from "./open.tag.ts";
+import ClosingParenthesis from "./closing.parenthesis.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -63,34 +63,28 @@ export default class Parser extends Lexer {
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       const startsAt = this.position;
-      let open = true;
-      let tagName = new Identifier("", new TokenInfo(startsAt, startsAt));
-      let properties = new TagProperties("", new TokenInfo(startsAt, startsAt));
       this.getNextToken();
+      const info = new TokenInfo(startsAt, startsAt);
+      const tagName = new Identifier("", info);
+      let hasDivision = false;
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
-        open = false;
+        hasDivision = true;
       }
+      if (this.peekToken() instanceof Identifier) tagName.raw = (this.getNextToken() as Identifier).raw;
+      const properties = this.parseProperties();
       const message = new ParserError(`Expecting a closing '>' token for the tag`);
-      if (this.peekToken() instanceof Identifier) {
-        tagName = this.getNextToken() as Identifier;
-        properties = this.parseProperties();
-        if (this.peekToken() instanceof Division) {
-          this.getNextToken();
-          this.expect(this.getNextToken(), GreaterThan, message);
-          const info = new TokenInfo(startsAt, this.position);
-          return new UniTag(tagName, properties, info);
-        }
+      if (this.peekToken() instanceof Division) {
+        this.getNextToken();
+        if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"));
         this.expect(this.getNextToken(), GreaterThan, message);
-        const info = new TokenInfo(startsAt, this.position);
-        if (open) return new OpenTag(tagName, properties, info);
-        return new CloseTag(tagName, properties, info);
+        info.endsAt = this.position;
+        return new UniTag(tagName, properties, info);
       }
-      properties.info.endsAt = this.position;
       this.expect(this.getNextToken(), GreaterThan, message);
-      const info = new TokenInfo(startsAt, this.position);
-      if (open) return new OpenTag(tagName, properties, info);
-      return new CloseTag(tagName, properties, info);
+      info.endsAt = this.position;
+      if (hasDivision) return new ClosingTag(tagName, properties, info);
+      return new OpenTag(tagName, properties, info);
     }
     return this.parseAddition();
   }
@@ -165,7 +159,7 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof OpenParenthesis) {
       const begin = this.getNextToken() as OpenParenthesis;
       const expression = this.expect(this.parseAddition(), Expression, new ParserError("Parenthesis expression cannot be empty"));
-      const end = this.expect(this.getNextToken(), CloseParenthesis, new ParserError("Missing a closing parenthesis in expression"));
+      const end = this.expect(this.getNextToken(), ClosingParenthesis, new ParserError("Missing a closing parenthesis in expression"));
       return new Parenthesis(begin, expression, end, new TokenInfo(startsAt, this.position));
     }
     return this.parseString();
@@ -174,19 +168,19 @@ export default class Parser extends Lexer {
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
-      let string = "";
+      let raw = "";
       this.keepSpace();
       const startsAt = this.position;
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
-        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.string}' found while parsing`));
+        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
         if (token instanceof Quote) break;
-        string += this.getNext();
+        raw += this.getNext();
       }
       this.ignoreSpace();
       const endsAt = this.position;
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));
-      return new String(begin, string, end, new TokenInfo(startsAt, endsAt));
+      return new String(begin, raw, end, new TokenInfo(startsAt, endsAt));
     }
     return this.parseValue();
   }
@@ -194,7 +188,7 @@ export default class Parser extends Lexer {
   private parseValue() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Illegal chacater '${token.string}' found while parsing`));
+      this.logError(new WarningError(`Illegal chacater '${token.raw}' found while parsing`));
     }
     if (token instanceof EOF) {
       this.logError(new ParserError(`Unexpected end of Program`));

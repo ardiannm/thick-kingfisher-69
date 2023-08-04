@@ -1,4 +1,3 @@
-import CloseParenthesis from "./close.parenthesis.ts";
 import ExclamationMark from "./exclamation.mark.ts";
 import Number from "./number.ts";
 import Identifier from "./identifier.ts";
@@ -20,6 +19,7 @@ import EOF from "./eof.ts";
 import WarningError from "./warning.error.ts";
 import ParserError from "./parser.error.ts";
 import TokenInfo from "./token.info.ts";
+import ClosingParenthesis from "./closing.parenthesis.ts";
 
 export default class Lexer {
   public logger = { errors: new Array<LogError>(), warnings: new Array<WarningError>() };
@@ -52,16 +52,16 @@ export default class Lexer {
 
   private getIdentifier() {
     const startsAt = this.position;
-    let string = "";
-    while (/[a-zA-Z]/.test(this.get())) string += this.getNext();
-    return new Identifier(string, new TokenInfo(startsAt, this.position));
+    let raw = "";
+    while (/[a-zA-Z]/.test(this.get())) raw += this.getNext();
+    return new Identifier(raw, new TokenInfo(startsAt, this.position));
   }
 
   private getNumber() {
     const startsAt = this.position;
-    let string = "";
-    while (/[0-9]/.test(this.get())) string += this.getNext();
-    return new Number(string, new TokenInfo(startsAt, this.position));
+    let raw = "";
+    while (/[0-9]/.test(this.get())) raw += this.getNext();
+    return new Number(raw, new TokenInfo(startsAt, this.position));
   }
 
   public peekToken() {
@@ -102,16 +102,16 @@ export default class Lexer {
     }
 
     if (/\s/.test(char)) {
-      let string = "";
-      while (/\s/.test(this.get())) string += this.getNext();
-      if (this.space) return new Space(string, new TokenInfo(startsAt, this.position));
+      let raw = "";
+      while (/\s/.test(this.get())) raw += this.getNext();
+      if (this.space) return new Space(raw, new TokenInfo(startsAt, this.position));
       return this.getNextToken();
     }
 
     const next = this.getNext();
 
     if (char == "(") return new OpenParenthesis(next, new TokenInfo(startsAt, this.position));
-    if (char == ")") return new CloseParenthesis(next, new TokenInfo(startsAt, this.position));
+    if (char == ")") return new ClosingParenthesis(next, new TokenInfo(startsAt, this.position));
     if (char == "!") return new ExclamationMark(next, new TokenInfo(startsAt, this.position));
     if (char == "?") return new QuestionMark(next, new TokenInfo(startsAt, this.position));
     if (char == '"') return new Quote(next, new TokenInfo(startsAt, this.position));

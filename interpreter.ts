@@ -46,7 +46,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.string));
+    return new RuntimeNumber(parseFloat(token.raw));
   }
 
   private evaluateBinary(token: Binary) {
