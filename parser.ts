@@ -91,7 +91,7 @@ export default class Parser extends Lexer {
     const startsAt = this.position;
     while (this.hasMoreTokens()) {
       if (this.peekToken() instanceof GreaterThan) break;
-      properties += this.getNextChar();
+      properties += this.getNext();
     }
     return new TagProperties(properties, new TokenInfo(startsAt, this.position));
   }
@@ -163,7 +163,7 @@ export default class Parser extends Lexer {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) this.logError(new WarningError(`Illegal chacater '${token.string}' found while parsing`));
         if (token instanceof Quote) break;
-        string += this.getNextChar();
+        string += this.getNext();
       }
       this.ignoreSpace();
       const endsAt = this.position;

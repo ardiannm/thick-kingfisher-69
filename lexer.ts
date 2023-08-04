@@ -32,12 +32,12 @@ export default class Lexer {
     return !(this.peekToken() instanceof EOF);
   }
 
-  private character() {
+  private get() {
     return this.input.charAt(this.position);
   }
 
-  public getNextChar() {
-    const character = this.character();
+  public getNext() {
+    const character = this.get();
     this.position++;
     return character;
   }
@@ -53,14 +53,14 @@ export default class Lexer {
   private getIdentifier() {
     const startsAt = this.position;
     let string = "";
-    while (/[a-zA-Z]/.test(this.character())) string += this.getNextChar();
+    while (/[a-zA-Z]/.test(this.get())) string += this.getNext();
     return new Identifier(string, new TokenInfo(startsAt, this.position));
   }
 
   private getNumber() {
     const startsAt = this.position;
     let string = "";
-    while (/[0-9]/.test(this.character())) string += this.getNextChar();
+    while (/[0-9]/.test(this.get())) string += this.getNext();
     return new Number(string, new TokenInfo(startsAt, this.position));
   }
 
@@ -85,9 +85,13 @@ export default class Lexer {
     return error;
   }
 
+  public snapBack(token: Token) {
+    this.position = token.info.startsAt;
+  }
+
   public getNextToken(): Token {
     const startsAt = this.position;
-    const char = this.character();
+    const char = this.get();
 
     if (/[a-zA-Z]/.test(char)) {
       return this.getIdentifier();
@@ -99,12 +103,12 @@ export default class Lexer {
 
     if (/\s/.test(char)) {
       let string = "";
-      while (/\s/.test(this.character())) string += this.getNextChar();
+      while (/\s/.test(this.get())) string += this.getNext();
       if (this.space) return new Space(string, new TokenInfo(startsAt, this.position));
       return this.getNextToken();
     }
 
-    const next = this.getNextChar();
+    const next = this.getNext();
 
     if (char == "(") return new OpenParenthesis(next, new TokenInfo(startsAt, this.position));
     if (char == ")") return new CloseParenthesis(next, new TokenInfo(startsAt, this.position));
