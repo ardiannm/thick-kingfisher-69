@@ -27,6 +27,7 @@ import OpenTag from "./open.tag.ts";
 import CloseTag from "./close.tag.ts";
 import TokenInfo from "./token.info.ts";
 import TagProperties from "./tag.properties.ts";
+import UniTag from "./uni.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -74,25 +75,42 @@ export default class Parser extends Lexer {
       if (this.peekToken() instanceof Identifier) {
         tagName = this.getNextToken() as Identifier;
         properties = this.parseProperties();
+        if (this.peekToken() instanceof Division) {
+          this.getNextToken();
+          this.expect(this.getNextToken(), GreaterThan, message);
+          const info = new TokenInfo(startsAt, this.position);
+          return new UniTag(tagName, properties, info);
+        }
         this.expect(this.getNextToken(), GreaterThan, message);
-        if (open) return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
-        return new CloseTag(tagName, properties, new TokenInfo(startsAt, this.position));
+        const info = new TokenInfo(startsAt, this.position);
+        if (open) return new OpenTag(tagName, properties, info);
+        return new CloseTag(tagName, properties, info);
       }
-      properties = new TagProperties(properties.string, new TokenInfo(startsAt, this.position));
+      properties.info.endsAt = this.position;
       this.expect(this.getNextToken(), GreaterThan, message);
-      if (open) return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
-      return new CloseTag(tagName, properties, new TokenInfo(startsAt, this.position));
+      const info = new TokenInfo(startsAt, this.position);
+      if (open) return new OpenTag(tagName, properties, info);
+      return new CloseTag(tagName, properties, info);
     }
     return this.parseAddition();
   }
 
   private parseProperties() {
-    let properties = "";
     const startsAt = this.position;
     while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof GreaterThan) break;
-      properties += this.getNext();
+      const token = this.getNextToken();
+      if (token instanceof Division) {
+        if (this.peekToken() instanceof GreaterThan) {
+          this.snapBack(token);
+          break;
+        }
+      }
+      if (token instanceof GreaterThan) {
+        this.snapBack(token);
+        break;
+      }
     }
+    const properties = this.input.substring(startsAt, this.position);
     return new TagProperties(properties, new TokenInfo(startsAt, this.position));
   }
 
