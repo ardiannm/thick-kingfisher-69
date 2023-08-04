@@ -23,7 +23,8 @@ import Exponentiation from "./exponentiation.ts";
 import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./graeter.than.ts";
-import Tag from "./tag.ts";
+import OpenTag from "./open.tag.ts";
+import CloseTag from "./close.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -53,16 +54,25 @@ export default class Parser extends Lexer {
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
+      let open = true;
       this.getNextToken();
+      if (this.peekToken() instanceof Division) {
+        this.getNextToken();
+        open = false;
+      }
       const errorMessage = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Identifier) {
         const token = this.getNextToken() as Identifier;
-        const properties = this.parseProperties();
+        if (open) {
+          const properties = this.parseProperties();
+          return new OpenTag(token, properties);
+        }
         this.expect(this.getNextToken(), GreaterThan, errorMessage);
-        return new Tag(token, properties);
+        return new CloseTag(token);
       }
       this.expect(this.getNextToken(), GreaterThan, errorMessage);
-      return new Tag();
+      if (open) return new OpenTag();
+      return new CloseTag();
     }
     return this.parseAddition();
   }
