@@ -32,13 +32,13 @@ export default class Lexer {
     return !(this.peekToken() instanceof EOF);
   }
 
-  private get() {
+  private getChar() {
     return this.input.charAt(this.position);
   }
 
-  public getNext() {
-    const character = this.get();
-    this.position++;
+  public getNextChar() {
+    const character = this.getChar();
+    this.position = this.position + 1;
     return character;
   }
 
@@ -53,15 +53,23 @@ export default class Lexer {
   private getIdentifier() {
     const startsAt = this.position;
     let raw = "";
-    while (/[a-zA-Z]/.test(this.get())) raw += this.getNext();
+    while (/[a-zA-Z]/.test(this.getChar())) raw += this.getNextChar();
     return new Identifier(raw, new TokenInfo(startsAt, this.position));
   }
 
   private getNumber() {
     const startsAt = this.position;
     let raw = "";
-    while (/[0-9]/.test(this.get())) raw += this.getNext();
+    while (/[0-9]/.test(this.getChar())) raw += this.getNextChar();
     return new Number(raw, new TokenInfo(startsAt, this.position));
+  }
+
+  private getSpace() {
+    const startsAt = this.position;
+    let raw = "";
+    while (/\s/.test(this.getChar())) raw += this.getNextChar();
+    if (this.space) return new Space(raw, new TokenInfo(startsAt, this.position));
+    return this.getNextToken();
   }
 
   public peekToken() {
@@ -91,24 +99,13 @@ export default class Lexer {
 
   public getNextToken(): Token {
     const startsAt = this.position;
-    const char = this.get();
+    const char = this.getChar();
 
-    if (/[a-zA-Z]/.test(char)) {
-      return this.getIdentifier();
-    }
+    if (/[0-9]/.test(char)) return this.getNumber();
+    if (/\s/.test(char)) return this.getSpace();
+    if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
-    if (/[0-9]/.test(char)) {
-      return this.getNumber();
-    }
-
-    if (/\s/.test(char)) {
-      let raw = "";
-      while (/\s/.test(this.get())) raw += this.getNext();
-      if (this.space) return new Space(raw, new TokenInfo(startsAt, this.position));
-      return this.getNextToken();
-    }
-
-    const next = this.getNext();
+    const next = this.getNextChar();
 
     if (char == "(") return new OpenParenthesis(next, new TokenInfo(startsAt, this.position));
     if (char == ")") return new ClosingParenthesis(next, new TokenInfo(startsAt, this.position));

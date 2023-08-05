@@ -63,28 +63,25 @@ export default class Parser extends Lexer {
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       const startsAt = this.position;
-      console.log(startsAt);
       this.getNextToken();
       const info = new TokenInfo(startsAt, startsAt);
-      const tagName = new Identifier("", info);
+      let tagName = new Identifier("", info);
       let hasDivision = false;
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
         hasDivision = true;
       }
-      if (this.peekToken() instanceof Identifier) tagName.raw = (this.getNextToken() as Identifier).raw;
+      if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
       const properties = this.parseProperties();
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
         if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"));
         this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-        info.endsAt = this.position;
-        return new UniTag(tagName, properties, info);
+        return new UniTag(tagName, properties, new TokenInfo(startsAt, this.position));
       }
       this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-      info.endsAt = this.position;
-      if (hasDivision) return new ClosingTag(tagName, properties, info);
-      return new OpenTag(tagName, properties, info);
+      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(startsAt, this.position));
+      return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
     }
     return this.parseAddition();
   }
@@ -177,14 +174,16 @@ export default class Parser extends Lexer {
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       const begin = this.getNextToken() as Quote;
+      const startsAt = this.position;
       let raw = "";
       this.keepSpace();
-      const startsAt = this.position;
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
-        if (token instanceof UnknownCharacter) this.logError(new WarningError(`Unknown chacater '${token.raw}' found while parsing`));
+        if (token instanceof UnknownCharacter) {
+          this.logError(new WarningError(`Unknown chacater '${token.raw}' found while parsing`));
+        }
         if (token instanceof Quote) break;
-        raw += this.getNext();
+        raw += this.getNextChar();
       }
       this.ignoreSpace();
       const endsAt = this.position;
