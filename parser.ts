@@ -29,6 +29,8 @@ import ClosingTag from "./closing.tag.ts";
 import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
+import Component from "./component.ts";
+import Content from "./content.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -57,7 +59,29 @@ export default class Parser extends Lexer {
   }
 
   private parseComponent() {
-    return this.parseTag();
+    const left = this.parseTag();
+    const expression = new Array<Content>(this.parseContent());
+    if (left instanceof OpenTag) {
+      const right = this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
+      return new Component(left, expression, new TokenInfo(left.info.from, right.info.to));
+    }
+    if (left instanceof UniTag) {
+      return new Component(left, expression, new TokenInfo(left.info.from, left.info.to));
+    }
+    return left;
+  }
+
+  private parseContent() {
+    this.keepSpace();
+    const from = this.position;
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof LessThan) {
+        break;
+      }
+      this.getNextToken();
+    }
+    this.ignoreSpace();
+    return new Content(this.input.substring(from, this.position), new TokenInfo(from, this.position));
   }
 
   private parseTag() {
@@ -147,22 +171,22 @@ export default class Parser extends Lexer {
 
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
-      const openning = this.getNextToken();
+      const left = this.getNextToken();
       const expression = this.expect(this.parseAddition(), Expression, new ParserError("No expression has been provided within parenthesis"));
-      const closing = this.getNextToken();
+      const right = this.getNextToken();
       if (expression instanceof Expression && !(expression instanceof ClosingParenthesis)) {
-        this.expect(closing, ClosingParenthesis, new ParserError("Expecting a closing parenthesis"));
+        this.expect(right, ClosingParenthesis, new ParserError("Expecting a closing parenthesis"));
       }
-      return new Parenthesis(openning as OpenParenthesis, expression, closing as ClosingParenthesis, new TokenInfo(openning.info.from, closing.info.to));
+      return new Parenthesis(left as OpenParenthesis, expression, right as ClosingParenthesis, new TokenInfo(left.info.from, right.info.to));
     }
     return this.parseString();
   }
 
   private parseString() {
     if (this.peekToken() instanceof Quote) {
+      this.keepSpace();
       const begin = this.getNextToken() as Quote;
       let raw = "";
-      this.keepSpace();
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
@@ -171,8 +195,8 @@ export default class Parser extends Lexer {
         if (token instanceof Quote) break;
         raw += this.getNextChar();
       }
-      this.ignoreSpace();
       const end = this.expect(this.getNextToken(), Quote, new ParserError("Expecing a closing quote for the string"));
+      this.ignoreSpace();
       return new String(begin, raw, end, new TokenInfo(begin.info.to, end.info.from));
     }
     return this.parseValue();
