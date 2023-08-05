@@ -95,35 +95,37 @@ export default class Lexer {
   }
 
   public snapBack(token: Token) {
-    this.position = token.info.startsAt;
+    this.position = token.info.from;
   }
 
   public getNextToken(): Token {
-    const startsAt = this.position;
     const char = this.getChar();
 
     if (/[0-9]/.test(char)) return this.getNumber();
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
+    const from = this.position;
     const next = this.getNextChar();
+    const to = this.position;
+    const info = new TokenInfo(from, to);
 
-    if (char == "(") return new OpenParenthesis(next, new TokenInfo(startsAt, this.position));
-    if (char == ")") return new ClosingParenthesis(next, new TokenInfo(startsAt, this.position));
-    if (char == "!") return new ExclamationMark(next, new TokenInfo(startsAt, this.position));
-    if (char == "?") return new QuestionMark(next, new TokenInfo(startsAt, this.position));
-    if (char == '"') return new Quote(next, new TokenInfo(startsAt, this.position));
-    if (char == "<") return new LessThan(next, new TokenInfo(startsAt, this.position));
-    if (char == ">") return new GreaterThan(next, new TokenInfo(startsAt, this.position));
+    if (char == "(") return new OpenParenthesis(next, info);
+    if (char == ")") return new ClosingParenthesis(next, info);
+    if (char == "!") return new ExclamationMark(next, info);
+    if (char == "?") return new QuestionMark(next, info);
+    if (char == '"') return new Quote(next, info);
+    if (char == "<") return new LessThan(next, info);
+    if (char == ">") return new GreaterThan(next, info);
 
-    if (char == "+") return new Addition(next, new TokenInfo(startsAt, this.position));
-    if (char == "-") return new Substraction(next, new TokenInfo(startsAt, this.position));
-    if (char == "*") return new Multiplication(next, new TokenInfo(startsAt, this.position));
-    if (char == "/") return new Division(next, new TokenInfo(startsAt, this.position));
-    if (char == "^") return new Exponentiation(next, new TokenInfo(startsAt, this.position));
+    if (char == "+") return new Addition(next, info);
+    if (char == "-") return new Substraction(next, info);
+    if (char == "*") return new Multiplication(next, info);
+    if (char == "/") return new Division(next, info);
+    if (char == "^") return new Exponentiation(next, info);
 
-    if (next) return new UnknownCharacter(next, new TokenInfo(startsAt, this.position));
+    if (next) return new UnknownCharacter(next, info);
 
-    return new EOF(new TokenInfo(startsAt, this.position));
+    return new EOF(new TokenInfo(from, from));
   }
 }

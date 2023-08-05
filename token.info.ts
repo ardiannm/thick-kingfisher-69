@@ -1,3 +1,3 @@
 export default class TokenInfo {
-  constructor(public startsAt: number, public endsAt: number) {}
+  constructor(public from: number, public to: number) {}
 }
