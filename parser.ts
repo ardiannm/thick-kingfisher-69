@@ -76,9 +76,9 @@ export default class Parser extends Lexer {
       const properties = this.parseProperties();
       const message = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Division) {
-        const division = this.getNextToken();
+        const otherDivision = this.getNextToken();
         if (hasDivision) {
-          this.logError(new ParserError("Unexpected token '/' for this tag"), division);
+          this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
         }
         this.expect(this.getNextToken(), GreaterThan, message);
         return new UniTag(tagName, properties, new TokenInfo(division.info.startsAt, this.position));
