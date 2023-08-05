@@ -16,13 +16,11 @@ import Exponentiation from "./exponentiation.ts";
 import Addition from "./addition.ts";
 import Substraction from "./substraction.ts";
 import EOF from "./eof.ts";
-import WarningError from "./warning.error.ts";
-import ParserError from "./parser.error.ts";
 import TokenInfo from "./token.info.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 
 export default class Lexer {
-  public logger = { errors: new Array<LogError>(), warnings: new Array<WarningError>() };
+  public logger = new Array<LogError>();
   public position = 0;
   private space = false;
 
@@ -81,16 +79,7 @@ export default class Lexer {
 
   public logError(error: LogError, atToken: Token) {
     error.token = atToken;
-    switch (true) {
-      case error instanceof WarningError: {
-        this.logger.warnings.push(error);
-        break;
-      }
-      case error instanceof ParserError: {
-        this.logger.errors.push(error);
-        break;
-      }
-    }
+    this.logger.push(error);
     return error;
   }
 

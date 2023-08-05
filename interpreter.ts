@@ -14,20 +14,8 @@ import Substraction from "./substraction.ts";
 import Exponentiation from "./exponentiation.ts";
 
 export default class Interpreter extends Parser {
-  //
-
   public run() {
     const tree = this.parse();
-    if (this.logger.errors.length) {
-      console.log();
-      console.log(this.logger.errors);
-    }
-    if (this.logger.warnings.length) {
-      console.log();
-      console.log(this.logger.warnings);
-    }
-    console.log();
-    console.log(tree);
     return this.evaluate(tree);
   }
 

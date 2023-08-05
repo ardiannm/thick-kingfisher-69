@@ -1,7 +1,5 @@
 import Lexer from "./lexer.ts";
 import UnknownCharacter from "./unknown.character.ts";
-import EOF from "./eof.ts";
-import Value from "./value.ts";
 import Binary from "./binary.ts";
 import Operator from "./operator.ts";
 import Expression from "./expression.ts";
@@ -30,7 +28,8 @@ import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
 import Component from "./component.ts";
-import Content from "./content.ts";
+import HTMLPlainText from "./html.plain.text.ts";
+import HTML from "./html.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -60,18 +59,18 @@ export default class Parser extends Lexer {
 
   private parseComponent() {
     const left = this.parseTag();
-    const expression = new Array<Content>(this.parseContent());
     if (left instanceof OpenTag) {
+      const expression = new Array<Expression>(this.parseHTMLPlainText());
       const right = this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
       return new Component(left, expression, new TokenInfo(left.info.from, right.info.to));
     }
-    if (left instanceof UniTag) {
-      return new Component(left, expression, new TokenInfo(left.info.from, left.info.to));
+    if (left instanceof HTML) {
+      this.expect(left, ClosingTag, new ParserError("Unexpected closing tag for this context"));
     }
     return left;
   }
 
-  private parseContent() {
+  private parseHTMLPlainText(): HTML {
     this.keepSpace();
     const from = this.position;
     while (this.hasMoreTokens()) {
@@ -81,7 +80,7 @@ export default class Parser extends Lexer {
       this.getNextToken();
     }
     this.ignoreSpace();
-    return new Content(this.input.substring(from, this.position), new TokenInfo(from, this.position));
+    return new HTMLPlainText(this.input.substring(from, this.position), new TokenInfo(from, this.position));
   }
 
   private parseTag() {
@@ -199,17 +198,14 @@ export default class Parser extends Lexer {
       this.ignoreSpace();
       return new String(begin, raw, end, new TokenInfo(begin.info.to, end.info.from));
     }
-    return this.parseValue();
+    return this.parseToken();
   }
 
-  private parseValue() {
+  private parseToken() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
       this.logError(new WarningError(`Unknown character '${token.raw}' found while parsing`), token);
     }
-    if (token instanceof EOF) {
-      this.logError(new ParserError(`Unexpected end of program while parsing`), token);
-    }
-    return this.expect(token, Value, new ParserError("Expecting a valid value in the program"));
+    return token;
   }
 }

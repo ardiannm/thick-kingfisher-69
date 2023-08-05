@@ -1,0 +1,135 @@
+{
+  "info": {
+    "from": 0,
+    "to": 16
+  },
+  "type": "program",
+  "expressions": [
+    {
+      "info": {
+        "from": 0,
+        "to": 17
+      },
+      "type": "component",
+      "tag": {
+        "info": {
+          "from": 0,
+          "to": 3
+        },
+        "type": "open tag",
+        "name": {
+          "info": {
+            "from": 1,
+            "to": 2
+          },
+          "type": "identifier",
+          "raw": "A"
+        },
+        "properties": {
+          "info": {
+            "from": 2,
+            "to": 2
+          },
+          "type": "tag properties",
+          "raw": ""
+        }
+      },
+      "innerText": [
+        {
+          "info": {
+            "from": 3,
+            "to": 4
+          },
+          "type": "h t m l plain text",
+          "raw": "1"
+        },
+        {
+          "info": {
+            "from": 4,
+            "to": 16
+          },
+          "type": "component",
+          "tag": {
+            "info": {
+              "from": 4,
+              "to": 7
+            },
+            "type": "open tag",
+            "name": {
+              "info": {
+                "from": 5,
+                "to": 6
+              },
+              "type": "identifier",
+              "raw": "B"
+            },
+            "properties": {
+              "info": {
+                "from": 6,
+                "to": 6
+              },
+              "type": "tag properties",
+              "raw": ""
+            }
+          },
+          "innerText": [
+            {
+              "info": {
+                "from": 7,
+                "to": 8
+              },
+              "type": "h t m l plain text",
+              "raw": "2"
+            },
+            {
+              "info": {
+                "from": 8,
+                "to": 12
+              },
+              "type": "closing tag",
+              "name": {
+                "info": {
+                  "from": 10,
+                  "to": 11
+                },
+                "type": "identifier",
+                "raw": "B"
+              },
+              "properties": {
+                "info": {
+                  "from": 11,
+                  "to": 11
+                },
+                "type": "tag properties",
+                "raw": ""
+              }
+            },
+            {
+              "info": {
+                "from": 12,
+                "to": 16
+              },
+              "type": "closing tag",
+              "name": {
+                "info": {
+                  "from": 14,
+                  "to": 15
+                },
+                "type": "identifier",
+                "raw": "A"
+              },
+              "properties": {
+                "info": {
+                  "from": 15,
+                  "to": 15
+                },
+                "type": "tag properties",
+                "raw": ""
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

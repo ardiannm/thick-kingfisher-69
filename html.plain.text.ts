@@ -1,7 +1,7 @@
-import Tag from "./tag.ts";
+import HTML from "./html.ts";
 import TokenInfo from "./token.info.ts";
 
-export default class Content extends Tag {
+export default class HTMLPlainText extends HTML {
   constructor(public raw: string, public info: TokenInfo) {
     super(info);
   }

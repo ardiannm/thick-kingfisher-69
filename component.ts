@@ -1,10 +1,9 @@
-import Content from "./content.ts";
+import HTML from "./html.ts";
 import OpenTag from "./open.tag.ts";
-import Tag from "./tag.ts";
 import TokenInfo from "./token.info.ts";
 
-export default class Component extends Tag {
-  constructor(public tag: OpenTag, public content: Array<Content>, public info: TokenInfo) {
+export default class Component extends HTML {
+  constructor(public tag: OpenTag, public innerText: Array<HTML>, public info: TokenInfo) {
     super(info);
   }
 }
