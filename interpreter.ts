@@ -15,8 +15,8 @@ import Exponentiation from "./exponentiation.ts";
 
 export default class Interpreter extends Parser {
   public run() {
-    const tree = this.parse();
-    return this.evaluate(tree);
+    this.parse();
+    return this.evaluate(this.tree);
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {
@@ -25,7 +25,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
-    return new InterpreterError(`Token type "${token.constructor.name}" has not been implemented for interpretation.`);
+    return new InterpreterError(`Token type "${token.name()}" has not been implemented for interpretation.`);
   }
 
   private evaluateProgram(token: Program) {
@@ -43,7 +43,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new InterpreterError(`Can't perform binary operations between "${token.left.constructor.name}" and "${token.right.constructor.name}" tokens.`);
+      return new InterpreterError(`Can't perform binary operations between "${token.left.name()}" and "${token.right.name()}" tokens.`);
     }
 
     switch (true) {

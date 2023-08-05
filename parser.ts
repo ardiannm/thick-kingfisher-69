@@ -22,7 +22,7 @@ import Identifier from "./identifier.ts";
 import GreaterThan from "./greater.than.ts";
 import TokenInfo from "./token.info.ts";
 import TagProperties from "./tag.properties.ts";
-import UniTag from "./uni.tag.ts";
+import UnaryTag from "./unary.tag.ts";
 import ClosingTag from "./closing.tag.ts";
 import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
@@ -63,11 +63,14 @@ export default class Parser extends Lexer {
   private parseComponent() {
     const left = this.parseTag();
     if (left instanceof OpenTag) {
-      const expression = new Array<Expression>(this.parseHTMLPlainText());
+      const expression = new Array<HTML>(this.parseHTMLPlainText());
+
+      // Here is an error with parsing expression ....
+
       const right = this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
       return new Component(left, expression, new TokenInfo(left.info.from, right.info.to));
     }
-    if (left instanceof HTML) {
+    if (left instanceof ClosingTag) {
       this.expect(left, ClosingTag, new ParserError("Unexpected closing tag for this context"));
     }
     return left;
@@ -101,7 +104,7 @@ export default class Parser extends Lexer {
         const otherDivision = this.getNextToken();
         if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
         const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-        return new UniTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+        return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
       }
       const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
       if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));

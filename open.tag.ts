@@ -4,7 +4,7 @@ import TagProperties from "./tag.properties.ts";
 import TokenInfo from "./token.info.ts";
 
 export default class OpenTag extends HTML {
-  constructor(public name: Identifier, public properties: TagProperties, public info: TokenInfo) {
+  constructor(public tagName: Identifier, public properties: TagProperties, public info: TokenInfo) {
     super(info);
   }
 }

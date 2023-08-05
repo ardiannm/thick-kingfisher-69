@@ -1,77 +1,34 @@
 {
-   "input": "1+3+",
-   "logger": [
-      {
-         "message": "ParserError: Invalid right hand side expression in addition operation.",
-         "token": {
-            "info": {
-               "from": 4,
-               "to": 4
-            },
-            "token": "EOF"
-         }
-      }
-   ],
-   "position": 5,
-   "space": false,
+   "input": "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+   "logger": [],
    "tree": {
       "info": {
          "from": 0,
-         "to": 4
+         "to": 76
       },
       "token": "Program",
       "expressions": [
          {
             "info": {
-               "from": 0,
-               "to": 4
+               "from": 4,
+               "to": 76
             },
-            "token": "Binary",
-            "left": {
+            "token": "UnaryTag",
+            "tagName": {
                "info": {
-                  "from": 0,
-                  "to": 3
+                  "from": 5,
+                  "to": 9
                },
-               "token": "Binary",
-               "left": {
-                  "info": {
-                     "from": 0,
-                     "to": 1
-                  },
-                  "token": "Number",
-                  "raw": "1"
-               },
-               "operator": {
-                  "info": {
-                     "from": 1,
-                     "to": 2
-                  },
-                  "token": "Addition",
-                  "raw": "+"
-               },
-               "right": {
-                  "info": {
-                     "from": 2,
-                     "to": 3
-                  },
-                  "token": "Number",
-                  "raw": "3"
-               }
+               "token": "Identifier",
+               "raw": "meta"
             },
-            "operator": {
+            "properties": {
                "info": {
-                  "from": 3,
-                  "to": 4
+                  "from": 9,
+                  "to": 74
                },
-               "token": "Addition",
-               "raw": "+"
-            },
-            "right": {
-               "info": {
-                  "from": 4,
-                  "to": 4
-               },
-               "token": "EOF"
+               "token": "TagProperties",
+               "raw": " name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
             }
          }
       ]
