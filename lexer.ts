@@ -79,7 +79,8 @@ export default class Lexer {
     return token;
   }
 
-  public logError(error: LogError) {
+  public logError(error: LogError, atToken: Token) {
+    error.token = atToken;
     switch (true) {
       case error instanceof WarningError: {
         this.logger.warnings.push(error);
