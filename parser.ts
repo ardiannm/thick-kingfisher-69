@@ -35,6 +35,8 @@ import HTML from "./html.ts";
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
+  public tree!: Token;
+
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
   }
@@ -46,7 +48,8 @@ export default class Parser extends Lexer {
   }
 
   public parse() {
-    return this.parseProgram();
+    this.tree = this.parseProgram();
+    return this.tree;
   }
 
   private parseProgram() {
@@ -130,8 +133,8 @@ export default class Parser extends Lexer {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
-      const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
+      const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -141,8 +144,8 @@ export default class Parser extends Lexer {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
-      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
+      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -152,8 +155,8 @@ export default class Parser extends Lexer {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
-      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
+      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -162,7 +165,7 @@ export default class Parser extends Lexer {
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.type} operation`));
+      const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.formatName()} operation`));
       return new Unary(operator, right, new TokenInfo(operator.info.from, right.info.to));
     }
     return this.parseParanthesis();

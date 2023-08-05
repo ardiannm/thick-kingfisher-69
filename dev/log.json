@@ -1,0 +1,79 @@
+{
+   "input": "1+3+",
+   "logger": [
+      {
+         "message": "ParserError: Invalid right hand side expression in addition operation.",
+         "token": {
+            "info": {
+               "from": 4,
+               "to": 4
+            },
+            "token": "EOF"
+         }
+      }
+   ],
+   "position": 5,
+   "space": false,
+   "tree": {
+      "info": {
+         "from": 0,
+         "to": 4
+      },
+      "token": "Program",
+      "expressions": [
+         {
+            "info": {
+               "from": 0,
+               "to": 4
+            },
+            "token": "Binary",
+            "left": {
+               "info": {
+                  "from": 0,
+                  "to": 3
+               },
+               "token": "Binary",
+               "left": {
+                  "info": {
+                     "from": 0,
+                     "to": 1
+                  },
+                  "token": "Number",
+                  "raw": "1"
+               },
+               "operator": {
+                  "info": {
+                     "from": 1,
+                     "to": 2
+                  },
+                  "token": "Addition",
+                  "raw": "+"
+               },
+               "right": {
+                  "info": {
+                     "from": 2,
+                     "to": 3
+                  },
+                  "token": "Number",
+                  "raw": "3"
+               }
+            },
+            "operator": {
+               "info": {
+                  "from": 3,
+                  "to": 4
+               },
+               "token": "Addition",
+               "raw": "+"
+            },
+            "right": {
+               "info": {
+                  "from": 4,
+                  "to": 4
+               },
+               "token": "EOF"
+            }
+         }
+      ]
+   }
+}

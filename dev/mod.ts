@@ -1,7 +1,7 @@
 // import { Parser, Interpreter } from "https://deno.land/x/amparser@v0.04/mod.ts";
 
 import Interpreter from "../interpreter.ts";
-import { write } from "./write.ts";
+import Write from "./write.ts";
 
 while (true) {
   console.log();
@@ -9,5 +9,5 @@ while (true) {
   const interpreter = new Interpreter(input);
   interpreter.run();
 
-  write(interpreter.logger);
+  Write(interpreter);
 }

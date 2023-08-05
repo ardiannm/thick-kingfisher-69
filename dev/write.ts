@@ -1,5 +1,7 @@
-import LogError from "../log.error.ts";
+import Interpreter from "../interpreter.ts";
 
-export const write = (token: Array<LogError>) => {
-  Deno.writeTextFile("./dev/log.json", JSON.stringify(token, null, 3));
+const Write = (obj: Interpreter) => {
+  Deno.writeTextFile("./dev/log.json", JSON.stringify(obj, null, 3));
 };
+
+export default Write;
