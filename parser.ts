@@ -62,26 +62,26 @@ export default class Parser extends Lexer {
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
-      const startsAt = this.position;
-      this.getNextToken();
-      const info = new TokenInfo(startsAt, startsAt);
-      let tagName = new Identifier("", info);
+      const division = this.getNextToken();
+      const info = new TokenInfo(division.info.startsAt, division.info.startsAt);
       let hasDivision = false;
+      let tagName = new Identifier("", info);
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
         hasDivision = true;
       }
       if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
       const properties = this.parseProperties();
+      const message = new ParserError(`Expecting a closing '>' token for the tag`);
       if (this.peekToken() instanceof Division) {
         this.getNextToken();
         if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"));
-        this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-        return new UniTag(tagName, properties, new TokenInfo(startsAt, this.position));
+        this.expect(this.getNextToken(), GreaterThan, message);
+        return new UniTag(tagName, properties, new TokenInfo(division.info.startsAt, this.position));
       }
-      this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(startsAt, this.position));
-      return new OpenTag(tagName, properties, new TokenInfo(startsAt, this.position));
+      this.expect(this.getNextToken(), GreaterThan, message);
+      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.startsAt, this.position));
+      return new OpenTag(tagName, properties, new TokenInfo(division.info.startsAt, this.position));
     }
     return this.parseAddition();
   }
@@ -107,50 +107,46 @@ export default class Parser extends Lexer {
   }
 
   private parseAddition() {
-    const startsAt = this.position;
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      const info = new TokenInfo(startsAt, this.position);
+      const info = new TokenInfo(left.info.startsAt, this.position);
       left = new Binary(left, operator, right, info);
     }
     return left;
   }
 
   private parseMultiplication() {
-    const startsAt = this.position;
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      const info = new TokenInfo(startsAt, this.position);
+      const info = new TokenInfo(left.info.startsAt, this.position);
       left = new Binary(left, operator, right, info);
     }
     return left;
   }
 
   private parsePower() {
-    const startsAt = this.position;
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
       const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.type} operation`));
       const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.type} operation`));
-      const info = new TokenInfo(startsAt, this.position);
+      const info = new TokenInfo(left.info.startsAt, this.position);
       left = new Binary(left, operator, right, info);
     }
     return left;
   }
 
   private parseUnary(): Expression {
-    const startsAt = this.position;
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
       const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.type} operation`));
-      const info = new TokenInfo(startsAt, this.position);
+      const info = new TokenInfo(operator.info.startsAt, this.position);
       return new Unary(operator, right, info);
     }
     return this.parseParanthesis();
