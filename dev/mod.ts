@@ -8,8 +8,8 @@ while (true) {
   console.log();
   const input = prompt(">>") || (await Read("./dev/template.html")) || "";
   const interpreter = new Interpreter(input);
+
   interpreter.run();
-  console.log(interpreter.tree);
 
   Write(interpreter);
 }

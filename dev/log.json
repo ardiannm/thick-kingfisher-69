@@ -1,19 +1,90 @@
 {
-   "input": "<div>properties",
+   "input": "<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <title>Document</title>\r\n  </head>\r\n  <body></body>\r\n</html>\r\n",
    "logger": [],
    "tree": {
       "info": {
          "from": 0,
-         "to": 5
+         "to": 202
       },
-      "token": "OpenTag",
-      "tagName": {
-         "info": {
-            "from": 1,
-            "to": 4
-         },
-         "token": "Identifier",
-         "raw": "div"
-      }
+      "token": "Program",
+      "expressions": [
+         {
+            "info": {
+               "from": 0,
+               "to": 200
+            },
+            "token": "Component",
+            "name": "html",
+            "components": [
+               {
+                  "info": {
+                     "from": 20,
+                     "to": 174
+                  },
+                  "token": "Component",
+                  "name": "head",
+                  "components": [
+                     {
+                        "info": {
+                           "from": 32,
+                           "to": 56
+                        },
+                        "token": "UnaryTag",
+                        "identifier": {
+                           "info": {
+                              "from": 33,
+                              "to": 37
+                           },
+                           "token": "Identifier",
+                           "raw": "meta"
+                        }
+                     },
+                     {
+                        "info": {
+                           "from": 62,
+                           "to": 134
+                        },
+                        "token": "UnaryTag",
+                        "identifier": {
+                           "info": {
+                              "from": 63,
+                              "to": 67
+                           },
+                           "token": "Identifier",
+                           "raw": "meta"
+                        }
+                     },
+                     {
+                        "info": {
+                           "from": 140,
+                           "to": 163
+                        },
+                        "token": "Component",
+                        "name": "title",
+                        "components": [
+                           {
+                              "info": {
+                                 "from": 147,
+                                 "to": 155
+                              },
+                              "token": "Content",
+                              "raw": "Document"
+                           }
+                        ]
+                     }
+                  ]
+               },
+               {
+                  "info": {
+                     "from": 178,
+                     "to": 191
+                  },
+                  "token": "Component",
+                  "name": "body",
+                  "components": []
+               }
+            ]
+         }
+      ]
    }
 }

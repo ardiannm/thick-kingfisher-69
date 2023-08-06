@@ -15,7 +15,7 @@ import Exponentiation from "./exponentiation.ts";
 
 export default class Interpreter extends Parser {
   public run() {
-    this.parse();
+    this.tree = this.parse();
     return this.evaluate(this.tree);
   }
 

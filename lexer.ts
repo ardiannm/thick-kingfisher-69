@@ -31,12 +31,12 @@ export default class Lexer {
     return !(this.peekToken() instanceof EOF);
   }
 
-  private getChar() {
+  private getCharacter() {
     return this.input.charAt(this.position);
   }
 
-  public getNextChar() {
-    const character = this.getChar();
+  public getNextCharacter() {
+    const character = this.getCharacter();
     this.position = this.position + 1;
     return character;
   }
@@ -52,21 +52,21 @@ export default class Lexer {
   private getIdentifier() {
     const startsAt = this.position;
     let raw = "";
-    while (/[a-zA-Z]/.test(this.getChar())) raw += this.getNextChar();
+    while (/[a-zA-Z]/.test(this.getCharacter())) raw += this.getNextCharacter();
     return new Identifier(raw, new TokenInfo(startsAt, this.position));
   }
 
   private getNumber() {
     const startsAt = this.position;
     let raw = "";
-    while (/[0-9]/.test(this.getChar())) raw += this.getNextChar();
+    while (/[0-9]/.test(this.getCharacter())) raw += this.getNextCharacter();
     return new Number(raw, new TokenInfo(startsAt, this.position));
   }
 
   private getSpace() {
     const startsAt = this.position;
     let raw = "";
-    while (/\s/.test(this.getChar())) raw += this.getNextChar();
+    while (/\s/.test(this.getCharacter())) raw += this.getNextCharacter();
     if (this.space) return new Space(raw, new TokenInfo(startsAt, this.position));
     return this.getNextToken();
   }
@@ -84,19 +84,19 @@ export default class Lexer {
     return error;
   }
 
-  public snapOnTo(token: Token) {
+  public peekBack(token: Token) {
     this.position = token.info.from;
   }
 
   public getNextToken(): Token {
-    const char = this.getChar();
+    const char = this.getCharacter();
 
     if (/[0-9]/.test(char)) return this.getNumber();
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
     const from = this.position;
-    const next = this.getNextChar();
+    const next = this.getNextCharacter();
     const to = this.position;
     const info = new TokenInfo(from, to);
 
