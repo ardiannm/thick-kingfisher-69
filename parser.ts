@@ -28,6 +28,8 @@ import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
 import Content from "./content.ts";
+import HTML from "./html.ts";
+import Component from "./component.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -46,8 +48,23 @@ export default class Parser extends Lexer {
   }
 
   public parse() {
-    this.tree = this.parseProgram();
+    this.tree = this.parseComponent();
     return this.tree;
+  }
+
+  private parseComponent() {
+    const left = this.parseTag();
+    if (left instanceof OpenTag) {
+      const components = new Array<HTML>();
+      while (this.hasMoreTokens()) {
+        const component = this.parseTag();
+        if (component instanceof ClosingTag) {
+          return new Component(left.tagName.raw, new TokenInfo(left.info.from, this.position));
+        }
+        components.push(component);
+      }
+    }
+    return left;
   }
 
   private parseProgram() {
@@ -67,17 +84,23 @@ export default class Parser extends Lexer {
         this.getNextToken();
         hasDivision = true;
       }
-      if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
-      const properties = this.parseProperties();
+      if (this.peekToken() instanceof Identifier) {
+        tagName = this.getNextToken() as Identifier;
+      }
+      this.parseProperties();
       if (this.peekToken() instanceof Division) {
         const otherDivision = this.getNextToken();
-        if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
+        if (hasDivision) {
+          this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
+        }
         const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-        return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+        return new UnaryTag(tagName, new TokenInfo(division.info.from, token.info.to));
       }
       const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
-      return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+      if (hasDivision) {
+        return new ClosingTag(tagName, new TokenInfo(division.info.from, token.info.to));
+      }
+      return new OpenTag(tagName, new TokenInfo(division.info.from, token.info.to));
     }
     return this.parseContent();
   }
@@ -113,8 +136,8 @@ export default class Parser extends Lexer {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
-      const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.token} operation`));
+      const right = this.expect(this.parseMultiplication(), Expression, new ParserError(`Invalid right hand side expression in ${operator.token} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -124,8 +147,8 @@ export default class Parser extends Lexer {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
-      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.token} operation`));
+      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.token} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -135,8 +158,8 @@ export default class Parser extends Lexer {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
       const operator = this.getNextToken() as Operator;
-      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.formatName()} operation`));
-      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.formatName()} operation`));
+      this.expect(left, Expression, new ParserError(`Invalid left hand side expression in ${operator.token} operation`));
+      const right = this.expect(this.parsePower(), Expression, new ParserError(`Invalid right hand side expression in ${operator.token} operation`));
       left = new Binary(left, operator, right, new TokenInfo(left.info.from, right.info.to));
     }
     return left;
@@ -145,7 +168,7 @@ export default class Parser extends Lexer {
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
-      const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.formatName()} operation`));
+      const right = this.expect(this.parseUnary(), Expression, new ParserError(`Invalid expression in unary ${operator.token} operation`));
       return new Unary(operator, right, new TokenInfo(operator.info.from, right.info.to));
     }
     return this.parseParanthesis();

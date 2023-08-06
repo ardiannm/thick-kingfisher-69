@@ -25,7 +25,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
-    return new InterpreterError(`Token type "${token.name()}" has not been implemented for interpretation.`);
+    return new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`);
   }
 
   private evaluateProgram(token: Program) {
@@ -43,7 +43,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new InterpreterError(`Can't perform binary operations between "${token.left.name()}" and "${token.right.name()}" tokens.`);
+      return new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`);
     }
 
     switch (true) {
