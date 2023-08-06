@@ -1,10 +1,10 @@
 import Identifier from "./identifier.ts";
-import TagProperties from "./tag.properties.ts";
+import Properties from "./properties.ts";
 import TokenInfo from "./token.info.ts";
-import Tag from "./tag.ts";
+import HTML from "./html.ts";
 
-export default class ClosingTag extends Tag {
-  constructor(public tagName: Identifier, public properties: TagProperties, public info: TokenInfo) {
+export default class ClosingTag extends HTML {
+  constructor(public tagName: Identifier, public properties: Properties, public info: TokenInfo) {
     super(info);
   }
 }

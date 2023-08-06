@@ -84,7 +84,7 @@ export default class Lexer {
     return error;
   }
 
-  public snapBackTo(token: Token) {
+  public snapOnTo(token: Token) {
     this.position = token.info.from;
   }
 

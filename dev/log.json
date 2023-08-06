@@ -27,7 +27,7 @@
                   "from": 5,
                   "to": 15
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": " lang=\"en\""
             }
          },
@@ -50,7 +50,7 @@
                   "from": 25,
                   "to": 25
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -73,7 +73,7 @@
                   "from": 37,
                   "to": 54
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": " charset=\"UTF-8\" "
             }
          },
@@ -96,7 +96,7 @@
                   "from": 67,
                   "to": 132
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": " name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
             }
          },
@@ -119,7 +119,7 @@
                   "from": 146,
                   "to": 146
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -128,7 +128,7 @@
                "from": 147,
                "to": 155
             },
-            "token": "Identifier",
+            "token": "Content",
             "raw": "Document"
          },
          {
@@ -150,7 +150,7 @@
                   "from": 162,
                   "to": 162
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -173,7 +173,7 @@
                   "from": 173,
                   "to": 173
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -196,7 +196,7 @@
                   "from": 183,
                   "to": 183
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -219,7 +219,7 @@
                   "from": 190,
                   "to": 190
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          },
@@ -242,7 +242,7 @@
                   "from": 199,
                   "to": 199
                },
-               "token": "TagProperties",
+               "token": "Properties",
                "raw": ""
             }
          }

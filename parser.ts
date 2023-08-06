@@ -21,12 +21,13 @@ import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
 import GreaterThan from "./greater.than.ts";
 import TokenInfo from "./token.info.ts";
-import TagProperties from "./tag.properties.ts";
+import Properties from "./properties.ts";
 import UnaryTag from "./unary.tag.ts";
 import ClosingTag from "./closing.tag.ts";
 import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
+import Content from "./content.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -78,26 +79,34 @@ export default class Parser extends Lexer {
       if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
       return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
     }
-    return this.parseAddition();
+    return this.parseContent();
   }
 
   private parseProperties() {
     const from = this.position;
     while (this.hasMoreTokens()) {
       const token = this.getNextToken();
-      if (token instanceof Division) {
-        if (this.peekToken() instanceof GreaterThan) {
-          this.snapBackTo(token);
-          break;
-        }
+      if (token instanceof Division && this.peekToken() instanceof GreaterThan) {
+        this.snapOnTo(token);
+        break;
       }
       if (token instanceof GreaterThan) {
-        this.snapBackTo(token);
+        this.snapOnTo(token);
         break;
       }
     }
     const properties = this.input.substring(from, this.position);
-    return new TagProperties(properties, new TokenInfo(from, this.position));
+    return new Properties(properties, new TokenInfo(from, this.position));
+  }
+
+  private parseContent() {
+    const from = this.position;
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof LessThan) break;
+      this.getNextChar();
+    }
+    const properties = this.input.substring(from, this.position);
+    return new Content(properties, new TokenInfo(from, this.position));
   }
 
   private parseAddition() {
