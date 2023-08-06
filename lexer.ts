@@ -18,6 +18,7 @@ import Substraction from "./substraction.ts";
 import EOF from "./eof.ts";
 import TokenInfo from "./token.info.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
+import Equals from "./equals.ts";
 
 export default class Lexer {
   public logger = new Array<LogError>();
@@ -83,7 +84,7 @@ export default class Lexer {
     return error;
   }
 
-  public snapBack(token: Token) {
+  public snapBackTo(token: Token) {
     this.position = token.info.from;
   }
 
@@ -106,6 +107,7 @@ export default class Lexer {
     if (char == '"') return new Quote(next, info);
     if (char == "<") return new LessThan(next, info);
     if (char == ">") return new GreaterThan(next, info);
+    if (char == "=") return new Equals(next, info);
 
     if (char == "+") return new Addition(next, info);
     if (char == "-") return new Substraction(next, info);

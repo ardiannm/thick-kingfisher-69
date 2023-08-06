@@ -50,39 +50,35 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    const expressions = new Array<Expression>(this.parseComponent());
+    const expressions = new Array<Expression>(this.parseTag());
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseComponent());
+      expressions.push(this.parseTag());
     }
     return new Program(expressions, new TokenInfo(0, this.input.length));
   }
 
-  private parseComponent() {
+  private parseTag() {
     if (this.peekToken() instanceof LessThan) {
-      return this.parseTag();
+      const division = this.getNextToken();
+      let hasDivision = false;
+      let tagName = new Identifier("", new TokenInfo(division.info.from, division.info.from));
+      if (this.peekToken() instanceof Division) {
+        this.getNextToken();
+        hasDivision = true;
+      }
+      if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
+      const properties = this.parseProperties();
+      if (this.peekToken() instanceof Division) {
+        const otherDivision = this.getNextToken();
+        if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
+        const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
+        return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+      }
+      const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
+      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+      return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
     }
     return this.parseAddition();
-  }
-
-  private parseTag() {
-    const division = this.expect(this.getNextToken(), LessThan, new ParserError("Expecting an HTML tag"));
-    let hasDivision = false;
-    let tagName = new Identifier("", new TokenInfo(division.info.from, division.info.from));
-    if (this.peekToken() instanceof Division) {
-      this.getNextToken();
-      hasDivision = true;
-    }
-    if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
-    const properties = this.parseProperties();
-    if (this.peekToken() instanceof Division) {
-      const otherDivision = this.getNextToken();
-      if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
-      const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-      return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
-    }
-    const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-    if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
-    return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
   }
 
   private parseProperties() {
@@ -91,12 +87,12 @@ export default class Parser extends Lexer {
       const token = this.getNextToken();
       if (token instanceof Division) {
         if (this.peekToken() instanceof GreaterThan) {
-          this.snapBack(token);
+          this.snapBackTo(token);
           break;
         }
       }
       if (token instanceof GreaterThan) {
-        this.snapBack(token);
+        this.snapBackTo(token);
         break;
       }
     }
