@@ -27,9 +27,6 @@ import ClosingTag from "./closing.tag.ts";
 import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
-import Component from "./component.ts";
-import HTMLPlainText from "./html.plain.text.ts";
-import HTML from "./html.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -61,56 +58,31 @@ export default class Parser extends Lexer {
   }
 
   private parseComponent() {
-    const left = this.parseTag();
-    if (left instanceof OpenTag) {
-      const expression = new Array<HTML>(this.parseHTMLPlainText());
-
-      // Here is an error with parsing expression ....
-
-      const right = this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
-      return new Component(left, expression, new TokenInfo(left.info.from, right.info.to));
+    if (this.peekToken() instanceof LessThan) {
+      return this.parseTag();
     }
-    if (left instanceof ClosingTag) {
-      this.expect(left, ClosingTag, new ParserError("Unexpected closing tag for this context"));
-    }
-    return left;
-  }
-
-  private parseHTMLPlainText(): HTML {
-    this.keepSpace();
-    const from = this.position;
-    while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof LessThan) {
-        break;
-      }
-      this.getNextToken();
-    }
-    this.ignoreSpace();
-    return new HTMLPlainText(this.input.substring(from, this.position), new TokenInfo(from, this.position));
+    return this.parseAddition();
   }
 
   private parseTag() {
-    if (this.peekToken() instanceof LessThan) {
-      const division = this.getNextToken();
-      let hasDivision = false;
-      let tagName = new Identifier("", new TokenInfo(division.info.from, division.info.from));
-      if (this.peekToken() instanceof Division) {
-        this.getNextToken();
-        hasDivision = true;
-      }
-      if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
-      const properties = this.parseProperties();
-      if (this.peekToken() instanceof Division) {
-        const otherDivision = this.getNextToken();
-        if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
-        const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-        return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
-      }
-      const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
-      if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
-      return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+    const division = this.expect(this.getNextToken(), LessThan, new ParserError("Expecting an HTML tag"));
+    let hasDivision = false;
+    let tagName = new Identifier("", new TokenInfo(division.info.from, division.info.from));
+    if (this.peekToken() instanceof Division) {
+      this.getNextToken();
+      hasDivision = true;
     }
-    return this.parseAddition();
+    if (this.peekToken() instanceof Identifier) tagName = this.getNextToken() as Identifier;
+    const properties = this.parseProperties();
+    if (this.peekToken() instanceof Division) {
+      const otherDivision = this.getNextToken();
+      if (hasDivision) this.logError(new ParserError("Unexpected token '/' for this tag"), otherDivision);
+      const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
+      return new UnaryTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+    }
+    const token = this.expect(this.getNextToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
+    if (hasDivision) return new ClosingTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
+    return new OpenTag(tagName, properties, new TokenInfo(division.info.from, token.info.to));
   }
 
   private parseProperties() {

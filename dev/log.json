@@ -1,34 +1,57 @@
 {
-   "input": "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />",
+   "input": "<></>",
    "logger": [],
    "tree": {
       "info": {
          "from": 0,
-         "to": 76
+         "to": 5
       },
       "token": "Program",
       "expressions": [
          {
             "info": {
-               "from": 4,
-               "to": 76
+               "from": 0,
+               "to": 2
             },
-            "token": "UnaryTag",
+            "token": "OpenTag",
             "tagName": {
                "info": {
-                  "from": 5,
-                  "to": 9
+                  "from": 0,
+                  "to": 0
                },
                "token": "Identifier",
-               "raw": "meta"
+               "raw": ""
             },
             "properties": {
                "info": {
-                  "from": 9,
-                  "to": 74
+                  "from": 1,
+                  "to": 1
                },
                "token": "TagProperties",
-               "raw": " name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
+               "raw": ""
+            }
+         },
+         {
+            "info": {
+               "from": 2,
+               "to": 5
+            },
+            "token": "ClosingTag",
+            "tagName": {
+               "info": {
+                  "from": 2,
+                  "to": 2
+               },
+               "token": "Identifier",
+               "raw": ""
+            },
+            "properties": {
+               "info": {
+                  "from": 4,
+                  "to": 4
+               },
+               "token": "TagProperties",
+               "raw": ""
             }
          }
       ]

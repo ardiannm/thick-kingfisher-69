@@ -8,6 +8,7 @@ while (true) {
   const input = prompt(">>") || "";
   const interpreter = new Interpreter(input);
   interpreter.run();
+  console.log(interpreter.tree);
 
   Write(interpreter);
 }
