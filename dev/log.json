@@ -14,7 +14,7 @@
                "to": 200
             },
             "token": "Component",
-            "name": "html",
+            "tagName": "html",
             "components": [
                {
                   "info": {
@@ -22,7 +22,7 @@
                      "to": 174
                   },
                   "token": "Component",
-                  "name": "head",
+                  "tagName": "head",
                   "components": [
                      {
                         "info": {
@@ -60,7 +60,7 @@
                            "to": 163
                         },
                         "token": "Component",
-                        "name": "title",
+                        "tagName": "title",
                         "components": [
                            {
                               "info": {
@@ -80,7 +80,7 @@
                      "to": 191
                   },
                   "token": "Component",
-                  "name": "body",
+                  "tagName": "body",
                   "components": []
                }
             ]

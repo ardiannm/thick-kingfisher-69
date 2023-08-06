@@ -63,17 +63,20 @@ export default class Parser extends Lexer {
   private parseComponent(): HTML {
     const left = this.parseTag();
     if (left instanceof OpenTag) {
-      const name = left.identifier.raw;
+      const tagName = left.identifier.raw;
       const components = new Array<HTML>();
       while (this.hasMoreTokens()) {
-        const comp = this.parseComponent();
-        if (comp instanceof ClosingTag) {
-          return new Component(name, components, new TokenInfo(left.info.from, this.position));
+        const right = this.parseComponent();
+        if (right instanceof ClosingTag) {
+          if (right.identifier.raw !== left.identifier.raw) {
+            this.logError(new ParserError(`Name tag '${right.identifier.raw}' for '${left.identifier.raw}' tag is not a match`), right);
+          }
+          return new Component(tagName, components, new TokenInfo(left.info.from, this.position));
         }
-        components.push(comp);
+        components.push(right);
       }
       this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
-      return new Component(name, components, new TokenInfo(left.info.from, this.position));
+      return new Component(tagName, components, new TokenInfo(left.info.from, this.position));
     }
     return left;
   }
