@@ -9,12 +9,12 @@ while (true) {
   const request = await Read("./dev/template.html");
   const input = prompt(">>") || request;
   const interpreter = new Interpreter(input);
-  const run = interpreter.run();
+  const tree = interpreter.run();
 
-  Write(run, "./dev/logger/parser.json");
-  const response = Write(run, "./dev/logger/interpreter.json");
+  Write(tree, "./dev/logger/parser.json");
+  Write(tree, "./dev/logger/interpreter.json");
 
-  console.log(`\n\tfrom <${request.length.toLocaleString()}> to <${response.length.toLocaleString()}> characters\n`);
+  console.log(tree);
 }
 
 export { Lexer, Parser, Interpreter };

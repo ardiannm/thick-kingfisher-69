@@ -50,11 +50,16 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    const expressions = new Array<Expression>(this.parseComponent());
+    const expressions = new Array<Expression>(this.parseExpressions());
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseComponent());
+      expressions.push(this.parseExpressions());
     }
     return new Program(expressions, 0, this.input.length);
+  }
+
+  private parseExpressions() {
+    if (this.peekToken() instanceof LessThan) return this.parseComponent();
+    return this.parseAddition();
   }
 
   private parseComponent(): HTML {
@@ -64,17 +69,17 @@ export default class Parser extends Lexer {
       const components = new Array<HTML>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
-        if (right instanceof ClosingTag) {
-          if (right.identifier.source !== left.identifier.source) {
-            this.logError(new ParserError(`Name tag '${right.identifier.source}' for '${left.identifier.source}' tag is not a match`), right);
-          }
-          return new Component(identifier, components, left.from, this.position);
-        }
         if (right instanceof Component) {
           if (right.identifier == "style") continue;
           if (right.identifier == "script") continue;
           if (right.identifier == "noscript") continue;
           if (right.components.length == 0) continue;
+        }
+        if (right instanceof ClosingTag) {
+          if (right.identifier.source !== left.identifier.source) {
+            this.logError(new ParserError(`Name tag '${right.identifier.source}' for '${left.identifier.source}' tag is not a match`), right);
+          }
+          return new Component(identifier, components, left.from, this.position);
         }
         if (right instanceof UnaryTag) continue;
         components.push(right);
@@ -120,6 +125,16 @@ export default class Parser extends Lexer {
     return this.parsePlainText();
   }
 
+  private parsePlainText() {
+    const from = this.position;
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof LessThan) break;
+      this.getNextCharacter();
+    }
+    const properties = this.input.substring(from, this.position).replace(/\s+/g, " ").trim();
+    return new PlainText(properties, from, this.position);
+  }
+
   private parseProperties() {
     const from = this.position;
     while (this.hasMoreTokens()) {
@@ -135,16 +150,6 @@ export default class Parser extends Lexer {
     }
     const properties = this.input.substring(from, this.position);
     return new Properties(properties, from, this.position);
-  }
-
-  private parsePlainText() {
-    const from = this.position;
-    while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof LessThan) break;
-      this.getNextCharacter();
-    }
-    const properties = this.input.substring(from, this.position).replace(/\s+/g, " ").trim();
-    return new PlainText(properties, from, this.position);
   }
 
   private parseAddition() {
