@@ -35,6 +35,8 @@ import Number from "./number.ts";
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
+  public logger = new Array<LogError>();
+
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
   }
@@ -43,6 +45,12 @@ export default class Parser extends Lexer {
     if (this.assert(token, constructor)) return token as T;
     this.logError(error, token);
     return token as T;
+  }
+
+  public logError(error: LogError, atToken: Token) {
+    error.atToken = atToken;
+    this.logger = [error, ...this.logger];
+    return error;
   }
 
   public parse() {
@@ -141,11 +149,11 @@ export default class Parser extends Lexer {
     while (this.hasMoreTokens()) {
       const token = this.getNextToken();
       if (token instanceof Division && this.peekToken() instanceof GreaterThan) {
-        this.peekBack(token);
+        this.backtrack(token);
         break;
       }
       if (token instanceof GreaterThan) {
-        this.peekBack(token);
+        this.backtrack(token);
         break;
       }
     }

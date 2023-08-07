@@ -8,7 +8,6 @@ import Multiplication from "./multiplication.ts";
 import Space from "./space.ts";
 import Token from "./token.ts";
 import Quote from "./quote.ts";
-import LogError from "./log.error.ts";
 import LessThan from "./less.than.ts";
 import GreaterThan from "./greater.than.ts";
 import UnknownCharacter from "./unknown.character.ts";
@@ -20,7 +19,6 @@ import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 
 export default class Lexer {
-  public logger = new Array<LogError>();
   public position = 0;
   private space = false;
 
@@ -77,13 +75,7 @@ export default class Lexer {
     return token;
   }
 
-  public logError(error: LogError, atToken: Token) {
-    error.atToken = atToken;
-    this.logger = [error, ...this.logger];
-    return error;
-  }
-
-  public peekBack(token: Token) {
+  public backtrack(token: Token) {
     this.position = token.from;
   }
 
