@@ -1,38 +1,29 @@
 [
+  ["OpenAI", [], []],
   [
-    [[["OpenAI"]], [], [[[]]]],
+    [["POST", ["/api", "/openai"], "Get a response from OpenAI", []], []],
     [
       [
+        ["Parameters", "Try it out"],
+        "No parameters",
         [
+          ["Request body", "application/json"],
           [
-            [[["POST"], [[["/api", "/openai"]]], ["Get a response from OpenAI"], [[]]], [[[]]]],
-            [
-              [
-                [
-                  [[[[["Parameters"]]]], [["Try it out"]]],
-                  [[["No parameters"]]],
-                  [
-                    [["Request body"], [[[["application/json"]]]]],
-                    [[[[[["Example Value"]], [["Schema"]]], [[[[["{"], [], ["\"model\""], [":"], ["\"text-davinci-003\""], [","], [], ["\"secret_api_key\""], [":"], ["\"sk-....0qPM\""], [","], [], ["\"prompt\""], [":"], ["\"Hello!\""], [","], [], ["\"temperature\""], [":"], ["0.1"], [","], [], ["\"max_tokens\""], [":"], ["700"], [","], [], ["\"top_p\""], [":"], ["1"], [","], [], ["\"frequency_penalty\""], [":"], ["0"], [","], [], ["\"presence_penalty\""], [":"], ["0"], [], "}"]]]]]]]
-                  ]
-                ],
-                [],
-                [
-                  [["Responses"]],
-                  [
-                    [
-                      [[["Code"], ["Description"], ["Links"]]],
-                      [
-                        [["200"], [[[["Successful response"]]]], [["No links"]]],
-                        [["400"], [[[["Bad request, please provide a prompt"]]]], [["No links"]]],
-                        [["429"], [[[["You exceeded your current quota, please check your plan and billing details"]]]], [["No links"]]],
-                        [["500"], [[[["Internal server error"]]]], [["No links"]]]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
+            ["Example Value", "Schema"],
+            ["{", [], "\"model\"", ":", "\"text-davinci-003\"", ",", [], "\"secret_api_key\"", ":", "\"sk-....0qPM\"", ",", [], "\"prompt\"", ":", "\"Hello!\"", ",", [], "\"temperature\"", ":", "0.1", ",", [], "\"max_tokens\"", ":", "700", ",", [], "\"top_p\"", ":", "1", ",", [], "\"frequency_penalty\"", ":", "0", ",", [], "\"presence_penalty\"", ":", "0", [], "}"]
+          ]
+        ]
+      ],
+      [],
+      [
+        "Responses",
+        [
+          ["Code", "Description", "Links"],
+          [
+            ["200", "Successful response", "No links"],
+            ["400", "Bad request, please provide a prompt", "No links"],
+            ["429", "You exceeded your current quota, please check your plan and billing details", "No links"],
+            ["500", "Internal server error", "No links"]
           ]
         ]
       ]

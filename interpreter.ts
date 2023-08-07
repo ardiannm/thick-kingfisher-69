@@ -33,7 +33,9 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateComponent(token: Component) {
-    return token.components.map((comp) => this.evaluate(comp));
+    const value = token.components.map((comp) => this.evaluate(comp));
+    if (value.length == 1) return value[0];
+    return value;
   }
 
   private evaluatePlainText(token: PlainText) {
