@@ -9,10 +9,10 @@ while (true) {
   const request = await Read("./dev/template.html");
   const input = prompt(">>") || request || "";
   const interpreter = new Interpreter(input);
-  const value = interpreter.run();
+  const run = interpreter.run();
 
-  Write(interpreter.tree, "./dev/logger/parser.json");
-  const response = Write(value, "./dev/logger/interpreter.json");
+  Write(run, "./dev/logger/parser.json");
+  const response = Write(run, "./dev/logger/interpreter.json");
 
   console.log(`\n\tfrom <${request.length.toLocaleString()}> to <${response.length.toLocaleString()}> characters\n`);
 }

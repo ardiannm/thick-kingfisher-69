@@ -17,8 +17,7 @@ import PlainText from "./plain.text.ts";
 
 export default class Interpreter extends Parser {
   public run() {
-    this.tree = this.parse();
-    return this.evaluate(this.tree);
+    return this.evaluate(this.parse());
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {

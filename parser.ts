@@ -29,15 +29,12 @@ import PlainText from "./plain.text.ts";
 import HTML from "./html.ts";
 import Component from "./component.ts";
 import Program from "./program.ts";
-import EOF from "./eof.ts";
 import Number from "./number.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
-  public tree = new EOF(0, 0);
-
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
   }
