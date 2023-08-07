@@ -39,7 +39,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluatePlainText(token: PlainText) {
-    return token.raw;
+    return token.source;
   }
 
   private evaluateProgram(token: Program) {
@@ -49,7 +49,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.raw));
+    return new RuntimeNumber(parseFloat(token.source));
   }
 
   private evaluateBinary(token: Binary) {

@@ -1,31 +1,51 @@
 [
-  ["OpenAI"],
+  ["Swagger UI", "html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; } *, *:before, *:after { box-sizing: inherit; } body { margin: 0; background: #fafafa; }"],
   [
-    [["POST", ["/api", "/openai"], "Get a response from OpenAI"]],
     [
+      ["Explore"],
       [
-        ["Parameters", "Try it out"],
-        "No parameters",
         [
-          ["Request body", "application/json"],
+          [["MongoDb", ["3.0.0", "OAS 3.0"]], "Starting setup for MongoDb and Express server in Typescript"],
           [
-            ["Example Value", "Schema"],
-            ["{", "\"model\"", ":", "\"text-davinci-003\"", ",", "\"secret_api_key\"", ":", "\"sk-....0qPM\"", ",", "\"prompt\"", ":", "\"Hello!\"", ",", "\"temperature\"", ":", "0.1", ",", "\"max_tokens\"", ":", "700", ",", "\"top_p\"", ":", "1", ",", "\"frequency_penalty\"", ":", "0", ",", "\"presence_penalty\"", ":", "0", "}"]
-          ]
-        ]
-      ],
-      [
-        "Responses",
-        [
-          ["Code", "Description", "Links"],
-          [
-            ["200", "Successful response", "No links"],
-            ["400", "Bad request, please provide a prompt", "No links"],
-            ["429", "You exceeded your current quota, please check your plan and billing details", "No links"],
-            ["500", "Internal server error", "No links"]
+            [["Healthcheck"], [[["GET", ["/api", "/healthcheck"], "Check if the server is up and running"]]]],
+            [["Genius"], [[["POST", ["/api", "/genius"], "Fetch song lyrics from Genius Lyrics API"]]]],
+            [
+              ["OpenAI"],
+              [
+                [["POST", ["/api", "/openai"], "Get a response from OpenAI"]],
+                [
+                  [
+                    ["Parameters", "Try it out"],
+                    "No parameters",
+                    [
+                      ["Request body", "application/json"],
+                      [
+                        ["Example Value", "Schema"],
+                        ["{", "\"model\"", ":", "\"text-davinci-003\"", ",", "\"secret_api_key\"", ":", "\"sk-....0qPM\"", ",", "\"prompt\"", ":", "\"Hello!\"", ",", "\"temperature\"", ":", "0.1", ",", "\"max_tokens\"", ":", "700", ",", "\"top_p\"", ":", "1", ",", "\"frequency_penalty\"", ":", "0", ",", "\"presence_penalty\"", ":", "0", "}"]
+                      ]
+                    ]
+                  ],
+                  [
+                    "Responses",
+                    [
+                      ["Code", "Description", "Links"],
+                      [
+                        ["200", "Successful response", "No links"],
+                        ["400", "Bad request, please provide a prompt", "No links"],
+                        ["429", "You exceeded your current quota, please check your plan and billing details", "No links"],
+                        ["500", "Internal server error", "No links"]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [["Webscrapper"], [[["GET", ["/api", "/webscrape"], "Scrape website content"]]]],
+            [["Users"], [[["GET", ["/api", "/users"], "Retrieve all users from the database"]]]]
           ]
         ]
       ]
-    ]
+    ],
+    ".swagger-ui .topbar .download-url-wrapper { display: none } undefined"
   ]
 ]

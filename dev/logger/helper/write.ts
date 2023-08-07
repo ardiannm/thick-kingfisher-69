@@ -1,5 +1,7 @@
 const Write = (obj: unknown, path: string) => {
-  Deno.writeTextFile(path, JSON.stringify(obj, null, 3));
+  const str = JSON.stringify(obj);
+  Deno.writeTextFile(path, str);
+  return str;
 };
 
 export default Write;

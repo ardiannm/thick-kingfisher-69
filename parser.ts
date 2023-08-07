@@ -30,6 +30,7 @@ import HTML from "./html.ts";
 import Component from "./component.ts";
 import Program from "./program.ts";
 import EOF from "./eof.ts";
+import Number from "./number.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -62,21 +63,21 @@ export default class Parser extends Lexer {
   private parseComponent(): HTML {
     const left = this.parseTag();
     if (left instanceof OpenTag) {
-      const tagName = left.identifier.raw;
+      const identifier = left.identifier.source;
       const components = new Array<HTML>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof ClosingTag) {
-          if (right.identifier.raw !== left.identifier.raw) {
-            this.logError(new ParserError(`Name tag '${right.identifier.raw}' for '${left.identifier.raw}' tag is not a match`), right);
+          if (right.identifier.source !== left.identifier.source) {
+            this.logError(new ParserError(`Name tag '${right.identifier.source}' for '${left.identifier.source}' tag is not a match`), right);
           }
-          return new Component(tagName, components, left.from, this.position);
+          return new Component(identifier, components, left.from, this.position);
         }
         if (right instanceof UnaryTag) continue;
         components.push(right);
       }
       this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
-      return new Component(tagName, components, left.from, this.position);
+      return new Component(identifier, components, left.from, this.position);
     }
     return left;
   }
@@ -92,6 +93,11 @@ export default class Parser extends Lexer {
       }
       if (this.peekToken() instanceof Identifier) {
         identifier = this.parseToken() as Identifier;
+        if (this.peekToken() instanceof Number) {
+          const number = this.parseToken();
+          identifier.source += (number as Number).source;
+          identifier.to = number.to;
+        }
       }
       this.parseProperties();
       if (this.peekToken() instanceof Division) {
@@ -108,7 +114,7 @@ export default class Parser extends Lexer {
       }
       return new OpenTag(identifier, division.from, token.to);
     }
-    return this.parseContent();
+    return this.parsePlainText();
   }
 
   private parseProperties() {
@@ -128,13 +134,13 @@ export default class Parser extends Lexer {
     return new Properties(properties, from, this.position);
   }
 
-  private parseContent() {
+  private parsePlainText() {
     const from = this.position;
     while (this.hasMoreTokens()) {
       if (this.peekToken() instanceof LessThan) break;
       this.getNextCharacter();
     }
-    const properties = this.input.substring(from, this.position);
+    const properties = this.input.substring(from, this.position).replace(/\s+/g, " ").trim();
     return new PlainText(properties, from, this.position);
   }
 
@@ -197,18 +203,18 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Quote) {
       this.keepSpace();
       const begin = this.parseToken() as Quote;
-      let raw = "";
+      let source = "";
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
-          this.logError(new WarningError(`Unknown character '${token.raw}' found while parsing`), token);
+          this.logError(new WarningError(`Unknown character '${token.source}' found while parsing`), token);
         }
         if (token instanceof Quote) break;
-        raw += this.getNextCharacter();
+        source += this.getNextCharacter();
       }
       const end = this.expect(this.parseToken(), Quote, new ParserError("Expecing a closing quote for the string"));
       this.ignoreSpace();
-      return new String(raw, begin.to, end.from);
+      return new String(source, begin.to, end.from);
     }
     return this.parseToken();
   }
@@ -216,7 +222,7 @@ export default class Parser extends Lexer {
   private parseToken() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Unknown character '${token.raw}' found while parsing`), token);
+      this.logError(new WarningError(`Unknown character '${token.source}' found while parsing`), token);
     }
     return token;
   }
