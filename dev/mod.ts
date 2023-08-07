@@ -14,5 +14,5 @@ while (true) {
   Write(interpreter.tree, "./dev/logger/parser.json");
   const response = Write(value, "./dev/logger/interpreter.json");
 
-  console.log(`\n\tfrom <${request.length}> to <${response.length}> characters\n`);
+  console.log(`\n\tfrom <${request.length.toLocaleString()}> to <${response.length.toLocaleString()}> characters\n`);
 }

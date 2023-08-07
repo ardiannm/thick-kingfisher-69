@@ -74,6 +74,9 @@ export default class Parser extends Lexer {
           return new Component(identifier, components, left.from, this.position);
         }
         if (right instanceof Component) {
+          if (right.identifier == "style") continue;
+          // if (right.identifier == "script") continue; // scripts must be kept to ensure content is checked
+          if (right.identifier == "noscript") continue;
           if (right.components.length == 0) continue;
         }
         if (right instanceof UnaryTag) continue;
