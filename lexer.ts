@@ -78,8 +78,8 @@ export default class Lexer {
   }
 
   public logError(error: LogError, atToken: Token) {
-    error.token = atToken;
-    this.logger.push(error);
+    error.atToken = atToken;
+    this.logger = [error, ...this.logger];
     return error;
   }
 

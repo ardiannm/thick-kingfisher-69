@@ -66,6 +66,7 @@ export default class Parser extends Lexer {
     const left = this.parseTag();
     if (left instanceof OpenTag) {
       const identifier = left.identifier.source;
+      if (identifier == "link") return this.parseComponent();
       const components = new Array<HTML>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
