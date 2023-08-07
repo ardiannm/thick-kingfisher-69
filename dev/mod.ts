@@ -1,16 +1,15 @@
 // import { Parser, Interpreter } from "https://deno.land/x/amparser@v0.04/mod.ts";
 
+import Read from "./logger/helper/read.ts";
+import Write from "./logger/helper/write.ts";
+
 import Interpreter from "../interpreter.ts";
-import Read from "./read.ts";
-import Write from "./write.ts";
 
 while (true) {
-  console.log();
   const input = prompt(">>") || (await Read("./dev/template.html")) || "";
   const interpreter = new Interpreter(input);
-
   const value = interpreter.run();
-  console.log(value);
 
-  Write(interpreter);
+  Write(interpreter.tree, "./dev/logger/parser.json");
+  Write(value, "./dev/logger/interpreter.json");
 }
