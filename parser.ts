@@ -73,6 +73,9 @@ export default class Parser extends Lexer {
           }
           return new Component(identifier, components, left.from, this.position);
         }
+        if (right instanceof Component) {
+          if (right.components.length == 0) continue;
+        }
         if (right instanceof UnaryTag) continue;
         components.push(right);
       }
