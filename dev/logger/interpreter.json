@@ -1,7 +1,7 @@
 [
-  ["OpenAI", [], []],
+  ["OpenAI"],
   [
-    [["POST", ["/api", "/openai"], "Get a response from OpenAI", []], []],
+    [["POST", ["/api", "/openai"], "Get a response from OpenAI"]],
     [
       [
         ["Parameters", "Try it out"],
@@ -10,11 +10,10 @@
           ["Request body", "application/json"],
           [
             ["Example Value", "Schema"],
-            ["{", [], "\"model\"", ":", "\"text-davinci-003\"", ",", [], "\"secret_api_key\"", ":", "\"sk-....0qPM\"", ",", [], "\"prompt\"", ":", "\"Hello!\"", ",", [], "\"temperature\"", ":", "0.1", ",", [], "\"max_tokens\"", ":", "700", ",", [], "\"top_p\"", ":", "1", ",", [], "\"frequency_penalty\"", ":", "0", ",", [], "\"presence_penalty\"", ":", "0", [], "}"]
+            ["{", "\"model\"", ":", "\"text-davinci-003\"", ",", "\"secret_api_key\"", ":", "\"sk-....0qPM\"", ",", "\"prompt\"", ":", "\"Hello!\"", ",", "\"temperature\"", ":", "0.1", ",", "\"max_tokens\"", ":", "700", ",", "\"top_p\"", ":", "1", ",", "\"frequency_penalty\"", ":", "0", ",", "\"presence_penalty\"", ":", "0", "}"]
           ]
         ]
       ],
-      [],
       [
         "Responses",
         [

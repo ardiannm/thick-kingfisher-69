@@ -35,7 +35,7 @@ export default class Interpreter extends Parser {
   private evaluateComponent(token: Component) {
     const value = token.components.map((comp) => this.evaluate(comp));
     if (value.length == 1) return value[0];
-    return value;
+    return value.filter((b) => !(Array.isArray(b) && b.length == 0));
   }
 
   private evaluatePlainText(token: PlainText) {
