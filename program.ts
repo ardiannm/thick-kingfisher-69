@@ -1,8 +1,7 @@
 import Expression from "./expression.ts";
-import TokenInfo from "./token.info.ts";
 
 export default class Program extends Expression {
-  constructor(public expressions: Array<Expression>, public info: TokenInfo) {
-    super(info);
+  constructor(public expressions: Array<Expression>, public from: number, public to: number) {
+    super(from, to);
   }
 }

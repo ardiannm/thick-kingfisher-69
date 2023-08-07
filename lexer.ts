@@ -16,7 +16,6 @@ import Exponentiation from "./exponentiation.ts";
 import Addition from "./addition.ts";
 import Substraction from "./substraction.ts";
 import EOF from "./eof.ts";
-import TokenInfo from "./token.info.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 
@@ -53,21 +52,21 @@ export default class Lexer {
     const startsAt = this.position;
     let raw = "";
     while (/[a-zA-Z]/.test(this.getCharacter())) raw += this.getNextCharacter();
-    return new Identifier(raw, new TokenInfo(startsAt, this.position));
+    return new Identifier(raw, startsAt, this.position);
   }
 
   private getNumber() {
     const startsAt = this.position;
     let raw = "";
     while (/[0-9]/.test(this.getCharacter())) raw += this.getNextCharacter();
-    return new Number(raw, new TokenInfo(startsAt, this.position));
+    return new Number(raw, startsAt, this.position);
   }
 
   private getSpace() {
     const startsAt = this.position;
     let raw = "";
     while (/\s/.test(this.getCharacter())) raw += this.getNextCharacter();
-    if (this.space) return new Space(raw, new TokenInfo(startsAt, this.position));
+    if (this.space) return new Space(raw, startsAt, this.position);
     return this.getNextToken();
   }
 
@@ -85,7 +84,7 @@ export default class Lexer {
   }
 
   public peekBack(token: Token) {
-    this.position = token.info.from;
+    this.position = token.from;
   }
 
   public getNextToken(): Token {
@@ -98,25 +97,24 @@ export default class Lexer {
     const from = this.position;
     const next = this.getNextCharacter();
     const to = this.position;
-    const info = new TokenInfo(from, to);
 
-    if (char == "(") return new OpenParenthesis(next, info);
-    if (char == ")") return new ClosingParenthesis(next, info);
-    if (char == "!") return new ExclamationMark(next, info);
-    if (char == "?") return new QuestionMark(next, info);
-    if (char == '"') return new Quote(next, info);
-    if (char == "<") return new LessThan(next, info);
-    if (char == ">") return new GreaterThan(next, info);
-    if (char == "=") return new Equals(next, info);
+    if (char == "(") return new OpenParenthesis(next, from, to);
+    if (char == ")") return new ClosingParenthesis(next, from, to);
+    if (char == "!") return new ExclamationMark(next, from, to);
+    if (char == "?") return new QuestionMark(next, from, to);
+    if (char == '"') return new Quote(next, from, to);
+    if (char == "<") return new LessThan(next, from, to);
+    if (char == ">") return new GreaterThan(next, from, to);
+    if (char == "=") return new Equals(next, from, to);
 
-    if (char == "+") return new Addition(next, info);
-    if (char == "-") return new Substraction(next, info);
-    if (char == "*") return new Multiplication(next, info);
-    if (char == "/") return new Division(next, info);
-    if (char == "^") return new Exponentiation(next, info);
+    if (char == "+") return new Addition(next, from, to);
+    if (char == "-") return new Substraction(next, from, to);
+    if (char == "*") return new Multiplication(next, from, to);
+    if (char == "/") return new Division(next, from, to);
+    if (char == "^") return new Exponentiation(next, from, to);
 
-    if (next) return new UnknownCharacter(next, info);
+    if (next) return new UnknownCharacter(next, from, to);
 
-    return new EOF(new TokenInfo(from, from));
+    return new EOF(from, from);
   }
 }

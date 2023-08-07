@@ -1,55 +1,41 @@
 {
-  "info": {
-    "from": 0,
-    "to": 8808
-  },
+  "from": 0,
+  "to": 8808,
   "token": "Program",
   "expressions": [
     {
-      "info": {
-        "from": 0,
-        "to": 8806
-      },
+      "from": 0,
+      "to": 8806,
       "token": "Component",
       "identifier": "span",
       "components": [
         {
-          "info": {
-            "from": 10,
-            "to": 8797
-          },
+          "from": 10,
+          "to": 8797,
           "token": "Component",
           "identifier": "div",
           "components": [
             {
-              "info": {
-                "from": 57,
-                "to": 518
-              },
+              "from": 57,
+              "to": 518,
               "token": "Component",
               "identifier": "h",
               "components": [
                 {
-                  "info": {
-                    "from": 162,
-                    "to": 228
-                  },
+                  "from": 162,
+                  "to": 228,
                   "token": "Component",
                   "identifier": "a",
                   "components": [
                     {
-                      "info": {
-                        "from": 197,
-                        "to": 216
-                      },
+                      "from": 197,
+                      "to": 216,
                       "token": "Component",
                       "identifier": "span",
                       "components": [
                         {
-                          "info": {
-                            "from": 203,
-                            "to": 209
-                          },
+                          "from": 203,
+                          "to": 209,
                           "token": "PlainText",
                           "raw": "OpenAI"
                         }
@@ -58,35 +44,27 @@
                   ]
                 },
                 {
-                  "info": {
-                    "from": 228,
-                    "to": 251
-                  },
+                  "from": 228,
+                  "to": 251,
                   "token": "Component",
                   "identifier": "small",
                   "components": []
                 },
                 {
-                  "info": {
-                    "from": 251,
-                    "to": 507
-                  },
+                  "from": 251,
+                  "to": 507,
                   "token": "Component",
                   "identifier": "button",
                   "components": [
                     {
-                      "info": {
-                        "from": 342,
-                        "to": 490
-                      },
+                      "from": 342,
+                      "to": 490,
                       "token": "Component",
                       "identifier": "svg",
                       "components": [
                         {
-                          "info": {
-                            "from": 421,
-                            "to": 484
-                          },
+                          "from": 421,
+                          "to": 484,
                           "token": "Component",
                           "identifier": "use",
                           "components": []
@@ -98,108 +76,82 @@
               ]
             },
             {
-              "info": {
-                "from": 524,
-                "to": 8787
-              },
+              "from": 524,
+              "to": 8787,
               "token": "Component",
               "identifier": "div",
               "components": [
                 {
-                  "info": {
-                    "from": 555,
-                    "to": 8775
-                  },
+                  "from": 555,
+                  "to": 8775,
                   "token": "Component",
                   "identifier": "div",
                   "components": [
                     {
-                      "info": {
-                        "from": 600,
-                        "to": 8761
-                      },
+                      "from": 600,
+                      "to": 8761,
                       "token": "Component",
                       "identifier": "span",
                       "components": [
                         {
-                          "info": {
-                            "from": 618,
-                            "to": 8744
-                          },
+                          "from": 618,
+                          "to": 8744,
                           "token": "Component",
                           "identifier": "div",
                           "components": [
                             {
-                              "info": {
-                                "from": 713,
-                                "to": 1695
-                              },
+                              "from": 713,
+                              "to": 1695,
                               "token": "Component",
                               "identifier": "div",
                               "components": [
                                 {
-                                  "info": {
-                                    "from": 779,
-                                    "to": 1470
-                                  },
+                                  "from": 779,
+                                  "to": 1470,
                                   "token": "Component",
                                   "identifier": "button",
                                   "components": [
                                     {
-                                      "info": {
-                                        "from": 890,
-                                        "to": 956
-                                      },
+                                      "from": 890,
+                                      "to": 956,
                                       "token": "Component",
                                       "identifier": "span",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 927,
-                                            "to": 931
-                                          },
+                                          "from": 927,
+                                          "to": 931,
                                           "token": "PlainText",
                                           "raw": "POST"
                                         }
                                       ]
                                     },
                                     {
-                                      "info": {
-                                        "from": 956,
-                                        "to": 1188
-                                      },
+                                      "from": 956,
+                                      "to": 1188,
                                       "token": "Component",
                                       "identifier": "span",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 1035,
-                                            "to": 1163
-                                          },
+                                          "from": 1035,
+                                          "to": 1163,
                                           "token": "Component",
                                           "identifier": "a",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 1108,
-                                                "to": 1139
-                                              },
+                                              "from": 1108,
+                                              "to": 1139,
                                               "token": "Component",
                                               "identifier": "span",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 1114,
-                                                    "to": 1118
-                                                  },
+                                                  "from": 1114,
+                                                  "to": 1118,
                                                   "token": "PlainText",
                                                   "raw": "/api"
                                                 },
                                                 {
-                                                  "info": {
-                                                    "from": 1125,
-                                                    "to": 1132
-                                                  },
+                                                  "from": 1125,
+                                                  "to": 1132,
                                                   "token": "PlainText",
                                                   "raw": "/openai"
                                                 }
@@ -210,36 +162,28 @@
                                       ]
                                     },
                                     {
-                                      "info": {
-                                        "from": 1206,
-                                        "to": 1279
-                                      },
+                                      "from": 1206,
+                                      "to": 1279,
                                       "token": "Component",
                                       "identifier": "div",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 1247,
-                                            "to": 1273
-                                          },
+                                          "from": 1247,
+                                          "to": 1273,
                                           "token": "PlainText",
                                           "raw": "Get a response from OpenAI"
                                         }
                                       ]
                                     },
                                     {
-                                      "info": {
-                                        "from": 1297,
-                                        "to": 1445
-                                      },
+                                      "from": 1297,
+                                      "to": 1445,
                                       "token": "Component",
                                       "identifier": "svg",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 1376,
-                                            "to": 1439
-                                          },
+                                          "from": 1376,
+                                          "to": 1439,
                                           "token": "Component",
                                           "identifier": "use",
                                           "components": []
@@ -249,26 +193,20 @@
                                   ]
                                 },
                                 {
-                                  "info": {
-                                    "from": 1486,
-                                    "to": 1675
-                                  },
+                                  "from": 1486,
+                                  "to": 1675,
                                   "token": "Component",
                                   "identifier": "div",
                                   "components": [
                                     {
-                                      "info": {
-                                        "from": 1576,
-                                        "to": 1653
-                                      },
+                                      "from": 1576,
+                                      "to": 1653,
                                       "token": "Component",
                                       "identifier": "svg",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 1604,
-                                            "to": 1647
-                                          },
+                                          "from": 1604,
+                                          "to": 1647,
                                           "token": "Component",
                                           "identifier": "use",
                                           "components": []
@@ -280,74 +218,56 @@
                               ]
                             },
                             {
-                              "info": {
-                                "from": 1709,
-                                "to": 8726
-                              },
+                              "from": 1709,
+                              "to": 8726,
                               "token": "Component",
                               "identifier": "div",
                               "components": [
                                 {
-                                  "info": {
-                                    "from": 1748,
-                                    "to": 8706
-                                  },
+                                  "from": 1748,
+                                  "to": 8706,
                                   "token": "Component",
                                   "identifier": "div",
                                   "components": [
                                     {
-                                      "info": {
-                                        "from": 1792,
-                                        "to": 5537
-                                      },
+                                      "from": 1792,
+                                      "to": 5537,
                                       "token": "Component",
                                       "identifier": "div",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 1841,
-                                            "to": 2241
-                                          },
+                                          "from": 1841,
+                                          "to": 2241,
                                           "token": "Component",
                                           "identifier": "div",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 1899,
-                                                "to": 2114
-                                              },
+                                              "from": 1899,
+                                              "to": 2114,
                                               "token": "Component",
                                               "identifier": "div",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 1947,
-                                                    "to": 2086
-                                                  },
+                                                  "from": 1947,
+                                                  "to": 2086,
                                                   "token": "Component",
                                                   "identifier": "div",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 2002,
-                                                        "to": 2056
-                                                      },
+                                                      "from": 2002,
+                                                      "to": 2056,
                                                       "token": "Component",
                                                       "identifier": "h",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 2028,
-                                                            "to": 2051
-                                                          },
+                                                          "from": 2028,
+                                                          "to": 2051,
                                                           "token": "Component",
                                                           "identifier": "span",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 2034,
-                                                                "to": 2044
-                                                              },
+                                                              "from": 2034,
+                                                              "to": 2044,
                                                               "token": "PlainText",
                                                               "raw": "Parameters"
                                                             }
@@ -360,26 +280,20 @@
                                               ]
                                             },
                                             {
-                                              "info": {
-                                                "from": 2136,
-                                                "to": 2215
-                                              },
+                                              "from": 2136,
+                                              "to": 2215,
                                               "token": "Component",
                                               "identifier": "div",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 2157,
-                                                    "to": 2209
-                                                  },
+                                                  "from": 2157,
+                                                  "to": 2209,
                                                   "token": "Component",
                                                   "identifier": "button",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 2190,
-                                                        "to": 2200
-                                                      },
+                                                      "from": 2190,
+                                                      "to": 2200,
                                                       "token": "PlainText",
                                                       "raw": "Try it out"
                                                     }
@@ -390,34 +304,26 @@
                                           ]
                                         },
                                         {
-                                          "info": {
-                                            "from": 2261,
-                                            "to": 2410
-                                          },
+                                          "from": 2261,
+                                          "to": 2410,
                                           "token": "Component",
                                           "identifier": "div",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 2317,
-                                                "to": 2384
-                                              },
+                                              "from": 2317,
+                                              "to": 2384,
                                               "token": "Component",
                                               "identifier": "div",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 2358,
-                                                    "to": 2378
-                                                  },
+                                                  "from": 2358,
+                                                  "to": 2378,
                                                   "token": "Component",
                                                   "identifier": "p",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 2361,
-                                                        "to": 2374
-                                                      },
+                                                      "from": 2361,
+                                                      "to": 2374,
                                                       "token": "PlainText",
                                                       "raw": "No parameters"
                                                     }
@@ -428,76 +334,58 @@
                                           ]
                                         },
                                         {
-                                          "info": {
-                                            "from": 2430,
-                                            "to": 5513
-                                          },
+                                          "from": 2430,
+                                          "to": 5513,
                                           "token": "Component",
                                           "identifier": "div",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 2510,
-                                                "to": 3062
-                                              },
+                                              "from": 2510,
+                                              "to": 3062,
                                               "token": "Component",
                                               "identifier": "div",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 2570,
-                                                    "to": 2639
-                                                  },
+                                                  "from": 2570,
+                                                  "to": 2639,
                                                   "token": "Component",
                                                   "identifier": "h",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 2622,
-                                                        "to": 2634
-                                                      },
+                                                      "from": 2622,
+                                                      "to": 2634,
                                                       "token": "PlainText",
                                                       "raw": "Request body"
                                                     }
                                                   ]
                                                 },
                                                 {
-                                                  "info": {
-                                                    "from": 2663,
-                                                    "to": 3034
-                                                  },
+                                                  "from": 2663,
+                                                  "to": 3034,
                                                   "token": "Component",
                                                   "identifier": "label",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 2696,
-                                                        "to": 3002
-                                                      },
+                                                      "from": 2696,
+                                                      "to": 3002,
                                                       "token": "Component",
                                                       "identifier": "div",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 2782,
-                                                            "to": 2970
-                                                          },
+                                                          "from": 2782,
+                                                          "to": 2970,
                                                           "token": "Component",
                                                           "identifier": "select",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 2875,
-                                                                "to": 2933
-                                                              },
+                                                              "from": 2875,
+                                                              "to": 2933,
                                                               "token": "Component",
                                                               "identifier": "option",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 2908,
-                                                                    "to": 2924
-                                                                  },
+                                                                  "from": 2908,
+                                                                  "to": 2924,
                                                                   "token": "PlainText",
                                                                   "raw": "application/json"
                                                                 }
@@ -512,58 +400,44 @@
                                               ]
                                             },
                                             {
-                                              "info": {
-                                                "from": 3084,
-                                                "to": 5487
-                                              },
+                                              "from": 3084,
+                                              "to": 5487,
                                               "token": "Component",
                                               "identifier": "div",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 3149,
-                                                    "to": 5459
-                                                  },
+                                                  "from": 3149,
+                                                  "to": 5459,
                                                   "token": "Component",
                                                   "identifier": "div",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 3180,
-                                                        "to": 5429
-                                                      },
+                                                      "from": 3180,
+                                                      "to": 5429,
                                                       "token": "Component",
                                                       "identifier": "div",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 3235,
-                                                            "to": 3724
-                                                          },
+                                                          "from": 3235,
+                                                          "to": 3724,
                                                           "token": "Component",
                                                           "identifier": "ul",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 3296,
-                                                                "to": 3486
-                                                              },
+                                                              "from": 3296,
+                                                              "to": 3486,
                                                               "token": "Component",
                                                               "identifier": "li",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 3343,
-                                                                    "to": 3481
-                                                                  },
+                                                                  "from": 3343,
+                                                                  "to": 3481,
                                                                   "token": "Component",
                                                                   "identifier": "button",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 3459,
-                                                                        "to": 3472
-                                                                      },
+                                                                      "from": 3459,
+                                                                      "to": 3472,
                                                                       "token": "PlainText",
                                                                       "raw": "Example Value"
                                                                     }
@@ -572,26 +446,20 @@
                                                               ]
                                                             },
                                                             {
-                                                              "info": {
-                                                                "from": 3516,
-                                                                "to": 3691
-                                                              },
+                                                              "from": 3516,
+                                                              "to": 3691,
                                                               "token": "Component",
                                                               "identifier": "li",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 3556,
-                                                                    "to": 3686
-                                                                  },
+                                                                  "from": 3556,
+                                                                  "to": 3686,
                                                                   "token": "Component",
                                                                   "identifier": "button",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 3671,
-                                                                        "to": 3677
-                                                                      },
+                                                                      "from": 3671,
+                                                                      "to": 3677,
                                                                       "token": "PlainText",
                                                                       "raw": "Schema"
                                                                     }
@@ -602,699 +470,543 @@
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 3752,
-                                                            "to": 5397
-                                                          },
+                                                          "from": 3752,
+                                                          "to": 5397,
                                                           "token": "Component",
                                                           "identifier": "div",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 3902,
-                                                                "to": 5363
-                                                              },
+                                                              "from": 3902,
+                                                              "to": 5363,
                                                               "token": "Component",
                                                               "identifier": "div",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 3962,
-                                                                    "to": 5327
-                                                                  },
+                                                                  "from": 3962,
+                                                                  "to": 5327,
                                                                   "token": "Component",
                                                                   "identifier": "pre",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 4106,
-                                                                        "to": 5321
-                                                                      },
+                                                                      "from": 4106,
+                                                                      "to": 5321,
                                                                       "token": "Component",
                                                                       "identifier": "code",
                                                                       "components": [
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4160,
-                                                                            "to": 4176
-                                                                          },
+                                                                          "from": 4160,
+                                                                          "to": 4176,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4166,
-                                                                                "to": 4167
-                                                                              },
+                                                                              "from": 4166,
+                                                                              "to": 4167,
                                                                               "token": "PlainText",
                                                                               "raw": "{"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4176,
-                                                                            "to": 4191
-                                                                          },
+                                                                          "from": 4176,
+                                                                          "to": 4191,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4191,
-                                                                            "to": 4229
-                                                                          },
+                                                                          "from": 4191,
+                                                                          "to": 4229,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4215,
-                                                                                "to": 4222
-                                                                              },
+                                                                              "from": 4215,
+                                                                              "to": 4222,
                                                                               "token": "PlainText",
                                                                               "raw": "\"model\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4229,
-                                                                            "to": 4244
-                                                                          },
+                                                                          "from": 4229,
+                                                                          "to": 4244,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4235,
-                                                                                "to": 4236
-                                                                              },
+                                                                              "from": 4235,
+                                                                              "to": 4236,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4244,
-                                                                            "to": 4310
-                                                                          },
+                                                                          "from": 4244,
+                                                                          "to": 4310,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4285,
-                                                                                "to": 4303
-                                                                              },
+                                                                              "from": 4285,
+                                                                              "to": 4303,
                                                                               "token": "PlainText",
                                                                               "raw": "\"text-davinci-003\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4310,
-                                                                            "to": 4326
-                                                                          },
+                                                                          "from": 4310,
+                                                                          "to": 4326,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4316,
-                                                                                "to": 4317
-                                                                              },
+                                                                              "from": 4316,
+                                                                              "to": 4317,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4326,
-                                                                            "to": 4341
-                                                                          },
+                                                                          "from": 4326,
+                                                                          "to": 4341,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4341,
-                                                                            "to": 4388
-                                                                          },
+                                                                          "from": 4341,
+                                                                          "to": 4388,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4365,
-                                                                                "to": 4381
-                                                                              },
+                                                                              "from": 4365,
+                                                                              "to": 4381,
                                                                               "token": "PlainText",
                                                                               "raw": "\"secret_api_key\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4388,
-                                                                            "to": 4403
-                                                                          },
+                                                                          "from": 4388,
+                                                                          "to": 4403,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4394,
-                                                                                "to": 4395
-                                                                              },
+                                                                              "from": 4394,
+                                                                              "to": 4395,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4403,
-                                                                            "to": 4464
-                                                                          },
+                                                                          "from": 4403,
+                                                                          "to": 4464,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4444,
-                                                                                "to": 4457
-                                                                              },
+                                                                              "from": 4444,
+                                                                              "to": 4457,
                                                                               "token": "PlainText",
                                                                               "raw": "\"sk-....0qPM\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4464,
-                                                                            "to": 4480
-                                                                          },
+                                                                          "from": 4464,
+                                                                          "to": 4480,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4470,
-                                                                                "to": 4471
-                                                                              },
+                                                                              "from": 4470,
+                                                                              "to": 4471,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4480,
-                                                                            "to": 4495
-                                                                          },
+                                                                          "from": 4480,
+                                                                          "to": 4495,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4495,
-                                                                            "to": 4534
-                                                                          },
+                                                                          "from": 4495,
+                                                                          "to": 4534,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4519,
-                                                                                "to": 4527
-                                                                              },
+                                                                              "from": 4519,
+                                                                              "to": 4527,
                                                                               "token": "PlainText",
                                                                               "raw": "\"prompt\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4534,
-                                                                            "to": 4549
-                                                                          },
+                                                                          "from": 4534,
+                                                                          "to": 4549,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4540,
-                                                                                "to": 4541
-                                                                              },
+                                                                              "from": 4540,
+                                                                              "to": 4541,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4549,
-                                                                            "to": 4605
-                                                                          },
+                                                                          "from": 4549,
+                                                                          "to": 4605,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4590,
-                                                                                "to": 4598
-                                                                              },
+                                                                              "from": 4590,
+                                                                              "to": 4598,
                                                                               "token": "PlainText",
                                                                               "raw": "\"Hello!\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4605,
-                                                                            "to": 4621
-                                                                          },
+                                                                          "from": 4605,
+                                                                          "to": 4621,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4611,
-                                                                                "to": 4612
-                                                                              },
+                                                                              "from": 4611,
+                                                                              "to": 4612,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4621,
-                                                                            "to": 4636
-                                                                          },
+                                                                          "from": 4621,
+                                                                          "to": 4636,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4636,
-                                                                            "to": 4680
-                                                                          },
+                                                                          "from": 4636,
+                                                                          "to": 4680,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4660,
-                                                                                "to": 4673
-                                                                              },
+                                                                              "from": 4660,
+                                                                              "to": 4673,
                                                                               "token": "PlainText",
                                                                               "raw": "\"temperature\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4680,
-                                                                            "to": 4695
-                                                                          },
+                                                                          "from": 4680,
+                                                                          "to": 4695,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4686,
-                                                                                "to": 4687
-                                                                              },
+                                                                              "from": 4686,
+                                                                              "to": 4687,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4695,
-                                                                            "to": 4744
-                                                                          },
+                                                                          "from": 4695,
+                                                                          "to": 4744,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4734,
-                                                                                "to": 4737
-                                                                              },
+                                                                              "from": 4734,
+                                                                              "to": 4737,
                                                                               "token": "PlainText",
                                                                               "raw": "0.1"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4744,
-                                                                            "to": 4760
-                                                                          },
+                                                                          "from": 4744,
+                                                                          "to": 4760,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4750,
-                                                                                "to": 4751
-                                                                              },
+                                                                              "from": 4750,
+                                                                              "to": 4751,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4760,
-                                                                            "to": 4775
-                                                                          },
+                                                                          "from": 4760,
+                                                                          "to": 4775,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4775,
-                                                                            "to": 4818
-                                                                          },
+                                                                          "from": 4775,
+                                                                          "to": 4818,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4799,
-                                                                                "to": 4811
-                                                                              },
+                                                                              "from": 4799,
+                                                                              "to": 4811,
                                                                               "token": "PlainText",
                                                                               "raw": "\"max_tokens\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4818,
-                                                                            "to": 4833
-                                                                          },
+                                                                          "from": 4818,
+                                                                          "to": 4833,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4824,
-                                                                                "to": 4825
-                                                                              },
+                                                                              "from": 4824,
+                                                                              "to": 4825,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4833,
-                                                                            "to": 4882
-                                                                          },
+                                                                          "from": 4833,
+                                                                          "to": 4882,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4872,
-                                                                                "to": 4875
-                                                                              },
+                                                                              "from": 4872,
+                                                                              "to": 4875,
                                                                               "token": "PlainText",
                                                                               "raw": "700"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4882,
-                                                                            "to": 4898
-                                                                          },
+                                                                          "from": 4882,
+                                                                          "to": 4898,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4888,
-                                                                                "to": 4889
-                                                                              },
+                                                                              "from": 4888,
+                                                                              "to": 4889,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4898,
-                                                                            "to": 4913
-                                                                          },
+                                                                          "from": 4898,
+                                                                          "to": 4913,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4913,
-                                                                            "to": 4951
-                                                                          },
+                                                                          "from": 4913,
+                                                                          "to": 4951,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4937,
-                                                                                "to": 4944
-                                                                              },
+                                                                              "from": 4937,
+                                                                              "to": 4944,
                                                                               "token": "PlainText",
                                                                               "raw": "\"top_p\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4951,
-                                                                            "to": 4966
-                                                                          },
+                                                                          "from": 4951,
+                                                                          "to": 4966,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 4957,
-                                                                                "to": 4958
-                                                                              },
+                                                                              "from": 4957,
+                                                                              "to": 4958,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 4966,
-                                                                            "to": 5013
-                                                                          },
+                                                                          "from": 4966,
+                                                                          "to": 5013,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5005,
-                                                                                "to": 5006
-                                                                              },
+                                                                              "from": 5005,
+                                                                              "to": 5006,
                                                                               "token": "PlainText",
                                                                               "raw": "1"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5013,
-                                                                            "to": 5029
-                                                                          },
+                                                                          "from": 5013,
+                                                                          "to": 5029,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5019,
-                                                                                "to": 5020
-                                                                              },
+                                                                              "from": 5019,
+                                                                              "to": 5020,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5029,
-                                                                            "to": 5044
-                                                                          },
+                                                                          "from": 5029,
+                                                                          "to": 5044,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5044,
-                                                                            "to": 5094
-                                                                          },
+                                                                          "from": 5044,
+                                                                          "to": 5094,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5068,
-                                                                                "to": 5087
-                                                                              },
+                                                                              "from": 5068,
+                                                                              "to": 5087,
                                                                               "token": "PlainText",
                                                                               "raw": "\"frequency_penalty\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5094,
-                                                                            "to": 5109
-                                                                          },
+                                                                          "from": 5094,
+                                                                          "to": 5109,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5100,
-                                                                                "to": 5101
-                                                                              },
+                                                                              "from": 5100,
+                                                                              "to": 5101,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5109,
-                                                                            "to": 5156
-                                                                          },
+                                                                          "from": 5109,
+                                                                          "to": 5156,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5148,
-                                                                                "to": 5149
-                                                                              },
+                                                                              "from": 5148,
+                                                                              "to": 5149,
                                                                               "token": "PlainText",
                                                                               "raw": "0"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5156,
-                                                                            "to": 5172
-                                                                          },
+                                                                          "from": 5156,
+                                                                          "to": 5172,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5162,
-                                                                                "to": 5163
-                                                                              },
+                                                                              "from": 5162,
+                                                                              "to": 5163,
                                                                               "token": "PlainText",
                                                                               "raw": ","
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5172,
-                                                                            "to": 5187
-                                                                          },
+                                                                          "from": 5172,
+                                                                          "to": 5187,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5187,
-                                                                            "to": 5236
-                                                                          },
+                                                                          "from": 5187,
+                                                                          "to": 5236,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5211,
-                                                                                "to": 5229
-                                                                              },
+                                                                              "from": 5211,
+                                                                              "to": 5229,
                                                                               "token": "PlainText",
                                                                               "raw": "\"presence_penalty\""
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5236,
-                                                                            "to": 5251
-                                                                          },
+                                                                          "from": 5236,
+                                                                          "to": 5251,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5242,
-                                                                                "to": 5243
-                                                                              },
+                                                                              "from": 5242,
+                                                                              "to": 5243,
                                                                               "token": "PlainText",
                                                                               "raw": ":"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5251,
-                                                                            "to": 5298
-                                                                          },
+                                                                          "from": 5251,
+                                                                          "to": 5298,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": [
                                                                             {
-                                                                              "info": {
-                                                                                "from": 5290,
-                                                                                "to": 5291
-                                                                              },
+                                                                              "from": 5290,
+                                                                              "to": 5291,
                                                                               "token": "PlainText",
                                                                               "raw": "0"
                                                                             }
                                                                           ]
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5298,
-                                                                            "to": 5313
-                                                                          },
+                                                                          "from": 5298,
+                                                                          "to": 5313,
                                                                           "token": "Component",
                                                                           "identifier": "span",
                                                                           "components": []
                                                                         },
                                                                         {
-                                                                          "info": {
-                                                                            "from": 5313,
-                                                                            "to": 5314
-                                                                          },
+                                                                          "from": 5313,
+                                                                          "to": 5314,
                                                                           "token": "PlainText",
                                                                           "raw": "}"
                                                                         }
@@ -1317,43 +1029,33 @@
                                       ]
                                     },
                                     {
-                                      "info": {
-                                        "from": 5555,
-                                        "to": 5590
-                                      },
+                                      "from": 5555,
+                                      "to": 5590,
                                       "token": "Component",
                                       "identifier": "div",
                                       "components": []
                                     },
                                     {
-                                      "info": {
-                                        "from": 5608,
-                                        "to": 8684
-                                      },
+                                      "from": 5608,
+                                      "to": 8684,
                                       "token": "Component",
                                       "identifier": "div",
                                       "components": [
                                         {
-                                          "info": {
-                                            "from": 5659,
-                                            "to": 5719
-                                          },
+                                          "from": 5659,
+                                          "to": 5719,
                                           "token": "Component",
                                           "identifier": "div",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 5695,
-                                                "to": 5713
-                                              },
+                                              "from": 5695,
+                                              "to": 5713,
                                               "token": "Component",
                                               "identifier": "h",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 5699,
-                                                    "to": 5708
-                                                  },
+                                                  "from": 5699,
+                                                  "to": 5708,
                                                   "token": "PlainText",
                                                   "raw": "Responses"
                                                 }
@@ -1362,86 +1064,66 @@
                                           ]
                                         },
                                         {
-                                          "info": {
-                                            "from": 5739,
-                                            "to": 8660
-                                          },
+                                          "from": 5739,
+                                          "to": 8660,
                                           "token": "Component",
                                           "identifier": "div",
                                           "components": [
                                             {
-                                              "info": {
-                                                "from": 5790,
-                                                "to": 8634
-                                              },
+                                              "from": 5790,
+                                              "to": 8634,
                                               "token": "Component",
                                               "identifier": "table",
                                               "components": [
                                                 {
-                                                  "info": {
-                                                    "from": 5909,
-                                                    "to": 6290
-                                                  },
+                                                  "from": 5909,
+                                                  "to": 6290,
                                                   "token": "Component",
                                                   "identifier": "thead",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 5942,
-                                                        "to": 6258
-                                                      },
+                                                      "from": 5942,
+                                                      "to": 6258,
                                                       "token": "Component",
                                                       "identifier": "tr",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 5999,
-                                                            "to": 6051
-                                                          },
+                                                          "from": 5999,
+                                                          "to": 6051,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6042,
-                                                                "to": 6046
-                                                              },
+                                                              "from": 6042,
+                                                              "to": 6046,
                                                               "token": "PlainText",
                                                               "raw": "Code"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 6079,
-                                                            "to": 6143
-                                                          },
+                                                          "from": 6079,
+                                                          "to": 6143,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6127,
-                                                                "to": 6138
-                                                              },
+                                                              "from": 6127,
+                                                              "to": 6138,
                                                               "token": "PlainText",
                                                               "raw": "Description"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 6171,
-                                                            "to": 6227
-                                                          },
+                                                          "from": 6171,
+                                                          "to": 6227,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6217,
-                                                                "to": 6222
-                                                              },
+                                                              "from": 6217,
+                                                              "to": 6222,
                                                               "token": "PlainText",
                                                               "raw": "Links"
                                                             }
@@ -1452,76 +1134,58 @@
                                                   ]
                                                 },
                                                 {
-                                                  "info": {
-                                                    "from": 6314,
-                                                    "to": 8604
-                                                  },
+                                                  "from": 6314,
+                                                  "to": 8604,
                                                   "token": "Component",
                                                   "identifier": "tbody",
                                                   "components": [
                                                     {
-                                                      "info": {
-                                                        "from": 6347,
-                                                        "to": 6865
-                                                      },
+                                                      "from": 6347,
+                                                      "to": 6865,
                                                       "token": "Component",
                                                       "identifier": "tr",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 6412,
-                                                            "to": 6452
-                                                          },
+                                                          "from": 6412,
+                                                          "to": 6452,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6444,
-                                                                "to": 6447
-                                                              },
+                                                              "from": 6444,
+                                                              "to": 6447,
                                                               "token": "PlainText",
                                                               "raw": "200"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 6480,
-                                                            "to": 6755
-                                                          },
+                                                          "from": 6480,
+                                                          "to": 6755,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6547,
-                                                                "to": 6722
-                                                              },
+                                                              "from": 6547,
+                                                              "to": 6722,
                                                               "token": "Component",
                                                               "identifier": "div",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 6624,
-                                                                    "to": 6686
-                                                                  },
+                                                                  "from": 6624,
+                                                                  "to": 6686,
                                                                   "token": "Component",
                                                                   "identifier": "div",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 6654,
-                                                                        "to": 6680
-                                                                      },
+                                                                      "from": 6654,
+                                                                      "to": 6680,
                                                                       "token": "Component",
                                                                       "identifier": "p",
                                                                       "components": [
                                                                         {
-                                                                          "info": {
-                                                                            "from": 6657,
-                                                                            "to": 6676
-                                                                          },
+                                                                          "from": 6657,
+                                                                          "to": 6676,
                                                                           "token": "PlainText",
                                                                           "raw": "Successful response"
                                                                         }
@@ -1534,26 +1198,20 @@
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 6783,
-                                                            "to": 6834
-                                                          },
+                                                          "from": 6783,
+                                                          "to": 6834,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6814,
-                                                                "to": 6829
-                                                              },
+                                                              "from": 6814,
+                                                              "to": 6829,
                                                               "token": "Component",
                                                               "identifier": "i",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 6817,
-                                                                    "to": 6825
-                                                                  },
+                                                                  "from": 6817,
+                                                                  "to": 6825,
                                                                   "token": "PlainText",
                                                                   "raw": "No links"
                                                                 }
@@ -1564,68 +1222,52 @@
                                                       ]
                                                     },
                                                     {
-                                                      "info": {
-                                                        "from": 6891,
-                                                        "to": 7426
-                                                      },
+                                                      "from": 6891,
+                                                      "to": 7426,
                                                       "token": "Component",
                                                       "identifier": "tr",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 6956,
-                                                            "to": 6996
-                                                          },
+                                                          "from": 6956,
+                                                          "to": 6996,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 6988,
-                                                                "to": 6991
-                                                              },
+                                                              "from": 6988,
+                                                              "to": 6991,
                                                               "token": "PlainText",
                                                               "raw": "400"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 7024,
-                                                            "to": 7316
-                                                          },
+                                                          "from": 7024,
+                                                          "to": 7316,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 7091,
-                                                                "to": 7283
-                                                              },
+                                                              "from": 7091,
+                                                              "to": 7283,
                                                               "token": "Component",
                                                               "identifier": "div",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 7168,
-                                                                    "to": 7247
-                                                                  },
+                                                                  "from": 7168,
+                                                                  "to": 7247,
                                                                   "token": "Component",
                                                                   "identifier": "div",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 7198,
-                                                                        "to": 7241
-                                                                      },
+                                                                      "from": 7198,
+                                                                      "to": 7241,
                                                                       "token": "Component",
                                                                       "identifier": "p",
                                                                       "components": [
                                                                         {
-                                                                          "info": {
-                                                                            "from": 7201,
-                                                                            "to": 7237
-                                                                          },
+                                                                          "from": 7201,
+                                                                          "to": 7237,
                                                                           "token": "PlainText",
                                                                           "raw": "Bad request, please provide a prompt"
                                                                         }
@@ -1638,26 +1280,20 @@
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 7344,
-                                                            "to": 7395
-                                                          },
+                                                          "from": 7344,
+                                                          "to": 7395,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 7375,
-                                                                "to": 7390
-                                                              },
+                                                              "from": 7375,
+                                                              "to": 7390,
                                                               "token": "Component",
                                                               "identifier": "i",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 7378,
-                                                                    "to": 7386
-                                                                  },
+                                                                  "from": 7378,
+                                                                  "to": 7386,
                                                                   "token": "PlainText",
                                                                   "raw": "No links"
                                                                 }
@@ -1668,68 +1304,52 @@
                                                       ]
                                                     },
                                                     {
-                                                      "info": {
-                                                        "from": 7452,
-                                                        "to": 8026
-                                                      },
+                                                      "from": 7452,
+                                                      "to": 8026,
                                                       "token": "Component",
                                                       "identifier": "tr",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 7517,
-                                                            "to": 7557
-                                                          },
+                                                          "from": 7517,
+                                                          "to": 7557,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 7549,
-                                                                "to": 7552
-                                                              },
+                                                              "from": 7549,
+                                                              "to": 7552,
                                                               "token": "PlainText",
                                                               "raw": "429"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 7585,
-                                                            "to": 7916
-                                                          },
+                                                          "from": 7585,
+                                                          "to": 7916,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 7652,
-                                                                "to": 7883
-                                                              },
+                                                              "from": 7652,
+                                                              "to": 7883,
                                                               "token": "Component",
                                                               "identifier": "div",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 7729,
-                                                                    "to": 7847
-                                                                  },
+                                                                  "from": 7729,
+                                                                  "to": 7847,
                                                                   "token": "Component",
                                                                   "identifier": "div",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 7759,
-                                                                        "to": 7841
-                                                                      },
+                                                                      "from": 7759,
+                                                                      "to": 7841,
                                                                       "token": "Component",
                                                                       "identifier": "p",
                                                                       "components": [
                                                                         {
-                                                                          "info": {
-                                                                            "from": 7762,
-                                                                            "to": 7837
-                                                                          },
+                                                                          "from": 7762,
+                                                                          "to": 7837,
                                                                           "token": "PlainText",
                                                                           "raw": "You exceeded your current quota, please check your plan and billing details"
                                                                         }
@@ -1742,26 +1362,20 @@
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 7944,
-                                                            "to": 7995
-                                                          },
+                                                          "from": 7944,
+                                                          "to": 7995,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 7975,
-                                                                "to": 7990
-                                                              },
+                                                              "from": 7975,
+                                                              "to": 7990,
                                                               "token": "Component",
                                                               "identifier": "i",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 7978,
-                                                                    "to": 7986
-                                                                  },
+                                                                  "from": 7978,
+                                                                  "to": 7986,
                                                                   "token": "PlainText",
                                                                   "raw": "No links"
                                                                 }
@@ -1772,68 +1386,52 @@
                                                       ]
                                                     },
                                                     {
-                                                      "info": {
-                                                        "from": 8052,
-                                                        "to": 8572
-                                                      },
+                                                      "from": 8052,
+                                                      "to": 8572,
                                                       "token": "Component",
                                                       "identifier": "tr",
                                                       "components": [
                                                         {
-                                                          "info": {
-                                                            "from": 8117,
-                                                            "to": 8157
-                                                          },
+                                                          "from": 8117,
+                                                          "to": 8157,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 8149,
-                                                                "to": 8152
-                                                              },
+                                                              "from": 8149,
+                                                              "to": 8152,
                                                               "token": "PlainText",
                                                               "raw": "500"
                                                             }
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 8185,
-                                                            "to": 8462
-                                                          },
+                                                          "from": 8185,
+                                                          "to": 8462,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 8252,
-                                                                "to": 8429
-                                                              },
+                                                              "from": 8252,
+                                                              "to": 8429,
                                                               "token": "Component",
                                                               "identifier": "div",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 8329,
-                                                                    "to": 8393
-                                                                  },
+                                                                  "from": 8329,
+                                                                  "to": 8393,
                                                                   "token": "Component",
                                                                   "identifier": "div",
                                                                   "components": [
                                                                     {
-                                                                      "info": {
-                                                                        "from": 8359,
-                                                                        "to": 8387
-                                                                      },
+                                                                      "from": 8359,
+                                                                      "to": 8387,
                                                                       "token": "Component",
                                                                       "identifier": "p",
                                                                       "components": [
                                                                         {
-                                                                          "info": {
-                                                                            "from": 8362,
-                                                                            "to": 8383
-                                                                          },
+                                                                          "from": 8362,
+                                                                          "to": 8383,
                                                                           "token": "PlainText",
                                                                           "raw": "Internal server error"
                                                                         }
@@ -1846,26 +1444,20 @@
                                                           ]
                                                         },
                                                         {
-                                                          "info": {
-                                                            "from": 8490,
-                                                            "to": 8541
-                                                          },
+                                                          "from": 8490,
+                                                          "to": 8541,
                                                           "token": "Component",
                                                           "identifier": "td",
                                                           "components": [
                                                             {
-                                                              "info": {
-                                                                "from": 8521,
-                                                                "to": 8536
-                                                              },
+                                                              "from": 8521,
+                                                              "to": 8536,
                                                               "token": "Component",
                                                               "identifier": "i",
                                                               "components": [
                                                                 {
-                                                                  "info": {
-                                                                    "from": 8524,
-                                                                    "to": 8532
-                                                                  },
+                                                                  "from": 8524,
+                                                                  "to": 8532,
                                                                   "token": "PlainText",
                                                                   "raw": "No links"
                                                                 }
