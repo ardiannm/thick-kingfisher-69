@@ -73,6 +73,7 @@ export default class Parser extends Lexer {
           }
           return new Component(tagName, components, new TokenInfo(left.info.from, this.position));
         }
+        if (right instanceof UnaryTag) continue;
         components.push(right);
       }
       this.expect(this.parseTag(), ClosingTag, new ParserError("Expecting a closing tag for this component"));
