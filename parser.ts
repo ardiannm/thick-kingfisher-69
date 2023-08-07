@@ -26,7 +26,7 @@ import ClosingTag from "./closing.tag.ts";
 import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
-import Content from "./content.ts";
+import PlainText from "./plain.text.ts";
 import HTML from "./html.ts";
 import Component from "./component.ts";
 import Program from "./program.ts";
@@ -135,7 +135,7 @@ export default class Parser extends Lexer {
       this.getNextCharacter();
     }
     const properties = this.input.substring(from, this.position);
-    return new Content(properties, new TokenInfo(from, this.position));
+    return new PlainText(properties, new TokenInfo(from, this.position));
   }
 
   private parseAddition() {

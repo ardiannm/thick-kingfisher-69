@@ -9,7 +9,8 @@ while (true) {
   const input = prompt(">>") || (await Read("./dev/template.html")) || "";
   const interpreter = new Interpreter(input);
 
-  interpreter.run();
+  const value = interpreter.run();
+  console.log(value);
 
   Write(interpreter);
 }

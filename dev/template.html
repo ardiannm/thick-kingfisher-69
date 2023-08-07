@@ -1,8 +1,140 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
-</html>
+<span
+  ><div class="opblock-tag-section is-open">
+    <h3 class="opblock-tag no-desc" id="operations-tag-OpenAI" data-tag="OpenAI" data-is-open="true">
+      <a class="nostyle" href="#/OpenAI"><span>OpenAI</span></a
+      ><small></small
+      ><button aria-expanded="true" class="expand-operation" title="Collapse operation">
+        <svg class="arrow" width="20" height="20" aria-hidden="true" focusable="false"><use href="#large-arrow-up" xlink:href="#large-arrow-up"></use></svg>
+      </button>
+    </h3>
+    <div class="no-margin">
+      <div class="operation-tag-content">
+        <span
+          ><div class="opblock opblock-post is-open" id="operations-OpenAI-post_api_openai">
+            <div class="opblock-summary opblock-summary-post">
+              <button aria-label="post ​/api​/openai" aria-expanded="true" class="opblock-summary-control">
+                <span class="opblock-summary-method">POST</span
+                ><span class="opblock-summary-path" data-path="/api/openai"
+                  ><a class="nostyle" href="#/OpenAI/post_api_openai"
+                    ><span>/api<wbr />/openai</span></a
+                  ></span
+                >
+                <div class="opblock-summary-description">Get a response from OpenAI</div>
+                <svg class="arrow" width="20" height="20" aria-hidden="true" focusable="false"><use href="#large-arrow-up" xlink:href="#large-arrow-up"></use></svg>
+              </button>
+              <div class="view-line-link copy-to-clipboard" title="Copy to clipboard">
+                <svg width="15" height="16"><use href="#copy" xlink:href="#copy"></use></svg>
+              </div>
+            </div>
+            <div class="no-margin">
+              <div class="opblock-body">
+                <div class="opblock-section">
+                  <div class="opblock-section-header">
+                    <div class="tab-header">
+                      <div class="tab-item active">
+                        <h4 class="opblock-title"><span>Parameters</span></h4>
+                      </div>
+                    </div>
+                    <div class="try-out"><button class="btn try-out__btn">Try it out</button></div>
+                  </div>
+                  <div class="parameters-container">
+                    <div class="opblock-description-wrapper"><p>No parameters</p></div>
+                  </div>
+                  <div class="opblock-section opblock-section-request-body">
+                    <div class="opblock-section-header">
+                      <h4 class="opblock-title parameter__name undefined">Request body</h4>
+                      <label
+                        ><div class="content-type-wrapper body-param-content-type">
+                          <select aria-label="Request content type" class="content-type">
+                            <option value="application/json">application/json</option>
+                          </select>
+                        </div></label
+                      >
+                    </div>
+                    <div class="opblock-description-wrapper">
+                      <div>
+                        <div class="model-example">
+                          <ul class="tab" role="tablist">
+                            <li class="tabitem active" role="presentation"><button aria-controls="fNn3FaU=" aria-selected="true" class="tablinks" data-name="example" id="n4NwMOA=" role="tab">Example Value</button></li>
+                            <li class="tabitem" role="presentation"><button aria-controls="WquzXHE=" aria-selected="false" class="tablinks" data-name="model" id="TqSgSXQ=" role="tab">Schema</button></li>
+                          </ul>
+                          <div aria-hidden="false" aria-labelledby="n4NwMOA=" data-name="examplePanel" id="fNn3FaU=" role="tabpanel" tabindex="0">
+                            <div class="highlight-code">
+                              <pre class="body-param__example microlight" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(51, 51, 51); color: white"><code class="language-json" style="white-space: pre;"><span>{
+</span><span>  </span><span class="hljs-attr">"model"</span><span>: </span><span style="color: rgb(162, 252, 162);">"text-davinci-003"</span><span>,
+</span><span>  </span><span class="hljs-attr">"secret_api_key"</span><span>: </span><span style="color: rgb(162, 252, 162);">"sk-....0qPM"</span><span>,
+</span><span>  </span><span class="hljs-attr">"prompt"</span><span>: </span><span style="color: rgb(162, 252, 162);">"Hello!"</span><span>,
+</span><span>  </span><span class="hljs-attr">"temperature"</span><span>: </span><span style="color: rgb(211, 99, 99);">0.1</span><span>,
+</span><span>  </span><span class="hljs-attr">"max_tokens"</span><span>: </span><span style="color: rgb(211, 99, 99);">700</span><span>,
+</span><span>  </span><span class="hljs-attr">"top_p"</span><span>: </span><span style="color: rgb(211, 99, 99);">1</span><span>,
+</span><span>  </span><span class="hljs-attr">"frequency_penalty"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>,
+</span><span>  </span><span class="hljs-attr">"presence_penalty"</span><span>: </span><span style="color: rgb(211, 99, 99);">0</span><span>
+</span>}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="execute-wrapper"></div>
+                <div class="responses-wrapper">
+                  <div class="opblock-section-header"><h4>Responses</h4></div>
+                  <div class="responses-inner">
+                    <table aria-live="polite" class="responses-table" id="post_api_openai_responses" role="region">
+                      <thead>
+                        <tr class="responses-header">
+                          <td class="col_header response-col_status">Code</td>
+                          <td class="col_header response-col_description">Description</td>
+                          <td class="col col_header response-col_links">Links</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="response" data-code="200">
+                          <td class="response-col_status">200</td>
+                          <td class="response-col_description">
+                            <div class="response-col_description__inner">
+                              <div class="renderedMarkdown"><p>Successful response</p></div>
+                            </div>
+                          </td>
+                          <td class="response-col_links"><i>No links</i></td>
+                        </tr>
+                        <tr class="response" data-code="400">
+                          <td class="response-col_status">400</td>
+                          <td class="response-col_description">
+                            <div class="response-col_description__inner">
+                              <div class="renderedMarkdown"><p>Bad request, please provide a prompt</p></div>
+                            </div>
+                          </td>
+                          <td class="response-col_links"><i>No links</i></td>
+                        </tr>
+                        <tr class="response" data-code="429">
+                          <td class="response-col_status">429</td>
+                          <td class="response-col_description">
+                            <div class="response-col_description__inner">
+                              <div class="renderedMarkdown"><p>You exceeded your current quota, please check your plan and billing details</p></div>
+                            </div>
+                          </td>
+                          <td class="response-col_links"><i>No links</i></td>
+                        </tr>
+                        <tr class="response" data-code="500">
+                          <td class="response-col_status">500</td>
+                          <td class="response-col_description">
+                            <div class="response-col_description__inner">
+                              <div class="renderedMarkdown"><p>Internal server error</p></div>
+                            </div>
+                          </td>
+                          <td class="response-col_links"><i>No links</i></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div></span
+        >
+      </div>
+    </div>
+  </div></span
+>
