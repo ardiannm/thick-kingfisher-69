@@ -1,3 +1,7 @@
-import LogError from "./log.error.ts";
+import ErrorMessage from "./log.error.ts";
 
-export default class ParserError extends LogError {}
+export default class ParserError extends ErrorMessage {
+  constructor(public message: string) {
+    super(message);
+  }
+}
