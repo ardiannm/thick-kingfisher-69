@@ -19,9 +19,8 @@ import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 
 export default class Lexer {
-  public position = 0;
   private space = false;
-
+  protected position = 0;
   constructor(public input: string) {}
 
   public hasMoreTokens(): boolean {

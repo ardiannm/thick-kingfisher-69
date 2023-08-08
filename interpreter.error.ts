@@ -1,3 +1,3 @@
-import ErrorMessage from "./log.error.ts";
+import Report from "./report.ts";
 
-export default class InterpreterError extends ErrorMessage {}
+export default class InterpreterError extends Report {}

@@ -1,7 +1,7 @@
 import Expression from "./expression.ts";
 
 export default class Value extends Expression {
-  constructor(public source: string, public from: number, public to: number) {
+  constructor(public raw: string, public from: number, public to: number) {
     super(from, to);
   }
 }

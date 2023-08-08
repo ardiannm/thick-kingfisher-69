@@ -19,7 +19,7 @@ export default class Interpreter extends Parser {
   public tree!: Token;
   public run() {
     this.tree = this.parse();
-    if (this.logger.length) return this.logger;
+    if (this.errors.length) return this.errors;
     return this.evaluate(this.tree);
   }
 
@@ -31,7 +31,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
     if (token instanceof PlainText) return this.evaluatePlainText(token);
-    return this.logError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`));
+    return this.report(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`));
   }
 
   private evaluateComponent(token: Component) {
@@ -51,7 +51,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.source));
+    return new RuntimeNumber(parseFloat(token.raw));
   }
 
   private evaluateBinary(token: Binary) {
@@ -59,7 +59,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return this.logError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`));
+      return this.report(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`));
     }
 
     switch (true) {
@@ -80,7 +80,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof RuntimeNumber)) {
-      return this.logError(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`));
+      return this.report(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`));
     }
 
     switch (true) {

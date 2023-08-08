@@ -12,7 +12,6 @@ import Quote from "./quote.ts";
 import String from "./string.ts";
 import ParserError from "./parser.error.ts";
 import WarningError from "./warning.error.ts";
-import ErrorMessage from "./log.error.ts";
 import Substraction from "./substraction.ts";
 import Addition from "./addition.ts";
 import Exponentiation from "./exponentiation.ts";
@@ -31,27 +30,26 @@ import Component from "./component.ts";
 import Program from "./program.ts";
 import Number from "./number.ts";
 import Tag from "./tag.ts";
-
-let count = 0;
+import Report from "./report.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
-  public logger = new Array<ErrorMessage>();
+  public errors = new Array<Report>();
 
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
   }
 
-  private expect<T extends Token>(token: Token, constructor: Constructor<T>, error: ErrorMessage): T {
+  private expect<T extends Token>(token: Token, constructor: Constructor<T>, error: Report): T {
     if (this.assert(token, constructor)) return token as T;
-    this.logError(error);
+    this.errors.push(error);
     return token as T;
   }
 
-  public logError(error: ErrorMessage) {
-    this.logger = [error, ...this.logger];
+  public report(error: Report) {
+    this.errors = [error, ...this.errors];
     return error;
   }
 
@@ -72,38 +70,34 @@ export default class Parser extends Lexer {
     return this.parseAddition();
   }
 
-  private parseNonSkippableTags() {
-    const left = this.parseTag();
-    if (left instanceof OpenTag || left instanceof UnaryTag) {
-      if (left.identifier.source == "meta" || left.identifier.source == "link" || left.identifier.source == "") {
-        return this.parseComponent();
-      }
-    }
-    return left;
-  }
-
   private parseComponent(): HTML {
     const left = this.parseNonSkippableTags();
     if (left instanceof OpenTag) {
-      const identifier = left.identifier.source;
+      const identifier = left.identifier.raw;
       const components = new Array<HTML>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof ClosingTag) {
-          if (right.identifier.source !== left.identifier.source) {
-            const error = new ParserError(`Tag name '${right.identifier.source}' is not a match for '${left.identifier.source}'`);
-            this.logError(error);
+          if (right.identifier.raw !== left.identifier.raw) {
+            this.report(new ParserError(`Tag name '${right.identifier.raw}' is not a match for '${left.identifier.raw}'`));
           }
-          count++;
           return new Component(identifier, components, left.from, this.position);
         }
         if (right instanceof UnaryTag) continue;
         components.push(right);
       }
-      const error = new ParserError(`Expecting a closing tag for '${identifier}' component`);
-      this.expect(this.parseTag(), ClosingTag, error);
-      count++;
+      this.expect(this.parseTag(), ClosingTag, new ParserError(`Expecting a closing tag for '${identifier}' component`));
       return new Component(identifier, components, left.from, this.position);
+    }
+    return left;
+  }
+
+  private parseNonSkippableTags() {
+    const left = this.parseTag();
+    if (left instanceof OpenTag || left instanceof UnaryTag) {
+      if (left.identifier.raw == "meta" || left.identifier.raw == "link" || left.identifier.raw == "") {
+        return this.parseComponent();
+      }
     }
     return left;
   }
@@ -121,7 +115,7 @@ export default class Parser extends Lexer {
         identifier = this.parseToken() as Identifier;
         if (this.peekToken() instanceof Number) {
           const number = this.parseToken();
-          identifier.source += (number as Number).source;
+          identifier.raw += (number as Number).raw;
           identifier.to = number.to;
         }
       }
@@ -129,7 +123,7 @@ export default class Parser extends Lexer {
       if (this.peekToken() instanceof Division) {
         this.parseToken();
         if (hasDivision) {
-          this.logError(new ParserError("Unexpected token '/' for this tag"));
+          this.report(new ParserError("Unexpected token '/' for this tag"));
         }
         const token = this.expect(this.parseToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`));
         return new UnaryTag(identifier, division.from, token.to);
@@ -235,18 +229,18 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Quote) {
       this.keepSpace();
       const begin = this.parseToken() as Quote;
-      let source = "";
+      let raw = "";
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
-          this.logError(new WarningError(`Unknown character '${token.source}' found while parsing`));
+          this.report(new WarningError(`Unknown character '${token.raw}' found while parsing`));
         }
         if (token instanceof Quote) break;
-        source += this.getNextCharacter();
+        raw += this.getNextCharacter();
       }
       const end = this.expect(this.parseToken(), Quote, new ParserError("Expecing a closing quote for the string"));
       this.ignoreSpace();
-      return new String(source, begin.to, end.from);
+      return new String(raw, begin.to, end.from);
     }
     return this.parseToken();
   }
@@ -254,7 +248,7 @@ export default class Parser extends Lexer {
   private parseToken() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logError(new WarningError(`Unknown character '${token.source}' found while parsing`));
+      this.report(new WarningError(`Unknown character '${token.raw}' found while parsing`));
     }
     return token;
   }

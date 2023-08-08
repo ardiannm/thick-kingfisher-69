@@ -1,1 +1,0 @@
-[{"message":"Expecting a closing tag for 'html' component"},{"message":"Expecting a closing tag for 'body' component"},{"message":"Expecting a closing tag for 'script' component"},{"message":"Tag name 'html' is not a match for 'props'"},{"message":"Tag name 'body' is not a match for 'script'"},{"message":"Tag name 'script' is not a match for 't'"}]
