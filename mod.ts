@@ -12,9 +12,9 @@ while (true) {
   const value = interpreter.run();
 
   console.log();
-  console.log(value.input);
+  console.log(value.logger);
 
-  Write(value, "./dev/template.json");
+  Write(value, "./dev/logger.json");
 }
 
 export { Lexer, Parser, Interpreter };

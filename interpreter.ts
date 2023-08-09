@@ -16,17 +16,26 @@ import Component from "./component.ts";
 import PlainText from "./plain.text.ts";
 
 export default class Interpreter extends Parser {
+  private interpreterErrors = new Array<InterpreterError>();
+
   public run() {
     const tree = this.parse();
     const runtime = this.evaluate(tree);
-    const firstError = this.errors[0];
-    const lines = this.input.substring(firstError.from, firstError.to).split("\n");
+    const error = this.parserErrors[0];
     return {
-      input: firstError ? lines.map((line, index) => `${index + 1}\t${line}`).join("\n") : [],
-      errors: this.errors,
+      logger: error ? this.input.substring(error.from, error.to) + `\n\n${error.message}.\n\n` : "",
+      errors: {
+        parser: this.parserErrors,
+        interpreter: this.interpreterErrors,
+      },
       runtime,
       parser: tree,
     };
+  }
+
+  public logInterpreterError(error: InterpreterError) {
+    this.interpreterErrors = [error, ...this.interpreterErrors];
+    return error;
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {
@@ -37,7 +46,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
     if (token instanceof PlainText) return this.evaluatePlainText(token);
-    return this.report(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`, token.from, token.to));
+    return this.logInterpreterError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`, token.from, token.to));
   }
 
   private evaluateComponent(token: Component) {
@@ -65,7 +74,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return this.report(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`, token.from, token.to));
+      return this.logInterpreterError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`, token.from, token.to));
     }
 
     switch (true) {
@@ -86,7 +95,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof RuntimeNumber)) {
-      return this.report(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`, token.from, token.to));
+      return this.logInterpreterError(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`, token.from, token.to));
     }
 
     switch (true) {
