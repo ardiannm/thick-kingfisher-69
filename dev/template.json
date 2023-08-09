@@ -1,23 +1,376 @@
 {
+  "input": "1\t< props.length; i++) {\r\n2\t            var descriptor = props[i];\r\n3\t            (descriptor.enumerable = descriptor.enumerable || !1), (descriptor.configurable = !0), \"value\" in descriptor && (descriptor.writable = !0), Object.defineProperty(target, descriptor.key, descriptor);\r\n4\t          }\r\n5\t        }\r\n6\t        return function (Constructor, protoProps, staticProps) {\r\n7\t          return protoProps && defineProperties(Constructor.prototype, protoProps), staticProps && defineProperties(Constructor, staticProps), Constructor;\r\n8\t        };\r\n9\t      })();\r\n10\t      function _classCallCheck(instance, Constructor) {\r\n11\t        if (!(instance instanceof Constructor)) throw new TypeError(\"Cannot call a class as a function\");\r\n12\t      }\r\n13\t      var RocketBrowserCompatibilityChecker = (function () {\r\n14\t        function RocketBrowserCompatibilityChecker(options) {\r\n15\t          _classCallCheck(this, RocketBrowserCompatibilityChecker), (this.passiveSupported = !1), this._checkPassiveOption(this), (this.options = !!this.passiveSupported && options);\r\n16\t        }\r\n17\t        return (\r\n18\t          _createClass(RocketBrowserCompatibilityChecker, [\r\n19\t            {\r\n20\t              key: \"_checkPassiveOption\",\r\n21\t              value: function (self) {\r\n22\t                try {\r\n23\t                  var options = {\r\n24\t                    get passive() {\r\n25\t                      return !(self.passiveSupported = !0);\r\n26\t                    },\r\n27\t                  };\r\n28\t                  window.addEventListener(\"test\", null, options), window.removeEventListener(\"test\", null, options);\r\n29\t                } catch (err) {\r\n30\t                  self.passiveSupported = !1;\r\n31\t                }\r\n32\t              },\r\n33\t            },\r\n34\t            {\r\n35\t              key: \"initRequestIdleCallback\",\r\n36\t              value: function () {\r\n37\t                !1 in window &&\r\n38\t                  (window.requestIdleCallback = function (cb) {\r\n39\t                    var start = Date.now();\r\n40\t                    return setTimeout(function () {\r\n41\t                      cb({\r\n42\t                        didTimeout: !1,\r\n43\t                        timeRemaining: function () {\r\n44\t                          return Math.max(0, 50 - (Date.now() - start));\r\n45\t                        },\r\n46\t                      });\r\n47\t                    }, 1);\r\n48\t                  }),\r\n49\t                  !1 in window &&\r\n50\t                    (window.cancelIdleCallback = function (id) {\r\n51\t                      return clearTimeout(id);\r\n52\t                    });\r\n53\t              },\r\n54\t            },\r\n55\t            {\r\n56\t              key: \"isDataSaverModeOn\",\r\n57\t              value: function () {\r\n58\t                return \"connection\" in navigator && !0 === navigator.connection.saveData;\r\n59\t              },\r\n60\t            },\r\n61\t            {\r\n62\t              key: \"supportsLinkPrefetch\",\r\n63\t              value: function () {\r\n64\t                var elem = document.createElement(\"link\");\r\n65\t                return elem.relList && elem.relList.supports && elem.relList.supports(\"prefetch\") && window.IntersectionObserver && \"isIntersecting\" in IntersectionObserverEntry.prototype;\r\n66\t              },\r\n67\t            },\r\n68\t            {\r\n69\t              key: \"isSlowConnection\",\r\n70\t              value: function () {\r\n71\t                return \"connection\" in navigator && \"effectiveType\" in navigator.connection && (\"2g\" === navigator.connection.effectiveType || \"slow-2g\" === navigator.connection.effectiveType);\r\n72\t              },\r\n73\t            },\r\n74\t          ]),\r\n75\t          RocketBrowserCompatibilityChecker\r\n76\t        );\r\n77\t      })();\r\n78\t    </script>\r\n79\t    <script type=\"text/javascript\" id=\"rocket-preload-links-js-extra\">\r\n80\t      /* <![CDATA[ */\r\n81\t      var RocketPreloadLinksConfig = { \"excludeUris\": \"\\/(.+\\/)?feed\\/?.+\\/?|\\/(?:.+\\/)?embed\\/|\\/(index\\\\.php\\/)?wp\\\\-json(\\/.*|$)|\\/wp-admin\\/|\\/logout\\/|\\/wp-login.php\", \"usesTrailingSlash\": \"1\", \"imageExt\": \"jpg|jpeg|gif|png|tiff|bmp|webp|avif\", \"fileExt\": \"jpg|jpeg|gif|png|tiff|bmp|webp|avif|php|pdf|html|htm\", \"siteUrl\": \"https:\\/\\/www.thefresh.co.uk\", \"onHoverDelay\": \"100\", \"rateThrottle\": \"3\" };\r\n82\t      /* ]]> */\r\n83\t    </script>\r\n84\t    <script type=\"text/javascript\" id=\"rocket-preload-links-js-after\">\r\n85\t      (function () {\r\n86\t        \"use strict\";\r\n87\t        var r =\r\n88\t            \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator\r\n89\t              ? function (e) {\r\n90\t                  return typeof e;\r\n91\t                }\r\n92\t              : function (e) {\r\n93\t                  return e && \"function\" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? \"symbol\" : typeof e;\r\n94\t                },\r\n95\t          e = (function () {\r\n96\t            function i(e, t) {\r\n97\t              for (var n = 0; n < t.length; n++) {\r\n98\t                var i = t[n];\r\n99\t                (i.enumerable = i.enumerable || !1), (i.configurable = !0), \"value\" in i && (i.writable = !0), Object.defineProperty(e, i.key, i);\r\n100\t              }\r\n101\t            }\r\n102\t            return function (e, t, n) {\r\n103\t              return t && i(e.prototype, t), n && i(e, n), e;\r\n104\t            };\r\n105\t          })();\r\n106\t        function i(e, t) {\r\n107\t          if (!(e instanceof t)) throw new TypeError(\"Cannot call a class as a function\");\r\n108\t        }\r\n109\t        var t = (function () {\r\n110\t          function n(e, t) {\r\n111\t            i(this, n), (this.browser = e), (this.config = t), (this.options = this.browser.options), (this.prefetched = new Set()), (this.eventTime = null), (this.threshold = 1111), (this.numOnHover = 0);\r\n112\t          }\r\n113\t          return (\r\n114\t            e(\r\n115\t              n,\r\n116\t              [\r\n117\t                {\r\n118\t                  key: \"init\",\r\n119\t                  value: function () {\r\n120\t                    !this.browser.supportsLinkPrefetch() || this.browser.isDataSaverModeOn() || this.browser.isSlowConnection() || ((this.regex = { excludeUris: RegExp(this.config.excludeUris, \"i\"), images: RegExp(\".(\" + this.config.imageExt + \")$\", \"i\"), fileExt: RegExp(\".(\" + this.config.fileExt + \")$\", \"i\") }), this._initListeners(this));\r\n121\t                  },\r\n122\t                },\r\n123\t                {\r\n124\t                  key: \"_initListeners\",\r\n125\t                  value: function (e) {\r\n126\t                    -1 < this.config.onHoverDelay && document.addEventListener(\"mouseover\", e.listener.bind(e), e.listenerOptions), document.addEventListener(\"mousedown\", e.listener.bind(e), e.listenerOptions), document.addEventListener(\"touchstart\", e.listener.bind(e), e.listenerOptions);\r\n127\t                  },\r\n128\t                },\r\n129\t                {\r\n130\t                  key: \"listener\",\r\n131\t                  value: function (e) {\r\n132\t                    var t = e.target.closest(\"a\"),\r\n133\t                      n = this._prepareUrl(t);\r\n134\t                    if (null !== n)\r\n135\t                      switch (e.type) {\r\n136\t                        case \"mousedown\":\r\n137\t                        case \"touchstart\":\r\n138\t                          this._addPrefetchLink(n);\r\n139\t                          break;\r\n140\t                        case \"mouseover\":\r\n141\t                          this._earlyPrefetch(t, n, \"mouseout\");\r\n142\t                      }\r\n143\t                  },\r\n144\t                },\r\n145\t                {\r\n146\t                  key: \"_earlyPrefetch\",\r\n147\t                  value: function (t, e, n) {\r\n148\t                    var i = this,\r\n149\t                      r = setTimeout(function () {\r\n150\t                        if (((r = null), 0 === i.numOnHover))\r\n151\t                          setTimeout(function () {\r\n152\t                            return (i.numOnHover = 0);\r\n153\t                          }, 1e3);\r\n154\t                        else if (i.numOnHover > i.config.rateThrottle) return;\r\n155\t                        i.numOnHover++, i._addPrefetchLink(e);\r\n156\t                      }, this.config.onHoverDelay);\r\n157\t                    t.addEventListener(\r\n158\t                      n,\r\n159\t                      function e() {\r\n160\t                        t.removeEventListener(n, e, { passive: !0 }), null !== r && (clearTimeout(r), (r = null));\r\n161\t                      },\r\n162\t                      { passive: !0 }\r\n163\t                    );\r\n164\t                  },\r\n165\t                },\r\n166\t                {\r\n167\t                  key: \"_addPrefetchLink\",\r\n168\t                  value: function (i) {\r\n169\t                    return (\r\n170\t                      this.prefetched.add(i.href),\r\n171\t                      new Promise(function (e, t) {\r\n172\t                        var n = document.createElement(\"link\");\r\n173\t                        (n.rel = \"prefetch\"), (n.href = i.href), (n.onload = e), (n.onerror = t), document.head.appendChild(n);\r\n174\t                      }).catch(function () {})\r\n175\t                    );\r\n176\t                  },\r\n177\t                },\r\n178\t                {\r\n179\t                  key: \"_prepareUrl\",\r\n180\t                  value: function (e) {\r\n181\t                    if (null === e || \"object\" !== (void 0 === e ? \"undefined\" : r(e)) || !1 in e || -1 === [\"http:\", \"https:\"].indexOf(e.protocol)) return null;\r\n182\t                    var t = e.href.substring(0, this.config.siteUrl.length),\r\n183\t                      n = this._getPathname(e.href, t),\r\n184\t                      i = { original: e.href, protocol: e.protocol, origin: t, pathname: n, href: t + n };\r\n185\t                    return this._isLinkOk(i) ? i : null;\r\n186\t                  },\r\n187\t                },\r\n188\t                {\r\n189\t                  key: \"_getPathname\",\r\n190\t                  value: function (e, t) {\r\n191\t                    var n = t ? e.substring(this.config.siteUrl.length) : e;\r\n192\t                    return n.startsWith(\"/\") || (n = \"/\" + n), this._shouldAddTrailingSlash(n) ? n + \"/\" : n;\r\n193\t                  },\r\n194\t                },\r\n195\t                {\r\n196\t                  key: \"_shouldAddTrailingSlash\",\r\n197\t                  value: function (e) {\r\n198\t                    return this.config.usesTrailingSlash && !e.endsWith(\"/\") && !this.regex.fileExt.test(e);\r\n199\t                  },\r\n200\t                },\r\n201\t                {\r\n202\t                  key: \"_isLinkOk\",\r\n203\t                  value: function (e) {\r\n204\t                    return null !== e && \"object\" === (void 0 === e ? \"undefined\" : r(e)) && !this.prefetched.has(e.href) && e.origin === this.config.siteUrl && -1 === e.href.indexOf(\"?\") && -1 === e.href.indexOf(\"#\") && !this.regex.excludeUris.test(e.href) && !this.regex.images.test(e.href);\r\n205\t                  },\r\n206\t                },\r\n207\t              ],\r\n208\t              [\r\n209\t                {\r\n210\t                  key: \"run\",\r\n211\t                  value: function () {\r\n212\t                    \"undefined\" != typeof RocketPreloadLinksConfig && new n(new RocketBrowserCompatibilityChecker({ capture: !0, passive: !0 }), RocketPreloadLinksConfig).init();\r\n213\t                  },\r\n214\t                },\r\n215\t              ]\r\n216\t            ),\r\n217\t            n\r\n218\t          );\r\n219\t        })();\r\n220\t        t.run();\r\n221\t      })();\r\n222\t    </script>\r\n223\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-content/themes/thefresh/js/main.js\" id=\"thefresh-common-js-js\"></script>\r\n224\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-content/plugins/caldera-forms/assets/build/js/jquery-baldrick.min.js?ver=1.9.7\" id=\"cf-baldrick-js\"></script>\r\n225\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-content/plugins/caldera-forms/assets/build/js/parsley.min.js?ver=1.9.7\" id=\"cf-validator-js\"></script>\r\n226\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/vendor/wp-polyfill-inert.min.js?ver=3.1.2\" id=\"wp-polyfill-inert-js\"></script>\r\n227\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.11\" id=\"regenerator-runtime-js\"></script>\r\n228\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0\" id=\"wp-polyfill-js\"></script>\r\n229\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/vendor/react.min.js?ver=18.2.0\" id=\"react-js\"></script>\r\n230\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/vendor/react-dom.min.js?ver=18.2.0\" id=\"react-dom-js\"></script>\r\n231\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-includes/js/dist/dom-ready.min.js?ver=392bdd43726760d1f3ca\" id=\"wp-dom-ready-js\"></script>\r\n232\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-content/plugins/caldera-forms/clients/render/build/index.min.js?ver=1.9.7\" id=\"cf-render-js\"></script>\r\n233\t    <script type=\"text/javascript\" id=\"cf-form-front-js-extra\">\r\n234\t      /* <![CDATA[ */\r\n235\t      var CF_API_DATA = {\r\n236\t        \"rest\": { \"root\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v2\\/\", \"rootV3\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v3\\/\", \"fileUpload\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v3\\/file\", \"tokens\": { \"nonce\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v2\\/tokens\\/form\" }, \"nonce\": \"ea942b45d0\" },\r\n237\t        \"strings\": {\r\n238\t          \"cf2FileField\": {\r\n239\t            \"removeFile\": \"Remove file\",\r\n240\t            \"defaultButtonText\": \"Drop files or click to select files to Upload\",\r\n241\t            \"fileUploadError1\": \"Error: \",\r\n242\t            \"fileUploadError2\": \" could not be processed\",\r\n243\t            \"invalidFiles\": \"These Files have been rejected : \",\r\n244\t            \"checkMessage\": \"Please check files type and size\",\r\n245\t            \"invalidFileResponse\": \"Unknown File Process Error\",\r\n246\t            \"fieldIsRequired\": \"Field is required\",\r\n247\t            \"filesUnit\": \"bytes\",\r\n248\t            \"maxSizeAlert\": \"This file is too large. Maximum size is \",\r\n249\t            \"wrongTypeAlert\": \"This file type is not allowed. Allowed types are \",\r\n250\t          },\r\n251\t        },\r\n252\t        \"nonce\": { \"field\": \"_cf_verify\" },\r\n253\t      };\r\n254\t      /* ]]> */\r\n255\t    </script>\r\n256\t    <script type=\"text/javascript\" src=\"https://www.thefresh.co.uk/wp-content/plugins/caldera-forms/assets/build/js/caldera-forms-front.min.js?ver=1.9.7\" id=\"cf-form-front-js\"></script>\r\n257\t    <script type=\"text/javascript\" id=\"cf-form-front-js-extra\">\r\n258\t      /* <![CDATA[ */\r\n259\t      var CF_API_DATA = {\r\n260\t        \"rest\": { \"root\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v2\\/\", \"rootV3\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v3\\/\", \"fileUpload\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v3\\/file\", \"tokens\": { \"nonce\": \"https:\\/\\/www.thefresh.co.uk\\/wp-json\\/cf-api\\/v2\\/tokens\\/form\" }, \"nonce\": \"ea942b45d0\" },\r\n261\t        \"strings\": {\r\n262\t          \"cf2FileField\": {\r\n263\t            \"removeFile\": \"Remove file\",\r\n264\t            \"defaultButtonText\": \"Drop files or click to select files to Upload\",\r\n265\t            \"fileUploadError1\": \"Error: \",\r\n266\t            \"fileUploadError2\": \" could not be processed\",\r\n267\t            \"invalidFiles\": \"These Files have been rejected : \",\r\n268\t            \"checkMessage\": \"Please check files type and size\",\r\n269\t            \"invalidFileResponse\": \"Unknown File Process Error\",\r\n270\t            \"fieldIsRequired\": \"Field is required\",\r\n271\t            \"filesUnit\": \"bytes\",\r\n272\t            \"maxSizeAlert\": \"This file is too large. Maximum size is \",\r\n273\t            \"wrongTypeAlert\": \"This file type is not allowed. Allowed types are \",\r\n274\t          },\r\n275\t        },\r\n276\t        \"nonce\": { \"field\": \"_cf_verify\" },\r\n277\t      };\r\n278\t      var CFFIELD_CONFIG = {\r\n279\t        \"1\": {\r\n280\t          \"configs\": { \"fld_7148288\": { \"type\": \"button\", \"id\": \"fld_7148288_1\", \"default\": \"\", \"form_id\": \"contact-form\", \"form_id_attr\": \"caldera_form_1\" } },\r\n281\t          \"fields\": {\r\n282\t            \"ids\": [\"fld_1575767_1\", \"fld_5348935_1\", \"fld_5761407_1\", \"fld_4925635_1\", \"fld_7148288_1\"],\r\n283\t            \"inputs\": [\r\n284\t              { \"type\": \"text\", \"fieldId\": \"fld_1575767\", \"id\": \"fld_1575767_1\", \"options\": [], \"default\": \"\" },\r\n285\t              { \"type\": \"email\", \"fieldId\": \"fld_5348935\", \"id\": \"fld_5348935_1\", \"options\": [], \"default\": \"\" },\r\n286\t              { \"type\": \"text\", \"fieldId\": \"fld_5761407\", \"id\": \"fld_5761407_1\", \"options\": [], \"default\": \"\" },\r\n287\t              { \"type\": \"paragraph\", \"fieldId\": \"fld_4925635\", \"id\": \"fld_4925635_1\", \"options\": [], \"default\": \"\" },\r\n288\t              { \"type\": \"button\", \"fieldId\": \"fld_7148288\", \"id\": \"fld_7148288_1\", \"options\": [], \"default\": \"\" },\r\n289\t            ],\r\n290\t            \"groups\": [],\r\n291\t            \"defaults\": { \"fld_1575767_1\": \"\", \"fld_5348935_1\": \"\", \"fld_5761407_1\": \"\", \"fld_4925635_1\": \"\", \"fld_7148288_1\": \"\" },\r\n292\t            \"calcDefaults\": { \"fld_1575767_1\": 0, \"fld_5348935_1\": 0, \"fld_5761407_1\": 0, \"fld_4925635_1\": 0, \"fld_7148288_1\": 0 },\r\n293\t          },\r\n294\t          \"error_strings\": { \"mixed_protocol\": \"Submission URL and current URL protocols do not match. Form may not function properly.\" },\r\n295\t        },\r\n296\t      };\r\n297\t      /* ]]> */\r\n298\t    </script>\r\n299\t    <script>\r\n300\t      window.addEventListener(\"load\", function () {\r\n301\t        jQuery(document).on(\"click dblclick\", \"#fld_7148288_1\", function (e) {\r\n302\t          jQuery(\"#fld_7148288_1_btn\").val(e.type).trigger(\"change\");\r\n303\t        });\r\n304\t      });\r\n305\t    </script>\r\n306\t\r\n307\t    <script id=\"cookie-script\" src=\"//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.10/cookieconsent.min.js\" defer=\"\"></script>\r\n308\t    <script type=\"text/javascript\" id=\"\">\r\n309\t      !(function (b, e, f, g, a, c, d) {\r\n310\t        b.fbq ||\r\n311\t          ((a = b.fbq =\r\n312\t            function () {\r\n313\t              a.callMethod ? a.callMethod.apply(a, arguments) : a.queue.push(arguments);\r\n314\t            }),\r\n315\t          b._fbq || (b._fbq = a),\r\n316\t          (a.push = a),\r\n317\t          (a.loaded = !0),\r\n318\t          (a.version = \"2.0\"),\r\n319\t          (a.queue = []),\r\n320\t          (c = e.createElement(f)),\r\n321\t          (c.async = !0),\r\n322\t          (c.src = g),\r\n323\t          (d = e.getElementsByTagName(f)[0]),\r\n324\t          d.parentNode.insertBefore(c, d));\r\n325\t      })(window, document, \"script\", \"https://connect.facebook.net/en_US/fbevents.js\");\r\n326\t      fbq(\"init\", \"1318902041620631\");\r\n327\t      fbq(\"track\", \"PageView\");\r\n328\t    </script>\r\n329\t    <noscript><img height=\"1\" width=\"1\" style=\"display: none\" src=\"https://www.facebook.com/tr?id=1318902041620631&amp;ev=PageView&amp;noscript=1\" /></noscript>\r\n330\t    <iframe id=\"lo-frame-core\" src=\"about:blank\" aria-hidden=\"true\" title=\"Lucky Orange: core\" style=\"display: none !important\"></iframe>\r\n331\t  </body>\r\n332\t</html>",
   "errors": [
     {
-      "message": "Tag name 'html' is not a match for 'props'"
+      "message": "ParserError: Tag name 'html' is not a match for 'props'",
+      "from": 268451,
+      "to": 286341
     },
     {
-      "message": "Tag name 'body' is not a match for 'script'"
+      "message": "ParserError: Tag name 'body' is not a match for 'script'",
+      "from": 272481,
+      "to": 286332
     },
     {
-      "message": "Tag name 'script' is not a match for 't'"
+      "message": "ParserError: Tag name 'script' is not a match for 't'",
+      "from": 273059,
+      "to": 279051
     },
     {
-      "message": "Expecting a closing tag for 'script' component"
+      "message": "ParserError: Expecting a closing tag for 'script' component",
+      "from": 268307,
+      "to": 286341
     },
     {
-      "message": "Expecting a closing tag for 'body' component"
+      "message": "ParserError: Expecting a closing tag for 'body' component",
+      "from": 23582,
+      "to": 286341
     },
     {
-      "message": "Expecting a closing tag for 'html' component"
+      "message": "ParserError: Expecting a closing tag for 'html' component",
+      "from": 16,
+      "to": 286341
     }
+  ],
+  "runtime": [
+    [
+      "window.requestIdleCallback = window.requestIdleCallback || function (cb) { var start = Date.now(); return setTimeout(function () { cb({ didTimeout: false, timeRemaining: function () { return Math.max(0, 50 - (Date.now() - start)); }, }); }, 1); }; window.cancelIdleCallback = window.cancelIdleCallback || function (id) { clearTimeout(id); };",
+      "#1 Dental Marketing &amp; Healthcare Consultancy - The Fresh",
+      "{ \"@context\": \"https://schema.org\", \"@graph\": [ { \"@type\": [\"Person\", \"Organization\"], \"@id\": \"https://www.thefresh.co.uk/#person\", \"name\": \"The Fresh\" }, { \"@type\": \"WebSite\", \"@id\": \"https://www.thefresh.co.uk/#website\", \"url\": \"https://www.thefresh.co.uk\", \"name\": \"The Fresh\", \"publisher\": { \"@id\": \"https://www.thefresh.co.uk/#person\" }, \"inLanguage\": \"en-US\", \"potentialAction\": { \"@type\": \"SearchAction\", \"target\": \"https://www.thefresh.co.uk/?s={search_term_string}\", \"query-input\": \"required name=search_term_string\" } }, { \"@type\": \"ImageObject\", \"@id\": \"https://www.thefresh.co.uk/wp-content/uploads/2021/12/social-home-thefresh.png\", \"url\": \"https://www.thefresh.co.uk/wp-content/uploads/2021/12/social-home-thefresh.png\", \"width\": \"1200\", \"height\": \"628\", \"inLanguage\": \"en-US\" }, { \"@type\": \"WebPage\", \"@id\": \"https://www.thefresh.co.uk/#webpage\", \"url\": \"https://www.thefresh.co.uk/\", \"name\": \"#1 Dental Marketing &amp; Healthcare Consultancy - The Fresh\", \"datePublished\": \"2021-12-21T16:32:36+00:00\", \"dateModified\": \"2022-11-01T07:49:09+00:00\", \"about\": { \"@id\": \"https://www.thefresh.co.uk/#person\" }, \"isPartOf\": { \"@id\": \"https://www.thefresh.co.uk/#website\" }, \"primaryImageOfPage\": { \"@id\": \"https://www.thefresh.co.uk/wp-content/uploads/2021/12/social-home-thefresh.png\" }, \"inLanguage\": \"en-US\" }, { \"@type\": \"Person\", \"@id\": \"https://www.thefresh.co.uk/author/freshadmin/\", \"name\": \"freshadmin\", \"url\": \"https://www.thefresh.co.uk/author/freshadmin/\", \"image\": { \"@type\": \"ImageObject\", \"@id\": \"https://secure.gravatar.com/avatar/0c96e715a13b96a56c72db0db9a3bcc1?s=96&amp;d=mm&amp;r=g\", \"url\": \"https://secure.gravatar.com/avatar/0c96e715a13b96a56c72db0db9a3bcc1?s=96&amp;d=mm&amp;r=g\", \"caption\": \"freshadmin\", \"inLanguage\": \"en-US\" }, \"sameAs\": [\"https://www.thefresh.co.uk\"] }, { \"@type\": \"Article\", \"headline\": \"#1 Dental Marketing &amp; Healthcare Consultancy - The Fresh\", \"keywords\": \"dental marketing\", \"datePublished\": \"2021-12-21T16:32:36+00:00\", \"dateModified\": \"2022-11-01T07:49:09+00:00\", \"author\": { \"@id\": \"https://www.thefresh.co.uk/author/freshadmin/\", \"name\": \"freshadmin\" }, \"publisher\": { \"@id\": \"https://www.thefresh.co.uk/#person\" }, \"description\": \"&quot;If you want to have a great working relationship with your marketing agency and get ahead of your competition, hire The Fresh.&quot; Dr Sarah Fitzharris\", \"name\": \"#1 Dental Marketing &amp; Healthcare Consultancy - The Fresh\", \"@id\": \"https://www.thefresh.co.uk/#richSnippet\", \"isPartOf\": { \"@id\": \"https://www.thefresh.co.uk/#webpage\" }, \"image\": { \"@id\": \"https://www.thefresh.co.uk/wp-content/uploads/2021/12/social-home-thefresh.png\" }, \"inLanguage\": \"en-US\", \"mainEntityOfPage\": { \"@id\": \"https://www.thefresh.co.uk/#webpage\" } } ] }",
+      "body { --wp--preset--color--black: #000000; --wp--preset--color--cyan-bluish-gray: #abb8c3; --wp--preset--color--white: #ffffff; --wp--preset--color--pale-pink: #f78da7; --wp--preset--color--vivid-red: #cf2e2e; --wp--preset--color--luminous-vivid-orange: #ff6900; --wp--preset--color--luminous-vivid-amber: #fcb900; --wp--preset--color--light-green-cyan: #7bdcb5; --wp--preset--color--vivid-green-cyan: #00d084; --wp--preset--color--pale-cyan-blue: #8ed1fc; --wp--preset--color--vivid-cyan-blue: #0693e3; --wp--preset--color--vivid-purple: #9b51e0; --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg, rgba(6, 147, 227, 1) 0%, rgb(155, 81, 224) 100%); --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg, rgb(122, 220, 180) 0%, rgb(0, 208, 130) 100%); --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg, rgba(252, 185, 0, 1) 0%, rgba(255, 105, 0, 1) 100%); --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg, rgba(255, 105, 0, 1) 0%, rgb(207, 46, 46) 100%); --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg, rgb(238, 238, 238) 0%, rgb(169, 184, 195) 100%); --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg, rgb(74, 234, 220) 0%, rgb(151, 120, 209) 20%, rgb(207, 42, 186) 40%, rgb(238, 44, 130) 60%, rgb(251, 105, 98) 80%, rgb(254, 248, 76) 100%); --wp--preset--gradient--blush-light-purple: linear-gradient(135deg, rgb(255, 206, 236) 0%, rgb(152, 150, 240) 100%); --wp--preset--gradient--blush-bordeaux: linear-gradient(135deg, rgb(254, 205, 165) 0%, rgb(254, 45, 45) 50%, rgb(107, 0, 62) 100%); --wp--preset--gradient--luminous-dusk: linear-gradient(135deg, rgb(255, 203, 112) 0%, rgb(199, 81, 192) 50%, rgb(65, 88, 208) 100%); --wp--preset--gradient--pale-ocean: linear-gradient(135deg, rgb(255, 245, 203) 0%, rgb(182, 227, 212) 50%, rgb(51, 167, 181) 100%); --wp--preset--gradient--electric-grass: linear-gradient(135deg, rgb(202, 248, 128) 0%, rgb(113, 206, 126) 100%); --wp--preset--gradient--midnight: linear-gradient(135deg, rgb(2, 3, 129) 0%, rgb(40, 116, 252) 100%); --wp--preset--duotone--dark-grayscale: url(\"#wp-duotone-dark-grayscale\"); --wp--preset--duotone--grayscale: url(\"#wp-duotone-grayscale\"); --wp--preset--duotone--purple-yellow: url(\"#wp-duotone-purple-yellow\"); --wp--preset--duotone--blue-red: url(\"#wp-duotone-blue-red\"); --wp--preset--duotone--midnight: url(\"#wp-duotone-midnight\"); --wp--preset--duotone--magenta-yellow: url(\"#wp-duotone-magenta-yellow\"); --wp--preset--duotone--purple-green: url(\"#wp-duotone-purple-green\"); --wp--preset--duotone--blue-orange: url(\"#wp-duotone-blue-orange\"); --wp--preset--font-size--small: 13px; --wp--preset--font-size--medium: 20px; --wp--preset--font-size--large: 36px; --wp--preset--font-size--x-large: 42px; --wp--preset--spacing--20: 0.44rem; --wp--preset--spacing--30: 0.67rem; --wp--preset--spacing--40: 1rem; --wp--preset--spacing--50: 1.5rem; --wp--preset--spacing--60: 2.25rem; --wp--preset--spacing--70: 3.38rem; --wp--preset--spacing--80: 5.06rem; --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2); --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4); --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2); --wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1); --wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1); } :where(.is-layout-flex) { gap: 0.5em; } body .is-layout-flow > .alignleft { float: left; margin-inline-start: 0; margin-inline-end: 2em; } body .is-layout-flow > .alignright { float: right; margin-inline-start: 2em; margin-inline-end: 0; } body .is-layout-flow > .aligncenter { margin-left: auto !important; margin-right: auto !important; } body .is-layout-constrained > .alignleft { float: left; margin-inline-start: 0; margin-inline-end: 2em; } body .is-layout-constrained > .alignright { float: right; margin-inline-start: 2em; margin-inline-end: 0; } body .is-layout-constrained > .aligncenter { margin-left: auto !important; margin-right: auto !important; } body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) { max-width: var(--wp--style--global--content-size); margin-left: auto !important; margin-right: auto !important; } body .is-layout-constrained > .alignwide { max-width: var(--wp--style--global--wide-size); } body .is-layout-flex { display: flex; } body .is-layout-flex { flex-wrap: wrap; align-items: center; } body .is-layout-flex > * { margin: 0; } :where(.wp-block-columns.is-layout-flex) { gap: 2em; } .has-black-color { color: var(--wp--preset--color--black) !important; } .has-cyan-bluish-gray-color { color: var(--wp--preset--color--cyan-bluish-gray) !important; } .has-white-color { color: var(--wp--preset--color--white) !important; } .has-pale-pink-color { color: var(--wp--preset--color--pale-pink) !important; } .has-vivid-red-color { color: var(--wp--preset--color--vivid-red) !important; } .has-luminous-vivid-orange-color { color: var(--wp--preset--color--luminous-vivid-orange) !important; } .has-luminous-vivid-amber-color { color: var(--wp--preset--color--luminous-vivid-amber) !important; } .has-light-green-cyan-color { color: var(--wp--preset--color--light-green-cyan) !important; } .has-vivid-green-cyan-color { color: var(--wp--preset--color--vivid-green-cyan) !important; } .has-pale-cyan-blue-color { color: var(--wp--preset--color--pale-cyan-blue) !important; } .has-vivid-cyan-blue-color { color: var(--wp--preset--color--vivid-cyan-blue) !important; } .has-vivid-purple-color { color: var(--wp--preset--color--vivid-purple) !important; } .has-black-background-color { background-color: var(--wp--preset--color--black) !important; } .has-cyan-bluish-gray-background-color { background-color: var(--wp--preset--color--cyan-bluish-gray) !important; } .has-white-background-color { background-color: var(--wp--preset--color--white) !important; } .has-pale-pink-background-color { background-color: var(--wp--preset--color--pale-pink) !important; } .has-vivid-red-background-color { background-color: var(--wp--preset--color--vivid-red) !important; } .has-luminous-vivid-orange-background-color { background-color: var(--wp--preset--color--luminous-vivid-orange) !important; } .has-luminous-vivid-amber-background-color { background-color: var(--wp--preset--color--luminous-vivid-amber) !important; } .has-light-green-cyan-background-color { background-color: var(--wp--preset--color--light-green-cyan) !important; } .has-vivid-green-cyan-background-color { background-color: var(--wp--preset--color--vivid-green-cyan) !important; } .has-pale-cyan-blue-background-color { background-color: var(--wp--preset--color--pale-cyan-blue) !important; } .has-vivid-cyan-blue-background-color { background-color: var(--wp--preset--color--vivid-cyan-blue) !important; } .has-vivid-purple-background-color { background-color: var(--wp--preset--color--vivid-purple) !important; } .has-black-border-color { border-color: var(--wp--preset--color--black) !important; } .has-cyan-bluish-gray-border-color { border-color: var(--wp--preset--color--cyan-bluish-gray) !important; } .has-white-border-color { border-color: var(--wp--preset--color--white) !important; } .has-pale-pink-border-color { border-color: var(--wp--preset--color--pale-pink) !important; } .has-vivid-red-border-color { border-color: var(--wp--preset--color--vivid-red) !important; } .has-luminous-vivid-orange-border-color { border-color: var(--wp--preset--color--luminous-vivid-orange) !important; } .has-luminous-vivid-amber-border-color { border-color: var(--wp--preset--color--luminous-vivid-amber) !important; } .has-light-green-cyan-border-color { border-color: var(--wp--preset--color--light-green-cyan) !important; } .has-vivid-green-cyan-border-color { border-color: var(--wp--preset--color--vivid-green-cyan) !important; } .has-pale-cyan-blue-border-color { border-color: var(--wp--preset--color--pale-cyan-blue) !important; } .has-vivid-cyan-blue-border-color { border-color: var(--wp--preset--color--vivid-cyan-blue) !important; } .has-vivid-purple-border-color { border-color: var(--wp--preset--color--vivid-purple) !important; } .has-vivid-cyan-blue-to-vivid-purple-gradient-background { background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important; } .has-light-green-cyan-to-vivid-green-cyan-gradient-background { background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important; } .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background { background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important; } .has-luminous-vivid-orange-to-vivid-red-gradient-background { background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important; } .has-very-light-gray-to-cyan-bluish-gray-gradient-background { background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important; } .has-cool-to-warm-spectrum-gradient-background { background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important; } .has-blush-light-purple-gradient-background { background: var(--wp--preset--gradient--blush-light-purple) !important; } .has-blush-bordeaux-gradient-background { background: var(--wp--preset--gradient--blush-bordeaux) !important; } .has-luminous-dusk-gradient-background { background: var(--wp--preset--gradient--luminous-dusk) !important; } .has-pale-ocean-gradient-background { background: var(--wp--preset--gradient--pale-ocean) !important; } .has-electric-grass-gradient-background { background: var(--wp--preset--gradient--electric-grass) !important; } .has-midnight-gradient-background { background: var(--wp--preset--gradient--midnight) !important; } .has-small-font-size { font-size: var(--wp--preset--font-size--small) !important; } .has-medium-font-size { font-size: var(--wp--preset--font-size--medium) !important; } .has-large-font-size { font-size: var(--wp--preset--font-size--large) !important; } .has-x-large-font-size { font-size: var(--wp--preset--font-size--x-large) !important; } .wp-block-navigation a:where(:not(.wp-element-button)) { color: inherit; } :where(.wp-block-columns.is-layout-flex) { gap: 2em; } .wp-block-pullquote { font-size: 1.5em; line-height: 1.6; }",
+      "(function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ \"gtm.start\": new Date().getTime(), event: \"gtm.js\" }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != \"dataLayer\" ? \"&l=\" + l : \"\"; j.async = true; j.src = \"https://www.googletagmanager.com/gtm.js?id=\" + i + dl; f.parentNode.insertBefore(j, f); })(window, document, \"script\", \"dataLayer\", \"GTM-N3RLLWL\");"
+    ],
+    [
+      [
+        "Got it!",
+        [
+          "This website uses cookies to ensure you get the best experience on our website",
+          "More info"
+        ],
+        "Cookie Consent plugin for the EU cookie law"
+      ],
+      [
+        [
+          ".fil0 { fill: none; } .fil1 { fill: currentColor; fill-rule: nonzero; }"
+        ]
+      ],
+      [
+        [
+          [
+            "About",
+            "Team",
+            "Marketing",
+            "Creative",
+            "Development",
+            "Consultancy",
+            "Blog",
+            "Contact"
+          ]
+        ]
+      ],
+      [
+        [
+          "Fresh Thinking for Dental Marketing &amp; Healthcare Growth",
+          "Meet The Team"
+        ],
+        "Meet The Team"
+      ],
+      [
+        "When We Talk Marketing, We Mean Business",
+        [
+          "High performing marketing campaigns are meaningless when your clinical practice isn’t prepared to handle calls, convert more leads and deal with the challenges of rapid scaling.",
+          "That’s why The Fresh isn’t just another marketing agency – but a different beast altogether.",
+          "We are a full-service growth agency built on fresh insight, fresh ideas and refreshingly efficient delivery. So, if you just want another PPC campaign, we’re probably not the right agency for you.",
+          "But if you want to make lifelong friends with holistic, results-driven thinking on patient acquisition and retention alongside a full suite of consultancy services, that’s us."
+        ]
+      ],
+      [
+        [
+          "Dental Marketing",
+          "Our bread &amp; butter",
+          "SEO, PPC, social and good old-fashioned print, meticulously planned and executed to deliver exceptional ROI.",
+          "Read More"
+        ],
+        [
+          "Creative",
+          "Digital &amp; print genius",
+          "Fresh design, content, video and more is the power behind standout branding and outstanding campaign results.",
+          "Read More"
+        ],
+        [
+          "Consulting",
+          "Improve the tried &amp; tested",
+          "Develop and integrate the new. Grow, scale and smash goals with insight from The Fresh agency.",
+          "Read More"
+        ],
+        [
+          "Development",
+          "Coded with love &amp; coffee",
+          "Custom sites, CRMs, lead management systems, apps and digital assets – coded with love and coffee.",
+          "Read More"
+        ]
+      ],
+      [
+        [
+          "Why The Fresh Delivers",
+          "Ever get the impression that consultancies and agencies just don’t get healthcare?",
+          "The Fresh Director Prav Solanki steers a national chain of dental clinics, a dental training academy and a health and fitness brand.",
+          "First-hand industry experience has helped us learn what works, as well as what doesn't. And we use this practical insight to help healthcare organisations to define and meet some pretty ambitious goals."
+        ],
+        [
+          "Recent Projects",
+          "Fancy a closer look at our recent projects?",
+          "Coming Soon"
+        ]
+      ],
+      [
+        "Here's What Our Friends Say About Us",
+        [
+          [
+            [
+              [
+                [
+                  "Chelsea Dental Clinic",
+                  "Dr Rhona Eskander"
+                ]
+              ],
+              [
+                [
+                  "Prav and his team have been an absolute pleasure to work with. They have done incredible work for my clinic, personal brand and PÄRLA.",
+                  "His team quickly nailed my brand and ‘voice’ where others had failed. I feel really lucky to work with Prav, it’s rare to find someone who goes above and beyond for every single one of his clients with close attention to detail."
+                ]
+              ]
+            ],
+            [
+              [
+                [
+                  "Love Teeth",
+                  "Dr Kunal Patel"
+                ]
+              ],
+              [
+                "Since engaging Prav and his team for marketing and sales training, we have noticed a huge increase in new patients and conversions. They offer a unique approach that is personal and the service extends way beyond marketing. I have direct access to Prav whenever I need it, and his team are very responsive."
+              ]
+            ],
+            [
+              [
+                [
+                  "Woodborough House",
+                  "Dr Sarah Fitzharris"
+                ]
+              ],
+              [
+                "We have worked with The Fresh for 15+ years now….. that should say it all! Prav is super intelligent, an innovator and emotionally intelligent. He “gets” people and he “gets” dentistry. If you want to have a great working relationship with your marketing agency and get ahead of your competition, use The Fresh."
+              ]
+            ],
+            [
+              [
+                [
+                  "Harley Street Dental Studio",
+                  "Dr Mark Hughes"
+                ]
+              ],
+              [
+                "The success of my practices wouldn’t have been anywhere near as good as it was without support from The Fresh, and boy do they deliver results!"
+              ]
+            ],
+            [
+              [
+                [
+                  "IAS",
+                  "Dr Tif Qureshi"
+                ]
+              ],
+              [
+                "Prav and his team have great expertise in marketing, strategy and execution when it comes to the business of dentistry. I have worked with Prav for over 10 years both as a client and business partner."
+              ]
+            ],
+            [
+              [
+                [
+                  "Dental Suite",
+                  "Dr Kalpesh Bohara"
+                ]
+              ],
+              [
+                "I know I can always rely on The Fresh to deliver the goods when it comes to marketing, generating new patients, business advice and planning. They play a large role in the success of my business."
+              ]
+            ],
+            [
+              [
+                [
+                  "Enlighten Smiles",
+                  "Dr Payman Langroudi"
+                ]
+              ],
+              [
+                "We’ve hired all the usual leading industry dental marketing experts, but Prav’s in-depth understanding of everything marketing and people is unparalleled."
+              ]
+            ],
+            [
+              [
+                [
+                  "Co-op",
+                  "Parm Kalari"
+                ]
+              ],
+              [
+                "The Fresh have been excellent strategic partners of the Co-op. A great team that helped us shape our strategic roadmap as well aiding with hands-on stuff like defining personas, creating user journeys and conveying our business requirements into specification documents which ensured they delivered what we needed."
+              ]
+            ],
+            [
+              [
+                [
+                  "The Cosmetic Dental Clinic",
+                  "Dr Andrew Stafford"
+                ]
+              ],
+              [
+                "Prav is someone we’ve always trusted, and I think ‘trust’ is the word I always come back to when I think about what his team has done for us. We trust them."
+              ]
+            ],
+            [
+              [
+                [
+                  [
+                    "Changing Faces",
+                    "®",
+                    "Dentures"
+                  ],
+                  "Marc Northover"
+                ]
+              ],
+              [
+                "The Fresh is instrumental to the success of our national franchise of denture clinics; their execution of design, coding and dental search engine campaigns is second to none."
+              ]
+            ],
+            [
+              [
+                [
+                  "Aqua Dental Clinic",
+                  "Dr Anoop Maini"
+                ]
+              ],
+              [
+                "If you’re lucky enough for The Fresh to take you on as a client, don’t look back."
+              ]
+            ],
+            [
+              [
+                [
+                  "The Cosmetic Dental Clinic",
+                  "Dr Darren Cannell"
+                ]
+              ],
+              [
+                "Having worked with Prav and his team at The Fresh UK for the best part of 15 years, I can hand on heart say that our business would not be where it is today without Prav’s input and guidance."
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "Freshly Picked Articles",
+        [
+          [
+            [
+              "11 July 2023",
+              [
+                "Blog"
+              ]
+            ],
+            "Threads for Dentists: What You Need to Know",
+            "Read More"
+          ],
+          [
+            [
+              "23 December 2022",
+              [
+                "Blog"
+              ]
+            ],
+            "Email Deliverability (and Why it Matters)",
+            "Read More"
+          ],
+          [
+            [
+              "25 November 2022",
+              [
+                "Blog"
+              ]
+            ],
+            "The Fresh Guide to Advertising Technology – Adtech",
+            "Read More"
+          ]
+        ]
+      ],
+      [
+        "Let's Talk",
+        "Want to work together? Give us a shout.",
+        "Get In Touch"
+      ],
+      [
+        [
+          "© 2020 - 2023 THE FRESH UK",
+          "|"
+        ],
+        [
+          "Terms &amp; conditions",
+          "|",
+          "Privacy policy"
+        ]
+      ],
+      [
+        [
+          "Book a discovery call with Joanne",
+          [
+            "Let's talk",
+            [
+              [
+                "Company",
+                [
+                  [
+                    "Name"
+                  ],
+                  [
+                    "Email"
+                  ],
+                  [
+                    "Phone"
+                  ],
+                  [
+                    "How Can we help?"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "\"use strict\"; var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i",
+        [
+          [
+            "/*",
+            "*/"
+          ],
+          [
+            "(function () { \"use strict\"; var r = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (e) { return typeof e; } : function (e) { return e && \"function\" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? \"symbol\" : typeof e; }, e = (function () { function i(e, t) { for (var n = 0; n",
+            "i.config.rateThrottle) return; i.numOnHover++, i._addPrefetchLink(e); }, this.config.onHoverDelay); t.addEventListener( n, function e() { t.removeEventListener(n, e, { passive: !0 }), null !== r && (clearTimeout(r), (r = null)); }, { passive: !0 } ); }, }, { key: \"_addPrefetchLink\", value: function (i) { return ( this.prefetched.add(i.href), new Promise(function (e, t) { var n = document.createElement(\"link\"); (n.rel = \"prefetch\"), (n.href = i.href), (n.onload = e), (n.onerror = t), document.head.appendChild(n); }).catch(function () {}) ); }, }, { key: \"_prepareUrl\", value: function (e) { if (null === e || \"object\" !== (void 0 === e ? \"undefined\" : r(e)) || !1 in e || -1 === [\"http:\", \"https:\"].indexOf(e.protocol)) return null; var t = e.href.substring(0, this.config.siteUrl.length), n = this._getPathname(e.href, t), i = { original: e.href, protocol: e.protocol, origin: t, pathname: n, href: t + n }; return this._isLinkOk(i) ? i : null; }, }, { key: \"_getPathname\", value: function (e, t) { var n = t ? e.substring(this.config.siteUrl.length) : e; return n.startsWith(\"/\") || (n = \"/\" + n), this._shouldAddTrailingSlash(n) ? n + \"/\" : n; }, }, { key: \"_shouldAddTrailingSlash\", value: function (e) { return this.config.usesTrailingSlash && !e.endsWith(\"/\") && !this.regex.fileExt.test(e); }, }, { key: \"_isLinkOk\", value: function (e) { return null !== e && \"object\" === (void 0 === e ? \"undefined\" : r(e)) && !this.prefetched.has(e.href) && e.origin === this.config.siteUrl && -1 === e.href.indexOf(\"?\") && -1 === e.href.indexOf(\"#\") && !this.regex.excludeUris.test(e.href) && !this.regex.images.test(e.href); }, }, ], [ { key: \"run\", value: function () { \"undefined\" != typeof RocketPreloadLinksConfig && new n(new RocketBrowserCompatibilityChecker({ capture: !0, passive: !0 }), RocketPreloadLinksConfig).init(); }, }, ] ), n ); })(); t.run(); })();",
+            [
+              "/*",
+              "*/"
+            ],
+            [
+              "/*",
+              "*/"
+            ],
+            "window.addEventListener(\"load\", function () { jQuery(document).on(\"click dblclick\", \"#fld_7148288_1\", function (e) { jQuery(\"#fld_7148288_1_btn\").val(e.type).trigger(\"change\"); }); });",
+            "!(function (b, e, f, g, a, c, d) { b.fbq || ((a = b.fbq = function () { a.callMethod ? a.callMethod.apply(a, arguments) : a.queue.push(arguments); }), b._fbq || (b._fbq = a), (a.push = a), (a.loaded = !0), (a.version = \"2.0\"), (a.queue = []), (c = e.createElement(f)), (c.async = !0), (c.src = g), (d = e.getElementsByTagName(f)[0]), d.parentNode.insertBefore(c, d)); })(window, document, \"script\", \"https://connect.facebook.net/en_US/fbevents.js\"); fbq(\"init\", \"1318902041620631\"); fbq(\"track\", \"PageView\");"
+          ]
+        ]
+      ]
+    ]
   ],
   "parser": {
     "from": 0,

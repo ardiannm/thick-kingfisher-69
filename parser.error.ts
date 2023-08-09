@@ -1,7 +1,3 @@
-import Report from "./report.ts";
+import Logger from "./logger.ts";
 
-export default class ParserError extends Report {
-  constructor(public message: string) {
-    super(message);
-  }
-}
+export default class ParserError extends Logger {}

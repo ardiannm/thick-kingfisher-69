@@ -1,3 +1,3 @@
-import Report from "./report.ts";
+import Logger from "./logger.ts";
 
-export default class InterpreterError extends Report {}
+export default class InterpreterError extends Logger {}

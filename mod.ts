@@ -1,19 +1,20 @@
 import Read from "./dev/helper/read.ts";
-import Write from "./dev/helper/write.ts";
 
 import Lexer from "./lexer.ts";
 import Parser from "./parser.ts";
 import Interpreter from "./interpreter.ts";
+import Write from "./dev/helper/write.ts";
 
 while (true) {
   const request = await Read("./dev/template.html");
   const input = prompt(">>") || request;
   const interpreter = new Interpreter(input);
-  const runtime = interpreter.run();
+  const value = interpreter.run();
 
-  Write({ errors: runtime, parser: interpreter.tree }, "./dev/template.json");
+  console.log();
+  console.log(value.input);
 
-  console.log(runtime);
+  Write(value, "./dev/template.json");
 }
 
 export { Lexer, Parser, Interpreter };
