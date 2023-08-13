@@ -1,3 +1,3 @@
-import Tag from "./tag.ts";
+import OpenTag from "./open.tag.ts";
 
-export default class UniTag extends Tag {}
+export default class UniTag extends OpenTag {}
