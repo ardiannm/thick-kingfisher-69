@@ -1,3 +1,4 @@
+import Identifier from "./identifier.ts";
 import Property from "./property.ts";
 import Tag from "./tag.ts";
 

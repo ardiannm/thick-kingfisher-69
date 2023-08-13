@@ -28,13 +28,13 @@ export default class Interpreter extends Parser {
     console.log();
 
     if (parserErrors.length) {
-      parserErrors.map((e) => console.log("\x1b[36m", e.message));
+      console.log("\x1b[36m");
+      parserErrors.map((e) => console.log(e.message));
       console.log("\x1b[0m");
       return;
     }
 
     console.log(tree);
-    console.log();
 
     return {
       errors: this.errors,

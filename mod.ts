@@ -5,6 +5,7 @@ import Parser from "./parser.ts";
 import Interpreter from "./interpreter.ts";
 
 while (true) {
+  console.log();
   const request = await Read("./dev/template.html");
   const input = prompt(">>") || request;
   const interpreter = new Interpreter(input);

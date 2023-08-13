@@ -25,6 +25,7 @@ import OpenTag from "./open.tag.ts";
 import Property from "./property.ts";
 import ClosingTag from "./closing.tag.ts";
 import GreaterThan from "./greater.than.ts";
+import UniTag from "./uni.tag.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -52,11 +53,22 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    return this.parseOpenTag();
+    return this.parseUniTag();
+  }
+
+  private parseUniTag() {
+    const left = this.parseOpenTag();
+    if (this.peekToken() instanceof Division) {
+      this.expect(left, OpenTag, new ParserError("Unexpected token '/' found for this tag", left.from, this.position));
+      this.parseToken();
+      return new UniTag(left.identifier, left.from, this.position);
+    }
+    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", left.from, this.position));
+    return left;
   }
 
   private parseOpenTag() {
-    const open = this.getNextToken();
+    const open = this.parseToken();
     const token = this.expect(open, LessThan, new ParserError("Execting an openning '<' to open tag", open.from, open.to));
     if (this.peekToken() instanceof Division) {
       return this.parseClosingTag();
@@ -64,15 +76,13 @@ export default class Parser extends Lexer {
     const identifier = this.parseToken() as Identifier;
     this.expect(identifier, Identifier, new ParserError("Expecting identifier for an open tag", identifier.from, identifier.to));
     const props = this.parseProperties();
-    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", open.from, this.position));
     return new OpenTag(identifier, props, token.from, this.position);
   }
 
   private parseClosingTag() {
-    const division = this.getNextToken();
+    const division = this.parseToken();
     const identifier = this.parseToken() as Identifier;
     this.expect(identifier, Identifier, new ParserError("Expecting identifier for this closing tag", identifier.from, identifier.to));
-    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", division.from, this.position));
     return new ClosingTag(identifier, division.from, this.position);
   }
 
