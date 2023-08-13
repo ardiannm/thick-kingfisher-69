@@ -23,6 +23,8 @@ import LessThan from "./less.than.ts";
 import Equals from "./equals.ts";
 import OpenTag from "./open.tag.ts";
 import Property from "./property.ts";
+import ClosingTag from "./closing.tag.ts";
+import GreaterThan from "./greater.than.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -56,10 +58,22 @@ export default class Parser extends Lexer {
   private parseOpenTag() {
     const open = this.getNextToken();
     const token = this.expect(open, LessThan, new ParserError("Execting an openning '<' to open tag", open.from, open.to));
+    if (this.peekToken() instanceof Division) {
+      return this.parseClosingTag();
+    }
     const identifier = this.parseToken() as Identifier;
     this.expect(identifier, Identifier, new ParserError("Expecting identifier for an open tag", identifier.from, identifier.to));
     const props = this.parseProperties();
+    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", open.from, this.position));
     return new OpenTag(identifier, props, token.from, this.position);
+  }
+
+  private parseClosingTag() {
+    const division = this.getNextToken();
+    const identifier = this.parseToken() as Identifier;
+    this.expect(identifier, Identifier, new ParserError("Expecting identifier for this closing tag", identifier.from, identifier.to));
+    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", division.from, this.position));
+    return new ClosingTag(identifier, division.from, this.position);
   }
 
   private parseProperties() {

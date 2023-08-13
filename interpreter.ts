@@ -14,6 +14,7 @@ import Substraction from "./substraction.ts";
 import Exponentiation from "./exponentiation.ts";
 import Component from "./component.ts";
 import PlainText from "./plain.text.ts";
+import ParserError from "./parser.error.ts";
 
 export default class Interpreter extends Parser {
   private interpreterErrors = new Array<InterpreterError>();
@@ -21,9 +22,21 @@ export default class Interpreter extends Parser {
   public run() {
     const tree = this.parse();
     const runtime = this.evaluate(tree);
-    const error = this.errors[0];
+
+    const parserErrors = this.errors.filter((e) => e instanceof ParserError);
+
+    console.log();
+
+    if (parserErrors.length) {
+      parserErrors.map((e) => console.log("\x1b[36m", e.message));
+      console.log("\x1b[0m");
+      return;
+    }
+
+    console.log(tree);
+    console.log();
+
     return {
-      log: error ? this.input.substring(error.from, error.to) + `\n\n${error.message}.\n\n` : "",
       errors: this.errors,
       runtime,
       parser: tree,
@@ -38,7 +51,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
     if (token instanceof PlainText) return this.evaluatePlainText(token);
-    return this.reportError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`, token.from, token.to));
+    return this.reportError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation`, token.from, token.to));
   }
 
   private evaluateComponent(token: Component) {
@@ -66,7 +79,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return this.reportError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`, token.from, token.to));
+      return this.reportError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens`, token.from, token.to));
     }
 
     switch (true) {
