@@ -15,28 +15,20 @@ import WarningError from "./warning.error.ts";
 import Substraction from "./substraction.ts";
 import Addition from "./addition.ts";
 import Exponentiation from "./exponentiation.ts";
-import LessThan from "./less.than.ts";
 import Identifier from "./identifier.ts";
-import GreaterThan from "./greater.than.ts";
-import Properties from "./properties.ts";
-import UnaryTag from "./unary.tag.ts";
-import ClosingTag from "./closing.tag.ts";
-import OpenTag from "./open.tag.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Token from "./token.ts";
-import PlainText from "./plain.text.ts";
-import HTML from "./html.ts";
-import Component from "./component.ts";
-import Program from "./program.ts";
-import Number from "./number.ts";
-import Tag from "./tag.ts";
 import Logger from "./logger.ts";
+import LessThan from "./less.than.ts";
+import Equals from "./equals.ts";
+import OpenTag from "./open.tag.ts";
+import Property from "./property.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
-  public parserErrors = new Array<Logger>();
+  public errors = new Array<Logger>();
 
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
@@ -44,12 +36,12 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token>(token: Token, constructor: Constructor<T>, error: Logger): T {
     if (this.assert(token, constructor)) return token as T;
-    this.parserErrors.push(error);
+    this.errors.push(error);
     return token as T;
   }
 
-  private logParserError(error: Logger) {
-    this.parserErrors = [error, ...this.parserErrors];
+  public reportError(error: Logger) {
+    this.errors = [error, ...this.errors];
     return error;
   }
 
@@ -58,116 +50,30 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    const expressions = new Array<Expression>(this.parseExpressions());
-    while (this.hasMoreTokens()) {
-      expressions.push(this.parseExpressions());
-    }
-    return new Program(expressions, 0, this.input.length);
+    return this.parseOpenTag();
   }
 
-  private parseExpressions() {
-    if (this.peekToken() instanceof LessThan) return this.parseComponent();
-    return this.parseAddition();
-  }
-
-  private parseComponent(): HTML {
-    const left = this.parseNonSkippableTags();
-    if (left instanceof OpenTag) {
-      const identifier = left.identifier.raw;
-      const components = new Array<HTML>();
-      while (this.hasMoreTokens()) {
-        const right = this.parseComponent();
-        if (right instanceof ClosingTag) {
-          if (right.identifier.raw !== left.identifier.raw) {
-            this.logParserError(new ParserError(`Tag name '${right.identifier.raw}' is not a match for '${left.identifier.raw}'`, left.from, this.position));
-          }
-          return new Component(identifier, components, left.from, this.position);
-        }
-        if (right instanceof UnaryTag) continue;
-        components.push(right);
-      }
-      this.expect(this.parseTag(), ClosingTag, new ParserError(`Expecting a closing tag for '${identifier}' component`, left.to, this.position));
-      return new Component(identifier, components, left.from, this.position);
-    }
-    return left;
-  }
-
-  private parseNonSkippableTags() {
-    const left = this.parseTag();
-    if (left instanceof OpenTag || left instanceof UnaryTag) {
-      if (left.identifier.raw == "meta" || left.identifier.raw == "link" || left.identifier.raw == "") {
-        return this.parseComponent();
-      }
-    }
-    return left;
-  }
-
-  private parseTag() {
-    if (this.peekToken() instanceof LessThan) {
-      const division = this.parseToken();
-      let hasDivision = false;
-      let identifier = new Identifier("", division.from, division.from);
-      if (this.peekToken() instanceof Division) {
-        this.parseToken();
-        hasDivision = true;
-      }
-      if (this.peekToken() instanceof Identifier) {
-        identifier = this.parseToken() as Identifier;
-        if (this.peekToken() instanceof Number) {
-          const number = this.parseToken();
-          identifier.raw += (number as Number).raw;
-          identifier.to = number.to;
-        }
-      }
-      this.parseProperties();
-      if (this.peekToken() instanceof Division) {
-        this.parseToken();
-        if (hasDivision) {
-          this.logParserError(new ParserError("Unexpected token '/' for this tag", division.from, this.position));
-        }
-        const token = this.expect(this.parseToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`, division.from, this.position));
-        return new UnaryTag(identifier, division.from, token.to);
-      }
-      const token = this.expect(this.parseToken(), GreaterThan, new ParserError(`Expecting a closing '>' token for the tag`, division.from, this.position));
-      if (hasDivision) {
-        return new ClosingTag(identifier, division.from, token.to);
-      }
-      return new OpenTag(identifier, division.from, token.to);
-    }
-    return this.parsePlainText();
-  }
-
-  private parsePlainText() {
-    const from = this.position;
-    while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof LessThan) {
-        const left = this.parseTag();
-        if (left instanceof Tag) {
-          this.backtrack(left);
-          break;
-        }
-      }
-      this.getNextCharacter();
-    }
-    const properties = this.input.substring(from, this.position).replace(/\s+/g, " ").trim();
-    return new PlainText(properties, from, this.position);
+  private parseOpenTag() {
+    const open = this.getNextToken();
+    const token = this.expect(open, LessThan, new ParserError("Execting an openning '<' to open tag", open.from, open.to));
+    const identifier = this.parseToken() as Identifier;
+    this.expect(identifier, Identifier, new ParserError("Expecting identifier for an open tag", identifier.from, identifier.to));
+    const props = this.parseProperties();
+    return new OpenTag(identifier, props, token.from, this.position);
   }
 
   private parseProperties() {
-    const from = this.position;
-    while (this.hasMoreTokens()) {
-      const left = this.getNextToken();
-      if (left instanceof Division && this.peekToken() instanceof GreaterThan) {
-        this.backtrack(left);
-        break;
+    const props = new Array<Property>();
+    while (this.peekToken() instanceof Identifier) {
+      const identifier = this.getNextToken() as Identifier;
+      let value = true as string | boolean;
+      if (this.peekToken() instanceof Equals) {
+        this.getNextToken();
+        value = this.expect(this.parseString(), String, new ParserError("Expecting value after '=' token following a tag property", identifier.from, this.position)).raw;
       }
-      if (left instanceof GreaterThan) {
-        this.backtrack(left);
-        break;
-      }
+      props.push(new Property(identifier.raw, value, identifier.from, this.position));
     }
-    const properties = this.input.substring(from, this.position);
-    return new Properties(properties, from, this.position);
+    return props;
   }
 
   private parseAddition() {
@@ -237,7 +143,7 @@ export default class Parser extends Lexer {
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
-          this.logParserError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from, token.to));
+          this.reportError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from, token.to));
         }
         if (token instanceof Quote) break;
         raw += this.getNextCharacter();
@@ -252,7 +158,7 @@ export default class Parser extends Lexer {
   private parseToken() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.logParserError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from, token.to));
+      this.reportError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from, token.to));
     }
     return token;
   }

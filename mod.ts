@@ -12,7 +12,7 @@ while (true) {
   const value = interpreter.run();
 
   console.log();
-  console.log(value.logger);
+  console.log(value.log);
 
   Write(value, "./dev/logger.json");
 }

@@ -21,21 +21,13 @@ export default class Interpreter extends Parser {
   public run() {
     const tree = this.parse();
     const runtime = this.evaluate(tree);
-    const error = this.parserErrors[0];
+    const error = this.errors[0];
     return {
-      logger: error ? this.input.substring(error.from, error.to) + `\n\n${error.message}.\n\n` : "",
-      errors: {
-        parser: this.parserErrors,
-        interpreter: this.interpreterErrors,
-      },
+      log: error ? this.input.substring(error.from, error.to) + `\n\n${error.message}.\n\n` : "",
+      errors: this.errors,
       runtime,
       parser: tree,
     };
-  }
-
-  public logInterpreterError(error: InterpreterError) {
-    this.interpreterErrors = [error, ...this.interpreterErrors];
-    return error;
   }
 
   evaluate<T extends Token>(token: T): RuntimeValue {
@@ -46,7 +38,7 @@ export default class Interpreter extends Parser {
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
     if (token instanceof PlainText) return this.evaluatePlainText(token);
-    return this.logInterpreterError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`, token.from, token.to));
+    return this.reportError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation.`, token.from, token.to));
   }
 
   private evaluateComponent(token: Component) {
@@ -74,7 +66,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return this.logInterpreterError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`, token.from, token.to));
+      return this.reportError(new InterpreterError(`Can't perform binary operations between "${token.left.token}" and "${token.right.token}" tokens.`, token.from, token.to));
     }
 
     switch (true) {
@@ -95,7 +87,7 @@ export default class Interpreter extends Parser {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof RuntimeNumber)) {
-      return this.logInterpreterError(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`, token.from, token.to));
+      return this.reportError(new InterpreterError(`Can't perform unary operation over "${token.right.constructor.name}" token`, token.from, token.to));
     }
 
     switch (true) {
