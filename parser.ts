@@ -44,7 +44,7 @@ export default class Parser extends Lexer {
     return token as T;
   }
 
-  public reportError(error: Logger) {
+  public log(error: Logger) {
     this.errors = [error, ...this.errors];
     return error;
   }
@@ -70,7 +70,7 @@ export default class Parser extends Lexer {
 
   private parseTag() {
     const open = this.parseToken();
-    this.expect(open, LessThan, new ParserError("Execting an open '<' to open tag", open.from));
+    this.expect(open, LessThan, new ParserError("Expecting a open '<' token", open.from));
     const tag = this.parseUniTag();
     const close = this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' token", tag.to));
     tag.from = open.from;
@@ -190,10 +190,10 @@ export default class Parser extends Lexer {
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
-          this.reportError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from));
+          this.log(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from));
         }
         if (token instanceof Quote) break;
-        raw += this.getNextCharacter();
+        raw += this.getNext();
       }
       const end = this.expect(this.parseToken(), Quote, new ParserError("Expecing a closing quote for the string", this.position));
       this.ignoreSpace();
@@ -205,7 +205,7 @@ export default class Parser extends Lexer {
   private parseToken() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
-      this.reportError(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from));
+      this.log(new WarningError(`Unknown character '${token.raw}' found while parsing`, token.from));
     }
     return token;
   }

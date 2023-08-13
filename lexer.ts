@@ -23,70 +23,15 @@ export default class Lexer {
   protected position = 0;
   constructor(public input: string) {}
 
-  public hasMoreTokens(): boolean {
-    return !(this.peekToken() instanceof EOF);
-  }
-
-  private getCharacter() {
-    return this.input.charAt(this.position);
-  }
-
-  public getNextCharacter() {
-    const character = this.getCharacter();
-    this.position = this.position + 1;
-    return character;
-  }
-
-  public keepSpace() {
-    this.space = true;
-  }
-
-  public ignoreSpace() {
-    this.space = false;
-  }
-
-  private getIdentifier() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/[a-zA-Z]/.test(this.getCharacter())) raw += this.getNextCharacter();
-    return new Identifier(raw, startsAt, this.position);
-  }
-
-  private getNumber() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/[0-9]/.test(this.getCharacter())) raw += this.getNextCharacter();
-    return new Number(raw, startsAt, this.position);
-  }
-
-  private getSpace() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/\s/.test(this.getCharacter())) raw += this.getNextCharacter();
-    if (this.space) return new Space(raw, startsAt, this.position);
-    return this.getNextToken();
-  }
-
-  public peekToken() {
-    const startsAt = this.position;
-    const token = this.getNextToken();
-    this.position = startsAt;
-    return token;
-  }
-
-  public backtrack(token: Token) {
-    this.position = token.from;
-  }
-
   public getNextToken(): Token {
-    const char = this.getCharacter();
+    const char = this.peek();
 
     if (/[0-9]/.test(char)) return this.getNumber();
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
     const from = this.position;
-    const next = this.getNextCharacter();
+    const next = this.getNext();
     const to = this.position;
 
     if (char == "(") return new OpenParenthesis(next, from, to);
@@ -107,5 +52,56 @@ export default class Lexer {
     if (next) return new UnknownCharacter(next, from, to);
 
     return new EOF(from, from);
+  }
+
+  public hasMoreTokens(): boolean {
+    return !(this.peekToken() instanceof EOF);
+  }
+
+  public peekToken() {
+    const startsAt = this.position;
+    const token = this.getNextToken();
+    this.position = startsAt;
+    return token;
+  }
+
+  public keepSpace() {
+    this.space = true;
+  }
+
+  public ignoreSpace() {
+    this.space = false;
+  }
+
+  private peek() {
+    return this.input.charAt(this.position);
+  }
+
+  public getNext() {
+    const character = this.peek();
+    this.position = this.position + 1;
+    return character;
+  }
+
+  private getNumber() {
+    const startsAt = this.position;
+    let raw = "";
+    while (/[0-9]/.test(this.peek())) raw += this.getNext();
+    return new Number(raw, startsAt, this.position);
+  }
+
+  private getSpace() {
+    const startsAt = this.position;
+    let raw = "";
+    while (/\s/.test(this.peek())) raw += this.getNext();
+    if (this.space) return new Space(raw, startsAt, this.position);
+    return this.getNextToken();
+  }
+
+  private getIdentifier() {
+    const startsAt = this.position;
+    let raw = "";
+    while (/[a-zA-Z]/.test(this.peek())) raw += this.getNext();
+    return new Identifier(raw, startsAt, this.position);
   }
 }
