@@ -21,7 +21,7 @@ import Equals from "./equals.ts";
 export default class Lexer {
   private space = false;
   protected position = 0;
-  constructor(public input: string) {}
+  constructor(protected input: string) {}
 
   public getNextToken(): Token {
     const char = this.peek();
@@ -58,18 +58,18 @@ export default class Lexer {
     return !(this.peekToken() instanceof EOF);
   }
 
-  public peekToken() {
+  protected peekToken() {
     const startsAt = this.position;
     const token = this.getNextToken();
     this.position = startsAt;
     return token;
   }
 
-  public keepSpace() {
+  protected keepSpace() {
     this.space = true;
   }
 
-  public ignoreSpace() {
+  protected ignoreSpace() {
     this.space = false;
   }
 
@@ -77,7 +77,7 @@ export default class Lexer {
     return this.input.charAt(this.position);
   }
 
-  public getNext() {
+  protected getNext() {
     const character = this.peek();
     this.position = this.position + 1;
     return character;

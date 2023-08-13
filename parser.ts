@@ -32,7 +32,7 @@ import Program from "./program.ts";
 export type Constructor<T> = new (...args: any[]) => T;
 
 export default class Parser extends Lexer {
-  public errors = new Array<Logger>();
+  protected errors = new Array<Logger>();
 
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
     return instance instanceof constructor;
@@ -44,7 +44,7 @@ export default class Parser extends Lexer {
     return token as T;
   }
 
-  public log(error: Logger) {
+  protected log(error: Logger) {
     this.errors = [error, ...this.errors];
     return error;
   }
@@ -170,13 +170,11 @@ export default class Parser extends Lexer {
       const left = this.parseToken();
       const expression = this.parseAddition();
       const right = this.parseToken();
-
       if (expression instanceof ClosingParenthesis) {
         this.expect(expression, Expression, new ParserError("No expression has been provided within parenthesis", left.from));
       } else {
         this.expect(right, ClosingParenthesis, new ParserError("Expecting a closing parenthesis", left.from));
       }
-
       return new Parenthesis(expression, left.from, right.to);
     }
     return this.parseString();
