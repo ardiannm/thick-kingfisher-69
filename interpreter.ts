@@ -17,7 +17,7 @@ import PlainText from "./plain.text.ts";
 import ParserError from "./parser.error.ts";
 
 export default class Interpreter extends Parser {
-  private interpreterErrors = new Array<InterpreterError>();
+  //
 
   public run() {
     const tree = this.parse();

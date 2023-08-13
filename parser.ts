@@ -93,9 +93,9 @@ export default class Parser extends Lexer {
       let value = true as string | boolean;
       if (this.peekToken() instanceof Equals) {
         this.getNextToken();
-        value = this.expect(this.parseString(), String, new ParserError("Expecting value after '=' token following a tag property", identifier.from)).raw;
+        value = this.expect(this.parseString(), String, new ParserError("Expecting a string value after '=' token following a tag property", identifier.from)).raw;
       }
-      props.push(new Property(identifier.raw, value, identifier.from, this.position));
+      props.push(new Property(identifier, value, identifier.from, this.position));
     }
     return props;
   }
