@@ -21,19 +21,19 @@ export default class Interpreter extends Parser {
 
   public run() {
     const tree = this.parse();
-    
     const parserErrors = this.errors.filter((e) => e instanceof ParserError);
 
     console.log();
-    
+
     if (parserErrors.length) {
       console.log("\x1b[36m");
       parserErrors.map((e) => console.log(e.message));
       console.log("\x1b[0m");
       return;
     }
-    
+
     console.log(tree);
+
     const runtime = this.evaluate(tree);
 
     return {

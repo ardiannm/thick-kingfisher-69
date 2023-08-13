@@ -54,11 +54,18 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    const expressions = new Array<Expression>(this.parseTag());
+    const expressions = new Array<Expression>(this.parseHTML());
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseTag());
+      expressions.push(this.parseHTML());
     }
     return new Program(expressions, 0, this.input.length);
+  }
+
+  private parseHTML() {
+    if (this.peekToken() instanceof LessThan) {
+      return this.parseTag();
+    }
+    return this.parseMath();
   }
 
   private parseTag() {
@@ -110,6 +117,10 @@ export default class Parser extends Lexer {
       props.push(new Property(identifier, value, identifier.from, this.position));
     }
     return props;
+  }
+
+  private parseMath() {
+    return this.parseAddition();
   }
 
   private parseAddition() {
