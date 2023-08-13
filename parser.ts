@@ -26,6 +26,7 @@ import Property from "./property.ts";
 import ClosingTag from "./closing.tag.ts";
 import GreaterThan from "./greater.than.ts";
 import UniTag from "./uni.tag.ts";
+import Program from "./program.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
@@ -53,7 +54,12 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    return this.parseUniTag();
+    const expressions = new Array<Expression>(this.parseUniTag());
+    while (this.hasMoreTokens()) {
+      console.log(this.peekToken());
+      expressions.push(this.parseUniTag());
+    }
+    return new Program(expressions, 0, this.input.length);
   }
 
   private parseUniTag() {
@@ -69,7 +75,7 @@ export default class Parser extends Lexer {
 
   private parseOpenTag() {
     const open = this.parseToken();
-    const token = this.expect(open, LessThan, new ParserError("Execting an openning '<' to open tag", open.from));
+    const token = this.expect(open, LessThan, new ParserError("Execting an open '<' to open tag", open.from));
     if (this.peekToken() instanceof Division) {
       return this.parseClosingTag();
     }
