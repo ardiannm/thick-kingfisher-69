@@ -54,12 +54,21 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    const expressions = new Array<Expression>(this.parseUniTag());
+    const expressions = new Array<Expression>(this.parseTag());
     while (this.hasMoreTokens()) {
-      console.log(this.peekToken());
-      expressions.push(this.parseUniTag());
+      expressions.push(this.parseTag());
     }
     return new Program(expressions, 0, this.input.length);
+  }
+
+  private parseTag() {
+    const open = this.parseToken();
+    this.expect(open, LessThan, new ParserError("Execting an open '<' to open tag", open.from));
+    const tag = this.parseUniTag();
+    const close = this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", tag.to));
+    tag.from = open.from;
+    tag.to = close.to;
+    return tag;
   }
 
   private parseUniTag() {
@@ -69,26 +78,23 @@ export default class Parser extends Lexer {
       this.parseToken();
       return new UniTag(open.identifier, open.properties, open.from, this.position);
     }
-    this.expect(this.parseToken(), GreaterThan, new ParserError("Expecting a closing '>' for this tag", left.identifier.to));
     return left;
   }
 
   private parseOpenTag() {
-    const open = this.parseToken();
-    const token = this.expect(open, LessThan, new ParserError("Execting an open '<' to open tag", open.from));
     if (this.peekToken() instanceof Division) {
       return this.parseClosingTag();
     }
     const identifier = this.parseToken() as Identifier;
     this.expect(identifier, Identifier, new ParserError("Expecting identifier for an open tag", identifier.from));
     const props = this.parseProperties();
-    return new OpenTag(identifier, props, token.from, this.position);
+    return new OpenTag(identifier, props, identifier.from, this.position);
   }
 
   private parseClosingTag() {
     const division = this.parseToken();
     const identifier = this.parseToken() as Identifier;
-    this.expect(identifier, Identifier, new ParserError("Expecting an identifier for this closing tag", identifier.from));
+    this.expect(identifier, Identifier, new ParserError("Expecting an identifier for this tag", identifier.from));
     return new ClosingTag(identifier, division.from, this.position);
   }
 
@@ -99,7 +105,7 @@ export default class Parser extends Lexer {
       let value = true as string | boolean;
       if (this.peekToken() instanceof Equals) {
         this.getNextToken();
-        value = this.expect(this.parseString(), String, new ParserError("Expecting a string value after '=' token following a tag property", identifier.from)).raw;
+        value = this.expect(this.parseString(), String, new ParserError("Expecting a string value after an '=' token following a tag property", identifier.from)).raw;
       }
       props.push(new Property(identifier, value, identifier.from, this.position));
     }
