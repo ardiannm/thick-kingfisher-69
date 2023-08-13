@@ -13,7 +13,6 @@ import Unary from "./unary.ts";
 import Substraction from "./substraction.ts";
 import Exponentiation from "./exponentiation.ts";
 import Component from "./component.ts";
-import PlainText from "./plain.text.ts";
 import ParserError from "./parser.error.ts";
 
 export default class Interpreter extends Parser {
@@ -50,7 +49,6 @@ export default class Interpreter extends Parser {
     if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
-    if (token instanceof PlainText) return this.evaluatePlainText(token);
     return this.reportError(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation`, token.from));
   }
 
@@ -58,10 +56,6 @@ export default class Interpreter extends Parser {
     const value = token.components.map((comp) => this.evaluate(comp));
     if (value.length == 1) return value[0];
     return value.filter((b) => !(Array.isArray(b) && b.length == 0));
-  }
-
-  private evaluatePlainText(token: PlainText) {
-    return token.source;
   }
 
   private evaluateProgram(token: Program) {
