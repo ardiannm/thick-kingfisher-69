@@ -38,11 +38,22 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token, E extends ParserError>(token: Token, tokenConstructor: Constructor<T>, errorConstructor: Constructor<E>, message: string): T {
     if (this.assert(token, tokenConstructor)) return token as T;
-    this.log(new errorConstructor(message, token) as E);
+    const error = new errorConstructor(message, token);
+    this.log(error as E);
     return token as T;
   }
 
   protected log(error: ParserError) {
+    const left = this.input.substring(0, error.atPosition.from);
+    const right = this.input.substring(error.atPosition.from);
+    const textMessage = left + " " + right;
+    const pointer = left.replace(/./g, " ") + "^" + right.replace(/./g, " ");
+    const outter = (textMessage + "\n" + pointer)
+      .split("\n")
+      .map((line) => `    ${line}`)
+      .join("\n");
+    error.message += "\n\n" + outter + "\n\n";
+
     this.errors.push(error);
     return error;
   }
@@ -78,7 +89,7 @@ export default class Parser extends Lexer {
   private parseUniTag() {
     const left = this.parseOpenTag();
     if (this.peekToken() instanceof Division) {
-      const right = this.expect(left, OpenTag, ParserError, "Unexpected token '/' found for this closing tag");
+      const right = this.expect(left, OpenTag, ParserError, "Unexpected token '/' found for this tag");
       this.parseToken();
       return new UniTag(left.identifier, right.properties, right.from, this.position);
     }
