@@ -2,7 +2,6 @@ import Binary from "./binary.ts";
 import Division from "./division.ts";
 import Multiplication from "./multiplication.ts";
 import Number from "./number.ts";
-import Parenthesis from "./parenthesis.ts";
 import Parser from "./parser.ts";
 import Program from "./program.ts";
 import InterpreterError from "./interpreter.error.ts";
@@ -25,7 +24,7 @@ export default class Interpreter extends Parser {
     console.log();
 
     if (parserErrors.length) {
-      const id = 69;
+      const id = 98;
       console.log(`\u001b[38;5;${id}m`);
       parserErrors.map((e) => console.log(e.message));
       console.log("\x1b[0m");
@@ -48,7 +47,6 @@ export default class Interpreter extends Parser {
     if (token instanceof Binary) return this.evaluateBinary(token);
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof Unary) return this.evaluateUnary(token);
-    if (token instanceof Parenthesis) return this.evaluateParenthesis(token);
     if (token instanceof Component) return this.evaluateComponent(token);
     return this.log(new InterpreterError(`Token type "${token.token}" has not been implemented for interpretation`, token));
   }
@@ -104,9 +102,5 @@ export default class Interpreter extends Parser {
       default:
         return new RuntimeNumber(+right.value);
     }
-  }
-
-  private evaluateParenthesis(token: Parenthesis) {
-    return this.evaluate(token.expression);
   }
 }

@@ -7,7 +7,6 @@ import Multiplication from "./multiplication.ts";
 import Division from "./division.ts";
 import Unary from "./unary.ts";
 import OpenParenthesis from "./open.parenthesis.ts";
-import Parenthesis from "./parenthesis.ts";
 import Quote from "./quote.ts";
 import String from "./string.ts";
 import ParserError from "./parser.error.ts";
@@ -163,7 +162,7 @@ export default class Parser extends Lexer {
 
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
-      const left = this.getNextToken();
+      this.getNextToken();
       const token = this.peekToken();
       if (token instanceof ClosingParenthesis) {
         this.log(new ParserError("No expression has been provided within parenthesis", this.getNextToken()));
@@ -173,7 +172,7 @@ export default class Parser extends Lexer {
       if (!(token instanceof ClosingParenthesis)) {
         this.expect(right, ClosingParenthesis, ParserError, "Expecting a closing parenthesis");
       }
-      return new Parenthesis(expression, left.from, right.to);
+      return expression;
     }
     return this.parseString();
   }
