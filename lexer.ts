@@ -14,9 +14,9 @@ import UnknownCharacter from "./unknown.character.ts";
 import Exponentiation from "./exponentiation.ts";
 import Addition from "./addition.ts";
 import Substraction from "./substraction.ts";
-import EOF from "./eof.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
+import EOF from "./eof.ts";
 
 export default class Lexer {
   private space = false;
