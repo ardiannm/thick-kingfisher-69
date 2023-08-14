@@ -28,7 +28,7 @@ import UniTag from "./uni.tag.ts";
 import Program from "./program.ts";
 
 // deno-lint-ignore no-explicit-any
-export type Constructor<T> = new (...args: any[]) => T;
+export type Constructor<Class> = new (...args: any[]) => Class;
 
 export default class Parser extends Lexer {
   protected errors = new Array<ParserError>();
@@ -39,8 +39,7 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token, E extends ParserError>(token: Token, tokenConstructor: Constructor<T>, errorConstructor: Constructor<E>, message: string): T {
     if (this.assert(token, tokenConstructor)) return token as T;
-    const newError = new errorConstructor(message, token);
-    this.log(newError);
+    this.log(new errorConstructor(message, token) as E);
     return token as T;
   }
 
@@ -165,11 +164,13 @@ export default class Parser extends Lexer {
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       const left = this.getNextToken();
+      const token = this.peekToken();
+      if (token instanceof ClosingParenthesis) {
+        this.log(new ParserError("No expression has been provided within parenthesis", this.getNextToken()));
+      }
       const expression = this.parseAddition();
       const right = this.getNextToken();
-      if (expression instanceof ClosingParenthesis) {
-        this.log(new ParserError("No expression has been provided within parenthesis", this.getNextToken()));
-      } else {
+      if (!(token instanceof ClosingParenthesis)) {
         this.expect(right, ClosingParenthesis, ParserError, "Expecting a closing parenthesis");
       }
       return new Parenthesis(expression, left.from, right.to);
