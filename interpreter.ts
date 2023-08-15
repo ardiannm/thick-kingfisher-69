@@ -23,15 +23,13 @@ export default class Interpreter extends Parser {
     const parserErrors = this.errors.filter((e) => e instanceof ParserError);
 
     console.log();
+    console.log(tree);
 
     if (parserErrors.length) {
-      const id = 98;
-      console.log(`\u001b[38;5;${id}m`);
+      console.log(`\u001b[38;5;${38}m`);
       parserErrors.map((e) => console.log(e.message));
       console.log("\x1b[0m");
     }
-
-    console.log(tree);
 
     Write(tree, "./dev/logger.json");
 

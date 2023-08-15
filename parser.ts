@@ -47,7 +47,7 @@ export default class Parser extends Lexer {
   protected log(error: ParserError) {
     const left = this.input.substring(0, error.atPosition.from);
     const right = this.input.substring(error.atPosition.from);
-    const textMessage = left + " " + right;
+    const textMessage = left + "" + right;
     const pointer = left.replace(/./g, " ") + "^" + right.replace(/./g, " ");
     const outter = (textMessage + "\n" + pointer)
       .split("\n")
@@ -180,10 +180,10 @@ export default class Parser extends Lexer {
         this.log(new ParserError("No expression has been provided within parenthesis", this.getNextToken()));
         return new Parenthesis(new Expression(left.to, left.to), left.from, token.to);
       }
-      const expression = this.parseAddition();
+      const expression = this.expect(this.parseAddition(), Expression, ParserError, "Expression expected after an open parenthesis");
       const right = this.getNextToken();
-      if (!(token instanceof ClosingParenthesis)) {
-        this.expect(right, ClosingParenthesis, ParserError, "Expecting a closing parenthesis");
+      if (expression instanceof Expression) {
+        this.expect(right, ClosingParenthesis, ParserError, "Expecting to close this parenthesis");
       }
       return new Parenthesis(expression, left.from, right.to);
     }
