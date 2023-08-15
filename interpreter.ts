@@ -13,6 +13,7 @@ import Substraction from "./substraction.ts";
 import Exponentiation from "./exponentiation.ts";
 import Component from "./component.ts";
 import ParserError from "./parser.error.ts";
+import Write from "./dev/helper/write.ts";
 
 export default class Interpreter extends Parser {
   //
@@ -28,10 +29,11 @@ export default class Interpreter extends Parser {
       console.log(`\u001b[38;5;${id}m`);
       parserErrors.map((e) => console.log(e.message));
       console.log("\x1b[0m");
-      return;
     }
 
     console.log(tree);
+
+    Write(tree, "./dev/logger.json");
 
     const runtime = this.evaluate(tree);
 

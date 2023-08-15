@@ -25,6 +25,7 @@ import ClosingTag from "./closing.tag.ts";
 import GreaterThan from "./greater.than.ts";
 import UniTag from "./uni.tag.ts";
 import Program from "./program.ts";
+import Parenthesis from "./parenthesis.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -173,17 +174,18 @@ export default class Parser extends Lexer {
 
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
-      this.getNextToken();
+      const left = this.getNextToken();
       const token = this.peekToken();
       if (token instanceof ClosingParenthesis) {
         this.log(new ParserError("No expression has been provided within parenthesis", this.getNextToken()));
+        return new Parenthesis(new Expression(left.to, left.to), left.from, token.to);
       }
       const expression = this.parseAddition();
       const right = this.getNextToken();
       if (!(token instanceof ClosingParenthesis)) {
         this.expect(right, ClosingParenthesis, ParserError, "Expecting a closing parenthesis");
       }
-      return expression;
+      return new Parenthesis(expression, left.from, right.to);
     }
     return this.parseString();
   }
