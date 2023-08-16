@@ -40,7 +40,7 @@ export default class Interpreter extends Parser {
   }
 
   private evaluateNumber(token: Number) {
-    return new RuntimeNumber(parseFloat(token.raw));
+    return new RuntimeNumber(parseFloat(token.view));
   }
 
   private evaluateBinary(token: Binary) {

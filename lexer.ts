@@ -30,28 +30,26 @@ export default class Lexer {
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
-    const from = this.position;
     const next = this.getNext();
-    const to = this.position;
 
-    if (char == "(") return new OpenParenthesis(next, from, to);
-    if (char == ")") return new ClosingParenthesis(next, from, to);
-    if (char == "!") return new ExclamationMark(next, from, to);
-    if (char == "?") return new QuestionMark(next, from, to);
-    if (char == '"') return new Quote(next, from, to);
-    if (char == "<") return new LessThan(next, from, to);
-    if (char == ">") return new GreaterThan(next, from, to);
-    if (char == "=") return new Equals(next, from, to);
+    if (char == "(") return new OpenParenthesis(next);
+    if (char == ")") return new ClosingParenthesis(next);
+    if (char == "!") return new ExclamationMark(next);
+    if (char == "?") return new QuestionMark(next);
+    if (char == '"') return new Quote(next);
+    if (char == "<") return new LessThan(next);
+    if (char == ">") return new GreaterThan(next);
+    if (char == "=") return new Equals(next);
 
-    if (char == "+") return new Addition(next, from, to);
-    if (char == "-") return new Substraction(next, from, to);
-    if (char == "*") return new Multiplication(next, from, to);
-    if (char == "/") return new Division(next, from, to);
-    if (char == "^") return new Exponentiation(next, from, to);
+    if (char == "+") return new Addition(next);
+    if (char == "-") return new Substraction(next);
+    if (char == "*") return new Multiplication(next);
+    if (char == "/") return new Division(next);
+    if (char == "^") return new Exponentiation(next);
 
-    if (next) return new UnknownCharacter(next, from, to);
+    if (next) return new UnknownCharacter(next);
 
-    return new EOF(from, from);
+    return new EOF();
   }
 
   public hasMoreTokens(): boolean {
@@ -84,24 +82,21 @@ export default class Lexer {
   }
 
   private getNumber() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/[0-9]/.test(this.peek())) raw += this.getNext();
-    return new Number(raw, startsAt, this.position);
+    let view = "";
+    while (/[0-9]/.test(this.peek())) view += this.getNext();
+    return new Number(view);
   }
 
   private getSpace() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/\s/.test(this.peek())) raw += this.getNext();
-    if (this.space) return new Space(raw, startsAt, this.position);
+    let view = "";
+    while (/\s/.test(this.peek())) view += this.getNext();
+    if (this.space) return new Space(view);
     return this.getNextToken();
   }
 
   private getIdentifier() {
-    const startsAt = this.position;
-    let raw = "";
-    while (/[a-zA-Z]/.test(this.peek())) raw += this.getNext();
-    return new Identifier(raw, startsAt, this.position);
+    let view = "";
+    while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
+    return new Identifier(view);
   }
 }
