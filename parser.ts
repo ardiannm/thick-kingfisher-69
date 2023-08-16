@@ -26,6 +26,7 @@ import GreaterThan from "./greater.than.ts";
 import UniTag from "./uni.tag.ts";
 import Program from "./program.ts";
 import Parenthesis from "./parenthesis.ts";
+import EOF from "./eof.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -81,14 +82,14 @@ export default class Parser extends Lexer {
 
   public parse() {
     try {
-      const tree = this.parseProgram();
-      return tree;
-    } catch (e) {
-      return e;
+      return this.parseProgram();
+    } catch (error) {
+      return error;
     }
   }
 
   private parseProgram() {
+    this.doNotExpect(this.peekToken(), EOF, "program cannot be empty")
     const expressions = new Array<Expression>(this.parseHTML());
     while (this.hasMoreTokens()) {
       expressions.push(this.parseHTML());
@@ -100,7 +101,8 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof LessThan) {
       return this.parseTag();
     }
-    return this.parseMath();
+    const left = this.expect(this.parseMath(), Expression, "math expression expected in the program");
+    return left;
   }
 
   private parseTag() {
