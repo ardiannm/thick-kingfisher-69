@@ -14,8 +14,6 @@ import Exponentiation from "./exponentiation.ts";
 import Component from "./component.ts";
 
 export default class Interpreter extends Parser {
-  //
-
   public run() {
     return this.evaluate(this.parse());
   }

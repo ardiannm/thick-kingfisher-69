@@ -32,8 +32,7 @@ import EOF from "./eof.ts";
 export type Constructor<Class> = new (...args: any[]) => Class;
 
 export default class Parser extends Lexer {
-  //
-  private colorize(str: string, code = 39) {
+  private colorize(str: string, code = 63) {
     return `\u001b[38;5;${code}m${str}\u001b[0m`;
   }
 
@@ -61,15 +60,12 @@ export default class Parser extends Lexer {
     const left = this.input.substring(0, error.position.from);
     const right = this.input.substring(error.position.from);
     const textMessage = left + "" + right;
-
     error.message = this.colorize(error.message);
-
-    const pointer = left.replace(/./g, " ") + this.colorize("^ ") + this.colorize(error.message) + right.replace(/./g, " ");
-
+    const pointer = left.replace(/./g, " ") + this.colorize("^");
     error.message =
       this.colorize(`\n${error.constructor.name}:`) +
       "\n\n" +
-      (textMessage + "\n" + pointer)
+      (textMessage + "\n" + pointer + " " + this.colorize(error.message))
         .split("\n")
         .map((line) => `    ${line}`)
         .join("\n") +
@@ -89,7 +85,7 @@ export default class Parser extends Lexer {
   }
 
   private parseProgram() {
-    this.doNotExpect(this.peekToken(), EOF, "program cannot be empty")
+    this.doNotExpect(this.peekToken(), EOF, "program cannot be empty");
     const expressions = new Array<Expression>(this.parseHTML());
     while (this.hasMoreTokens()) {
       expressions.push(this.parseHTML());
