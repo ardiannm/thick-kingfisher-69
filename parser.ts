@@ -27,6 +27,7 @@ import UniTag from "./uni.tag.ts";
 import Program from "./program.ts";
 import Parenthesis from "./parenthesis.ts";
 import EOF from "./eof.ts";
+import Literal from "./literal.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -89,9 +90,9 @@ export default class Parser extends Lexer {
   }
 
   private parseTag() {
-    this.expect(this.parseToken(), LessThan, "expecting a open '<' token");
+    this.expect(this.getNextToken(), LessThan, "expecting a open '<' token");
     const tag = this.parseUniTag();
-    this.expect(this.parseToken(), GreaterThan, "expecting a closing '>' token");
+    this.expect(this.getNextToken(), GreaterThan, "expecting a closing '>' token");
     return tag;
   }
 
@@ -99,7 +100,7 @@ export default class Parser extends Lexer {
     const left = this.parseOpenTag();
     if (this.peekToken() instanceof Division) {
       const right = this.expect(left, OpenTag, "unexpected token '/' found for this tag");
-      this.parseToken();
+      this.getNextToken();
       return new UniTag(left.identifier, right.properties);
     }
     return left;
@@ -109,14 +110,14 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Division) {
       return this.parseClosingTag();
     }
-    const identifier = this.expect(this.parseToken(), Identifier, "expecting identifier for an open tag");
+    const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for an open tag");
     const properties = this.parseProperties();
     return new OpenTag(identifier, properties);
   }
 
   private parseClosingTag() {
-    this.expect(this.parseToken(), Division, "expecting '/' for a closing tag");
-    const identifier = this.expect(this.parseToken(), Identifier, "expecting an identifier for this closing tag");
+    this.expect(this.getNextToken(), Division, "expecting '/' for a closing tag");
+    const identifier = this.expect(this.getNextToken(), Identifier, "expecting an identifier for this closing tag");
     return new ClosingTag(identifier);
   }
 
@@ -142,7 +143,7 @@ export default class Parser extends Lexer {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       this.expect(left, Expression, `invalid left hand side expression in ${this.peekToken().token} operation`);
-      const operator = this.parseToken() as Operator;
+      const operator = this.getNextToken() as Operator;
       const right = this.expect(this.parseMultiplication(), Expression, `invalid right hand side expression in ${operator.token} operation`);
       left = new Binary(left, operator, right);
     }
@@ -152,7 +153,7 @@ export default class Parser extends Lexer {
   private parseMultiplication() {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
-      const operator = this.parseToken() as Operator;
+      const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, `invalid left hand side expression in ${operator.token} operation`);
       const right = this.expect(this.parsePower(), Expression, `invalid right hand side expression in ${operator.token} operation`);
       left = new Binary(left, operator, right);
@@ -163,7 +164,7 @@ export default class Parser extends Lexer {
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
-      const operator = this.parseToken() as Operator;
+      const operator = this.getNextToken() as Operator;
       this.expect(left, Expression, `invalid left hand side expression in ${operator.token} operation`);
       const right = this.expect(this.parsePower(), Expression, `invalid right hand side expression in ${operator.token} operation`);
       left = new Binary(left, operator, right);
@@ -173,7 +174,7 @@ export default class Parser extends Lexer {
 
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
-      const operator = this.parseToken() as Operator;
+      const operator = this.getNextToken() as Operator;
       const right = this.expect(this.parseUnary(), Expression, `invalid expression in unary ${operator.token} operation`);
       return new Unary(operator, right);
     }
@@ -204,18 +205,19 @@ export default class Parser extends Lexer {
         if (token instanceof Quote) break;
         view += this.getNext();
       }
-      this.expect(this.parseToken(), Quote, "expecting a closing quote for the string");
+      this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
       return new String(view);
     }
-    return this.parseToken();
+    return this.parseLiteral();
   }
 
-  private parseToken() {
+  private parseLiteral() {
     const token = this.getNextToken();
     if (token instanceof UnknownCharacter) {
       this.log(new WarningError(`unknown character '${token.view}' found while parsing`, token));
     }
+    this.expect(token, Literal, "token identifier or number expected");
     return token;
   }
 }
