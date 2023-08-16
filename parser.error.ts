@@ -1,7 +1,8 @@
+import LogError from "./log.error.ts";
 import Token from "./token.ts";
 
-export default class ParserError {
-  constructor(public message: string, public atPosition: Token) {
-    this.message = `${message}, at position ${atPosition.from + 1}`;
+export default class ParserError extends LogError {
+  constructor(public message: string, public position: Token) {
+    super(message);
   }
 }

@@ -1,3 +1,3 @@
-import ParserError from "./parser.error.ts";
+import LogError from "./log.error.ts";
 
-export default class InterpreterError extends ParserError {}
+export default class InterpreterError extends LogError {}
