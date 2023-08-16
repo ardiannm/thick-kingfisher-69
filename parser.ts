@@ -36,7 +36,7 @@ export default class Parser extends Lexer {
   //
 
   private colorize(str: string, code = 63) {
-    return `\u001b[38;5;${code}m${str}\u001b[0m`;
+    return "\n" + `\u001b[38;5;${code}m${str}\u001b[0m`;
   }
 
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
@@ -60,26 +60,27 @@ export default class Parser extends Lexer {
   }
 
   protected log(error: ParserError) {
-    console.log();
     console.log(this.colorize(error.message));
     return error;
   }
 
   public parse() {
-    try {
-      return this.parseProgram();
-    } catch (err) {
-      return err;
-    }
+    return this.parseProgram();
   }
 
   private parseProgram() {
-    this.doNotExpect(this.peekToken(), EOF, "program cannot be empty");
-    const expressions = new Array<Expression>();
-    while (this.hasMoreTokens()) {
-      expressions.push(this.parseHTML());
+    try {
+      this.doNotExpect(this.peekToken(), EOF, "program cannot be empty");
+      const expressions = new Array<Expression>();
+      while (this.hasMoreTokens()) {
+        expressions.push(this.parseHTML());
+      }
+      const program = new Program(expressions);
+      console.log(this.colorize(JSON.stringify(program, null, 3)));
+      return program;
+    } catch (error) {
+      return error;
     }
-    return new Program(expressions, 0, this.input.length);
   }
 
   private parseHTML() {
