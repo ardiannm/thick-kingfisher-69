@@ -1,3 +1,3 @@
-import Value from "./value.ts";
+import Literal from "./literal.ts";
 
-export default class Identifier extends Value {}
+export default class Identifier extends Literal {}
