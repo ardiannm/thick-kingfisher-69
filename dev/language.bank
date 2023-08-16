@@ -1,0 +1,23 @@
+<html lang="en">
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,200,300,400,500,600,700,800,900,300italic,400italic,500,italic,600italic,700italic,900italic&amp;subset=latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic,khmer,devanagari,arabic,hebrew,telugu" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-K1P8J4RQ4F&amp;cx=c&amp;_slc=1"></script>
+    <script>
+      window.requestIdleCallback =
+        window.requestIdleCallback ||
+        function (cb) {
+          var start = Date.now();
+          return setTimeout(function () {
+            cb({
+              didTimeout: false,
+              timeRemaining: function () {
+                return Math.max(0, 50 - (Date.now() - start));
+              },
+            });
+          }, 1);
+        };
+
+      window.cancelIdleCallback =
+</script>

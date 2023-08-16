@@ -32,6 +32,8 @@ import EOF from "./eof.ts";
 export type Constructor<Class> = new (...args: any[]) => Class;
 
 export default class Parser extends Lexer {
+  //
+
   private colorize(str: string, code = 63) {
     return `\u001b[38;5;${code}m${str}\u001b[0m`;
   }
@@ -40,38 +42,23 @@ export default class Parser extends Lexer {
     return instance instanceof constructor;
   }
 
-  private expect<T extends Token, E extends ParserError>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
+  private expect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
     if (this.assert(token, tokenConstructor)) return token as T;
     const error = new ParserError(message, token);
-    this.log(error as E);
+    this.log(error);
     throw error;
   }
 
-  private doNotExpect<T extends Token, E extends ParserError>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
+  private doNotExpect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
     if (this.assert(token, tokenConstructor)) {
       const error = new ParserError(message, token);
-      this.log(error as E);
+      this.log(error);
       throw error;
     }
     return token as T;
   }
 
   protected log(error: ParserError) {
-    const left = this.input.substring(0, error.position.from);
-    const right = this.input.substring(error.position.from);
-    const textMessage = left + "" + right;
-    error.message = this.colorize(error.message);
-    const pointer = left.replace(/./g, " ") + this.colorize("^");
-    error.message =
-      this.colorize(`\n${error.constructor.name}:`) +
-      "\n\n" +
-      (textMessage + "\n" + pointer + " " + this.colorize(error.message))
-        .split("\n")
-        .map((line) => `    ${line}`)
-        .join("\n") +
-      "\n\n";
-
-    error.message = "\n" + error.message;
     console.log(error.message);
     return error;
   }
