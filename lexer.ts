@@ -57,10 +57,6 @@ export default class Lexer {
     return new EOF(id);
   }
 
-  public hasMoreTokens(): boolean {
-    return !(this.peekToken() instanceof EOF);
-  }
-
   protected peekToken() {
     const startsAt = this.pointer;
     const id = this.generation;
@@ -68,24 +64,6 @@ export default class Lexer {
     this.pointer = startsAt;
     this.generation = id;
     return token;
-  }
-
-  protected keepSpace() {
-    this.space = true;
-  }
-
-  protected ignoreSpace() {
-    this.space = false;
-  }
-
-  private peek() {
-    return this.input.charAt(this.pointer);
-  }
-
-  protected getNext() {
-    const character = this.peek();
-    this.pointer = this.pointer + 1;
-    return character;
   }
 
   private getNumber() {
@@ -115,5 +93,27 @@ export default class Lexer {
     this.generation = id;
     this.info.set(id, new Info(from, to));
     return id;
+  }
+
+  public hasMoreTokens(): boolean {
+    return !(this.peekToken() instanceof EOF);
+  }
+
+  protected keepSpace() {
+    this.space = true;
+  }
+
+  protected ignoreSpace() {
+    this.space = false;
+  }
+
+  private peek() {
+    return this.input.charAt(this.pointer);
+  }
+
+  protected getNext() {
+    const character = this.peek();
+    this.pointer = this.pointer + 1;
+    return character;
   }
 }

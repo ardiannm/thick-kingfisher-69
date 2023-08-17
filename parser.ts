@@ -35,35 +35,6 @@ export type Constructor<Class> = new (...args: any[]) => Class;
 export default class Parser extends Lexer {
   //
 
-  private colorize(str: string, code = 26) {
-    return "\n" + `\u001b[38;5;${code}m${str}\u001b[0m`;
-  }
-
-  private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
-    return instance instanceof constructor;
-  }
-
-  private expect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenConstructor)) return token as T;
-    const error = new ParserError(message, token);
-    this.report(error);
-    throw error;
-  }
-
-  private doNotExpect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenConstructor)) {
-      const error = new ParserError(message, token);
-      this.report(error);
-      throw error;
-    }
-    return token as T;
-  }
-
-  protected report(error: ParserError) {
-    console.log(this.colorize(error.message));
-    return error;
-  }
-
   public parse() {
     return this.parseProgram();
   }
@@ -76,16 +47,21 @@ export default class Parser extends Lexer {
       while (this.hasMoreTokens()) {
         expressions.push(this.parseHTML());
       }
+
       const to = this.pointer;
       const id = this.storeInfo(from, to);
       const program = new Program(id, expressions);
 
       //
 
+      const result = Array.from(this.info)
+        .map(([id, info]) => this.colorize(`token [${id}] \t ${info.from}:${info.to} \t ${info.to - info.from}`))
+        .join("");
+
+      console.log(result);
       const temp = this.colorize(JSON.stringify(program, null, 3));
+
       console.log(temp);
-      console.log();
-      console.log(this.info);
 
       //
 
@@ -244,9 +220,9 @@ export default class Parser extends Lexer {
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       const from = this.pointer;
-      this.keepSpace();
       this.getNextToken() as Quote;
       let view = "";
+      this.keepSpace();
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof UnknownCharacter) {
@@ -270,5 +246,34 @@ export default class Parser extends Lexer {
       this.report(new WarningError(`unknown character '${token.view}' found while parsing`, token));
     }
     return token;
+  }
+
+  private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
+    return instance instanceof constructor;
+  }
+
+  private expect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
+    if (this.assert(token, tokenConstructor)) return token as T;
+    const error = new ParserError(message, token);
+    this.report(error);
+    throw error;
+  }
+
+  private doNotExpect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
+    if (this.assert(token, tokenConstructor)) {
+      const error = new ParserError(message, token);
+      this.report(error);
+      throw error;
+    }
+    return token as T;
+  }
+
+  protected report(error: ParserError) {
+    console.log(this.colorize(error.message));
+    return error;
+  }
+
+  private colorize(str: string, code = 26) {
+    return "\n" + `\u001b[38;5;${code}m${str}\u001b[0m`;
   }
 }
