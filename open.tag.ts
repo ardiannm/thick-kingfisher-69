@@ -3,7 +3,7 @@ import Property from "./property.ts";
 import Tag from "./tag.ts";
 
 export default class OpenTag extends Tag {
-  constructor(public identifier: Identifier, public properties: Array<Property>) {
-    super(identifier);
+  constructor(public id: number, public identifier: Identifier, public properties: Array<Property>) {
+    super(id, identifier);
   }
 }

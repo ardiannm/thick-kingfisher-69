@@ -20,6 +20,7 @@ import EOF from "./eof.ts";
 
 export default class Lexer {
   private space = false;
+  private gen = 0;
   protected position = 0;
   constructor(protected input: string) {}
 
@@ -30,26 +31,27 @@ export default class Lexer {
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
+    const id = this.id();
     const next = this.getNext();
 
-    if (char == "(") return new OpenParenthesis(next);
-    if (char == ")") return new ClosingParenthesis(next);
-    if (char == "!") return new ExclamationMark(next);
-    if (char == "?") return new QuestionMark(next);
-    if (char == '"') return new Quote(next);
-    if (char == "<") return new LessThan(next);
-    if (char == ">") return new GreaterThan(next);
-    if (char == "=") return new Equals(next);
+    if (char == "(") return new OpenParenthesis(id, next);
+    if (char == ")") return new ClosingParenthesis(id, next);
+    if (char == "!") return new ExclamationMark(id, next);
+    if (char == "?") return new QuestionMark(id, next);
+    if (char == '"') return new Quote(id, next);
+    if (char == "<") return new LessThan(id, next);
+    if (char == ">") return new GreaterThan(id, next);
+    if (char == "=") return new Equals(id, next);
 
-    if (char == "+") return new Addition(next);
-    if (char == "-") return new Substraction(next);
-    if (char == "*") return new Multiplication(next);
-    if (char == "/") return new Division(next);
-    if (char == "^") return new Exponentiation(next);
+    if (char == "+") return new Addition(id, next);
+    if (char == "-") return new Substraction(id, next);
+    if (char == "*") return new Multiplication(id, next);
+    if (char == "/") return new Division(id, next);
+    if (char == "^") return new Exponentiation(id, next);
 
-    if (next) return new UnknownCharacter(next);
+    if (next) return new UnknownCharacter(id, next);
 
-    return new EOF();
+    return new EOF(id);
   }
 
   public hasMoreTokens(): boolean {
@@ -58,8 +60,10 @@ export default class Lexer {
 
   protected peekToken() {
     const startsAt = this.position;
+    const id = this.gen;
     const token = this.getNextToken();
     this.position = startsAt;
+    this.gen = id;
     return token;
   }
 
@@ -84,19 +88,25 @@ export default class Lexer {
   private getNumber() {
     let view = "";
     while (/[0-9]/.test(this.peek())) view += this.getNext();
-    return new Number(view);
+    return new Number(this.id(), view);
   }
 
   private getSpace() {
     let view = "";
     while (/\s/.test(this.peek())) view += this.getNext();
-    if (this.space) return new Space(view);
+    if (this.space) return new Space(this.id(), view);
     return this.getNextToken();
   }
 
   private getIdentifier() {
     let view = "";
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
-    return new Identifier(view);
+    return new Identifier(this.id(), view);
+  }
+
+  protected id() {
+    const id = this.gen + 1;
+    this.gen = id;
+    return id;
   }
 }

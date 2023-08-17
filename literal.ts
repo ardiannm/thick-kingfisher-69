@@ -1,7 +1,7 @@
 import Expression from "./expression.ts";
 
 export default class Literal extends Expression {
-  constructor(public view: string) {
-    super();
+  constructor(public id: number, public view: string) {
+    super(id);
   }
 }
