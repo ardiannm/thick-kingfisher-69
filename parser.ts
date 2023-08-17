@@ -28,6 +28,7 @@ import Program from "./program.ts";
 import Parenthesis from "./parenthesis.ts";
 import EOF from "./eof.ts";
 import Info from "./info.ts";
+import Character from "./character.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -44,24 +45,21 @@ export default class Parser extends Lexer {
       const from = this.pointer;
       this.doNotExpect(this.peekToken(), EOF, "program cannot be empty");
       const expressions = new Array<Expression>();
-      while (this.hasMoreTokens()) {
-        expressions.push(this.parseHTML());
-      }
-
+      while (this.hasMoreTokens()) expressions.push(this.parseHTML());
       const to = this.pointer;
       const id = this.storeInfo(from, to);
       const program = new Program(id, expressions);
 
       //
 
-      const result = Array.from(this.info)
+      const info = Array.from(this.info)
         .map(([id, info]) => this.colorize(`token [${id}] \t ${info.from}:${info.to} \t ${info.to - info.from}`))
         .join("");
 
-      console.log(result);
-      const temp = this.colorize(JSON.stringify(program, null, 3));
+      const tree = this.colorize(JSON.stringify(program, null, 3));
 
-      console.log(temp);
+      console.log(info);
+      console.log(tree);
 
       //
 
@@ -224,12 +222,8 @@ export default class Parser extends Lexer {
       let view = "";
       this.keepSpace();
       while (this.hasMoreTokens()) {
-        const token = this.peekToken();
-        if (token instanceof UnknownCharacter) {
-          this.report(new WarningError(`unknown character '${token.view}' found while parsing`, token));
-        }
-        if (token instanceof Quote) break;
-        view += this.getNext();
+        if (this.peekToken() instanceof Quote) break;
+        view += (this.parseLiteral() as Character).view;
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
