@@ -1,3 +1,3 @@
 export default class Info {
-  constructor() {}
+  constructor(public from: number, public to: number) {}
 }
