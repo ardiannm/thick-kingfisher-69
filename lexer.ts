@@ -17,13 +17,13 @@ import Substraction from "./substraction.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 import EOF from "./eof.ts";
-import Info from "./info.ts";
+import Position from "./position.ts";
 
 export default class Lexer {
   private space = false;
   private generation = 0;
   protected pointer = 0;
-  public info = new Map<number, Info>();
+  public positions = new Map<number, Position>();
   constructor(protected input: string) {}
 
   public getNextToken(): Token {
@@ -35,7 +35,7 @@ export default class Lexer {
 
     const from = this.pointer;
     const next = this.getNext();
-    const id = this.storeInfo(from, this.pointer);
+    const id = this.storePosition(from, this.pointer);
 
     if (char == "(") return new OpenParenthesis(id, next);
     if (char == ")") return new ClosingParenthesis(id, next);
@@ -70,14 +70,15 @@ export default class Lexer {
     let view = "";
     const from = this.pointer;
     while (/[0-9]/.test(this.peek())) view += this.getNext();
-    return new Number(this.storeInfo(from, this.pointer), view);
+    return new Number(this.storePosition(from, this.pointer), view);
   }
 
   private getSpace() {
     let view = "";
     const from = this.pointer;
     while (/\s/.test(this.peek())) view += this.getNext();
-    if (this.space) return new Space(this.storeInfo(from, this.pointer), view);
+    const id = this.storePosition(from, this.pointer);
+    if (this.space) return new Space(id, view);
     return this.getNextToken();
   }
 
@@ -85,13 +86,14 @@ export default class Lexer {
     let view = "";
     const from = this.pointer;
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
-    return new Identifier(this.storeInfo(from, this.pointer), view);
+    const id = this.storePosition(from, this.pointer);
+    return new Identifier(id, view);
   }
 
-  protected storeInfo(from: number, to: number) {
+  protected storePosition(from: number, to: number) {
     const id = this.generation + 1;
     this.generation = id;
-    this.info.set(id, new Info(from, to));
+    this.positions.set(id, new Position(from, to));
     return id;
   }
 

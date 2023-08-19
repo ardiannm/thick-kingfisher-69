@@ -1,4 +1,4 @@
-const Read = (path: string) => {
+const Read = (path = "./dev/language.bank") => {
   return Deno.readTextFile(path);
 };
 
