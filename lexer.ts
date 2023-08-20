@@ -35,7 +35,7 @@ export default class Lexer {
 
     const from = this.pointer;
     const next = this.getNext();
-    const id = this.storePosition(from, this.pointer);
+    const id = this.storePosition(from);
 
     if (char == "(") return new OpenParenthesis(id, next);
     if (char == ")") return new ClosingParenthesis(id, next);
@@ -58,10 +58,10 @@ export default class Lexer {
   }
 
   protected peekToken() {
-    const startsAt = this.pointer;
+    const from = this.pointer;
     const id = this.generation;
     const token = this.getNextToken();
-    this.pointer = startsAt;
+    this.pointer = from;
     this.generation = id;
     return token;
   }
@@ -70,14 +70,15 @@ export default class Lexer {
     let view = "";
     const from = this.pointer;
     while (/[0-9]/.test(this.peek())) view += this.getNext();
-    return new Number(this.storePosition(from, this.pointer), view);
+    const id = this.storePosition(from);
+    return new Number(id, view);
   }
 
   private getSpace() {
     let view = "";
     const from = this.pointer;
     while (/\s/.test(this.peek())) view += this.getNext();
-    const id = this.storePosition(from, this.pointer);
+    const id = this.storePosition(from);
     if (this.space) return new Space(id, view);
     return this.getNextToken();
   }
@@ -86,14 +87,14 @@ export default class Lexer {
     let view = "";
     const from = this.pointer;
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
-    const id = this.storePosition(from, this.pointer);
+    const id = this.storePosition(from);
     return new Identifier(id, view);
   }
 
-  protected storePosition(from: number, to: number) {
+  protected storePosition(from: number) {
     const id = this.generation + 1;
     this.generation = id;
-    this.positions.set(id, new Position(from, to));
+    this.positions.set(id, new Position(from, this.pointer));
     return id;
   }
 

@@ -45,8 +45,8 @@ export default class Parser extends Lexer {
       this.doNotExpect(this.peekToken(), EOF, "program cannot be empty");
       const expressions = new Array<Expression>();
       while (this.hasMoreTokens()) expressions.push(this.parseHTML());
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+
+      const id = this.storePosition(from);
       const program = new Program(id, expressions);
 
       // Logging results
@@ -83,8 +83,8 @@ export default class Parser extends Lexer {
       this.getNextToken();
       const identifier = this.expect(this.parseLiteral(), Identifier, "expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, message);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+
+      const id = this.storePosition(from);
       return new ClosingTag(id, identifier);
     }
     const identifier = this.expect(this.parseLiteral(), Identifier, "expecting identifier for this open tag");
@@ -92,12 +92,11 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof Division) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, message);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+
+      const id = this.storePosition(from);
       return new UniTag(id, identifier, properties);
     }
-    const to = this.pointer;
-    const id = this.storePosition(from, to);
+    const id = this.storePosition(from);
     this.expect(this.getNextToken(), GreaterThan, message);
     return new OpenTag(id, identifier, properties);
   }
@@ -112,8 +111,7 @@ export default class Parser extends Lexer {
         this.getNextToken();
         view = this.expect(this.parseString(), String, "expecting a string value after '=' token following a tag property").view;
       }
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       props.push(new Property(id, identifier, view));
     }
     return props;
@@ -131,8 +129,7 @@ export default class Parser extends Lexer {
       const operator = this.getNextToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `unexpected ending of ${operator.token} expression`);
       const right = this.expect(this.parseMultiplication(), Expression, `invalid right hand side in ${operator.token} expression`);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       left = new Binary(id, left, operator, right);
     }
     return left;
@@ -146,8 +143,7 @@ export default class Parser extends Lexer {
       this.expect(left, Expression, `invalid left hand side in ${operator.token} expression`);
       this.doNotExpect(this.peekToken(), EOF, `unexpected ending of ${operator.token} expression`);
       const right = this.expect(this.parsePower(), Expression, `invalid right hand side in ${operator.token} expression`);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       left = new Binary(id, left, operator, right);
     }
     return left;
@@ -161,8 +157,7 @@ export default class Parser extends Lexer {
       this.expect(left, Expression, `invalid left hand side in ${operator.token} expression`);
       this.doNotExpect(this.peekToken(), EOF, `unexpected ending of ${operator.token} expression`);
       const right = this.expect(this.parsePower(), Expression, `invalid right hand side in ${operator.token} expression`);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       left = new Binary(id, left, operator, right);
     }
     return left;
@@ -174,8 +169,7 @@ export default class Parser extends Lexer {
       const operator = this.getNextToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `unexpected ending of ${operator.token} expression`);
       const right = this.expect(this.parseUnary(), Expression, `invalid expression in ${operator.token} expression`);
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       return new Unary(id, operator, right);
     }
     return this.parseParanthesis();
@@ -188,8 +182,7 @@ export default class Parser extends Lexer {
       this.doNotExpect(this.peekToken(), ClosingParenthesis, "no expression provided within parenthesis statement");
       const expression = this.expect(this.parseAddition(), Expression, "expecting expression after an open parenthesis");
       this.expect(this.getNextToken(), ClosingParenthesis, "expecting to close this parenthesis");
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       return new Parenthesis(id, expression);
     }
     return this.parseString();
@@ -207,8 +200,7 @@ export default class Parser extends Lexer {
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
-      const to = this.pointer;
-      const id = this.storePosition(from, to);
+      const id = this.storePosition(from);
       return new String(id, view);
     }
     return this.parseLiteral();
