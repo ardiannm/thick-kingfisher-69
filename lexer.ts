@@ -17,25 +17,30 @@ import Substraction from "./substraction.ts";
 import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 import EOF from "./eof.ts";
-import Position from "./position.ts";
+import Info from "./info.ts";
 
 export default class Lexer {
-  private space = false;
-  private generation = 0;
   protected pointer = 0;
-  public positions = new Map<number, Position>();
+  private generation = 0;
+  protected line = 1;
+  private space = false;
+  public info = new Map<number, Info>();
   constructor(protected input: string) {}
 
   public getNextToken(): Token {
     const char = this.peek();
 
+    if (char == "\n") this.newLine();
+    if (char == "\r") this.newLine();
+
     if (/[0-9]/.test(char)) return this.getNumber();
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
 
-    const from = this.pointer;
+    const info = this.snapshot();
+    const id = this.generateInfo(info);
+
     const next = this.getNext();
-    const id = this.storePosition(from);
 
     if (char == "(") return new OpenParenthesis(id, next);
     if (char == ")") return new ClosingParenthesis(id, next);
@@ -52,49 +57,49 @@ export default class Lexer {
     if (char == "/") return new Division(id, next);
     if (char == "^") return new Exponentiation(id, next);
 
-    if (next) return new UnknownCharacter(id, next);
+    if (char) return new UnknownCharacter(id, next);
 
     return new EOF(id);
   }
 
   protected peekToken() {
-    const from = this.pointer;
-    const id = this.generation;
+    const info = this.snapshot();
     const token = this.getNextToken();
-    this.pointer = from;
-    this.generation = id;
+    this.pointer = info.pointer;
+    this.generation = info.id;
+    if (this.line > info.line) this.line = info.line;
     return token;
   }
 
   private getNumber() {
     let view = "";
-    const from = this.pointer;
+    const info = this.snapshot();
     while (/[0-9]/.test(this.peek())) view += this.getNext();
-    const id = this.storePosition(from);
+    const id = this.generateInfo(info);
     return new Number(id, view);
   }
 
   private getSpace() {
     let view = "";
-    const from = this.pointer;
+    const info = this.snapshot();
     while (/\s/.test(this.peek())) view += this.getNext();
-    const id = this.storePosition(from);
+    const id = this.generateInfo(info);
     if (this.space) return new Space(id, view);
     return this.getNextToken();
   }
 
   private getIdentifier() {
     let view = "";
-    const from = this.pointer;
+    const info = this.snapshot();
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
-    const id = this.storePosition(from);
+    const id = this.generateInfo(info);
     return new Identifier(id, view);
   }
 
-  protected storePosition(from: number) {
+  protected generateInfo(info: { id: number; pointer: number; line: number }) {
     const id = this.generation + 1;
     this.generation = id;
-    this.positions.set(id, new Position(from, this.pointer));
+    this.info.set(id, new Info(info.pointer, this.pointer, info.line));
     return id;
   }
 
@@ -118,5 +123,13 @@ export default class Lexer {
     const character = this.peek();
     this.pointer = this.pointer + 1;
     return character;
+  }
+
+  private newLine() {
+    this.line = this.line + 1;
+  }
+
+  protected snapshot() {
+    return { id: this.generation, pointer: this.pointer, line: this.line };
   }
 }
