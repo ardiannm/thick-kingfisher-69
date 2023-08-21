@@ -27,6 +27,7 @@ export default class Lexer {
   protected pointer = 0;
   private generation = 0;
   protected line = 1;
+  protected lineStart = 0;
   private space = false;
   public data = new Map<number, State>();
   constructor(protected input: string) {}
