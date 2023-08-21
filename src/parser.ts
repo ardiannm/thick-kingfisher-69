@@ -29,6 +29,7 @@ import ParserError from "./parser.error";
 import String from "./string";
 import Parenthesis from "./parenthesis";
 import ClosingTag from "./closing.tag";
+import SpecialCharacter from "./special.character";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -47,27 +48,13 @@ export default class Parser extends Lexer {
       const expressions = new Array<Expression>();
       while (this.hasMoreTokens()) {
         expressions.push(this.parseHTML());
+        this.expect(this.getNextToken(), SpecialCharacter, "expression must end with a ';'");
         if (this.hasMoreTokens()) {
           this.expect(this.getNextToken(), Newline, "new expression can only continue in a new line");
         }
       }
       const id = this.generate(data);
-      const program = new Program(id, expressions);
-
-      // Logging results
-
-      const datas = Array.from(this.data)
-        .map(([id, data]) => this.colorize(`token [${id}] \t ${data.from}:${data.to} \t ${data.to - data.from} \t line ${data.line}`))
-        .join("");
-
-      const tree = this.colorize(JSON.stringify(program, null, 3));
-
-      console.log(datas);
-      console.log(tree);
-
-      // Returning results ...
-
-      return program;
+      return new Program(id, expressions);
     } catch (report) {
       return report;
     }
@@ -235,14 +222,5 @@ export default class Parser extends Lexer {
       throw error;
     }
     return token as T;
-  }
-
-  protected report(error: ParserError) {
-    console.log(this.colorize(`${error.message}, at token [${error.position.id}]`));
-    return error;
-  }
-
-  private colorize(str: string, code = 26) {
-    return "\n" + `\u001b[38;5;${code}m${str}\u001b[0m`;
   }
 }

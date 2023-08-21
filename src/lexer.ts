@@ -19,6 +19,9 @@ import Multiplication from "./multiplication";
 import Space from "./space";
 import Newline from "./newline";
 import EOF from "./eof";
+import SemiColon from "./SemiColon";
+import WarningError from "./warning.error";
+import ParserError from "./parser.error";
 
 export default class Lexer {
   protected pointer = 0;
@@ -41,6 +44,7 @@ export default class Lexer {
 
     const next = this.getNext();
 
+    if (char == ";") return new SemiColon(id, next);
     if (char == "(") return new OpenParenthesis(id, next);
     if (char == ")") return new ClosingParenthesis(id, next);
     if (char == "!") return new ExclamationMark(id, next);
@@ -56,7 +60,10 @@ export default class Lexer {
     if (char == "/") return new Division(id, next);
     if (char == "^") return new Exponentiation(id, next);
 
-    if (char) return new UnknownCharacter(id, next);
+    if (char) {
+      const token = new UnknownCharacter(id, next);
+      this.report(new WarningError(`unknown character '${token.view}' found while parsing`, token));
+    }
 
     return new EOF(id);
   }
@@ -140,5 +147,9 @@ export default class Lexer {
 
   protected keepState() {
     return { id: this.generation, pointer: this.pointer, line: this.line };
+  }
+
+  protected report(error: ParserError) {
+    console.log(`${error.message} at token [${error.position.id}]`);
   }
 }

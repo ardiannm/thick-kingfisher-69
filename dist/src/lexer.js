@@ -23,6 +23,8 @@ const multiplication_1 = __importDefault(require("./multiplication"));
 const space_1 = __importDefault(require("./space"));
 const newline_1 = __importDefault(require("./newline"));
 const eof_1 = __importDefault(require("./eof"));
+const SemiColon_1 = __importDefault(require("./SemiColon"));
+const warning_error_1 = __importDefault(require("./warning.error"));
 class Lexer {
     input;
     pointer = 0;
@@ -46,6 +48,8 @@ class Lexer {
         if (/[0-9]/.test(char))
             return this.getNumber();
         const next = this.getNext();
+        if (char == ";")
+            return new SemiColon_1.default(id, next);
         if (char == "(")
             return new open_parenthesis_1.default(id, next);
         if (char == ")")
@@ -72,8 +76,10 @@ class Lexer {
             return new division_1.default(id, next);
         if (char == "^")
             return new exponentiation_1.default(id, next);
-        if (char)
-            return new unknown_character_1.default(id, next);
+        if (char) {
+            const token = new unknown_character_1.default(id, next);
+            this.report(new warning_error_1.default(`unknown character '${token.view}' found while parsing`, token));
+        }
         return new eof_1.default(id);
     }
     peekToken() {
@@ -149,6 +155,9 @@ class Lexer {
     }
     keepState() {
         return { id: this.generation, pointer: this.pointer, line: this.line };
+    }
+    report(error) {
+        console.log(`${error.message} at token [${error.position.id}]`);
     }
 }
 exports.default = Lexer;

@@ -7,7 +7,6 @@
     "outDir": "dist",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-
   },
   "include": ["index.ts"]
 }
