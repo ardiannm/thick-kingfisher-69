@@ -1,3 +1,3 @@
-import Space from "./space";
+import Space from "./Space";
 
 export default class Newline extends Space {}

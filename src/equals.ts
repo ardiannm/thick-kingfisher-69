@@ -1,3 +1,3 @@
-import SpecialCharacter from "./special.character";
+import SpecialCharacter from "./SpecialCharacters";
 
 export default class Equals extends SpecialCharacter {}

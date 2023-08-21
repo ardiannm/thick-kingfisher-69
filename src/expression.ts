@@ -1,3 +1,3 @@
-import Token from "./token";
+import Token from "./Token";
 
 export default class Expression extends Token {}

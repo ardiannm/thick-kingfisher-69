@@ -1,3 +1,3 @@
-import OpenTag from "./open.tag";
+import OpenTag from "./OpenTag";
 
 export default class UniTag extends OpenTag {}

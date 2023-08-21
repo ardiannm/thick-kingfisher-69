@@ -1,5 +1,5 @@
-import Token from "./token";
-import LogError from "./log.error";
+import Token from "./Token";
+import LogError from "./LogError";
 
 export default class ParserError extends LogError {
   constructor(public message: string, public position: Token) {

@@ -1,16 +1,16 @@
-import Parser from "./parser";
-import RuntimeValue from "./runtime.value";
-import InterpreterError from "./interpreter.error";
-import Binary from "./binary";
-import Program from "./program";
-import Unary from "./unary";
-import Token from "./token";
-import RuntimeNumber from "./runtime.number";
-import Substraction from "./substraction";
-import Multiplication from "./multiplication";
-import Division from "./division";
-import Exponentiation from "./exponentiation";
-import Number from "./number";
+import Parser from "./Parser";
+import RuntimeValue from "./RuntimeValue";
+import InterpreterError from "./InterpreterError";
+import Binary from "./Binary";
+import Program from "./Program";
+import Unary from "./Unary";
+import Token from "./Token";
+import RuntimeNumber from "./RuntimeNumber";
+import Substraction from "./Substraction";
+import Multiplication from "./Multiplication";
+import Division from "./Division";
+import Exponentiation from "./Exponentiation";
+import Number from "./Number";
 
 export default class Interpreter extends Parser {
   public run() {

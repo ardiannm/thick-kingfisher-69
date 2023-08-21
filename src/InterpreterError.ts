@@ -1,3 +1,3 @@
-import LogError from "./log.error";
+import LogError from "./LogError";
 
 export default class InterpreterError extends LogError {}

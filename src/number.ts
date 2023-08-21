@@ -1,3 +1,3 @@
-import Literal from "./literal";
+import Literal from "./Literal";
 
 export default class Number extends Literal {}
