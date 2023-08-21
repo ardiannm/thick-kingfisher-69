@@ -20,7 +20,7 @@ import Space from "./Space";
 import Newline from "./Newline";
 import EOF from "./EOF";
 import SemiColon from "./SemiColon";
-import WarningError from "./WarningError";
+import TokenError from "./TokenError";
 import ParserError from "./ParserError";
 
 export default class Lexer {
@@ -61,8 +61,9 @@ export default class Lexer {
     if (char == "^") return new Exponentiation(id, next);
 
     if (char) {
-      const token = new UnknownCharacter(id, next);
-      this.report(new WarningError(`unknown character '${token.view}' found while parsing`, token));
+      const error = new TokenError(`Unknown character '${char}' found while parsing`, new UnknownCharacter(id, next));
+      this.report(error);
+      throw error;
     }
 
     return new EOF(id);
