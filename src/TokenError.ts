@@ -1,3 +1,3 @@
-import ParserError from "./ParserError";
+import ParseError from "./ParseError";
 
-export default class TokenError extends ParserError {}
+export default class TokenError extends ParseError {}

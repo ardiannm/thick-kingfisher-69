@@ -1,4 +1,4 @@
 export default class Token {
-  public token = this.constructor.name.replace(/[A-Z]/g, " $&").trim().replace(/ /, "-").toLowerCase();
+  public name = this.constructor.name;
   constructor(public id: number) {}
 }

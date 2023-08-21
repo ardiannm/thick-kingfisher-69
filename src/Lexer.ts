@@ -1,10 +1,9 @@
 import Token from "./Token";
-import State from "./State";
+import Info from "./Info";
 import OpenParenthesis from "./OpenParenthesis";
 import ClosingParenthesis from "./ClosingParenthesis";
 import Number from "./Number";
 import Identifier from "./Identifier";
-import UnknownCharacter from "./UnknownCharacter";
 import Exponentiation from "./Exponentiation";
 import ExclamationMark from "./ExclamationMark";
 import Substraction from "./Substraction";
@@ -18,24 +17,25 @@ import Equals from "./Equals";
 import Multiplication from "./Multiplication";
 import Space from "./Space";
 import Newline from "./Newline";
-import EOF from "./EOF";
 import SemiColon from "./SemiColon";
+import ParseError from "./ParseError";
 import TokenError from "./TokenError";
-import ParserError from "./ParserError";
+
+import EOF from "./EOF";
 
 export default class Lexer {
-  protected pointer = 0;
+  protected pos = 0;
   private generation = 0;
   protected line = 1;
   protected lineStart = 0;
   private space = false;
-  public data = new Map<number, State>();
+  public data = new Map<number, Info>();
   constructor(protected input: string) {}
 
   public getNextToken(): Token {
     const char = this.peek();
 
-    const data = this.keepState();
+    const data = this.keepInfo();
     const id = this.generate(data);
 
     if (/\r|\n/.test(char)) return this.getNewLine();
@@ -62,7 +62,7 @@ export default class Lexer {
     if (char == "^") return new Exponentiation(id, next);
 
     if (char) {
-      const error = new TokenError(`Unknown character '${char}' found while parsing`, new UnknownCharacter(id, next));
+      const error = new TokenError(id, `Unknown character '${char}' found while parsing`);
       this.report(error);
       throw error;
     }
@@ -71,17 +71,18 @@ export default class Lexer {
   }
 
   protected peekToken() {
-    const data = this.keepState();
+    const info = this.keepInfo();
     const token = this.getNextToken();
-    this.pointer = data.pointer;
-    this.generation = data.id;
-    if (this.line > data.line) this.line = data.line;
+    this.pos = info.start;
+    this.generation = info.id;
+    if (this.line > info.line) this.line = info.line;
+    if (this.lineStart > info.lineStart) this.lineStart = info.lineStart;
     return token;
   }
 
   private getNumber() {
     let view = "";
-    const data = this.keepState();
+    const data = this.keepInfo();
     while (/[0-9]/.test(this.peek())) view += this.getNext();
     const id = this.generate(data);
     return new Number(id, view);
@@ -89,8 +90,9 @@ export default class Lexer {
 
   private getNewLine() {
     let view = "";
-    const data = this.keepState();
+    const data = this.keepInfo();
     while (/\r/.test(this.peek())) view += this.getNext();
+    this.lineStart = this.lineStart + 1;
     view += this.getNext();
     this.newLine();
     const id = this.generate(data);
@@ -99,7 +101,7 @@ export default class Lexer {
 
   private getSpace() {
     let view = "";
-    const data = this.keepState();
+    const data = this.keepInfo();
     while (/\s/.test(this.peek())) view += this.getNext();
     const id = this.generate(data);
     if (this.space) return new Space(id, view);
@@ -108,16 +110,16 @@ export default class Lexer {
 
   private getIdentifier() {
     let view = "";
-    const data = this.keepState();
+    const data = this.keepInfo();
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
     const id = this.generate(data);
     return new Identifier(id, view);
   }
 
-  protected generate(data: { id: number; pointer: number; line: number }) {
+  protected generate(data: Info) {
     const id = this.generation + 1;
     this.generation = id;
-    this.data.set(id, new State(data.pointer, this.pointer, data.line));
+    this.data.set(id, new Info(id, data.start, this.pos, data.line, this.lineStart));
     return id;
   }
 
@@ -134,12 +136,12 @@ export default class Lexer {
   }
 
   private peek() {
-    return this.input.charAt(this.pointer);
+    return this.input.charAt(this.pos);
   }
 
   protected getNext() {
     const character = this.peek();
-    this.pointer = this.pointer + 1;
+    this.pos = this.pos + 1;
     return character;
   }
 
@@ -147,11 +149,24 @@ export default class Lexer {
     this.line = this.line + 1;
   }
 
-  protected keepState() {
-    return { id: this.generation, pointer: this.pointer, line: this.line };
+  protected keepInfo() {
+    return new Info(this.generation, this.pos, this.pos, this.line, this.lineStart);
   }
 
-  protected report(error: ParserError) {
-    console.log(`${error.message} at token [${error.position.id}]`);
+  protected report(error: ParseError) {
+    const token = this.data.get(error.id);
+    const row = token.line;
+    const column = token.start - token.lineStart + 1;
+    const msg = `${error.name}: ${error.message}. ${row}:${column}.`;
+
+    const first = this.input.substring(token.lineStart, token.start);
+    const second = this.input.substring(token.start);
+
+    let pointer = `${first}${second}`;
+    pointer += "\n" + first.replace(/./g, " ") + "^";
+
+    console.log(msg);
+    console.log();
+    console.log(pointer);
   }
 }

@@ -1,9 +1,9 @@
-## PROJECT STRUCTURE
+### PROJECT STRUCTURE
 
 - [x] Convert Deno into NPM Typescript package module
 
 
-## ERROR HANDLING
+### ERROR HANDLING
 
 - [x] Implement error handling mechanism.
 - [ ] Set line and line start numbers in token positional details associated with each token by token id.

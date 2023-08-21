@@ -1,3 +1,3 @@
-import LogError from "./LogError";
-
-export default class InterpreterError extends LogError {}
+export default class InterpreterError {
+  constructor(public message: string) {}
+}
