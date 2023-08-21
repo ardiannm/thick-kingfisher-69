@@ -1,3 +1,3 @@
-import Expression from "./Expression";
+import Token from "./Token";
 
-export default class HTML extends Expression {}
+export default class HTML extends Token {}

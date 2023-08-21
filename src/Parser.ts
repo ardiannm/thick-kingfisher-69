@@ -17,7 +17,7 @@ import Property from "./Property";
 import Addition from "./Addition";
 import Multiplication from "./Multiplication";
 import OpenParenthesis from "./OpenParenthesis";
-import ClosingParenthesis from "./ClosingParenthesis";
+import CloseParenthesis from "./CloseParenthesis";
 import Character from "./Character";
 import Quote from "./Quote";
 import Token from "./Token";
@@ -26,7 +26,7 @@ import Unary from "./Unary";
 import ParseError from "./ParseError";
 import String from "./String";
 import Parenthesis from "./Parenthesis";
-import ClosingTag from "./ClosingTag";
+import CloseTag from "./CloseTag";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -51,7 +51,7 @@ export default class Parser extends Lexer {
       }
       const id = this.generate(info);
       const program = new Program(id, expressions);
-
+      console.log(JSON.stringify(program, null, 3));
       return program;
     } catch (report) {
       return report;
@@ -74,7 +74,7 @@ export default class Parser extends Lexer {
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, message);
       const id = this.generate(info);
-      return new ClosingTag(id, identifier);
+      return new CloseTag(id, identifier);
     }
     const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this open tag");
     const properties = this.parseProperties();
@@ -167,9 +167,9 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof OpenParenthesis) {
       const info = this.keepInfo();
       this.getNextToken();
-      this.doNotExpect(this.peekToken(), ClosingParenthesis, "Parenthesis closed with no expression");
+      this.doNotExpect(this.peekToken(), CloseParenthesis, "Parenthesis closed with no expression");
       const expression = this.expect(this.parseAddition(), Expression, "Expecting expression after an open parenthesis");
-      this.expect(this.getNextToken(), ClosingParenthesis, "Expecting to close this parenthesis");
+      this.expect(this.getNextToken(), CloseParenthesis, "Expecting to close this parenthesis");
       const id = this.generate(info);
       return new Parenthesis(id, expression);
     }

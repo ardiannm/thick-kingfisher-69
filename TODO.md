@@ -1,6 +1,7 @@
 ### PROJECT STRUCTURE
 
 - [x] Convert Deno into NPM Typescript package module
+- [x] Add BNF Grammar Rules
 
 
 ### ERROR HANDLING

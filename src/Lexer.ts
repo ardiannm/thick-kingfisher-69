@@ -1,7 +1,7 @@
 import Token from "./Token";
 import Info from "./Info";
 import OpenParenthesis from "./OpenParenthesis";
-import ClosingParenthesis from "./ClosingParenthesis";
+import CloseParenthesis from "./CloseParenthesis";
 import Number from "./Number";
 import Identifier from "./Identifier";
 import Exponentiation from "./Exponentiation";
@@ -47,7 +47,7 @@ export default class Lexer {
 
     if (char == ";") return new SemiColon(id, next);
     if (char == "(") return new OpenParenthesis(id, next);
-    if (char == ")") return new ClosingParenthesis(id, next);
+    if (char == ")") return new CloseParenthesis(id, next);
     if (char == "!") return new ExclamationMark(id, next);
     if (char == "?") return new QuestionMark(id, next);
     if (char == '"') return new Quote(id, next);
