@@ -28,6 +28,7 @@ import EOF from "./eof.ts";
 import Character from "./character.ts";
 import OpenTag from "./open.tag.ts";
 import UniTag from "./uni.tag.ts";
+import Newline from "./newline.ts";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -46,6 +47,7 @@ export default class Parser extends Lexer {
       const expressions = new Array<Expression>();
       while (this.hasMoreTokens()) {
         expressions.push(this.parseHTML());
+        this.expect(this.getNextToken(), Newline, "new expression can only continue in a new line");
       }
       const id = this.generateInfo(info);
       const program = new Program(id, expressions);

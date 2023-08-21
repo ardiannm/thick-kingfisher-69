@@ -18,6 +18,7 @@ import ClosingParenthesis from "./closing.parenthesis.ts";
 import Equals from "./equals.ts";
 import EOF from "./eof.ts";
 import Info from "./info.ts";
+import Newline from "./newline.ts";
 
 export default class Lexer {
   protected pointer = 0;
@@ -30,15 +31,13 @@ export default class Lexer {
   public getNextToken(): Token {
     const char = this.peek();
 
-    if (char == "\n") this.newLine();
-    if (char == "\r") this.newLine();
-
-    if (/[0-9]/.test(char)) return this.getNumber();
-    if (/\s/.test(char)) return this.getSpace();
-    if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
-
     const info = this.snapshot();
     const id = this.generateInfo(info);
+
+    if (/\r|\n/.test(char)) return this.getNewline();
+    if (/\s/.test(char)) return this.getSpace();
+    if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
+    if (/[0-9]/.test(char)) return this.getNumber();
 
     const next = this.getNext();
 
@@ -77,6 +76,20 @@ export default class Lexer {
     while (/[0-9]/.test(this.peek())) view += this.getNext();
     const id = this.generateInfo(info);
     return new Number(id, view);
+  }
+
+  private getNewline() {
+    let view = "";
+    this.newLine();
+    const info = this.snapshot();
+    if (this.peek() == "\r") {
+      view += this.getNext();
+      view += this.getNext();
+    } else {
+      view += this.getNext();
+    }
+    const id = this.generateInfo(info);
+    return new Newline(id, view);
   }
 
   private getSpace() {
