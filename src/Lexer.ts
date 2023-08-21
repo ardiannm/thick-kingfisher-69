@@ -11,7 +11,7 @@ import Substraction from "./Substraction";
 import Division from "./Division";
 import QuestionMark from "./QuestionMark";
 import Quote from "./Quote";
-import LessThan from "./less.than";
+import LessThan from "./LessThan";
 import Addition from "./Addition";
 import GreaterThan from "./GreaterThan";
 import Equals from "./Equals";

@@ -2,7 +2,7 @@ import Lexer from "./Lexer";
 import Program from "./Program";
 import Expression from "./Expression";
 import Newline from "./Newline";
-import LessThan from "./less.than";
+import LessThan from "./LessThan";
 import Division from "./Division";
 import Exponentiation from "./Exponentiation";
 import Identifier from "./Identifier";
