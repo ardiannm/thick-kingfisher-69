@@ -21,8 +21,6 @@ import ClosingParenthesis from "./closing.parenthesis";
 import Character from "./character";
 import Quote from "./quote";
 import Token from "./token";
-import UnknownCharacter from "./unknown.character";
-import WarningError from "./warning.error";
 import Binary from "./binary";
 import Unary from "./unary";
 import ParserError from "./parser.error";
@@ -54,7 +52,11 @@ export default class Parser extends Lexer {
         }
       }
       const id = this.generate(data);
-      return new Program(id, expressions);
+      const program = new Program(id, expressions);
+
+      console.log(JSON.stringify(program, null, 3));
+
+      return program;
     } catch (report) {
       return report;
     }
@@ -73,12 +75,12 @@ export default class Parser extends Lexer {
     const message = "expecting a closing '>' token for this tag";
     if (this.peekToken() instanceof Division) {
       this.getNextToken();
-      const identifier = this.expect(this.parseLiteral(), Identifier, "expecting identifier for this closing tag");
+      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, message);
       const id = this.generate(data);
       return new ClosingTag(id, identifier);
     }
-    const identifier = this.expect(this.parseLiteral(), Identifier, "expecting identifier for this open tag");
+    const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for this open tag");
     const properties = this.parseProperties();
     if (this.peekToken() instanceof Division) {
       this.getNextToken();
@@ -186,22 +188,14 @@ export default class Parser extends Lexer {
       this.keepSpace();
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Quote) break;
-        view += (this.parseLiteral() as Character).view;
+        view += (this.getNextToken() as Character).view;
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
       const id = this.generate(data);
       return new String(id, view);
     }
-    return this.parseLiteral();
-  }
-
-  private parseLiteral() {
-    const token = this.getNextToken();
-    if (token instanceof UnknownCharacter) {
-      this.report(new WarningError(`unknown character '${token.view}' found while parsing`, token));
-    }
-    return token;
+    return this.getNextToken();
   }
 
   private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {

@@ -50,7 +50,9 @@ class Parser extends lexer_1.default {
                 }
             }
             const id = this.generate(data);
-            return new program_1.default(id, expressions);
+            const program = new program_1.default(id, expressions);
+            console.log(JSON.stringify(program, null, 3));
+            return program;
         }
         catch (report) {
             return report;

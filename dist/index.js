@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prompt_sync_1 = __importDefault(require("prompt-sync"));
 const interpreter_1 = __importDefault(require("./src/interpreter"));
 while (true) {
-    console.log();
     const input = (0, prompt_sync_1.default)({ sigint: true })(">> ");
+    console.log();
     const interpreter = new interpreter_1.default(input);
     interpreter.run();
+    console.log();
 }
