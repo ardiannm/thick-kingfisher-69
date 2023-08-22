@@ -20,11 +20,9 @@ import SemiColon from "./SemiColon";
 import ParseError from "./ParseError";
 import TokenError from "./TokenError";
 import StateMachine from "./StateMachine";
+import generateId from "./GenerateId";
+import preserveState from "./PreserveState";
 import EOF from "./EOF";
-
-import "./GenerateId";
-
-import generate from "./GenerateId";
 
 export default class Lexer {
   private space = false;
@@ -32,7 +30,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @generate
+  @generateId
   public getNextToken(): Token {
     const char = this.peek();
 
@@ -68,12 +66,9 @@ export default class Lexer {
     return new EOF();
   }
 
-  // @preserveState
+  @preserveState
   protected peekToken(): Token {
-    const stateSnapshot = { ...this.state };
-    const token = this.getNextToken();
-    this.state = stateSnapshot;
-    return token;
+    return this.getNextToken();
   }
   private getNumber() {
     let view = "";
