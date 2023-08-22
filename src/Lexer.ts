@@ -19,15 +19,13 @@ import Newline from "./Newline";
 import SemiColon from "./SemiColon";
 import ParseError from "./ParseError";
 import TokenError from "./TokenError";
-
+import StateMachine from "./StateMachine";
 import EOF from "./EOF";
 
 export default class Lexer {
-  protected pointer = 0;
-  private gen = 1;
-  protected line = 1;
-  protected lineStart = 0;
   private space = false;
+  private state = new StateMachine(0, 1, 0, 1);
+
   constructor(protected input: string) {}
 
   public getNextToken(): Token {
@@ -65,19 +63,12 @@ export default class Lexer {
     return new EOF();
   }
 
-  protected peekToken() {
-    const pointer = this.pointer;
-    const line = this.line;
-    const lineStart = this.lineStart;
-    const gen = this.gen;
+  protected peekToken(): Token {
+    const stateSnapshot = { ...this.state };
     const token = this.getNextToken();
-    this.pointer = pointer;
-    this.gen = gen;
-    this.line = line;
-    this.lineStart = lineStart;
+    this.state = stateSnapshot;
     return token;
   }
-
   private getNumber() {
     let view = "";
     while (/[0-9]/.test(this.peek())) view += this.getNext();
@@ -86,7 +77,6 @@ export default class Lexer {
 
   private getNewLine() {
     let view = "";
-
     while (/\r/.test(this.peek())) view += this.getNext();
     view += this.getNext();
     this.newLine();
@@ -119,18 +109,18 @@ export default class Lexer {
   }
 
   private peek() {
-    return this.input.charAt(this.pointer);
+    return this.input.charAt(this.state.pointer);
   }
 
   protected getNext() {
     const character = this.peek();
-    this.pointer = this.pointer + 1;
+    this.state.pointer = this.state.pointer + 1;
     return character;
   }
 
   private newLine() {
-    this.line = this.line + 1;
-    this.lineStart = this.pointer;
+    this.state.line = this.state.line + 1;
+    this.state.lineStart = this.state.pointer;
   }
 
   protected report(error: ParseError) {
