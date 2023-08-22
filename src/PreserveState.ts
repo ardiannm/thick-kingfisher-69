@@ -5,17 +5,17 @@ import Lexer from "./Lexer";
  * Generates and injects an unique id for the token
  * @returns Token with newly injected id for the next generation
  */
-function generate(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
+function preserveState(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
+    const stateSnapshot = { ...this.state };
     const token = originalMethod.apply(this, arguments) as Token;
-    token.token = this.state.tokenId;
-    this.state.tokenId = this.state.tokenId + 1;
+    this.state = stateSnapshot;
     return token;
   };
 
   return descriptor;
 }
 
-export default generate;
+export default preserveState;
