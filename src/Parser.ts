@@ -35,7 +35,9 @@ export default class Parser extends Lexer {
   //
 
   public parse() {
-    return this.parseProgram();
+    const program = this.parseProgram();
+    this.reset();
+    return program;
   }
 
   private parseProgram() {

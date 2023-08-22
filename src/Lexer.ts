@@ -32,6 +32,15 @@ export default class Lexer {
   public data = new Map<number, Info>();
   constructor(protected input: string) {}
 
+  protected reset() {
+    this.pos = 0;
+    this.generation = 0;
+    this.line = 1;
+    this.lineStart = 0;
+    this.space = false;
+    this.data = new Map<number, Info>();
+  }
+
   public getNextToken(): Token {
     const char = this.peek();
 
@@ -157,7 +166,7 @@ export default class Lexer {
     const token = this.data.get(error.id);
     const row = token.line;
     const column = token.start - token.lineStart;
-    const msg = `${error.name}: ${error.message}. ${"./src/tests/tst.txt"}:${row}:${column}.`;
+    const msg = `${error.name}: ${error.message}. ${"./src/tsts/tst.txt"}:${row}:${column}.`;
 
     const first = this.input.substring(token.lineStart, token.start);
     const second = this.input.substring(token.start);
