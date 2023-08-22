@@ -71,8 +71,8 @@ export default class Lexer {
   }
 
   protected peekToken() {
-    const info = this.keepInfo();
     const token = this.getNextToken();
+    const info = this.data.get(token.id);
     this.pos = info.start;
     this.generation = info.id;
     if (this.line > info.line) this.line = info.line;
@@ -92,7 +92,6 @@ export default class Lexer {
     let view = "";
     const data = this.keepInfo();
     while (/\r/.test(this.peek())) view += this.getNext();
-    this.lineStart = this.lineStart + 1;
     view += this.getNext();
     this.newLine();
     const id = this.generate(data);
@@ -147,6 +146,7 @@ export default class Lexer {
 
   private newLine() {
     this.line = this.line + 1;
+    this.lineStart = this.pos;
   }
 
   protected keepInfo() {
@@ -156,13 +156,13 @@ export default class Lexer {
   protected report(error: ParseError) {
     const token = this.data.get(error.id);
     const row = token.line;
-    const column = token.start - token.lineStart + 1;
-    const msg = `${error.name}: ${error.message}. ${row}:${column}.`;
+    const column = token.start - token.lineStart;
+    const msg = `${error.name}: ${error.message}. ${"./src/tests/tst.txt"}:${row}:${column}.`;
 
     const first = this.input.substring(token.lineStart, token.start);
     const second = this.input.substring(token.start);
 
-    let pointer = `${first}${second}`;
+    let pointer = `${first}${second}`.split("\n")[0];
     pointer += "\n" + first.replace(/./g, " ") + "^";
 
     console.log(msg);
