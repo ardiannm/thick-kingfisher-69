@@ -1,5 +1,5 @@
 import Token from "./Token";
-import Info from "./Info";
+import TokenState from "./TokenState";
 import OpenParenthesis from "./OpenParenthesis";
 import CloseParenthesis from "./CloseParenthesis";
 import Number from "./Number";
@@ -24,28 +24,19 @@ import TokenError from "./TokenError";
 import EOF from "./EOF";
 
 export default class Lexer {
-  protected pos = 0;
-  private generation = 0;
+  protected pointer = 0;
+  private gen = 1;
   protected line = 1;
   protected lineStart = 0;
   private space = false;
-  public data = new Map<number, Info>();
+  public state = new Map<number, TokenState>();
   constructor(protected input: string) {}
-
-  protected reset() {
-    this.pos = 0;
-    this.generation = 0;
-    this.line = 1;
-    this.lineStart = 0;
-    this.space = false;
-    this.data = new Map<number, Info>();
-  }
 
   public getNextToken(): Token {
     const char = this.peek();
 
-    const data = this.keepInfo();
-    const id = this.generate(data);
+    const state = this.getState();
+    const gen = this.setState(state);
 
     if (/\r|\n/.test(char)) return this.getNewLine();
     if (/\s/.test(char)) return this.getSpace();
@@ -54,81 +45,84 @@ export default class Lexer {
 
     const next = this.getNext();
 
-    if (char == ";") return new SemiColon(id, next);
-    if (char == "(") return new OpenParenthesis(id, next);
-    if (char == ")") return new CloseParenthesis(id, next);
-    if (char == "!") return new ExclamationMark(id, next);
-    if (char == "?") return new QuestionMark(id, next);
-    if (char == '"') return new Quote(id, next);
-    if (char == "<") return new LessThan(id, next);
-    if (char == ">") return new GreaterThan(id, next);
-    if (char == "=") return new Equals(id, next);
+    if (char == ";") return new SemiColon(gen, next);
+    if (char == "(") return new OpenParenthesis(gen, next);
+    if (char == ")") return new CloseParenthesis(gen, next);
+    if (char == "!") return new ExclamationMark(gen, next);
+    if (char == "?") return new QuestionMark(gen, next);
+    if (char == '"') return new Quote(gen, next);
+    if (char == "<") return new LessThan(gen, next);
+    if (char == ">") return new GreaterThan(gen, next);
+    if (char == "=") return new Equals(gen, next);
 
-    if (char == "+") return new Addition(id, next);
-    if (char == "-") return new Substraction(id, next);
-    if (char == "*") return new Multiplication(id, next);
-    if (char == "/") return new Division(id, next);
-    if (char == "^") return new Exponentiation(id, next);
+    if (char == "+") return new Addition(gen, next);
+    if (char == "-") return new Substraction(gen, next);
+    if (char == "*") return new Multiplication(gen, next);
+    if (char == "/") return new Division(gen, next);
+    if (char == "^") return new Exponentiation(gen, next);
 
     if (char) {
-      const error = new TokenError(id, `Unknown character '${char}' found while parsing`);
+      const error = new TokenError(gen, `Unknown character '${char}' found while parsing`);
       this.report(error);
       throw error;
     }
 
-    return new EOF(id);
+    return new EOF(gen);
   }
 
   protected peekToken() {
+    const pointer = this.pointer;
+    const line = this.line;
+    const lineStart = this.lineStart;
+    const gen = this.gen;
     const token = this.getNextToken();
-    const info = this.data.get(token.id);
-    this.pos = info.start;
-    this.generation = info.id;
-    if (this.line > info.line) this.line = info.line;
-    if (this.lineStart > info.lineStart) this.lineStart = info.lineStart;
+    this.pointer = pointer;
+    this.gen = gen;
+    this.line = line;
+    this.lineStart = lineStart;
     return token;
   }
 
   private getNumber() {
     let view = "";
-    const data = this.keepInfo();
+    const state = this.getState();
     while (/[0-9]/.test(this.peek())) view += this.getNext();
-    const id = this.generate(data);
+    const id = this.setState(state);
     return new Number(id, view);
   }
 
   private getNewLine() {
     let view = "";
-    const data = this.keepInfo();
+    const state = this.getState();
     while (/\r/.test(this.peek())) view += this.getNext();
     view += this.getNext();
     this.newLine();
-    const id = this.generate(data);
-    return new Newline(id, view);
+    const gen = this.setState(state);
+    return new Newline(gen, view);
   }
 
   private getSpace() {
     let view = "";
-    const data = this.keepInfo();
+    const state = this.getState();
     while (/\s/.test(this.peek())) view += this.getNext();
-    const id = this.generate(data);
-    if (this.space) return new Space(id, view);
+    const gen = this.setState(state);
+    if (this.space) return new Space(gen, view);
     return this.getNextToken();
   }
 
   private getIdentifier() {
     let view = "";
-    const data = this.keepInfo();
+    const state = this.getState();
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
-    const id = this.generate(data);
-    return new Identifier(id, view);
+    const gen = this.setState(state);
+    return new Identifier(gen, view);
   }
 
-  protected generate(data: Info) {
-    const id = this.generation + 1;
-    this.generation = id;
-    this.data.set(id, new Info(id, data.start, this.pos, data.line, this.lineStart));
-    return id;
+  protected setState(state: TokenState) {
+    const gen = this.gen + 1;
+    this.gen = gen;
+    this.state.set(gen, new TokenState(gen, state.start, this.pointer, state.line, state.lineStart));
+    return gen;
   }
 
   public hasMoreTokens(): boolean {
@@ -144,29 +138,29 @@ export default class Lexer {
   }
 
   private peek() {
-    return this.input.charAt(this.pos);
+    return this.input.charAt(this.pointer);
   }
 
   protected getNext() {
     const character = this.peek();
-    this.pos = this.pos + 1;
+    this.pointer = this.pointer + 1;
     return character;
   }
 
   private newLine() {
     this.line = this.line + 1;
-    this.lineStart = this.pos;
+    this.lineStart = this.pointer;
   }
 
-  protected keepInfo() {
-    return new Info(this.generation, this.pos, this.pos, this.line, this.lineStart);
+  protected getState() {
+    return new TokenState(this.gen, this.pointer, this.pointer, this.line, this.lineStart);
   }
 
   protected report(error: ParseError) {
-    const token = this.data.get(error.id);
+    const token = this.state.get(error.gen);
     const row = token.line;
-    const column = token.start - token.lineStart;
-    const msg = `${error.name}: ${error.message}. ${"./src/tsts/tst.txt"}:${row}:${column}.`;
+    const column = token.start - token.lineStart + 1;
+    const msg = `${error.name}: ${error.message}. ${"./src/tst/tst.txt"}:${row}:${column}.`;
 
     const first = this.input.substring(token.lineStart, token.start);
     const second = this.input.substring(token.start);
