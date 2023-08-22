@@ -22,9 +22,9 @@ import TokenError from "./TokenError";
 import StateMachine from "./StateMachine";
 import EOF from "./EOF";
 
-import "./TokenIdGenerator";
+import "./GenerateId";
 
-import TokenId from "./TokenIdGenerator";
+import generate from "./GenerateId";
 
 export default class Lexer {
   private space = false;
@@ -32,7 +32,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @TokenId
+  @generate
   public getNextToken(): Token {
     const char = this.peek();
 
@@ -68,6 +68,7 @@ export default class Lexer {
     return new EOF();
   }
 
+  // @preserveState
   protected peekToken(): Token {
     const stateSnapshot = { ...this.state };
     const token = this.getNextToken();
