@@ -22,12 +22,17 @@ import TokenError from "./TokenError";
 import StateMachine from "./StateMachine";
 import EOF from "./EOF";
 
+import "./TokenIdGenerator";
+
+import TokenId from "./TokenIdGenerator";
+
 export default class Lexer {
   private space = false;
   private state = new StateMachine(0, 1, 0, 1);
 
   constructor(protected input: string) {}
 
+  @TokenId
   public getNextToken(): Token {
     const char = this.peek();
 
