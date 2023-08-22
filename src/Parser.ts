@@ -27,6 +27,7 @@ import ParseError from "./ParseError";
 import String from "./String";
 import Parenthesis from "./Parenthesis";
 import CloseTag from "./CloseTag";
+import generateId from "./GenerateId";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -38,6 +39,7 @@ export default class Parser extends Lexer {
     return this.parseProgram();
   }
 
+  @generateId
   private parseProgram() {
     try {
       this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
