@@ -3,19 +3,19 @@ import Program from "./Program";
 import Expression from "./Expression";
 import Newline from "./Newline";
 import LessThan from "./LessThan";
-import Division from "./Division";
-import Exponentiation from "./Exponentiation";
+import Slash from "./Slash";
+import Power from "./Power";
 import Identifier from "./Identifier";
 import GreaterThan from "./GreaterThan";
 import UniTag from "./UinTag";
 import Operator from "./Operator";
 import Equals from "./Equals";
-import Substraction from "./Substraction";
+import Minus from "./Minus";
 import EOF from "./EOF";
 import OpenTag from "./OpenTag";
 import Property from "./Property";
-import Addition from "./Addition";
-import Multiplication from "./Multiplication";
+import Plus from "./Plus";
+import Product from "./Product";
 import OpenParenthesis from "./OpenParenthesis";
 import CloseParenthesis from "./CloseParenthesis";
 import Character from "./Character";
@@ -66,7 +66,7 @@ export default class Parser extends Lexer {
   private parseTag() {
     this.expect(this.getNextToken(), LessThan, "Expecting a open '<' token");
     const message = "Expecting a closing '>' token for this tag";
-    if (this.peekToken() instanceof Division) {
+    if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, message);
@@ -74,7 +74,7 @@ export default class Parser extends Lexer {
     }
     const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this open tag");
     const properties = this.parseProperties();
-    if (this.peekToken() instanceof Division) {
+    if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, message);
       return new UniTag(identifier, properties);
@@ -109,12 +109,12 @@ export default class Parser extends Lexer {
   @Register(Binary)
   private parseAddition() {
     let left = this.parseMultiplication();
-    while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
+    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       this.expect(left, Expression, `Invalid left hand side in ${this.peekToken().name} expression`);
       const operator = this.parseToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parseMultiplication(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, operator, right);
+      left = new Binary(left, right);
     }
     return left;
   }
@@ -122,12 +122,12 @@ export default class Parser extends Lexer {
   @Register(Binary)
   private parseMultiplication() {
     let left = this.parsePower();
-    while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
+    while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
       const operator = this.parseToken() as Operator;
       this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, operator, right);
+      left = new Binary(left, right);
     }
     return left;
   }
@@ -135,19 +135,19 @@ export default class Parser extends Lexer {
   @Register(Binary)
   private parsePower() {
     let left = this.parseUnary();
-    if (this.peekToken() instanceof Exponentiation) {
+    if (this.peekToken() instanceof Power) {
       const operator = this.parseToken() as Operator;
       this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, operator, right);
+      left = new Binary(left, right);
     }
     return left;
   }
 
   @Register(Unary)
   private parseUnary(): Expression {
-    if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
+    if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.parseToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parseUnary(), Expression, `Invalid expression in ${operator.name} expression`);

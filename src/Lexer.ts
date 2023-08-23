@@ -3,17 +3,17 @@ import OpenParenthesis from "./OpenParenthesis";
 import CloseParenthesis from "./CloseParenthesis";
 import Number from "./Number";
 import Identifier from "./Identifier";
-import Exponentiation from "./Exponentiation";
+import Power from "./Power";
 import ExclamationMark from "./ExclamationMark";
-import Substraction from "./Substraction";
-import Division from "./Division";
+import Minus from "./Minus";
+import Slash from "./Slash";
 import QuestionMark from "./QuestionMark";
 import Quote from "./Quote";
 import LessThan from "./LessThan";
-import Addition from "./Addition";
+import Plus from "./Plus";
 import GreaterThan from "./GreaterThan";
 import Equals from "./Equals";
-import Multiplication from "./Multiplication";
+import Product from "./Product";
 import Space from "./Space";
 import Newline from "./Newline";
 import SemiColon from "./SemiColon";
@@ -50,11 +50,11 @@ export default class Lexer {
     if (char == ">") return new GreaterThan(next);
     if (char == "=") return new Equals(next);
 
-    if (char == "+") return new Addition(next);
-    if (char == "-") return new Substraction(next);
-    if (char == "*") return new Multiplication(next);
-    if (char == "/") return new Division(next);
-    if (char == "^") return new Exponentiation(next);
+    if (char == "+") return new Plus(next);
+    if (char == "-") return new Minus(next);
+    if (char == "*") return new Product(next);
+    if (char == "/") return new Slash(next);
+    if (char == "^") return new Power(next);
 
     if (char) {
       const error = new TokenError(`Unknown character '${char}' found while parsing`);
