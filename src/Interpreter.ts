@@ -9,8 +9,8 @@ import RuntimeNumber from "./RuntimeNumber";
 import Substraction from "./Substraction";
 import Multiplication from "./Multiplication";
 import Division from "./Division";
-import Exponentiation from "./Exponentiation";
 import Number from "./Number";
+import Exponentiation from "./Exponentiation";
 
 export default class Interpreter extends Parser {
   public run() {
@@ -44,13 +44,13 @@ export default class Interpreter extends Parser {
     }
 
     switch (true) {
-      case token.operator instanceof Substraction:
+      case token instanceof Substraction:
         return new RuntimeNumber(left.value - right.value);
-      case token.operator instanceof Multiplication:
+      case token instanceof Multiplication:
         return new RuntimeNumber(left.value * right.value);
-      case token.operator instanceof Division:
+      case token instanceof Division:
         return new RuntimeNumber(left.value / right.value);
-      case token.operator instanceof Exponentiation:
+      case token instanceof Exponentiation:
         return new RuntimeNumber(left.value ** right.value);
       default:
         return new RuntimeNumber(left.value + right.value);

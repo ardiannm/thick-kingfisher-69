@@ -32,6 +32,12 @@ import Constructor from "./Constructor";
 import Tag from "./Tag";
 import HTML from "./HTML";
 
+import Division from "./Division";
+import Addition from "./Addition";
+import Multiplication from "./Multiplication";
+import Exponentiation from "./Exponentiation";
+import Substraction from "./Substraction";
+
 export default class Parser extends Lexer {
   //
 
@@ -106,41 +112,41 @@ export default class Parser extends Lexer {
     return this.parseAddition();
   }
 
-  @Register(Binary)
+  @Register(Addition)
   private parseAddition() {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       this.expect(left, Expression, `Invalid left hand side in ${this.peekToken().name} expression`);
-      const operator = this.parseToken() as Operator;
-      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
-      const right = this.expect(this.parseMultiplication(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, right);
+      this.getNextToken();
+      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of binary expression`);
+      const right = this.expect(this.parseMultiplication(), Expression, `Invalid right hand side in binary expression`);
+      left = new Addition(left, right);
     }
     return left;
   }
 
-  @Register(Binary)
+  @Register(Multiplication)
   private parseMultiplication() {
     let left = this.parsePower();
     while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
-      const operator = this.parseToken() as Operator;
-      this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
-      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
-      const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, right);
+      this.getNextToken();
+      this.expect(left, Expression, `Invalid left hand side in binary expression`);
+      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of binary expression`);
+      const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in binary expression`);
+      left = new Multiplication(left, right);
     }
     return left;
   }
 
-  @Register(Binary)
+  @Register(Exponentiation)
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
-      const operator = this.parseToken() as Operator;
-      this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
-      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
-      const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
-      left = new Binary(left, right);
+      this.getNextToken();
+      this.expect(left, Expression, `Invalid left hand side in binary expression`);
+      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of binary expression`);
+      const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in binary expression`);
+      left = new Exponentiation(left, right);
     }
     return left;
   }
@@ -149,8 +155,8 @@ export default class Parser extends Lexer {
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.parseToken() as Operator;
-      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
-      const right = this.expect(this.parseUnary(), Expression, `Invalid expression in ${operator.name} expression`);
+      this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of unary expression`);
+      const right = this.expect(this.parseUnary(), Expression, `Invalid expression in unary expression`);
       return new Unary(operator, right);
     }
     return this.parseParanthesis();
