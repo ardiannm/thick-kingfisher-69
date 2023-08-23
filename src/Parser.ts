@@ -27,7 +27,7 @@ import ParseError from "./ParseError";
 import String from "./String";
 import Parenthesis from "./Parenthesis";
 import CloseTag from "./CloseTag";
-import generateId from "./GenerateId";
+import TokenId from "./TokenId";
 
 // deno-lint-ignore no-explicit-any
 export type Constructor<Class> = new (...args: any[]) => Class;
@@ -39,7 +39,7 @@ export default class Parser extends Lexer {
     return this.parseProgram();
   }
 
-  @generateId
+  @TokenId
   private parseProgram() {
     try {
       this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
@@ -55,6 +55,7 @@ export default class Parser extends Lexer {
     }
   }
 
+  @TokenId
   private parseHTML() {
     if (this.peekToken() instanceof LessThan) {
       return this.parseTag();
@@ -62,6 +63,7 @@ export default class Parser extends Lexer {
     return this.expect(this.parseMath(), Binary, "Math expression or HTML content expected in the program");
   }
 
+  @TokenId
   private parseTag() {
     this.expect(this.getNextToken(), LessThan, "Expecting a open '<' token");
     const message = "Expecting a closing '>' token for this tag";
@@ -85,21 +87,27 @@ export default class Parser extends Lexer {
   private parseProperties() {
     const props = new Array<Property>();
     while (this.peekToken() instanceof Identifier) {
-      const identifier = this.getNextToken() as Identifier;
-      let view = "";
-      if (this.peekToken() instanceof Equals) {
-        this.getNextToken();
-        view = this.expect(this.parseString(), String, "Expecting a string value after '=' token following a tag property").view;
-      }
-      props.push(new Property(identifier, view));
+      props.push(this.parseProperty());
     }
     return props;
+  }
+
+  @TokenId
+  private parseProperty() {
+    const identifier = this.getNextToken() as Identifier;
+    let view = "";
+    if (this.peekToken() instanceof Equals) {
+      this.getNextToken();
+      view = this.expect(this.parseString(), String, "Expecting a string value after '=' token following a tag property").view;
+    }
+    return new Property(identifier, view);
   }
 
   private parseMath() {
     return this.parseAddition();
   }
 
+  @TokenId
   private parseAddition() {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
@@ -112,6 +120,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
+  @TokenId
   private parseMultiplication() {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
@@ -124,6 +133,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
+  @TokenId
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
@@ -136,6 +146,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
+  @TokenId
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       const operator = this.getNextToken() as Operator;
@@ -146,6 +157,7 @@ export default class Parser extends Lexer {
     return this.parseParanthesis();
   }
 
+  @TokenId
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -157,6 +169,7 @@ export default class Parser extends Lexer {
     return this.parseString();
   }
 
+  @TokenId
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken() as Quote;
