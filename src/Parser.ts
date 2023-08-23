@@ -27,35 +27,34 @@ import ParseError from "./ParseError";
 import String from "./String";
 import Parenthesis from "./Parenthesis";
 import CloseTag from "./CloseTag";
-import TokenId from "./TokenId";
-
-// deno-lint-ignore no-explicit-any
-export type Constructor<Class> = new (...args: any[]) => Class;
+import Register from "./Register";
+import Constructor from "./Constructor";
+import Tag from "./Tag";
+import HTML from "./HTML";
 
 export default class Parser extends Lexer {
   //
 
   public parse() {
-    return this.parseProgram();
-  }
-
-  @TokenId
-  private parseProgram() {
     try {
-      this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
-      const expressions = new Array<Expression>();
-      while (this.hasMoreTokens()) {
-        expressions.push(this.parseHTML());
-        if (this.peekToken() instanceof Newline) this.getNextToken();
-      }
-      const program = new Program(expressions);
-      return program;
-    } catch (report) {
-      return report;
+      return this.parseProgram();
+    } catch (error) {
+      return error;
     }
   }
 
-  @TokenId
+  @Register(Program)
+  private parseProgram() {
+    this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
+    const expressions = new Array<Expression>();
+    while (this.hasMoreTokens()) {
+      expressions.push(this.parseHTML());
+      if (this.peekToken() instanceof Newline) this.getNextToken();
+    }
+    return new Program(expressions);
+  }
+
+  @Register(HTML)
   private parseHTML() {
     if (this.peekToken() instanceof LessThan) {
       return this.parseTag();
@@ -63,7 +62,7 @@ export default class Parser extends Lexer {
     return this.expect(this.parseMath(), Binary, "Math expression or HTML content expected in the program");
   }
 
-  @TokenId
+  @Register(Tag)
   private parseTag() {
     this.expect(this.getNextToken(), LessThan, "Expecting a open '<' token");
     const message = "Expecting a closing '>' token for this tag";
@@ -92,7 +91,7 @@ export default class Parser extends Lexer {
     return props;
   }
 
-  @TokenId
+  @Register(Property)
   private parseProperty() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
@@ -107,12 +106,12 @@ export default class Parser extends Lexer {
     return this.parseAddition();
   }
 
-  @TokenId
+  @Register(Binary)
   private parseAddition() {
     let left = this.parseMultiplication();
     while (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
       this.expect(left, Expression, `Invalid left hand side in ${this.peekToken().name} expression`);
-      const operator = this.getNextToken() as Operator;
+      const operator = this.parseToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parseMultiplication(), Expression, `Invalid right hand side in ${operator.name} expression`);
       left = new Binary(left, operator, right);
@@ -120,11 +119,11 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @TokenId
+  @Register(Binary)
   private parseMultiplication() {
     let left = this.parsePower();
     while (this.peekToken() instanceof Multiplication || this.peekToken() instanceof Division) {
-      const operator = this.getNextToken() as Operator;
+      const operator = this.parseToken() as Operator;
       this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
@@ -133,11 +132,11 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @TokenId
+  @Register(Binary)
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Exponentiation) {
-      const operator = this.getNextToken() as Operator;
+      const operator = this.parseToken() as Operator;
       this.expect(left, Expression, `Invalid left hand side in ${operator.name} expression`);
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parsePower(), Expression, `Invalid right hand side in ${operator.name} expression`);
@@ -146,10 +145,10 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @TokenId
+  @Register(Unary)
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Addition || this.peekToken() instanceof Substraction) {
-      const operator = this.getNextToken() as Operator;
+      const operator = this.parseToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of ${operator.name} expression`);
       const right = this.expect(this.parseUnary(), Expression, `Invalid expression in ${operator.name} expression`);
       return new Unary(operator, right);
@@ -157,7 +156,7 @@ export default class Parser extends Lexer {
     return this.parseParanthesis();
   }
 
-  @TokenId
+  @Register(Parenthesis)
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -169,7 +168,7 @@ export default class Parser extends Lexer {
     return this.parseString();
   }
 
-  @TokenId
+  @Register(String)
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken() as Quote;
@@ -183,22 +182,22 @@ export default class Parser extends Lexer {
       this.ignoreSpace();
       return new String(view);
     }
-    return this.getNextToken();
+    return this.parseToken();
   }
 
-  private assert<T extends Token>(instance: Token, constructor: Constructor<T>): boolean {
-    return instance instanceof constructor;
+  private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
+    return instance instanceof tokenType;
   }
 
-  private expect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenConstructor)) return token as T;
+  private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
+    if (this.assert(token, tokenType)) return token as T;
     const error = new ParseError(message);
     this.report(error);
     throw error;
   }
 
-  private doNotExpect<T extends Token>(token: Token, tokenConstructor: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenConstructor)) {
+  private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
+    if (this.assert(token, tokenType)) {
       const error = new ParseError(message);
       this.report(error);
       throw error;

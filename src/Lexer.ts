@@ -20,9 +20,9 @@ import SemiColon from "./SemiColon";
 import ParseError from "./ParseError";
 import TokenError from "./TokenError";
 import StateMachine from "./StateMachine";
-import TokenId from "./TokenId";
-import PreserveState from "./PreserveState";
+import Preserve from "./Preserve";
 import EOF from "./EOF";
+import Register from "./Register";
 
 export default class Lexer {
   private space = false;
@@ -30,8 +30,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @TokenId
-  public getNextToken(): Token {
+  protected getNextToken(): Token {
     const char = this.peek();
 
     if (/\r|\n/.test(char)) return this.getNewLine();
@@ -66,7 +65,12 @@ export default class Lexer {
     return new EOF();
   }
 
-  @PreserveState
+  @Register(Token)
+  public parseToken() {
+    return this.getNextToken();
+  }
+
+  @Preserve
   protected peekToken(): Token {
     return this.getNextToken();
   }
