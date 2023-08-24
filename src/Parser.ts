@@ -149,24 +149,6 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  // @Register(Division)
-  // @Register(Multiplication)
-  // private parseMultiplication() {
-  //   let left = this.parsePower();
-  //   while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
-  //     const operator = this.getNextToken();
-  //     this.expect(left, Expression, "Invalid left hand side in binary expression");
-  //     this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
-  //     const right = this.expect(this.parsePower(), Expression, "Invalid right hand side in binary expression");
-  //     if (operator instanceof Product) {
-  //       left = new Multiplication(left, right);
-  //     } else {
-  //       left = new Division(left, right);
-  //     }
-  //   }
-  //   return left;
-  // }
-
   @Register(Exponentiation)
   private parsePower() {
     let left = this.parseUnary();

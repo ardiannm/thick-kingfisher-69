@@ -13,11 +13,7 @@ import Number from "./Number";
 import Exponentiation from "./Exponentiation";
 import Negative from "./Negative";
 
-export default class Interpreter extends Parser {
-  public run() {
-    return this.evaluate(this.parse());
-  }
-
+export default class Interpreter {
   evaluate<T extends Token>(token: T): RuntimeValue {
     if (token instanceof Program) return this.evaluateProgram(token);
     if (token instanceof Binary) return this.evaluateBinary(token);
