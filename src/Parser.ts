@@ -1,41 +1,41 @@
 import Lexer from "./Lexer";
-import Program from "./Program";
-import Expression from "./Expression";
-import Newline from "./Newline";
-import LessThan from "./LessThan";
-import Slash from "./Slash";
-import Power from "./Power";
-import Identifier from "./Identifier";
-import GreaterThan from "./GreaterThan";
-import UniTag from "./UinTag";
-import Operator from "./Operator";
-import Equals from "./Equals";
-import Minus from "./Minus";
-import EOF from "./EOF";
-import OpenTag from "./OpenTag";
-import Property from "./Property";
-import Plus from "./Plus";
-import Product from "./Product";
-import OpenParenthesis from "./OpenParenthesis";
-import CloseParenthesis from "./CloseParenthesis";
-import Character from "./Character";
-import Quote from "./Quote";
-import Token from "./Token";
-import ParseError from "./ParseError";
-import Substraction from "./Substraction";
-import Positive from "./Positive";
-import Negative from "./Negative";
-import Division from "./Division";
-import Addition from "./Addition";
-import Multiplication from "./Multiplication";
-import Exponentiation from "./Exponentiation";
-import String from "./String";
-import Parenthesis from "./Parenthesis";
-import CloseTag from "./CloseTag";
-import Register from "./Register";
-import Constructor from "./Constructor";
-import Tag from "./Tag";
-import HTML from "./HTML";
+import Program from "./tokens/Program";
+import Expression from "./tokens/Expression";
+import Newline from "./tokens/Newline";
+import LessThan from "./tokens/LessThan";
+import Slash from "./tokens/Slash";
+import Power from "./tokens/Power";
+import Identifier from "./tokens/Identifier";
+import GreaterThan from "./tokens/GreaterThan";
+import UniTag from "./tokens/UinTag";
+import Operator from "./tokens/Operator";
+import Equals from "./tokens/Equals";
+import Minus from "./tokens/Minus";
+import EOF from "./tokens/EOF";
+import OpenTag from "./tokens/OpenTag";
+import Attribute from "./tokens/Attribute";
+import Plus from "./tokens/Plus";
+import Product from "./tokens/Product";
+import OpenParenthesis from "./tokens/OpenParenthesis";
+import CloseParenthesis from "./tokens/CloseParenthesis";
+import Character from "./tokens/Character";
+import Quote from "./tokens/Quote";
+import Token from "./tokens/Token";
+import ParseError from "./tokens/ParseError";
+import Substraction from "./tokens/Substraction";
+import Positive from "./tokens/Positive";
+import Negative from "./tokens/Negative";
+import Division from "./tokens/Division";
+import Addition from "./tokens/Addition";
+import Multiplication from "./tokens/Multiplication";
+import Exponentiation from "./tokens/Exponentiation";
+import String from "./tokens/String";
+import Parenthesis from "./tokens/Parenthesis";
+import CloseTag from "./tokens/CloseTag";
+import Register from "./tokens/Register";
+import Constructor from "./tokens/Constructor";
+import Tag from "./tokens/Tag";
+import HTML from "./tokens/HTML";
 
 export default class Parser extends Lexer {
   //
@@ -89,22 +89,22 @@ export default class Parser extends Lexer {
   }
 
   private parseProperties() {
-    const props = new Array<Property>();
+    const props = new Array<Attribute>();
     while (this.peekToken() instanceof Identifier) {
-      props.push(this.parseProperty());
+      props.push(this.parseAttribute());
     }
     return props;
   }
 
-  @Register(Property)
-  private parseProperty() {
+  @Register(Attribute)
+  private parseAttribute() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
       view = this.expect(this.parseString(), String, "Expecting a string value after '=' token following a tag property").view;
     }
-    return new Property(identifier, view);
+    return new Attribute(identifier, view);
   }
 
   @Register(Addition)

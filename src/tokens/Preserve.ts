@@ -1,5 +1,5 @@
 import Token from "./Token";
-import Lexer from "./Lexer";
+import Lexer from "../Lexer";
 
 /**
  * Preserve lexer state after executing lexer methods than return tokens

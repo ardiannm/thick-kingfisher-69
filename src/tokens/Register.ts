@@ -1,10 +1,7 @@
 import Token from "./Token";
-import Lexer from "./Lexer";
+import Lexer from "../Lexer";
 import Constructor from "./Constructor";
 
-/**
- *
- */
 function Register<T extends Token>(tokenType: Constructor<T>) {
   return function (_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
