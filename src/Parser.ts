@@ -32,11 +32,13 @@ import Constructor from "./Constructor";
 import Tag from "./Tag";
 import HTML from "./HTML";
 
+import Substraction from "./Substraction";
+import Positive from "./Positive";
+import Negative from "./Negative";
 import Division from "./Division";
 import Addition from "./Addition";
 import Multiplication from "./Multiplication";
 import Exponentiation from "./Exponentiation";
-import Substraction from "./Substraction";
 
 export default class Parser extends Lexer {
   //
@@ -65,7 +67,7 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof LessThan) {
       return this.parseTag();
     }
-    return this.expect(this.parseMath(), Binary, "Math expression or HTML content expected in the program");
+    return this.expect(this.parseMath(), Expression, "Math expression or HTML content expected in the program");
   }
 
   @Register(Tag)
@@ -154,10 +156,10 @@ export default class Parser extends Lexer {
   @Register(Unary)
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
-      const operator = this.parseToken() as Operator;
+      const operator = this.getNextToken() as Operator;
       this.doNotExpect(this.peekToken(), EOF, `Unexpected ending of unary expression`);
       const right = this.expect(this.parseUnary(), Expression, `Invalid expression in unary expression`);
-      return new Unary(operator, right);
+      return operator instanceof Plus ? new Positive(right) : new Negative(right);
     }
     return this.parseParanthesis();
   }

@@ -11,6 +11,7 @@ import Multiplication from "./Multiplication";
 import Division from "./Division";
 import Number from "./Number";
 import Exponentiation from "./Exponentiation";
+import Negative from "./Negative";
 
 export default class Interpreter extends Parser {
   public run() {
@@ -65,7 +66,7 @@ export default class Interpreter extends Parser {
     }
 
     switch (true) {
-      case token.operator instanceof Substraction:
+      case token instanceof Negative:
         return new RuntimeNumber(-right.value);
       default:
         return new RuntimeNumber(+right.value);
