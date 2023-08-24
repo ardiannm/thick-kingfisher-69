@@ -70,25 +70,24 @@ export default class Parser extends Lexer {
   @Register(Tag)
   private parseTag() {
     this.expect(this.getNextToken(), LessThan, "Expecting a open '<' token");
-    const message = "Expecting a closing '>' token for this tag";
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
-      const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
-      this.expect(this.getNextToken(), GreaterThan, message);
+      const identifier = this.expect(this.parseToken(), Identifier, "Expecting identifier for this closing tag");
+      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
       return new CloseTag(identifier);
     }
-    const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this open tag");
-    const properties = this.parseProperties();
+    const identifier = this.expect(this.parseToken(), Identifier, "Expecting identifier for this open tag");
+    const properties = this.parseAttributes();
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
-      this.expect(this.getNextToken(), GreaterThan, message);
+      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
       return new UniTag(identifier, properties);
     }
-    this.expect(this.getNextToken(), GreaterThan, message);
+    this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
     return new OpenTag(identifier, properties);
   }
 
-  private parseProperties() {
+  private parseAttributes() {
     const props = new Array<Attribute>();
     while (this.peekToken() instanceof Identifier) {
       props.push(this.parseAttribute());
@@ -98,7 +97,7 @@ export default class Parser extends Lexer {
 
   @Register(Attribute)
   private parseAttribute() {
-    const identifier = this.getNextToken() as Identifier;
+    const identifier = this.parseToken() as Identifier;
     let view = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();

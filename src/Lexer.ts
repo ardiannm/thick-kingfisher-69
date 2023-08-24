@@ -11,6 +11,7 @@ import QuestionMark from "./tokens/QuestionMark";
 import Quote from "./tokens/Quote";
 import LessThan from "./tokens/LessThan";
 import Plus from "./tokens/Plus";
+import Comma from "./tokens/Comma";
 import GreaterThan from "./tokens/GreaterThan";
 import Equals from "./tokens/Equals";
 import Product from "./tokens/Product";
@@ -21,8 +22,8 @@ import ParseError from "./tokens/ParseError";
 import TokenError from "./tokens/TokenError";
 import StateMachine from "./tokens/StateMachine";
 import Preserve from "./tokens/Preserve";
-import EOF from "./tokens/EOF";
 import Register from "./tokens/Register";
+import EOF from "./tokens/EOF";
 
 export default class Lexer {
   private space = false;
@@ -40,6 +41,7 @@ export default class Lexer {
 
     const next = this.getNext();
 
+    if (char == ",") return new Comma(next);
     if (char == ";") return new SemiColon(next);
     if (char == "(") return new OpenParenthesis(next);
     if (char == ")") return new CloseParenthesis(next);
@@ -57,7 +59,7 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     if (char) {
-      const error = new TokenError(`Unknown character '${char}' found while parsing`);
+      const error = new TokenError("Unknown character '" + char + "' found while parsing");
       this.report(error);
       throw error;
     }
