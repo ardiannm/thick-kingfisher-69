@@ -128,42 +128,44 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  // @Register(Addition)
-  // @Register(Substraction)
-  // private parseAddition() {
-  //   let left = this.parseMultiplication();
-  //   while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
-  //     this.expect(left, Expression, "Invalid left hand side in binary expression");
+  @Register(Division)
+  @Register(Multiplication)
+  private parseMultiplication() {
+    const left = this.parsePower();
+    if (this.peekToken() instanceof Product) {
+      this.expect(left, Expression, "Invalid left hand side in binary expression");
+      this.getNextToken();
+      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
+      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
+      return new Multiplication(left, right);
+    }
+    if (this.peekToken() instanceof Slash) {
+      this.expect(left, Expression, "Invalid left hand side in binary expression");
+      this.getNextToken();
+      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
+      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
+      return new Division(left, right);
+    }
+    return left;
+  }
+
+  // @Register(Division)
+  // @Register(Multiplication)
+  // private parseMultiplication() {
+  //   let left = this.parsePower();
+  //   while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
   //     const operator = this.getNextToken();
+  //     this.expect(left, Expression, "Invalid left hand side in binary expression");
   //     this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
-  //     const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
-  //     if (operator instanceof Substraction) {
-  //       left = new Substraction(left, right);
+  //     const right = this.expect(this.parsePower(), Expression, "Invalid right hand side in binary expression");
+  //     if (operator instanceof Product) {
+  //       left = new Multiplication(left, right);
   //     } else {
-  //       left = new Addition(left, right);
-  //       // Warning: this node will go without id modifications under decorators when they just get reassigned to the left side while in the while loop
+  //       left = new Division(left, right);
   //     }
   //   }
   //   return left;
   // }
-
-  @Register(Division)
-  @Register(Multiplication)
-  private parseMultiplication() {
-    let left = this.parsePower();
-    while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
-      const operator = this.getNextToken();
-      this.expect(left, Expression, "Invalid left hand side in binary expression");
-      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
-      const right = this.expect(this.parsePower(), Expression, "Invalid right hand side in binary expression");
-      if (operator instanceof Product) {
-        left = new Multiplication(left, right);
-      } else {
-        left = new Division(left, right);
-      }
-    }
-    return left;
-  }
 
   @Register(Exponentiation)
   private parsePower() {
