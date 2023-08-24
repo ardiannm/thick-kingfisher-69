@@ -74,17 +74,17 @@ export default class Parser extends Lexer {
       this.getNextToken();
       const identifier = this.expect(this.parseToken(), Identifier, "Expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
-      return new CloseTag(identifier);
+      return new CloseTag(identifier.view);
     }
     const identifier = this.expect(this.parseToken(), Identifier, "Expecting identifier for this open tag");
     const properties = this.parseAttributes();
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
-      return new UniTag(identifier, properties);
+      return new UniTag(identifier.view, properties);
     }
     this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
-    return new OpenTag(identifier, properties);
+    return new OpenTag(identifier.view, properties);
   }
 
   private parseAttributes() {
@@ -103,7 +103,7 @@ export default class Parser extends Lexer {
       this.getNextToken();
       view = this.expect(this.parseString(), String, "Expecting a string value after '=' token following a tag property").view;
     }
-    return new Attribute(identifier, view);
+    return new Attribute(identifier.view, view);
   }
 
   @Register(Addition)

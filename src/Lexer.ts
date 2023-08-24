@@ -12,12 +12,14 @@ import Quote from "./tokens/Quote";
 import LessThan from "./tokens/LessThan";
 import Plus from "./tokens/Plus";
 import Comma from "./tokens/Comma";
+import Underline from "./tokens/Underline";
 import GreaterThan from "./tokens/GreaterThan";
 import Equals from "./tokens/Equals";
 import Product from "./tokens/Product";
 import Space from "./tokens/Space";
 import Newline from "./tokens/Newline";
 import SemiColon from "./tokens/SemiColon";
+import Colon from "./tokens/Colon";
 import ParseError from "./tokens/ParseError";
 import TokenError from "./tokens/TokenError";
 import StateMachine from "./tokens/StateMachine";
@@ -43,6 +45,7 @@ export default class Lexer {
 
     if (char == ",") return new Comma(next);
     if (char == ";") return new SemiColon(next);
+    if (char == ":") return new Colon(next);
     if (char == "(") return new OpenParenthesis(next);
     if (char == ")") return new CloseParenthesis(next);
     if (char == "!") return new ExclamationMark(next);
@@ -51,6 +54,7 @@ export default class Lexer {
     if (char == "<") return new LessThan(next);
     if (char == ">") return new GreaterThan(next);
     if (char == "=") return new Equals(next);
+    if (char == "_") return new Underline(next);
 
     if (char == "+") return new Plus(next);
     if (char == "-") return new Minus(next);
