@@ -21,17 +21,7 @@ import CloseParenthesis from "./CloseParenthesis";
 import Character from "./Character";
 import Quote from "./Quote";
 import Token from "./Token";
-import Binary from "./Binary";
-import Unary from "./Unary";
 import ParseError from "./ParseError";
-import String from "./String";
-import Parenthesis from "./Parenthesis";
-import CloseTag from "./CloseTag";
-import Register from "./Register";
-import Constructor from "./Constructor";
-import Tag from "./Tag";
-import HTML from "./HTML";
-
 import Substraction from "./Substraction";
 import Positive from "./Positive";
 import Negative from "./Negative";
@@ -39,6 +29,13 @@ import Division from "./Division";
 import Addition from "./Addition";
 import Multiplication from "./Multiplication";
 import Exponentiation from "./Exponentiation";
+import String from "./String";
+import Parenthesis from "./Parenthesis";
+import CloseTag from "./CloseTag";
+import Register from "./Register";
+import Constructor from "./Constructor";
+import Tag from "./Tag";
+import HTML from "./HTML";
 
 export default class Parser extends Lexer {
   //
@@ -67,7 +64,7 @@ export default class Parser extends Lexer {
     if (this.peekToken() instanceof LessThan) {
       return this.parseTag();
     }
-    return this.expect(this.parseMath(), Expression, "Math expression or HTML content expected in the program");
+    return this.expect(this.parseAddition(), Expression, "Math expression or HTML content expected in the program");
   }
 
   @Register(Tag)
@@ -110,53 +107,39 @@ export default class Parser extends Lexer {
     return new Property(identifier, view);
   }
 
-  private parseMath() {
-    return this.parseBinary();
-  }
-
-  private parseBinary() {
-    if (this.peekToken() instanceof Plus) {
-      return this.parseAddition();
-    } else if (this.peekToken() instanceof Minus) {
-      return this.parseSubstraction();
-    }
-  }
-
   @Register(Addition)
+  @Register(Substraction)
   private parseAddition() {
     let left = this.parseMultiplication();
-    while (this.peekToken() instanceof Plus) {
+    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       this.expect(left, Expression, "Invalid left hand side in binary expression");
-      this.getNextToken();
+      const operator = this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
       const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
-      left = new Addition(left, right);
+      if (operator instanceof Substraction) {
+        left = new Substraction(left, right);
+      } else {
+        left = new Addition(left, right);
+        // Warning: this node will go without id modifications under decorators when they just get reassigned to the left side while in the while loop
+      }
     }
     return left;
   }
 
-  @Register(Substraction)
-  private parseSubstraction() {
-    let left = this.parseMultiplication();
-    while (this.peekToken() instanceof Minus) {
-      this.expect(left, Expression, "Invalid left hand side in binary expression");
-      this.getNextToken();
-      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
-      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
-      left = new Substraction(left, right);
-    }
-    return left;
-  }
-
+  @Register(Division)
   @Register(Multiplication)
   private parseMultiplication() {
     let left = this.parsePower();
     while (this.peekToken() instanceof Product || this.peekToken() instanceof Slash) {
-      this.getNextToken();
+      const operator = this.getNextToken();
       this.expect(left, Expression, "Invalid left hand side in binary expression");
       this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
       const right = this.expect(this.parsePower(), Expression, "Invalid right hand side in binary expression");
-      left = new Multiplication(left, right);
+      if (operator instanceof Product) {
+        left = new Multiplication(left, right);
+      } else {
+        left = new Division(left, right);
+      }
     }
     return left;
   }
@@ -174,7 +157,8 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Register(Unary)
+  @Register(Positive)
+  @Register(Negative)
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
