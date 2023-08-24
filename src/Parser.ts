@@ -1,14 +1,12 @@
 import Lexer from "./Lexer";
 import Program from "./tokens/Program";
 import Expression from "./tokens/Expression";
-import Newline from "./tokens/Newline";
 import LessThan from "./tokens/LessThan";
 import Slash from "./tokens/Slash";
 import Power from "./tokens/Power";
 import Identifier from "./tokens/Identifier";
 import GreaterThan from "./tokens/GreaterThan";
 import UniTag from "./tokens/UinTag";
-import Operator from "./tokens/Operator";
 import Equals from "./tokens/Equals";
 import Minus from "./tokens/Minus";
 import EOF from "./tokens/EOF";
@@ -35,7 +33,6 @@ import CloseTag from "./tokens/CloseTag";
 import Register from "./tokens/Register";
 import Constructor from "./tokens/Constructor";
 import Tag from "./tokens/Tag";
-import HTML from "./tokens/HTML";
 
 export default class Parser extends Lexer {
   //
@@ -53,23 +50,14 @@ export default class Parser extends Lexer {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseHTML());
-      if (this.peekToken() instanceof Newline) this.getNextToken();
+      expressions.push(this.parseTag());
     }
     return new Program(expressions);
   }
 
-  @Register(HTML)
-  private parseHTML() {
-    if (this.peekToken() instanceof LessThan) {
-      return this.parseTag();
-    }
-    return this.expect(this.parseAddition(), Expression, "Math expression or HTML content expected in the program");
-  }
-
   @Register(Tag)
   private parseTag() {
-    this.expect(this.getNextToken(), LessThan, "Expecting a open '<' token");
+    this.getNextToken();
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.parseToken(), Identifier, "Expecting identifier for this closing tag");

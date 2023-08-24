@@ -29,7 +29,7 @@ import EOF from "./tokens/EOF";
 
 export default class Lexer {
   private space = false;
-  private state = new StateMachine(0, 1, 0, 1);
+  protected state = new StateMachine(0, 1, 0, 1);
 
   constructor(protected input: string) {}
 
@@ -92,7 +92,8 @@ export default class Lexer {
     while (/\r/.test(this.peek())) view += this.getNext();
     view += this.getNext();
     this.newLine();
-    return new Newline(view);
+    if (this.space) return new Newline(view);
+    return this.getNextToken();
   }
 
   private getSpace() {
