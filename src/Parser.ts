@@ -110,21 +110,36 @@ export default class Parser extends Lexer {
   @Register(Addition)
   @Register(Substraction)
   private parseAddition() {
-    let left = this.parseMultiplication();
-    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
-      this.expect(left, Expression, "Invalid left hand side in binary expression");
-      const operator = this.getNextToken();
-      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
-      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
-      if (operator instanceof Substraction) {
-        left = new Substraction(left, right);
-      } else {
-        left = new Addition(left, right);
-        // Warning: this node will go without id modifications under decorators when they just get reassigned to the left side while in the while loop
-      }
+    const left = this.parseMultiplication();
+    if (this.peekToken() instanceof Plus) {
+      this.getNextToken();
+      return new Addition(left, this.parseAddition());
+    }
+    if (this.peekToken() instanceof Minus) {
+      this.getNextToken();
+      return new Substraction(left, this.parseAddition());
     }
     return left;
   }
+
+  // @Register(Addition)
+  // @Register(Substraction)
+  // private parseAddition() {
+  //   let left = this.parseMultiplication();
+  //   while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
+  //     this.expect(left, Expression, "Invalid left hand side in binary expression");
+  //     const operator = this.getNextToken();
+  //     this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
+  //     const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
+  //     if (operator instanceof Substraction) {
+  //       left = new Substraction(left, right);
+  //     } else {
+  //       left = new Addition(left, right);
+  //       // Warning: this node will go without id modifications under decorators when they just get reassigned to the left side while in the while loop
+  //     }
+  //   }
+  //   return left;
+  // }
 
   @Register(Division)
   @Register(Multiplication)
