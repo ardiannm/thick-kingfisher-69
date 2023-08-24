@@ -1,7 +1,4 @@
-import Token from "./Token";
-
-export default class Exception extends Token {
-  constructor(public message: string) {
-    super();
-  }
+export default class Exception {
+  public name = this.constructor.name;
+  constructor(public message: string) {}
 }

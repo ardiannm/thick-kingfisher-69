@@ -111,18 +111,39 @@ export default class Parser extends Lexer {
   }
 
   private parseMath() {
-    return this.parseAddition();
+    return this.parseBinary();
+  }
+
+  private parseBinary() {
+    if (this.peekToken() instanceof Plus) {
+      return this.parseAddition();
+    } else if (this.peekToken() instanceof Minus) {
+      return this.parseSubstraction();
+    }
   }
 
   @Register(Addition)
   private parseAddition() {
     let left = this.parseMultiplication();
-    while (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
+    while (this.peekToken() instanceof Plus) {
       this.expect(left, Expression, "Invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
       const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
       left = new Addition(left, right);
+    }
+    return left;
+  }
+
+  @Register(Substraction)
+  private parseSubstraction() {
+    let left = this.parseMultiplication();
+    while (this.peekToken() instanceof Minus) {
+      this.expect(left, Expression, "Invalid left hand side in binary expression");
+      this.getNextToken();
+      this.doNotExpect(this.peekToken(), EOF, "Unexpected ending of binary expression");
+      const right = this.expect(this.parseMultiplication(), Expression, "Invalid right hand side in binary expression");
+      left = new Substraction(left, right);
     }
     return left;
   }
