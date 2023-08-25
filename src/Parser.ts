@@ -1,7 +1,6 @@
 import Lexer from "./Lexer";
 import Program from "./tokens/Program";
 import Expression from "./tokens/Expression";
-import LessThan from "./tokens/LessThan";
 import Slash from "./tokens/Slash";
 import Power from "./tokens/Power";
 import Identifier from "./tokens/Identifier";
@@ -33,7 +32,6 @@ import CloseTag from "./tokens/CloseTag";
 import Register from "./tokens/Register";
 import Constructor from "./tokens/Constructor";
 import Tag from "./tokens/Tag";
-import Component from "./tokens/Component";
 
 export default class Parser extends Lexer {
   //
@@ -49,26 +47,11 @@ export default class Parser extends Lexer {
   @Register(Program)
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
-    const expressions = new Array<Expression>(this.parseComponent());
-    // while (this.hasMoreTokens()) {
-    // expressions.push(this.parseComponent());
-    // }
-    return new Program(expressions);
-  }
-
-  @Register(Component)
-  private parseComponent() {
-    const left = this.parseTag();
-    if (left instanceof OpenTag) {
-      const right = this.parseComponent();
-      if (right instanceof Component) {
-        this.expect(this.parseTag(), CloseTag, "Expecting an closing tag for component");
-        return new Component(left.selector, [right]);
-      }
-      this.expect(right, CloseTag, "Expecting an closing tag for component");
-      return new Component(left.selector, []);
+    const expressions = new Array<Expression>();
+    while (this.hasMoreTokens()) {
+      expressions.push(this.parseTag());
     }
-    return left;
+    return new Program(expressions);
   }
 
   @Register(Tag)
@@ -101,7 +84,7 @@ export default class Parser extends Lexer {
 
   @Register(Attribute)
   private parseAttribute() {
-    const identifier = this.parseToken() as Identifier;
+    const identifier = this.getNextToken() as Identifier;
     let view = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
@@ -204,7 +187,7 @@ export default class Parser extends Lexer {
       this.ignoreSpace();
       return new String(view);
     }
-    return this.parseToken();
+    return this.getNextToken();
   }
 
   private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
@@ -213,20 +196,13 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    const error = new ParseError(message);
-    console.log();
-    const msg = this.input.substring(0, this.state.pointer);
-    console.log(`${msg} <--`);
-    console.log();
-    this.report(error);
-    throw error;
+    console.log(token);
+    throw new ParseError(message);
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
-      const error = new ParseError(message);
-      this.report(error);
-      throw error;
+      throw new ParseError(message);
     }
     return token as T;
   }

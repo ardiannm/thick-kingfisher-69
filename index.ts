@@ -6,6 +6,6 @@ while (true) {
   const input = prompt({ sigint: true })(">> ") || ReadFile();
   const tree = new Parser(input).parse();
   console.log();
-  console.log(JSON.stringify(tree, undefined, 3));
+  console.log(tree);
   console.log();
 }

@@ -20,7 +20,6 @@ import Space from "./tokens/Space";
 import Newline from "./tokens/Newline";
 import SemiColon from "./tokens/SemiColon";
 import Colon from "./tokens/Colon";
-import ParseError from "./tokens/ParseError";
 import TokenError from "./tokens/TokenError";
 import StateMachine from "./tokens/StateMachine";
 import Preserve from "./tokens/Preserve";
@@ -33,6 +32,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
+  @Register(Token)
   protected getNextToken(): Token {
     const char = this.peek();
 
@@ -64,16 +64,11 @@ export default class Lexer {
 
     if (char) {
       const error = new TokenError("Unknown character '" + char + "' found while parsing");
-      this.report(error);
+      console.log(error);
       throw error;
     }
 
     return new EOF();
-  }
-
-  @Register(Token)
-  public parseToken() {
-    return this.getNextToken();
   }
 
   @Preserve
@@ -134,10 +129,5 @@ export default class Lexer {
   private newLine() {
     this.state.line = this.state.line + 1;
     this.state.lineStart = this.state.pointer;
-  }
-
-  protected report(error: ParseError) {
-    const msg = `${error.name}: ${error.message}.`;
-    console.log(msg);
   }
 }
