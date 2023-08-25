@@ -32,6 +32,10 @@ import CloseTag from "./tokens/CloseTag";
 import Register from "./tokens/Register";
 import Constructor from "./tokens/Constructor";
 import Tag from "./tokens/Tag";
+import LessThan from "./tokens/LessThan";
+import OpenScriptTag from "./tokens/OpenScriptTag";
+import CloseScriptTag from "./tokens/CloseScriptTag";
+import Script from "./tokens/Script";
 
 export default class Parser extends Lexer {
   //
@@ -49,9 +53,27 @@ export default class Parser extends Lexer {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseTag());
+      expressions.push(this.parseScript());
     }
     return new Program(expressions);
+  }
+
+  private parseScript() {
+    const left = this.parseTag();
+    if (left instanceof OpenScriptTag) {
+      let view = "";
+      while (this.hasMoreTokens()) {
+        if (this.peekToken() instanceof LessThan) break;
+        view += this.getNext();
+      }
+      try {
+        this.expect(this.parseScript(), CloseScriptTag, "Expecting a closing script tag");
+        return new Script(view);
+      } catch (error) {
+        this.expect(error, CloseScriptTag, "Expecting a closing script tag");
+      }
+    }
+    return left;
   }
 
   @Register(Tag)
@@ -61,6 +83,7 @@ export default class Parser extends Lexer {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
       this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
+      if (identifier.view === "script") return new CloseScriptTag();
       return new CloseTag(identifier.view);
     }
     const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this open tag");
@@ -71,6 +94,7 @@ export default class Parser extends Lexer {
       return new UniTag(identifier.view, properties);
     }
     this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
+    if (identifier.view === "script") return new OpenScriptTag();
     return new OpenTag(identifier.view, properties);
   }
 

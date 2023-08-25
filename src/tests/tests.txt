@@ -1,4 +1,10 @@
-<ardian>
-   <maliqaj></maliqaj>
-   <birth></birth>
-</ardian>
+<script>
+// Name
+</script>
+<script>
+// LastName
+</script>
+<name>
+   <script></script>
+   <lastname></lastname>
+</name>
