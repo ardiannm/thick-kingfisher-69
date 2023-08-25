@@ -1,6 +1,6 @@
-import Component from "./Component";
+import HTML from "./HTML";
 
-export default class Script extends Component {
+export default class Script extends HTML {
   constructor(public view: string) {
     super();
   }
