@@ -9,8 +9,9 @@ function Register<T extends Token>(tokenType: Constructor<T>) {
     descriptor.value = function () {
       const token = originalMethod.apply(this, arguments) as Token;
       if (token instanceof tokenType) {
-        token.token = this.state.tokenId;
-        this.state.tokenId = this.state.tokenId + 1;
+        const id = this.state.tokenId;
+        token.token = id;
+        this.state.tokenId = id + 1;
       }
       return token;
     };

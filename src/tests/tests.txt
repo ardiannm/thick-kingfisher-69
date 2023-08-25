@@ -1,3 +1,4 @@
-<div class="gstl_50 sbdd_a" style="display: none; min-width: 515px; top: 52px; position: fixed; left: 650px;">
-   <div class="fl"></div>
-</div>
+<ardian>
+   <maliqaj></maliqaj>
+   <birth></birth>
+</ardian>

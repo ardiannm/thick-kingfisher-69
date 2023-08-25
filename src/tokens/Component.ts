@@ -1,8 +1,7 @@
-import Attribute from "./Attribute";
-import OpenTag from "./OpenTag";
+import HTML from "./HTML";
 
-export default class Component extends OpenTag {
-  constructor(public identifier: string, public attributes: Array<Attribute>) {
-    super(identifier, attributes);
+export default class Component extends HTML {
+  constructor(public selector: string, public comp: Array<Component>) {
+    super();
   }
 }
