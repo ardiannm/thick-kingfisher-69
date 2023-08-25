@@ -1,16 +1,15 @@
-import Parser from "./Parser";
 import RuntimeValue from "./tokens/RuntimeValue";
-import InterpreterError from "./tokens/InterpreterError";
-import Binary from "./tokens/Binary";
+import InterpreterError from "./tokens/errors/InterpreterError";
+import Binary from "./tokens/maths/Binary";
 import Program from "./tokens/Program";
 import Unary from "./tokens/Unary";
 import Token from "./tokens/Token";
 import RuntimeNumber from "./tokens/RuntimeNumber";
 import Substraction from "./tokens/Substraction";
-import Multiplication from "./tokens/Multiplication";
-import Division from "./tokens/Division";
+import Multiplication from "./tokens/maths/Multiplication";
+import Division from "./tokens/maths/Division";
 import Number from "./tokens/Number";
-import Exponentiation from "./tokens/Exponentiation";
+import Exponentiation from "./tokens/maths/Exponentiation";
 import Negative from "./tokens/Negative";
 
 export default class Interpreter {
