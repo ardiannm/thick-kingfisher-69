@@ -34,7 +34,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @Register(Token)
+  @Register
   protected getNextToken(): Token {
     const char = this.peek();
 
