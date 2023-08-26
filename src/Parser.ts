@@ -42,9 +42,7 @@ export default class Parser extends Lexer {
 
   public parse() {
     try {
-      const program = this.parseProgram();
-      console.log(JSON.stringify(Array.from(this.logger), undefined, 3));
-      return program;
+      return this.parseProgram();
     } catch (error) {
       return error;
     }
@@ -55,12 +53,15 @@ export default class Parser extends Lexer {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseScript());
+      expressions.push(this.parseHTML());
     }
     return new Program(expressions);
   }
 
-  private parseComponent() {}
+  private parseHTML() {
+    if (this.peekToken() instanceof LessThan) return this.parseScript();
+    return this.parseAddition();
+  }
 
   @Register(Script)
   private parseScript() {
@@ -225,14 +226,25 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    console.log(token);
+    this.explain(token);
     throw new ParseError(message);
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
+      this.explain(token);
       throw new ParseError(message);
     }
     return token as T;
+  }
+
+  private explain(token: Token) {
+    const logger = this.logger.get(token.id);
+    const out = this.input.substring(logger.start).split("\n")[0];
+    const mark = this.input.substring(logger.start, logger.from).replace(/./g, " ") + "^";
+    console.log();
+    console.log(out);
+    console.log(mark);
+    console.log();
   }
 }

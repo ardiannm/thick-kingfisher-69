@@ -13,7 +13,7 @@ function Register<T extends Token>(tokenType: Constructor<T>) {
       const token = originalMethod.apply(this, arguments) as Token;
       if (token instanceof tokenType) {
         const id = this.state.tokenId;
-        token.token = id;
+        token.id = id;
         this.logger.set(id, new Logger(state.lineStart, state.pointer, this.state.pointer));
         this.state.tokenId = id + 1;
       }

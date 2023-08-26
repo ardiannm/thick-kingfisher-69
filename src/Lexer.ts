@@ -64,9 +64,7 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     if (char) {
-      const error = new TokenError("Unknown character '" + char + "' found while parsing");
-      console.log(error);
-      throw error;
+      throw new TokenError("Unknown character '" + char + "' found while parsing");
     }
 
     return new EOF();
