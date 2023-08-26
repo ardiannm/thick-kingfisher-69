@@ -12,7 +12,8 @@ function Register(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
     if (token.id) return token;
     const id = this.state.tokenId;
     token.id = id;
-    this.logger.set(id, new Logger(state.lineStart, state.pointer, this.state.pointer));
+    const err = new Logger(state.lineStart, state.pointer, this.state.pointer);
+    this.logger.set(id, err);
     this.state.tokenId = id + 1;
     return token;
   };
