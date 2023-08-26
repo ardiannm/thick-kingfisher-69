@@ -2,6 +2,7 @@
   "version": "3.0.0",
   "description": "",
   "scripts": {
+    "dev": "npm start",
     "start": "node dist/index.js",
     "prestart": "npm run build",
     "build": "tsc"

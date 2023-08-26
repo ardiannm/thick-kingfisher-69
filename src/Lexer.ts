@@ -24,11 +24,13 @@ import TokenError from "./tokens/errors/TokenError";
 import StateMachine from "./tokens/StateMachine";
 import Preserve from "./tokens/Preserve";
 import Register from "./tokens/Register";
+import Logger from "./Logger";
 import EOF from "./tokens/EOF";
 
 export default class Lexer {
   private space = false;
   protected state = new StateMachine(0, 1, 0, 1);
+  protected logger = new Map<number, Logger>();
 
   constructor(protected input: string) {}
 
@@ -36,7 +38,6 @@ export default class Lexer {
   protected getNextToken(): Token {
     const char = this.peek();
 
-    if (/\r|\n/.test(char)) return this.getNewLine();
     if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
     if (/[0-9]/.test(char)) return this.getNumber();
@@ -82,18 +83,12 @@ export default class Lexer {
     return new Number(view);
   }
 
-  private getNewLine() {
-    let view = "";
-    while (/\r/.test(this.peek())) view += this.getNext();
-    view += this.getNext();
-    this.newLine();
-    if (this.space) return new Newline(view);
-    return this.getNextToken();
-  }
-
   private getSpace() {
     let view = "";
-    while (/\s/.test(this.peek())) view += this.getNext();
+    while (/\s/.test(this.peek())) {
+      if (/\n/.test(this.peek())) this.newLine();
+      view += this.getNext();
+    }
     if (this.space) return new Space(view);
     return this.getNextToken();
   }

@@ -36,15 +36,15 @@ import LessThan from "./tokens/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
 import CloseScriptTag from "./tokens/html/CloseScriptTag";
 import Script from "./tokens/html/Script";
-import Component from "./tokens/html/Component";
-import HTML from "./tokens/html/HTML";
 
 export default class Parser extends Lexer {
   //
 
   public parse() {
     try {
-      return this.parseProgram();
+      const program = this.parseProgram();
+      console.log(JSON.stringify(Array.from(this.logger), undefined, 3));
+      return program;
     } catch (error) {
       return error;
     }
@@ -55,30 +55,12 @@ export default class Parser extends Lexer {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseComponent());
+      expressions.push(this.parseScript());
     }
     return new Program(expressions);
   }
 
-  @Register(Component)
-  private parseComponent() {
-    const left = this.parseScript();
-    if (left instanceof OpenTag) {
-      const components = new Array<HTML>();
-      while (this.hasMoreTokens()) {
-        const right = this.parseComponent();
-        if (right instanceof CloseTag) {
-          return new Component(left.selector, left.attributes, components);
-        }
-        if (right instanceof Component || right instanceof Script) {
-          components.push(right);
-          continue;
-        }
-        this.expect(right, CloseTag, "Unexpected token found in the component. Closing tag required");
-      }
-    }
-    return left;
-  }
+  private parseComponent() {}
 
   @Register(Script)
   private parseScript() {
