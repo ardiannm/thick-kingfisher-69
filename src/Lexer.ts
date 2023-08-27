@@ -21,19 +21,19 @@ import Colon from "./tokens/basic/Colon";
 import IllegalCharacter from "./utils/IllegalCharacter";
 import StateMachine from "./utils/StateMachine";
 import Preserve from "./utils/Preserve";
-import Describe from "./utils/Describe";
-import Logger from "./utils/Logger";
+import InjectId from "./utils/InjectId";
+import TokenInfo from "./utils/TokenInfo";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 
 export default class Lexer {
   private space = false;
   protected state = new StateMachine(0, 1, 0, 1);
-  protected logger = new Map<number, Logger>();
+  protected logger = new Map<number, TokenInfo>();
 
   constructor(protected input: string) {}
 
-  @Describe
+  @InjectId
   protected getNextToken(): Token {
     const char = this.peek();
 

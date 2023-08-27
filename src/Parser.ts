@@ -29,7 +29,7 @@ import Exponentiation from "./tokens/expressions/Exponentiation";
 import String from "./tokens/expressions/String";
 import Parenthesis from "./tokens/expressions/Parenthesis";
 import CloseTag from "./tokens/html/CloseTag";
-import Describe from "./utils/Describe";
+import InjectId from "./utils/InjectId";
 import Constructor from "./utils/Constructor";
 import LessThan from "./tokens/basic/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
@@ -45,7 +45,7 @@ export default class Parser extends Lexer {
     }
   }
 
-  @Describe
+  @InjectId
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
@@ -55,13 +55,13 @@ export default class Parser extends Lexer {
     return new Program(expressions);
   }
 
-  @Describe
+  @InjectId
   private parseHTML() {
     if (this.peekToken() instanceof LessThan) return this.parseScript();
     return this.parseAddition();
   }
 
-  @Describe
+  @InjectId
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
@@ -80,7 +80,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Describe
+  @InjectId
   private parseTag() {
     this.getNextToken();
     if (this.peekToken() instanceof Slash) {
@@ -110,7 +110,7 @@ export default class Parser extends Lexer {
     return props;
   }
 
-  @Describe
+  @InjectId
   private parseAttribute() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
@@ -121,7 +121,7 @@ export default class Parser extends Lexer {
     return new Attribute(identifier.view, view);
   }
 
-  @Describe
+  @InjectId
   private parseAddition() {
     const left = this.parseMultiplication();
     if (this.peekToken() instanceof Plus) {
@@ -141,7 +141,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Describe
+  @InjectId
   private parseMultiplication() {
     const left = this.parsePower();
     if (this.peekToken() instanceof Product) {
@@ -161,7 +161,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Describe
+  @InjectId
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
@@ -174,7 +174,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Describe
+  @InjectId
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
@@ -186,7 +186,7 @@ export default class Parser extends Lexer {
     return this.parseParanthesis();
   }
 
-  @Describe
+  @InjectId
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -198,7 +198,7 @@ export default class Parser extends Lexer {
     return this.parseString();
   }
 
-  @Describe
+  @InjectId
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken();

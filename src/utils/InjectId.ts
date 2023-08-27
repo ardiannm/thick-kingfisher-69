@@ -1,9 +1,9 @@
 import Lexer from "../Lexer";
 import Token from "../tokens/basic/Token";
 import StateMachine from "./StateMachine";
-import Logger from "./Logger";
+import TokenInfo from "./TokenInfo";
 
-function Describe(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
+function InjectId(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
@@ -12,7 +12,7 @@ function Describe(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
     if (token.id) return token;
     const id = this.state.tokenId;
     token.id = id;
-    const err = new Logger(state.lineStart, state.pointer, this.state.pointer);
+    const err = new TokenInfo(state.lineStart, state.pointer, this.state.pointer);
     this.logger.set(id, err);
     this.state.tokenId = id + 1;
     return token;
@@ -21,4 +21,4 @@ function Describe(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
   return descriptor;
 }
 
-export default Describe;
+export default InjectId;

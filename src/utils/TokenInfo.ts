@@ -1,4 +1,4 @@
-export default class Logger {
+export default class TokenInfo {
   constructor(public start: number, public from: number, public to: number) {}
 
   logError(source: string, errorMessage: string) {
