@@ -1,9 +1,9 @@
-import Token from "./Token";
 import Lexer from "../Lexer";
+import Token from "../tokens/Token";
 import StateMachine from "./StateMachine";
-import Logger from "../Logger";
+import Logger from "./Logger";
 
-function Register(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
+function Describe(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
@@ -21,4 +21,4 @@ function Register(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
   return descriptor;
 }
 
-export default Register;
+export default Describe;

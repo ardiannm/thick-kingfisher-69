@@ -17,14 +17,13 @@ import GreaterThan from "./tokens/GreaterThan";
 import Equals from "./tokens/Equals";
 import Product from "./tokens/maths/Product";
 import Space from "./tokens/Space";
-import Newline from "./tokens/Newline";
 import SemiColon from "./tokens/SemiColon";
 import Colon from "./tokens/Colon";
-import TokenError from "./tokens/errors/TokenError";
-import StateMachine from "./tokens/StateMachine";
-import Preserve from "./tokens/Preserve";
-import Register from "./tokens/Register";
-import Logger from "./Logger";
+import TokenError from "./utils/TokenError";
+import StateMachine from "./utils/StateMachine";
+import Preserve from "./utils/Preserve";
+import Describe from "./utils/Describe";
+import Logger from "./utils/Logger";
 import EOF from "./tokens/EOF";
 
 export default class Lexer {
@@ -34,7 +33,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @Register
+  @Describe
   protected getNextToken(): Token {
     const char = this.peek();
 

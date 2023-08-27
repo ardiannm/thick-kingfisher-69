@@ -1,5 +1,5 @@
 import prompt from "prompt-sync";
-import ReadFile from "./src/dev/ReadFile";
+import ReadFile from "./dev/ReadFile";
 import Parser from "./src/Parser";
 
 while (true) {

@@ -18,7 +18,7 @@ import CloseParenthesis from "./tokens/CloseParenthesis";
 import Character from "./tokens/Character";
 import Quote from "./tokens/Quote";
 import Token from "./tokens/Token";
-import ParseError from "./tokens/errors/ParseError";
+import ParseError from "./utils/ParseError";
 import Substraction from "./tokens/Substraction";
 import Positive from "./tokens/Positive";
 import Negative from "./tokens/Negative";
@@ -29,7 +29,7 @@ import Exponentiation from "./tokens/maths/Exponentiation";
 import String from "./tokens/String";
 import Parenthesis from "./tokens/Parenthesis";
 import CloseTag from "./tokens/html/CloseTag";
-import Register from "./tokens/Register";
+import Describe from "./utils/Describe";
 import Constructor from "./tokens/Constructor";
 import LessThan from "./tokens/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
@@ -45,7 +45,7 @@ export default class Parser extends Lexer {
     }
   }
 
-  @Register
+  @Describe
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
@@ -55,13 +55,13 @@ export default class Parser extends Lexer {
     return new Program(expressions);
   }
 
-  @Register
+  @Describe
   private parseHTML() {
     if (this.peekToken() instanceof LessThan) return this.parseScript();
     return this.parseAddition();
   }
 
-  @Register
+  @Describe
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
@@ -80,7 +80,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Register
+  @Describe
   private parseTag() {
     this.getNextToken();
     if (this.peekToken() instanceof Slash) {
@@ -110,7 +110,7 @@ export default class Parser extends Lexer {
     return props;
   }
 
-  @Register
+  @Describe
   private parseAttribute() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
@@ -121,7 +121,7 @@ export default class Parser extends Lexer {
     return new Attribute(identifier.view, view);
   }
 
-  @Register
+  @Describe
   private parseAddition() {
     const left = this.parseMultiplication();
     if (this.peekToken() instanceof Plus) {
@@ -141,7 +141,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Register
+  @Describe
   private parseMultiplication() {
     const left = this.parsePower();
     if (this.peekToken() instanceof Product) {
@@ -161,7 +161,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Register
+  @Describe
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
@@ -174,7 +174,7 @@ export default class Parser extends Lexer {
     return left;
   }
 
-  @Register
+  @Describe
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
@@ -186,7 +186,7 @@ export default class Parser extends Lexer {
     return this.parseParanthesis();
   }
 
-  @Register
+  @Describe
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -198,7 +198,7 @@ export default class Parser extends Lexer {
     return this.parseString();
   }
 
-  @Register
+  @Describe
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken();
