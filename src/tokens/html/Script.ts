@@ -1,7 +1,9 @@
-import HTML from "./HTML";
+import CloseTag from "./CloseTag";
+import Component from "./Component";
+import OpenTag from "./OpenTag";
 
-export default class Script extends HTML {
+export default class Script extends Component {
   constructor(public view: string) {
-    super();
+    super(new OpenTag("script", []), [], new CloseTag("script"));
   }
 }

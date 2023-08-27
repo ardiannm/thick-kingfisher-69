@@ -35,6 +35,7 @@ import LessThan from "./tokens/basic/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
 import CloseScriptTag from "./tokens/html/CloseScriptTag";
 import Script from "./tokens/html/Script";
+import Component from "./tokens/html/Component";
 
 export default class Parser extends Lexer {
   public parse() {
@@ -57,8 +58,25 @@ export default class Parser extends Lexer {
 
   @InjectId
   private parseHTML() {
-    if (this.peekToken() instanceof LessThan) return this.parseScript();
+    if (this.peekToken() instanceof LessThan) return this.parseComponent();
     return this.parseAddition();
+  }
+
+  @InjectId
+  private parseComponent() {
+    const left = this.parseScript();
+    if (left instanceof OpenTag) {
+      const children = new Array<Component>();
+      while (this.hasMoreTokens()) {
+        const right = this.parseComponent();
+        if (right instanceof CloseTag) {
+          return new Component(left, children, right);
+        }
+        const component = this.expect(right, Component, "Token is not a valid component");
+        children.push(component);
+      }
+    }
+    return left;
   }
 
   @InjectId

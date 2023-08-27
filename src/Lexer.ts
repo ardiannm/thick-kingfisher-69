@@ -21,7 +21,6 @@ import Colon from "./tokens/basic/Colon";
 import IllegalCharacter from "./utils/IllegalCharacter";
 import StateMachine from "./utils/StateMachine";
 import Preserve from "./utils/Preserve";
-import InjectId from "./utils/InjectId";
 import TokenInfo from "./utils/TokenInfo";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
@@ -33,7 +32,6 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @InjectId
   protected getNextToken(): Token {
     const char = this.peek();
 
