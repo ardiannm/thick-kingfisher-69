@@ -1,5 +1,5 @@
 import Lexer from "../Lexer";
-import Token from "../tokens/Token";
+import Token from "../tokens/basic/Token";
 import StateMachine from "./StateMachine";
 import Logger from "./Logger";
 

@@ -1,16 +1,16 @@
-import RuntimeValue from "./tokens/RuntimeValue";
-import InterpreterError from "./tokens/errors/InterpreterError";
-import Binary from "./tokens/maths/Binary";
-import Program from "./tokens/Program";
-import Unary from "./tokens/Unary";
-import Token from "./tokens/Token";
-import RuntimeNumber from "./tokens/RuntimeNumber";
-import Substraction from "./tokens/Substraction";
-import Multiplication from "./tokens/maths/Multiplication";
-import Division from "./tokens/maths/Division";
-import Number from "./tokens/Number";
-import Exponentiation from "./tokens/maths/Exponentiation";
-import Negative from "./tokens/Negative";
+import RuntimeValue from "./runtime/RuntimeValue";
+import InterpreterError from "./utils/InterpreterError";
+import Binary from "./tokens/expressions/Binary";
+import Program from "./tokens/expressions/Program";
+import Unary from "./tokens/expressions/Unary";
+import Token from "./tokens/basic/Token";
+import RuntimeNumber from "./runtime/RuntimeNumber";
+import Substraction from "./tokens/expressions/Substraction";
+import Multiplication from "./tokens/expressions/Multiplication";
+import Division from "./tokens/expressions/Division";
+import Number from "./tokens/expressions/Number";
+import Exponentiation from "./tokens/expressions/Exponentiation";
+import Negative from "./tokens/expressions/Negative";
 
 export default class Interpreter {
   evaluate<T extends Token>(token: T): RuntimeValue {

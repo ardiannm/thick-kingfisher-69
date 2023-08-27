@@ -1,30 +1,30 @@
-import Token from "./tokens/Token";
-import OpenParenthesis from "./tokens/OpenParenthesis";
-import CloseParenthesis from "./tokens/CloseParenthesis";
-import Number from "./tokens/Number";
-import Identifier from "./tokens/Identifier";
-import Power from "./tokens/Power";
-import ExclamationMark from "./tokens/ExclamationMark";
-import Minus from "./tokens/Minus";
-import Slash from "./tokens/Slash";
-import QuestionMark from "./tokens/QuestionMark";
-import Quote from "./tokens/Quote";
-import LessThan from "./tokens/LessThan";
-import Plus from "./tokens/Plus";
-import Comma from "./tokens/Comma";
-import Underline from "./tokens/Underline";
-import GreaterThan from "./tokens/GreaterThan";
-import Equals from "./tokens/Equals";
-import Product from "./tokens/maths/Product";
-import Space from "./tokens/Space";
-import SemiColon from "./tokens/SemiColon";
-import Colon from "./tokens/Colon";
-import TokenError from "./utils/TokenError";
+import Token from "./tokens/basic/Token";
+import CloseParenthesis from "./tokens/basic/CloseParenthesis";
+import Number from "./tokens/expressions/Number";
+import Identifier from "./tokens/expressions/Identifier";
+import Power from "./tokens/operators/Power";
+import ExclamationMark from "./tokens/basic/ExclamationMark";
+import Minus from "./tokens/operators/Minus";
+import Slash from "./tokens/operators/Slash";
+import QuestionMark from "./tokens/basic/QuestionMark";
+import Quote from "./tokens/basic/Quote";
+import LessThan from "./tokens/basic/LessThan";
+import Plus from "./tokens/operators/Plus";
+import Comma from "./tokens/basic/Comma";
+import Underline from "./tokens/basic/Underline";
+import GreaterThan from "./tokens/basic/GreaterThan";
+import Equals from "./tokens/basic/Equals";
+import Product from "./tokens/operators/Product";
+import Space from "./tokens/basic/Space";
+import SemiColon from "./tokens/basic/SemiColon";
+import Colon from "./tokens/basic/Colon";
+import IllegalCharacter from "./utils/IllegalCharacter";
 import StateMachine from "./utils/StateMachine";
 import Preserve from "./utils/Preserve";
 import Describe from "./utils/Describe";
 import Logger from "./utils/Logger";
-import EOF from "./tokens/EOF";
+import EOF from "./tokens/basic/EOF";
+import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 
 export default class Lexer {
   private space = false;
@@ -63,7 +63,7 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     if (char) {
-      throw new TokenError("Unknown character '" + char + "' found while parsing");
+      throw new IllegalCharacter("Illegal character '" + char + "' found while parsing");
     }
 
     return new EOF();

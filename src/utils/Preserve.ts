@@ -1,4 +1,4 @@
-import Token from "../tokens/Token";
+import Token from "../tokens/basic/Token";
 import Lexer from "../Lexer";
 
 /**
