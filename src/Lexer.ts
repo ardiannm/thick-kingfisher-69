@@ -20,10 +20,11 @@ import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
 import IllegalCharacter from "./utils/IllegalCharacter";
 import StateMachine from "./utils/StateMachine";
-import Preserve from "./utils/Preserve";
+import RestoreState from "./utils/RestoreState";
 import TokenInfo from "./utils/TokenInfo";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
+import InjectId from "./utils/InjectId";
 
 export default class Lexer {
   private space = false;
@@ -32,6 +33,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
+  @InjectId
   protected getNextToken(): Token {
     const char = this.peek();
 
@@ -67,7 +69,7 @@ export default class Lexer {
     return new EOF();
   }
 
-  @Preserve
+  @RestoreState
   protected peekToken(): Token {
     return this.getNextToken();
   }

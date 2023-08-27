@@ -4,7 +4,7 @@ import Lexer from "../Lexer";
 /**
  * Preserve lexer state after executing lexer methods than return tokens
  */
-function Preserve(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
+function RestoreState(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
@@ -17,4 +17,4 @@ function Preserve(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
   return descriptor;
 }
 
-export default Preserve;
+export default RestoreState;

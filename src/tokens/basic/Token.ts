@@ -1,4 +1,4 @@
 export default class Token {
   public name = this.constructor.name;
-  constructor(public id?: number) {}
+  public id = 0;
 }
