@@ -1,8 +1,7 @@
-import Tag from "./Tag";
+import OpenTag from "./OpenTag";
 
-export default class OpenScriptTag extends Tag {
-  public selector = "script";
+export default class OpenScriptTag extends OpenTag {
   constructor() {
-    super();
+    super("script", []);
   }
 }

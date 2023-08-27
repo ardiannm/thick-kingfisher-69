@@ -89,8 +89,8 @@ export default class Parser extends Lexer {
         view += this.getNext();
       }
       try {
-        this.expect(this.parseScript(), CloseScriptTag, "Expecting a closing script tag");
-        return new Script(view);
+        const right = this.expect(this.parseScript(), CloseScriptTag, "Expecting a closing script tag");
+        return new Script(left, view, right);
       } catch (error) {
         this.expect(error, CloseScriptTag, "Expecting a closing script tag");
       }
