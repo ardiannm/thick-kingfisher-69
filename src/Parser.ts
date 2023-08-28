@@ -94,8 +94,8 @@ export default class Parser extends Lexer {
         const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
         return new Script(left, view, right);
       } catch (error) {
-        this.expect(this.getNextToken(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
-        // this.expect(null, CloseScriptTag, "Expecting a closing script tag");
+        // this.expect(this.getNextToken(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
+        this.expect(null, CloseScriptTag, "Expecting a closing script tag");
       }
     }
     return left;
