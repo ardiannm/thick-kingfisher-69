@@ -9,7 +9,7 @@ function InjectId(_target: Lexer, _key: string, descriptor: PropertyDescriptor) 
   descriptor.value = function () {
     const state = { ...this.state } as StateMachine;
     const token = originalMethod.apply(this, arguments) as Token;
-    if (token.id) return token;
+    if (token.id !== undefined) return token;
     const id = this.state.tokenId;
     token.id = id;
     const err = new TokenInfo(state.lineStart, state.pointer, this.state.pointer);

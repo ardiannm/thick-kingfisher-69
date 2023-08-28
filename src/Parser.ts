@@ -68,7 +68,6 @@ export default class Parser extends Lexer {
       const children = new Array<Component>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
-        console.log(right);
         if (right instanceof CloseTag) {
           return new Component(left, children, right);
         }
@@ -100,7 +99,7 @@ export default class Parser extends Lexer {
 
   @InjectId
   private parseTag() {
-    this.getNextToken();
+    this.expect(this.getNextToken(), LessThan, "HTML open tag expected");
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
@@ -239,17 +238,20 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    const logger = this.logger.get(token.id);
-    logger.logError(this.input, message);
+    this.explain(token, message);
     throw token;
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
-      const logger = this.logger.get(token.id);
-      logger.logError(this.input, message);
+      this.explain(token, message);
       throw token;
     }
     return token as T;
+  }
+
+  private explain(token: Token, message: string) {
+    const logger = this.logger.get(token.id);
+    logger.logError(this.input, message);
   }
 }
