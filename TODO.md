@@ -6,3 +6,4 @@
 - [x] Handle parsing HTML elements/components including different rules for script tags
 - [ ] Change error logging using RUST's method i.e. two different Spans with line and column properties to log position.
 - [ ] Parser does not log the tree properly when two consecutive html components are in two different lines.
+- [ ] Handle parsing execl ranges, cells, rows and columns
