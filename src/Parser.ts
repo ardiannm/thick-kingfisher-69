@@ -91,10 +91,11 @@ export default class Parser extends Lexer {
         view += this.getNext();
       }
       try {
-        const right = this.expect(this.parseTag(), CloseScriptTag, "Expecting a closing script tag");
+        const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
         return new Script(left, view, right);
       } catch (error) {
-        this.expect(this.parseTag(), CloseScriptTag, "Expecting a closing script tag");
+        this.expect(this.getNextToken(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
+        // this.expect(null, CloseScriptTag, "Expecting a closing script tag");
       }
     }
     return left;
@@ -242,11 +243,13 @@ export default class Parser extends Lexer {
   private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
     this.explain(token, message);
+    throw token;
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
       this.explain(token, message);
+      throw token;
     }
     return token as T;
   }
@@ -254,6 +257,5 @@ export default class Parser extends Lexer {
   private explain(token: Token, message: string) {
     const logger = this.logger.get(token.id);
     logger.log(this.input, message);
-    throw token;
   }
 }
