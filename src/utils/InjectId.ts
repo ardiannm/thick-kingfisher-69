@@ -1,19 +1,19 @@
 import Lexer from "../Lexer";
 import Token from "../tokens/basic/Token";
-import StateMachine from "./StateMachine";
-import TokenInfo from "./TokenInfo";
+import Location from "./Location";
+import Logger from "./Logger";
 
 function InjectId(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
-    const state = { ...this.state } as StateMachine;
+    const location = { ...this.state.location } as Location;
     const token = originalMethod.apply(this, arguments) as Token;
     if (token.id !== undefined) return token;
     const id = this.state.tokenId;
     token.id = id;
-    const err = new TokenInfo(state.lineStart, state.pointer, this.state.pointer);
-    this.logger.set(id, err);
+    const report = new Logger(location, this.state.location);
+    this.logger.set(id, report);
     this.state.tokenId = id + 1;
     return token;
   };

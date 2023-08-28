@@ -19,17 +19,17 @@ import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
 import IllegalCharacter from "./utils/IllegalCharacter";
-import StateMachine from "./utils/StateMachine";
+import LexerState from "./utils/LexerState";
 import RestoreState from "./utils/RestoreState";
-import TokenInfo from "./utils/TokenInfo";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import InjectId from "./utils/InjectId";
+import Logger from "./utils/Logger";
 
 export default class Lexer {
   private space = false;
-  protected state = new StateMachine(0, 1, 0, 1);
-  protected logger = new Map<number, TokenInfo>();
+  protected state = new LexerState(0, 1);
+  protected logger = new Map<number, Logger>();
 
   constructor(protected input: string) {}
 
@@ -83,7 +83,10 @@ export default class Lexer {
   private getSpace() {
     let view = "";
     while (/\s/.test(this.peek())) {
-      if (/\n/.test(this.peek())) this.newLine();
+      if (this.peek() === "\n") {
+        this.state.location.line = this.state.location.line + 1;
+        this.state.location.column = 1; // Reset the column for the new line
+      }
       view += this.getNext();
     }
     if (this.space) return new Space(view);
@@ -115,11 +118,7 @@ export default class Lexer {
   protected getNext() {
     const character = this.peek();
     this.state.pointer = this.state.pointer + 1;
+    this.state.location.column = this.state.location.column + 1; // Increment the column
     return character;
-  }
-
-  private newLine() {
-    this.state.line = this.state.line + 1;
-    this.state.lineStart = this.state.pointer;
   }
 }

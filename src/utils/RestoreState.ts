@@ -1,16 +1,14 @@
 import Token from "../tokens/basic/Token";
 import Lexer from "../Lexer";
 
-/**
- * Preserve lexer state after executing lexer methods than return tokens
- */
 function RestoreState(_target: Lexer, _key: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
 
   descriptor.value = function () {
-    const stateSnapshot = { ...this.state };
+    const stateSnapshot = { ...this.state, location: { ...this.state.location } };
     const token = originalMethod.apply(this, arguments) as Token;
     this.state = stateSnapshot;
+
     return token;
   };
 

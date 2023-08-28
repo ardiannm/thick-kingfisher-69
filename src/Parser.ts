@@ -252,6 +252,6 @@ export default class Parser extends Lexer {
 
   private explain(token: Token, message: string) {
     const logger = this.logger.get(token.id);
-    logger.logError(this.input, message);
+    logger.log(this.input, message);
   }
 }
