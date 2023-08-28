@@ -18,7 +18,6 @@ import CloseParenthesis from "./tokens/basic/CloseParenthesis";
 import Character from "./tokens/basic/Character";
 import Quote from "./tokens/basic/Quote";
 import Token from "./tokens/basic/Token";
-import ParseError from "./utils/ParseError";
 import Substraction from "./tokens/expressions/Substraction";
 import Positive from "./tokens/expressions/Positive";
 import Negative from "./tokens/expressions/Negative";
@@ -69,6 +68,7 @@ export default class Parser extends Lexer {
       const children = new Array<Component>();
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
+        console.log(right);
         if (right instanceof CloseTag) {
           return new Component(left, children, right);
         }
@@ -241,14 +241,14 @@ export default class Parser extends Lexer {
     if (this.assert(token, tokenType)) return token as T;
     const logger = this.logger.get(token.id);
     logger.logError(this.input, message);
-    throw new ParseError(message);
+    throw token;
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
       const logger = this.logger.get(token.id);
       logger.logError(this.input, message);
-      throw new ParseError(message);
+      throw token;
     }
     return token as T;
   }
