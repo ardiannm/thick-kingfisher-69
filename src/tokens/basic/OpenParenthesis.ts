@@ -1,3 +1,3 @@
-import SpecialCharacter from "./SpecialCharacter";
+import Punctuation from "./Punctuation";
 
-export default class OpenParenthesis extends SpecialCharacter {}
+export default class OpenParenthesis extends Punctuation {}

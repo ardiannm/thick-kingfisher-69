@@ -1,3 +1,3 @@
-import SpecialCharacter from "../basic/SpecialCharacter";
+import Punctuation from "../basic/Punctuation";
 
-export default class Operator extends SpecialCharacter {}
+export default class Operator extends Punctuation {}

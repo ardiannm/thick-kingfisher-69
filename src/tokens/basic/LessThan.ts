@@ -1,3 +1,3 @@
-import SpecialCharacter from "./SpecialCharacter";
+import Punctuation from "./Punctuation";
 
-export default class LessThan extends SpecialCharacter {}
+export default class LessThan extends Punctuation {}

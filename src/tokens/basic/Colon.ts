@@ -1,3 +1,3 @@
-import SpecialCharacter from "./SpecialCharacter";
+import Punctuation from "./Punctuation";
 
-export default class Colon extends SpecialCharacter {}
+export default class Colon extends Punctuation {}

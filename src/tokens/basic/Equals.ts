@@ -1,3 +1,3 @@
-import SpecialCharacter from "./SpecialCharacter";
+import Punctuation from "./Punctuation";
 
-export default class Equals extends SpecialCharacter {}
+export default class Equals extends Punctuation {}

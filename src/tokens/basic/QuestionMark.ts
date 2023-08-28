@@ -1,3 +1,3 @@
-import SpecialCharacter from "./SpecialCharacter";
+import Punctuation from "./Punctuation";
 
-export default class QuestionMark extends SpecialCharacter {}
+export default class QuestionMark extends Punctuation {}
