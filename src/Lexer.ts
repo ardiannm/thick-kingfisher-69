@@ -117,8 +117,10 @@ export default class Lexer {
 
   protected getNext() {
     const character = this.peek();
-    this.state.pointer = this.state.pointer + 1;
-    this.state.location.column = this.state.location.column + 1; // Increment the column
+    if (character) {
+      this.state.pointer = this.state.pointer + 1;
+      this.state.location.column = this.state.location.column + 1; // Increment the column
+    }
     return character;
   }
 }
