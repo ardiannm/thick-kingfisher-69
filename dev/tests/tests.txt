@@ -1,3 +1,3 @@
 <div>
 <script>jsCode2</script>
-<script>jsCode3
+<script>jsCode3</script>123</div>

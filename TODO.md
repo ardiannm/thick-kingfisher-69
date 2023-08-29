@@ -12,3 +12,4 @@
 ## ISSUES
 
 - [x] Parser does not log the tree properly when two consecutive html components are in two different lines.
+- [x] Throw errors when closing html element with an unmatching closing tag.

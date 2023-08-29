@@ -71,9 +71,12 @@ export default class Parser extends Lexer {
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
+          if (right.selector !== left.selector) {
+            this.expect(right, EOF, `Not a matching '${left.selector}' tag`);
+          }
           return new Component(left, children, right);
         }
-        const component = this.expect(right, Component, "Token is not a valid component");
+        const component = this.expect(right, Component, "Token is not a valid html component");
         children.push(component);
       }
       this.doNotExpect(this.getNextToken(), EOF, `Expecting a closing token for '${left.selector}' tag`);
@@ -102,7 +105,7 @@ export default class Parser extends Lexer {
 
   @InjectId
   private parseTag() {
-    this.expect(this.getNextToken(), LessThan, "HTML open tag expected");
+    this.expect(this.getNextToken(), LessThan, "Expecting '<' for an HTML tag");
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
