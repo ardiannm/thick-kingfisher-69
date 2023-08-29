@@ -18,18 +18,18 @@ import Product from "./tokens/operators/Product";
 import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
-import IllegalCharacter from "./utils/IllegalCharacter";
+import Illegal from "./utils/Illegal";
 import LexerState from "./utils/LexerState";
 import RestoreState from "./utils/RestoreState";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import InjectId from "./utils/InjectId";
-import Logger from "./utils/Logger";
+import TokenState from "./utils/TokenState";
 
 export default class Lexer {
   private space = false;
   protected state = new LexerState(0, 1);
-  protected logger = new Map<number, Logger>();
+  protected tokenStates = new Map<number, TokenState>();
 
   constructor(protected input: string) {}
 
@@ -62,10 +62,7 @@ export default class Lexer {
     if (char == "/") return new Slash(next);
     if (char == "^") return new Power(next);
 
-    if (char) {
-      throw new IllegalCharacter("Illegal character '" + char + "' found while parsing");
-    }
-
+    if (char) return new Illegal(next);
     return new EOF();
   }
 

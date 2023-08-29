@@ -244,26 +244,25 @@ export default class Parser extends Lexer {
 
   private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    this.explain(token, message);
+    this.printf(token, message);
     throw token;
   }
 
   private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
-      this.explain(token, message);
+      this.printf(token, message);
       throw token;
     }
     return token as T;
   }
 
-  private explain(token: Token, message: string) {
-    const logger = this.logger.get(token.id);
-    logger.log(this.input, message);
+  private printf(token: Token, message: string) {
+    this.tokenStates.get(token.id).printf(this.input, message);
   }
 
   private throw(message: string) {
     const token = this.getNextToken();
-    this.explain(token, message);
+    this.printf(token, message);
     throw token;
   }
 }
