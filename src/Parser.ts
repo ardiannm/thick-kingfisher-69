@@ -71,14 +71,14 @@ export default class Parser extends Lexer {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
           if (right.tagName !== left.tagName) {
-            this.expect(right, EOF, `Unmatching '${right.tagName}' found for the '${left.tagName}' OpenTag`);
+            this.expect(right, EOF, `Unmatching \`${right.tagName}\` found for the \`${left.tagName}\` OpenTag`);
           }
           return new Component(left, children, right);
         }
         const component = this.expect(right, Component, "Token is not a valid html component");
         children.push(component);
       }
-      this.throw(`Expecting a closing token for '${left.tagName}' tag`);
+      this.throw(`Expecting a closing token for \`${left.tagName}\` tag`);
     }
     return left;
   }
@@ -93,10 +93,10 @@ export default class Parser extends Lexer {
         view += this.getNext();
       }
       try {
-        const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for '${left.tagName}' tag`);
+        const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for \`${left.tagName}\` tag`);
         return new Script(left, view, right);
       } catch {
-        this.throw(`Expecting a closing token for '${left.tagName}' tag`);
+        this.throw(`Expecting a closing token for \`${left.tagName}\` tag`);
       }
     }
     return left;
@@ -104,11 +104,11 @@ export default class Parser extends Lexer {
 
   @InjectId
   private parseTag() {
-    this.expect(this.getNextToken(), LessThan, "Expecting '<' for an HTML tag");
+    this.expect(this.getNextToken(), LessThan, "Expecting \`<\` for an HTML tag");
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "Expecting identifier for this closing tag");
-      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
+      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing \`>\` token for this tag");
       if (identifier.view === "script") return new CloseScriptTag();
       return new CloseTag(identifier.view);
     }
@@ -116,10 +116,10 @@ export default class Parser extends Lexer {
     const properties = this.parseAttributes();
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
-      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
+      this.expect(this.getNextToken(), GreaterThan, "Expecting a closing \`>\` token for this tag");
       return new UniTag(identifier.view, properties);
     }
-    this.expect(this.getNextToken(), GreaterThan, "Expecting a closing '>' token for this tag");
+    this.expect(this.getNextToken(), GreaterThan, "Expecting a closing \`>\` token for this tag");
     if (identifier.view === "script") return new OpenScriptTag();
     return new OpenTag(identifier.view, properties);
   }
@@ -138,7 +138,7 @@ export default class Parser extends Lexer {
     let view = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
-      view = this.expect(this.parseString(), String, "Expecting a string value after '=' token following a tag property").view;
+      view = this.expect(this.parseString(), String, "Expecting a string value after \`=\` token following a tag property").view;
     }
     return new Attribute(identifier.view, view);
   }

@@ -6,11 +6,11 @@ export default class Printf {
   public printf(source: string, errorMessage: string) {
     console.log();
     console.log(`error: ${errorMessage}`);
-    console.log(`--> ./dev/tests/tests.txt:${this.to.line}:${this.to.column}`);
+    console.log(`-- ./dev/tests/tests.txt:${this.to.line}:${this.to.column}`);
     console.log();
     console.log(`${this.to.line}`.replace(/./g, " ") + " | ");
     console.log(this.to.line + " | " + source.split("\n")[this.to.line - 1]);
-    console.log(`${this.to.line}`.replace(/./g, " ") + " | ");
+    console.log(`${this.to.line}`.replace(/./g, " ") + " | " + " ".repeat(this.to.column - 1) + " -- " + `starting from ${this.from.line}:${this.to.column}, ending to ${this.to.line}:${this.to.column}`);
     console.log();
   }
 }

@@ -10,7 +10,7 @@
 - [ ] Parse textContent like characters as HTML Content within HTML Components recursively
 - [ ] Handle Standalone Components for HTML; like 'meta', 'input' or the ambiguous 'br' or 'link'
 - [ ] Parse Angular like selector identifiers for the name tags of format "ng-component"
-- [ ] Regular webscraping expression of special format for comprehensive parsing of HTML
+- [ ] Implement regular expression for picking specific patterns while parsing HTML
 
 ## ISSUES
 
