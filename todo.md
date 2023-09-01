@@ -1,4 +1,12 @@
-## intenting to
+### long-term goals
+
+- [x] parse math expressions
+- [ ] parse html and convert it to csv table
+- [ ] parse excel formulas and execute formula calls efficiently
+- [ ] parse basic function scopes with (,,param) format for parameter definitions
+
+
+### short-term goals
 
 - [x] convert deno into npm typescript package module
 - [x] add bnf grammar rules
@@ -13,7 +21,7 @@
 - [ ] parse angular like selector identifiers for the name tags of format "ng-component"
 - [ ] implement regular expression for picking specific patterns while parsing html
 
-## issues
+### issues
 
 - [x] parser does not log the tree properly when two consecutive html components are in two different lines
 - [x] throw errors when closing html element with an unmatching closing tag

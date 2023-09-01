@@ -93,7 +93,7 @@ export default class Lexer {
     while (/\s/.test(this.peek())) {
       if (this.peek() === "\n") {
         this.line = this.line + 1;
-        this.column = 1; // Reset the column for the new line
+        this.column = 1;
       }
       view += this.getNext();
     }
