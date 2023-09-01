@@ -25,6 +25,7 @@ import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import InjectId from "./utils/InjectId";
 import Printf from "./utils/Printf";
 import BackSlash from "./tokens/basic/BackSlash";
+import Location from "./utils/Location";
 
 export default class Lexer {
   private space = false;
@@ -58,7 +59,7 @@ export default class Lexer {
     if (char == ">") return new GreaterThan(next);
     if (char == "=") return new Equals(next);
     if (char == "_") return new Underline(next);
-    if (char == "\\") return new BackSlash(next);
+    // if (char == "\\") return new BackSlash(next);
 
     if (char == "+") return new Plus(next);
     if (char == "-") return new Minus(next);
@@ -66,7 +67,12 @@ export default class Lexer {
     if (char == "/") return new Slash(next);
     if (char == "^") return new Power(next);
 
-    if (char) return new Illegal(next);
+    if (char) {
+      const token = new Illegal(next);
+      const location = new Location(this.line, this.column);
+      new Printf(location, location).printf(this.input, `unimplemented token \`${next}\` found in the lexer`);
+      return token;
+    }
 
     return new EOF();
   }
