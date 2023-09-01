@@ -1,4 +1,4 @@
-"<p>
+<p>
   <script>jsCode1</script>
   <script>jsCode2</script>   \"
   <script>jsCode3</script>

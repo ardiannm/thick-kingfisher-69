@@ -108,13 +108,16 @@ export default class Parser extends Service {
     this.expect(this.getNextToken(), LessThan, "expecting token `<` for an html tag");
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
-      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for this closing tag");
-      this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for this closing tag");
+      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
+      this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for closing tag");
       if (identifier.view === "script") return new CloseScriptTag();
       return new CloseTag(identifier.view);
     }
     const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for open tag");
-    const properties = this.parseAttributes();
+    const properties = new Array<Attribute>();
+    while (this.peekToken() instanceof Identifier) {
+      properties.push(this.parseAttribute());
+    }
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, "expecting token `>` token for tag");
@@ -123,14 +126,6 @@ export default class Parser extends Service {
     this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
     return new OpenTag(identifier.view, properties);
-  }
-
-  private parseAttributes() {
-    const props = new Array<Attribute>();
-    while (this.peekToken() instanceof Identifier) {
-      props.push(this.parseAttribute());
-    }
-    return props;
   }
 
   @InjectId
