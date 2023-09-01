@@ -24,6 +24,7 @@ import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import InjectId from "./utils/InjectId";
 import Printf from "./utils/Printf";
+import BackSlash from "./tokens/basic/BackSlash";
 
 export default class Lexer {
   private space = false;
@@ -57,6 +58,7 @@ export default class Lexer {
     if (char == ">") return new GreaterThan(next);
     if (char == "=") return new Equals(next);
     if (char == "_") return new Underline(next);
+    if (char == "\\") return new BackSlash(next);
 
     if (char == "+") return new Plus(next);
     if (char == "-") return new Minus(next);
@@ -65,6 +67,7 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     if (char) return new Illegal(next);
+
     return new EOF();
   }
 

@@ -5,6 +5,7 @@ import Slash from "./tokens/operators/Slash";
 import Power from "./tokens/operators/Power";
 import Identifier from "./tokens/expressions/Identifier";
 import GreaterThan from "./tokens/basic/GreaterThan";
+import BackSlash from "./tokens/basic/BackSlash";
 import UniTag from "./tokens/html/UinTag";
 import Equals from "./tokens/basic/Equals";
 import Minus from "./tokens/operators/Minus";
@@ -227,7 +228,11 @@ export default class Parser extends Lexer {
       let view = "";
       this.keepSpace();
       while (this.hasMoreTokens()) {
-        if (this.peekToken() instanceof Quote) break;
+        const token = this.peekToken();
+        if (token instanceof Quote) break;
+        if (token instanceof BackSlash) {
+          this.getNextToken();
+        }
         view += (this.getNextToken() as Character).view;
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
