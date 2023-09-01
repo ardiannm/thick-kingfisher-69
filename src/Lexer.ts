@@ -70,7 +70,7 @@ export default class Lexer {
     if (char) {
       const token = new Illegal(next);
       const location = new Location(this.line, this.column);
-      new Printf(location, location).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
+      new Printf(location).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
       return token;
     }
 

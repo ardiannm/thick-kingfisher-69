@@ -1,7 +1,9 @@
 import Location from "./Location";
 
 export default class Printf {
-  constructor(public from: Location, public to: Location) {}
+  constructor(public from: Location, public to: Location = new Location(1, 1)) {
+    if (!this.to) this.to = this.from;
+  }
 
   public printf(source: string, errorMessage: string) {
     console.log();
@@ -13,9 +15,9 @@ export default class Printf {
 
     const from = `${this.from.line}:${this.to.column}`;
     const to = `${this.to.line}:${this.to.column}`;
-    const info = from === to ? `at position ${to}` : `starting from ${this.from.line}:${this.to.column}, ending to ${this.to.line}:${this.to.column}`
+    const info = from === to ? `at position ${to}` : `starting from ${this.from.line}:${this.to.column}, ending to ${this.to.line}:${this.to.column}`;
 
-    console.log(`${this.to.line}`.replace(/./g, " ") + " | " + " ".repeat(this.to.column - 1) + " -- " +  `${info}`);
+    console.log(`${this.to.line}`.replace(/./g, " ") + " | " + " ".repeat(this.to.column - 1) + " -- " + `${info}`);
     console.log();
   }
 }

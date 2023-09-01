@@ -30,14 +30,16 @@ import String from "./tokens/expressions/String";
 import Parenthesis from "./tokens/expressions/Parenthesis";
 import CloseTag from "./tokens/html/CloseTag";
 import InjectId from "./utils/InjectId";
-import Constructor from "./utils/Constructor";
 import LessThan from "./tokens/basic/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
 import CloseScriptTag from "./tokens/html/CloseScriptTag";
 import Script from "./tokens/html/Script";
 import Component from "./tokens/html/Component";
+import Service from "./utils/Service";
 
-export default class Parser extends Lexer {
+export default class Parser extends Service {
+  //
+
   public parse() {
     try {
       const program = this.parseProgram();
@@ -240,34 +242,5 @@ export default class Parser extends Lexer {
       return new String(view);
     }
     return this.getNextToken();
-  }
-
-  private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
-    return instance instanceof tokenType;
-  }
-
-  private expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenType)) return token as T;
-    this.printf(token, message);
-    throw token;
-  }
-
-  private doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenType)) {
-      this.printf(token, message);
-      throw token;
-    }
-    return token as T;
-  }
-
-  private printf(token: Token, message: string) {
-    const target = this.tokenStates.get(token.id);
-    target.printf(this.input, message);
-  }
-
-  private throw(message: string) {
-    const token = this.getNextToken();
-    this.printf(token, message);
-    throw token;
   }
 }
