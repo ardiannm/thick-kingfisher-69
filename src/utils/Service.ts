@@ -27,7 +27,7 @@ export default class Service extends Lexer {
 
   protected printf(token: Token, message: string) {
     const target = this.tokenStates.get(token.id as number);
-    if (target) target.printf(this.input, message);
+    if (target) return target.printf(this.input, message);
     const location = new Location(this.line, this.column);
     new Printf(location).printf(this.input, `for some reason token with id \`${token.id}\` has not been mapped in the token states`);
   }

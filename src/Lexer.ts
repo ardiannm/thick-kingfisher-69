@@ -128,7 +128,7 @@ export default class Lexer {
     if (character) {
       this.pointer = this.pointer + 1;
       if (character !== "\r" && character !== "\n") {
-        this.column = this.column + 1; // Increment the column
+        this.column = this.column + 1;
       }
     }
     return character;

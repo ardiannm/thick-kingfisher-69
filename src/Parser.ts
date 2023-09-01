@@ -1,4 +1,3 @@
-import Lexer from "./Lexer";
 import Program from "./tokens/expressions/Program";
 import Expression from "./tokens/expressions/Expression";
 import Slash from "./tokens/operators/Slash";
@@ -18,7 +17,6 @@ import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import CloseParenthesis from "./tokens/basic/CloseParenthesis";
 import Character from "./tokens/basic/Character";
 import Quote from "./tokens/basic/Quote";
-import Token from "./tokens/basic/Token";
 import Substraction from "./tokens/expressions/Substraction";
 import Positive from "./tokens/expressions/Positive";
 import Negative from "./tokens/expressions/Negative";

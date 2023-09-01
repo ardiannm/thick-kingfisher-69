@@ -1,14 +1,14 @@
 import Location from "./Location";
 
 export default class Printf {
-  constructor(public from: Location, public to: Location = new Location(1, 1)) {
+  constructor(public from: Location, public to?: Location) {
     if (!this.to) this.to = this.from;
   }
 
   public printf(source: string, errorMessage: string) {
     console.log();
     console.log(`error: ${errorMessage}`);
-    console.log(`-- ./dev/tests/tests.txt:${this.to.line}:${this.to.column}`);
+    console.log(` -- ./dev/tests/tests.txt:${this.to.line}:${this.to.column}`);
     console.log();
     console.log(`${this.to.line}`.replace(/./g, " ") + " | ");
     console.log(this.to.line + " | " + source.split("\n")[this.to.line - 1]);
