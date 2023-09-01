@@ -42,14 +42,13 @@ export default class Parser extends Lexer {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
       return program;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      return error;
     }
   }
 
   @InjectId
   private parseProgram() {
-    this.doNotExpect(this.peekToken(), EOF, "Program can't be blank");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
       expressions.push(this.parseHTML());
@@ -71,15 +70,15 @@ export default class Parser extends Lexer {
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
-          if (right.selector !== left.selector) {
-            this.expect(right, EOF, `Not a matching '${left.selector}' tag`);
+          if (right.tagName !== left.tagName) {
+            this.expect(right, EOF, `Unmatching '${right.tagName}' found for the '${left.tagName}' OpenTag`);
           }
           return new Component(left, children, right);
         }
         const component = this.expect(right, Component, "Token is not a valid html component");
         children.push(component);
       }
-      this.throw(`Expecting a closing token for '${left.selector}' tag`);
+      this.throw(`Expecting a closing token for '${left.tagName}' tag`);
     }
     return left;
   }
@@ -94,10 +93,10 @@ export default class Parser extends Lexer {
         view += this.getNext();
       }
       try {
-        const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for '${left.selector}' tag`);
+        const right = this.expect(this.parseTag(), CloseScriptTag, `Expecting a closing token for '${left.tagName}' tag`);
         return new Script(left, view, right);
       } catch {
-        this.throw(`Expecting a closing token for '${left.selector}' tag`);
+        this.throw(`Expecting a closing token for '${left.tagName}' tag`);
       }
     }
     return left;
@@ -257,7 +256,8 @@ export default class Parser extends Lexer {
   }
 
   private printf(token: Token, message: string) {
-    this.tokenStates.get(token.id).printf(this.input, message);
+    const target = this.tokenStates.get(token.id);
+    target.printf(this.input, message);
   }
 
   private throw(message: string) {

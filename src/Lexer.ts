@@ -19,17 +19,19 @@ import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
 import Illegal from "./utils/Illegal";
-import LexerState from "./utils/LexerState";
-import RestoreState from "./utils/RestoreState";
+import PreserveState from "./utils/PreserveState";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import InjectId from "./utils/InjectId";
-import TokenState from "./utils/TokenState";
+import Printf from "./utils/Printf";
 
 export default class Lexer {
   private space = false;
-  protected state = new LexerState(0, 1);
-  protected tokenStates = new Map<number, TokenState>();
+  protected pointer = 0;
+  protected line = 1;
+  protected column = 1;
+  protected id = 1;
+  protected tokenStates = new Map<number, Printf>();
 
   constructor(protected input: string) {}
 
@@ -66,7 +68,7 @@ export default class Lexer {
     return new EOF();
   }
 
-  @RestoreState
+  @PreserveState
   protected peekToken(): Token {
     return this.getNextToken();
   }
@@ -81,8 +83,8 @@ export default class Lexer {
     let view = "";
     while (/\s/.test(this.peek())) {
       if (this.peek() === "\n") {
-        this.state.location.line = this.state.location.line + 1;
-        this.state.location.column = 1; // Reset the column for the new line
+        this.line = this.line + 1;
+        this.column = 1; // Reset the column for the new line
       }
       view += this.getNext();
     }
@@ -109,15 +111,15 @@ export default class Lexer {
   }
 
   private peek() {
-    return this.input.charAt(this.state.pointer);
+    return this.input.charAt(this.pointer);
   }
 
   protected getNext() {
     const character = this.peek();
     if (character) {
-      this.state.pointer = this.state.pointer + 1;
+      this.pointer = this.pointer + 1;
       if (character !== "\r" && character !== "\n") {
-        this.state.location.column = this.state.location.column + 1; // Increment the column
+        this.column = this.column + 1; // Increment the column
       }
     }
     return character;
