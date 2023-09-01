@@ -9,8 +9,11 @@
 - [ ] Simplify HTML Component structure, do not include uneccessary tag structures, after all said and done
 - [ ] Parse textContent like characters as HTML Content within HTML Components recursively
 - [ ] Handle Standalone Components for HTML; like 'meta', 'input' or the ambiguous 'br' or 'link'
+- [ ] Parse Angular like selector identifiers for the name tags of format "ng-component"
+- [ ] Regular webscraping expression of special format for comprehensive parsing of HTML
 
 ## ISSUES
 
 - [x] Parser does not log the tree properly when two consecutive html components are in two different lines.
 - [x] Throw errors when closing html element with an unmatching closing tag.
+- [ ] Using start/end line/column rust like properties in the tree is not enough to point out the problematic token within line.
