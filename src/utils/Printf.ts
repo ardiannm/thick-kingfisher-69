@@ -10,7 +10,12 @@ export default class Printf {
     console.log();
     console.log(`${this.to.line}`.replace(/./g, " ") + " | ");
     console.log(this.to.line + " | " + source.split("\n")[this.to.line - 1]);
-    console.log(`${this.to.line}`.replace(/./g, " ") + " | " + " ".repeat(this.to.column - 1) + " -- " + `starting from ${this.from.line}:${this.to.column}, ending to ${this.to.line}:${this.to.column}`);
+
+    const from = `${this.from.line}:${this.to.column}`;
+    const to = `${this.to.line}:${this.to.column}`;
+    const info = from === to ? `at position ${to}` : `starting from ${this.from.line}:${this.to.column}, ending to ${this.to.line}:${this.to.column}`
+
+    console.log(`${this.to.line}`.replace(/./g, " ") + " | " + " ".repeat(this.to.column - 1) + " -- " +  `${info}`);
     console.log();
   }
 }

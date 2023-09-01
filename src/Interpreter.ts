@@ -1,10 +1,10 @@
-import RuntimeValue from "./runtime/RuntimeValue";
+import RuntimeValue from "./values/RuntimeValue";
 import InterpreterException from "./utils/InterpreterException";
 import Binary from "./tokens/expressions/Binary";
 import Program from "./tokens/expressions/Program";
 import Unary from "./tokens/expressions/Unary";
 import Token from "./tokens/basic/Token";
-import RuntimeNumber from "./runtime/RuntimeNumber";
+import RuntimeNumber from "./values/RuntimeNumber";
 import Substraction from "./tokens/expressions/Substraction";
 import Multiplication from "./tokens/expressions/Multiplication";
 import Division from "./tokens/expressions/Division";
@@ -18,7 +18,7 @@ export default class Interpreter {
     if (token instanceof Binary) return this.evaluateBinary(token);
     if (token instanceof Number) return this.evaluateNumber(token);
     if (token instanceof Unary) return this.evaluateUnary(token);
-    return new InterpreterException(`Token type "${token.name}" has not been implemented for interpretation`);
+    return new InterpreterException(`token type "${token.type}" has not been implemented for interpretation`);
   }
 
   private evaluateProgram(token: Program) {
@@ -36,7 +36,7 @@ export default class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof RuntimeNumber) || !(right instanceof RuntimeNumber)) {
-      return new InterpreterException(`Can't perform binary operations between "${token.left.name}" and "${token.right.name}" tokens`);
+      return new InterpreterException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
     }
 
     switch (true) {
@@ -57,7 +57,7 @@ export default class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof RuntimeNumber)) {
-      return new InterpreterException(`Can't perform unary operation over "${token.right.constructor.name}" token`);
+      return new InterpreterException(`can't perform unary operation over "${token.right.constructor.name}" token`);
     }
 
     switch (true) {
