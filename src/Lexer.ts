@@ -59,7 +59,7 @@ export default class Lexer {
     if (char == ">") return new GreaterThan(next);
     if (char == "=") return new Equals(next);
     if (char == "_") return new Underline(next);
-    // if (char == "\\") return new BackSlash(next);
+    if (char == "\\") return new BackSlash(next);
 
     if (char == "+") return new Plus(next);
     if (char == "-") return new Minus(next);
@@ -70,7 +70,7 @@ export default class Lexer {
     if (char) {
       const token = new Illegal(next);
       const location = new Location(this.line, this.column);
-      new Printf(location, location).printf(this.input, `unimplemented token \`${next}\` found in the lexer`);
+      new Printf(location, location).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
       return token;
     }
 
