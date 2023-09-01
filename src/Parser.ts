@@ -73,7 +73,7 @@ export default class Parser extends Lexer {
           if (right.tagName !== left.tagName) {
             this.expect(right, EOF, `unmatching \`${right.tagName}\` found for the \`${left.tagName}\` open tag`);
           }
-          return new Component(left, children, right);
+          return new Component(left.tagName, children);
         }
         const component = this.expect(right, Component, "token is not a valid html component");
         children.push(component);
@@ -93,8 +93,8 @@ export default class Parser extends Lexer {
         view += this.getNext();
       }
       try {
-        const right = this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`${left.tagName}\` tag`);
-        return new Script(left, view, right);
+        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`${left.tagName}\` tag`);
+        return new Script(view);
       } catch {
         this.throw(`expecting a closing \`${left.tagName}\` tag`);
       }
