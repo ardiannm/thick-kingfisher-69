@@ -2,11 +2,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title></title>
   </head>
   <body>
     <script>
-      // ... write your own script
+      // Write your own script
     </script>
   </body>
 </html>

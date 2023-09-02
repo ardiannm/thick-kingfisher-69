@@ -49,6 +49,7 @@ export default class Parser extends Service {
       console.log(JSON.stringify(program, undefined, 3));
       return program;
     } catch (error) {
+      console.log(error);
       return error;
     }
   }
@@ -99,10 +100,10 @@ export default class Parser extends Service {
         view += this.getNext();
       }
       try {
-        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`${left.tag}\` tag`);
+        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`script\` tag`);
         return new Script(view);
       } catch {
-        this.throw(`expecting a closing \`${left.tag}\` tag`);
+        this.throw(`expecting a closing \`script\` tag`);
       }
     }
     return left;
@@ -110,14 +111,14 @@ export default class Parser extends Service {
 
   @InjectId
   private parseTag() {
-    this.expect(this.getNextToken(), LessThan, "expecting token `<` for an html tag");
+    this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
       return this.parseComment();
     }
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
-      this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for closing tag");
+      this.expect(this.getNextToken(), GreaterThan, "expecting `>` for closing tag");
       if (identifier.view === "script") return new CloseScriptTag();
       return new CloseTag(identifier.view);
     }
@@ -128,10 +129,10 @@ export default class Parser extends Service {
     }
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
-      this.expect(this.getNextToken(), GreaterThan, "expecting token `>` token for tag");
+      this.expect(this.getNextToken(), GreaterThan, "expecting `>` token for tag");
       return new StandaloneComponent(identifier.view, attributes);
     }
-    this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
+    this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
     if (AmbigousTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
@@ -152,7 +153,7 @@ export default class Parser extends Service {
         this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
         if (token instanceof Minus) {
           this.getNextToken();
-          this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for comment");
+          this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
           return new Comment(view);
         }
         this.pointer = keep;
@@ -168,7 +169,7 @@ export default class Parser extends Service {
     let view = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
-      view = this.expect(this.parseString(), String, "expecting a string value after `=` token following a tag property").view;
+      view = this.expect(this.parseString(), String, "expecting a string value after `=` following a tag property").view;
     }
     return new Attribute(identifier.view, view);
   }
