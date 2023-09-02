@@ -21,11 +21,12 @@
 - [ ] parse angular like selector identifiers for the name tags of format "ng-component"
 - [ ] implement regular expression for picking specific patterns while parsing html
 - [x] implement parsing html comments
+- [ ] parse html text content children within html elements
 
 ### issues
 
 - [x] parser does not log the tree properly when two consecutive html components are in two different lines
 - [x] throw errors when closing html element with an unmatching closing tag
-- [ ] using start/end line/column rust like properties in the tree is not enough to point out the problematic token within line
+- [ ] using rust like only line and column properties in the ast is not enough to point out the problematic token within line
 - [x] simplify html component structure, do not include uneccessary tag structures, after all said and done
-- [ ] there is an issue with the control flow of how decorators capure token states' properties
+- [ ] decorators are not properly locating errors while parsing
