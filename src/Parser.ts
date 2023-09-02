@@ -74,8 +74,8 @@ export default class Parser extends Service {
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
-          if (right.tagName !== left.tag) {
-            this.expect(right, EOF, `unmatching \`${right.tagName}\` found for the \`${left.tag}\` open tag`);
+          if (right.tag !== left.tag) {
+            this.expect(right, EOF, `unmatching \`${right.tag}\` found for the \`${left.tag}\` open tag`);
           }
           return new HTMLElement(left.tag, children);
         }

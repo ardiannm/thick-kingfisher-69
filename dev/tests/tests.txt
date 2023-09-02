@@ -1,8 +1,10 @@
 <body>
-<p>
+  <!-- first comment -->
+  <meta title="WebApp"/>
+  <p>
     <script>
       const name = "you name it!"
     </script>
-  <!-- Hello World -->
-</p>
-  </body>
+  </p>
+</body>
+<!-- second comment -->
