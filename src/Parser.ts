@@ -32,8 +32,11 @@ import LessThan from "./tokens/basic/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
 import CloseScriptTag from "./tokens/html/CloseScriptTag";
 import Script from "./tokens/html/Script";
+import HTMLElement from "./tokens/html/HTMLElement";
 import Component from "./tokens/html/Component";
 import Service from "./utils/Service";
+import ExclamationMark from "./tokens/basic/ExclamationMark";
+import Comment from "./tokens/html/Comment";
 
 export default class Parser extends Service {
   //
@@ -74,7 +77,7 @@ export default class Parser extends Service {
           if (right.tagName !== left.tagName) {
             this.expect(right, EOF, `unmatching \`${right.tagName}\` found for the \`${left.tagName}\` open tag`);
           }
-          return new Component(left.tagName, children);
+          return new HTMLElement(left.tagName, children);
         }
         const component = this.expect(right, Component, "token is not a valid html component");
         children.push(component);
@@ -106,6 +109,9 @@ export default class Parser extends Service {
   @InjectId
   private parseTag() {
     this.expect(this.getNextToken(), LessThan, "expecting token `<` for an html tag");
+    if (this.peekToken() instanceof ExclamationMark) {
+      return this.parseComment();
+    }
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
@@ -126,6 +132,31 @@ export default class Parser extends Service {
     this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
     return new OpenTag(identifier.view, properties);
+  }
+
+  @InjectId
+  private parseComment() {
+    this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
+    const message = "expecting two consecutive `--` after `!` for a comment";
+    this.expect(this.getNextToken(), Minus, message);
+    this.expect(this.getNextToken(), Minus, message);
+    let view = "";
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof Minus) {
+        const keep = this.pointer;
+        this.getNextToken();
+        const token = this.peekToken();
+        this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
+        if (token instanceof Minus) {
+          this.getNextToken();
+          this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for comment");
+          return new Comment(view);
+        }
+        this.pointer = keep;
+      }
+      view += this.getNext();
+    }
+    this.throw("unexpected end of comment");
   }
 
   @InjectId

@@ -1,7 +1,3 @@
-import HTML from "./HTML";
+import Token from "../basic/Token";
 
-export default class Component extends HTML {
-  constructor(public selector: string, public children: Array<Component>) {
-    super();
-  }
-}
+export default class HTML extends Token {}
