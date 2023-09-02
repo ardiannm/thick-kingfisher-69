@@ -1,3 +1,3 @@
-import Token from "../basic/Token";
+import HTML from "./HTML";
 
-export default class HTML extends Token {}
+export default class Component extends HTML {}

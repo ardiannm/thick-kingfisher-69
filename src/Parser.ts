@@ -5,7 +5,7 @@ import Power from "./tokens/operators/Power";
 import Identifier from "./tokens/expressions/Identifier";
 import GreaterThan from "./tokens/basic/GreaterThan";
 import BackSlash from "./tokens/basic/BackSlash";
-import UniTag from "./tokens/html/UinTag";
+import SelfEnclosingTag from "./tokens/html/SelfEnclosingTag";
 import Equals from "./tokens/basic/Equals";
 import Minus from "./tokens/operators/Minus";
 import EOF from "./tokens/basic/EOF";
@@ -120,18 +120,18 @@ export default class Parser extends Service {
       return new CloseTag(identifier.view);
     }
     const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for open tag");
-    const properties = new Array<Attribute>();
+    const attributes = new Array<Attribute>();
     while (this.peekToken() instanceof Identifier) {
-      properties.push(this.parseAttribute());
+      attributes.push(this.parseAttribute());
     }
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, "expecting token `>` token for tag");
-      return new UniTag(identifier.view, properties);
+      return new SelfEnclosingTag(identifier.view, attributes);
     }
     this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
-    return new OpenTag(identifier.view, properties);
+    return new OpenTag(identifier.view, attributes);
   }
 
   @InjectId
