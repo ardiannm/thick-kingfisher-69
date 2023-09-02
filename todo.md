@@ -21,7 +21,7 @@
 - [ ] parse angular like selector identifiers for the name tags of format "ng-component"
 - [ ] implement regular expression for picking specific patterns while parsing html
 - [x] implement parsing html comments
-- [ ] parse html text content children within html elements
+- [x] parse html text content children within html elements
 
 ### issues
 

@@ -37,6 +37,7 @@ import Component from "./tokens/html/Component";
 import Service from "./utils/Service";
 import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
+import TextContent from "./tokens/html/TextContent";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -94,14 +95,10 @@ export default class Parser extends Service {
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
-      let view = "";
-      while (this.hasMoreTokens()) {
-        if (this.peekToken() instanceof LessThan) break;
-        view += this.getNext();
-      }
+      const content = this.parseContent();
       try {
         this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`script\` tag`);
-        return new Script(view);
+        return new Script(content.view);
       } catch {
         this.throw(`expecting a closing \`script\` tag`);
       }
@@ -111,31 +108,44 @@ export default class Parser extends Service {
 
   @InjectId
   private parseTag() {
-    this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
-    if (this.peekToken() instanceof ExclamationMark) {
-      return this.parseComment();
+    if (this.peekToken() instanceof LessThan) {
+      this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
+      if (this.peekToken() instanceof ExclamationMark) {
+        return this.parseComment();
+      }
+      if (this.peekToken() instanceof Slash) {
+        this.getNextToken();
+        const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
+        this.expect(this.getNextToken(), GreaterThan, "expecting `>` for closing tag");
+        if (identifier.view === "script") return new CloseScriptTag();
+        return new CloseTag(identifier.view);
+      }
+      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for open tag");
+      const attributes = new Array<Attribute>();
+      while (this.peekToken() instanceof Identifier) {
+        attributes.push(this.parseAttribute());
+      }
+      if (this.peekToken() instanceof Slash) {
+        this.getNextToken();
+        this.expect(this.getNextToken(), GreaterThan, "expecting `>` token for tag");
+        return new StandaloneComponent(identifier.view, attributes);
+      }
+      this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
+      if (identifier.view === "script") return new OpenScriptTag();
+      if (AmbigousTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
+      return new OpenTag(identifier.view, attributes);
     }
-    if (this.peekToken() instanceof Slash) {
-      this.getNextToken();
-      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
-      this.expect(this.getNextToken(), GreaterThan, "expecting `>` for closing tag");
-      if (identifier.view === "script") return new CloseScriptTag();
-      return new CloseTag(identifier.view);
+    return this.parseContent();
+  }
+
+  @InjectId
+  private parseContent() {
+    let view = "";
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof LessThan) break;
+      view += this.getNext();
     }
-    const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for open tag");
-    const attributes = new Array<Attribute>();
-    while (this.peekToken() instanceof Identifier) {
-      attributes.push(this.parseAttribute());
-    }
-    if (this.peekToken() instanceof Slash) {
-      this.getNextToken();
-      this.expect(this.getNextToken(), GreaterThan, "expecting `>` token for tag");
-      return new StandaloneComponent(identifier.view, attributes);
-    }
-    this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
-    if (identifier.view === "script") return new OpenScriptTag();
-    if (AmbigousTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
-    return new OpenTag(identifier.view, attributes);
+    return new TextContent(view);
   }
 
   @InjectId
