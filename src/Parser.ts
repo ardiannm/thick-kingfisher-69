@@ -5,7 +5,7 @@ import Power from "./tokens/operators/Power";
 import Identifier from "./tokens/expressions/Identifier";
 import GreaterThan from "./tokens/basic/GreaterThan";
 import BackSlash from "./tokens/basic/BackSlash";
-import SelfEnclosingElement from "./tokens/html/SelfEnclosingElement";
+import StandaloneComponent from "./tokens/html/StandaloneComponent";
 import Equals from "./tokens/basic/Equals";
 import Minus from "./tokens/operators/Minus";
 import EOF from "./tokens/basic/EOF";
@@ -77,7 +77,7 @@ export default class Parser extends Service {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
-            this.expect(right, EOF, `unmatching \`${right.tag}\` found for the \`${left.tag}\` open tag`);
+            this.throw(`unmatching \`${right.tag}\` found for the \`${left.tag}\` open tag`);
           }
           return new HTMLElement(left.tag, children);
         }
@@ -129,11 +129,11 @@ export default class Parser extends Service {
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, "expecting token `>` token for tag");
-      return new SelfEnclosingElement(identifier.view, attributes);
+      return new StandaloneComponent(identifier.view, attributes);
     }
     this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
-    if (AmbigousTags.includes(identifier.view)) return new SelfEnclosingElement(identifier.view, attributes);
+    if (AmbigousTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
   }
 
