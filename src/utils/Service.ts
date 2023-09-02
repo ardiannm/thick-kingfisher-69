@@ -3,6 +3,7 @@ import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 import Printf from "./Printf";
 import Location from "./Location";
+import Space from "../tokens/basic/Space";
 
 export default class Service extends Lexer {
   //

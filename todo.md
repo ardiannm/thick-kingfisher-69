@@ -16,9 +16,8 @@
 - [x] handle parsing html elements/components including different rules for script tags
 - [x] change error logging using rust's ast structure i.e. two different spans for each node and token with line and column properties to log position
 - [ ] handle parsing excel ranges, cells, rows and columns
-- [ ] parse textcontent like characters as html content within html components recursively
 - [ ] handle standalone components for html; like 'meta', 'input' or the ambiguous 'br' or 'link'
-- [ ] parse angular like selector identifiers for the name tags of format "ng-component"
+- [x] parse angular like selector identifiers for the name tags of format "ng-component"
 - [ ] implement regular expression for picking specific patterns while parsing html
 - [x] implement parsing html comments
 - [x] parse html text content children within html elements

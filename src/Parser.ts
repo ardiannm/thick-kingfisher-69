@@ -38,6 +38,7 @@ import Service from "./utils/Service";
 import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
+import Number from "./tokens/expressions/Number";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -115,12 +116,12 @@ export default class Parser extends Service {
       }
       if (this.peekToken() instanceof Slash) {
         this.getNextToken();
-        const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for closing tag");
+        const identifier = this.expect(this.parseTagIdentifier(), Identifier, "expecting identifier for closing tag");
         this.expect(this.getNextToken(), GreaterThan, "expecting `>` for closing tag");
         if (identifier.view === "script") return new CloseScriptTag();
         return new CloseTag(identifier.view);
       }
-      const identifier = this.expect(this.getNextToken(), Identifier, "expecting identifier for open tag");
+      const identifier = this.expect(this.parseTagIdentifier(), Identifier, "expecting identifier for open tag");
       const attributes = new Array<Attribute>();
       while (this.peekToken() instanceof Identifier) {
         attributes.push(this.parseAttribute());
@@ -146,6 +147,22 @@ export default class Parser extends Service {
       view += this.getNext();
     }
     return new TextContent(view);
+  }
+
+  @InjectId
+  private parseTagIdentifier() {
+    const identifier = this.expect(this.getNextToken(), Identifier, "expecting leading identifier for html tag name");
+    let view = identifier.view;
+    this.keepSpace();
+    while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
+      const token = this.getNextToken() as Identifier | Minus | Number;
+      if (token instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
+        this.throw("expecting an ending number or identifier for the name tag");
+      }
+      view += token.view;
+    }
+    this.ignoreSpace();
+    return new Identifier(view);
   }
 
   @InjectId
