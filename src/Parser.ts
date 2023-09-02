@@ -5,7 +5,7 @@ import Power from "./tokens/operators/Power";
 import Identifier from "./tokens/expressions/Identifier";
 import GreaterThan from "./tokens/basic/GreaterThan";
 import BackSlash from "./tokens/basic/BackSlash";
-import SelfEnclosingTag from "./tokens/html/SelfEnclosingTag";
+import SelfEnclosingElement from "./tokens/html/SelfEnclosingElement";
 import Equals from "./tokens/basic/Equals";
 import Minus from "./tokens/operators/Minus";
 import EOF from "./tokens/basic/EOF";
@@ -37,6 +37,8 @@ import Component from "./tokens/html/Component";
 import Service from "./utils/Service";
 import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
+
+const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
 export default class Parser extends Service {
   //
@@ -127,10 +129,11 @@ export default class Parser extends Service {
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       this.expect(this.getNextToken(), GreaterThan, "expecting token `>` token for tag");
-      return new SelfEnclosingTag(identifier.view, attributes);
+      return new SelfEnclosingElement(identifier.view, attributes);
     }
     this.expect(this.getNextToken(), GreaterThan, "expecting token `>` for tag");
     if (identifier.view === "script") return new OpenScriptTag();
+    if (AmbigousTags.includes(identifier.view)) return new SelfEnclosingElement(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
   }
 
