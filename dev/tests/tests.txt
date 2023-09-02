@@ -1,4 +1,8 @@
+<body>
 <p>
-  <script>const name = "you name it!"</script>
+    <script>
+      const name = "you name it!"
+    </script>
   <!-- Hello World -->
 </p>
+  </body>

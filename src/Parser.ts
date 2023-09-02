@@ -74,15 +74,15 @@ export default class Parser extends Service {
       while (this.hasMoreTokens()) {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
-          if (right.tagName !== left.tagName) {
-            this.expect(right, EOF, `unmatching \`${right.tagName}\` found for the \`${left.tagName}\` open tag`);
+          if (right.tagName !== left.tag) {
+            this.expect(right, EOF, `unmatching \`${right.tagName}\` found for the \`${left.tag}\` open tag`);
           }
-          return new HTMLElement(left.tagName, children);
+          return new HTMLElement(left.tag, children);
         }
         const component = this.expect(right, Component, "token is not a valid html component");
         children.push(component);
       }
-      this.throw(`expecting a closing token for \`${left.tagName}\` tag`);
+      this.throw(`expecting a closing token for \`${left.tag}\` tag`);
     }
     return left;
   }
@@ -97,10 +97,10 @@ export default class Parser extends Service {
         view += this.getNext();
       }
       try {
-        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`${left.tagName}\` tag`);
+        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`${left.tag}\` tag`);
         return new Script(view);
       } catch {
-        this.throw(`expecting a closing \`${left.tagName}\` tag`);
+        this.throw(`expecting a closing \`${left.tag}\` tag`);
       }
     }
     return left;
