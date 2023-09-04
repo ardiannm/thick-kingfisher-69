@@ -38,6 +38,7 @@ import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
+import Literal from "./tokens/expressions/Literal";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -48,7 +49,6 @@ export default class Parser extends Service {
     try {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
-      console.log(Array.from(this.locators));
 
       return program;
     } catch (error) {
@@ -107,10 +107,8 @@ export default class Parser extends Service {
 
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
-      this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
-      if (this.peekToken() instanceof ExclamationMark) {
-        return this.parseComment();
-      }
+      const left = this.parseComment();
+      if (left instanceof Comment) return left;
       if (this.peekToken() instanceof Slash) {
         this.getNextToken();
         const identifier = this.expect(this.parseTagIdentifier(), Identifier, "expecting identifier for closing tag");
@@ -136,6 +134,34 @@ export default class Parser extends Service {
     return this.parseContent();
   }
 
+  private parseComment() {
+    const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
+    if (this.peekToken() instanceof ExclamationMark) {
+      this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
+      const message = "expecting two consecutive `--` after `!` for a comment";
+      this.expect(this.getNextToken(), Minus, message);
+      this.expect(this.getNextToken(), Minus, message);
+      let view = "";
+      while (this.hasMoreTokens()) {
+        if (this.peekToken() instanceof Minus) {
+          const keep = this.pointer;
+          this.getNextToken();
+          const token = this.peekToken();
+          this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
+          if (token instanceof Minus) {
+            this.getNextToken();
+            this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
+            return new Comment(view);
+          }
+          this.pointer = keep;
+        }
+        view += this.getNext();
+      }
+      this.throw("unexpected end of comment");
+    }
+    return left;
+  }
+
   private parseContent() {
     let view = "";
     while (this.hasMoreTokens()) {
@@ -158,30 +184,6 @@ export default class Parser extends Service {
     }
     this.ignoreSpace();
     return new Identifier(view);
-  }
-
-  private parseComment() {
-    this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
-    const message = "expecting two consecutive `--` after `!` for a comment";
-    this.expect(this.getNextToken(), Minus, message);
-    this.expect(this.getNextToken(), Minus, message);
-    let view = "";
-    while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof Minus) {
-        const keep = this.pointer;
-        this.getNextToken();
-        const token = this.peekToken();
-        this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
-        if (token instanceof Minus) {
-          this.getNextToken();
-          this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
-          return new Comment(view);
-        }
-        this.pointer = keep;
-      }
-      view += this.getNext();
-    }
-    this.throw("unexpected end of comment");
   }
 
   private parseAttribute() {
@@ -274,9 +276,7 @@ export default class Parser extends Service {
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof Quote) break;
-        if (token instanceof BackSlash) {
-          this.getNextToken();
-        }
+        if (token instanceof BackSlash) this.getNextToken();
         view += (this.getNextToken() as Character).view;
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
