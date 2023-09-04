@@ -48,7 +48,7 @@ export default class Parser extends Service {
     try {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
-      console.log(Array.from(this.tokenStates));
+      console.log(Array.from(this.locators));
 
       return program;
     } catch (error) {

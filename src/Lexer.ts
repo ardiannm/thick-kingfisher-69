@@ -23,6 +23,7 @@ import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import ShowError from "./utils/ShowError";
 import BackSlash from "./tokens/basic/BackSlash";
+import Locator from "./utils/Locator";
 
 export default class Lexer {
   private space = false;
@@ -30,7 +31,7 @@ export default class Lexer {
   protected line = 1;
   protected column = 1;
   protected id = 1;
-  protected tokenStates = new Map<number, ShowError>();
+  protected locators = new Map<number, Locator>();
 
   constructor(protected input: string) {}
 
