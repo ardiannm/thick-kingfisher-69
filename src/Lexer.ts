@@ -18,10 +18,9 @@ import Product from "./tokens/operators/Product";
 import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
-import Illegal from "./utils/Illegal";
+import UnknownCharacter from "./utils/UnknownCharacter";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
-import ShowError from "./utils/ShowError";
 import BackSlash from "./tokens/basic/BackSlash";
 import Locator from "./utils/Locator";
 import InjectId from "./utils/InjectId";
@@ -36,8 +35,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  @InjectId
-  protected getNextToken(): Token {
+  private getNextToken(): Token {
     const char = this.peek();
 
     if (/\s/.test(char)) return this.getSpace();
@@ -67,8 +65,8 @@ export default class Lexer {
     if (char == "^") return new Power(next);
 
     if (char) {
-      const token = new Illegal(next);
-      new ShowError(this.line, this.column, this.line, this.column).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
+      const token = new UnknownCharacter(next);
+      new Locator(this.line, this.column, this.line, this.column).printf(this.input, `unknown character \`${next}\` found in the lexer`);
       return token;
     }
 
@@ -86,6 +84,11 @@ export default class Lexer {
     this.column = column;
     this.id = id;
     return token;
+  }
+
+  @InjectId
+  protected parseToken() {
+    return this.getNextToken();
   }
 
   private getNumber() {

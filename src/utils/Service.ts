@@ -1,7 +1,7 @@
 import Token from "../tokens/basic/Token";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
-import ShowError from "./ShowError";
+import Locator from "./Locator";
 
 export default class Service extends Lexer {
   //
@@ -25,11 +25,11 @@ export default class Service extends Lexer {
   }
 
   protected printf(message: string) {
-    new ShowError(this.line, this.column, this.line, this.column).printf(this.input, message);
+    new Locator(this.line, this.column, this.line, this.column).printf(this.input, message);
   }
 
   protected throw(message: string) {
-    const token = this.getNextToken();
+    const token = this.parseToken();
     this.printf(message);
     throw token;
   }
