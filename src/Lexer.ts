@@ -24,6 +24,7 @@ import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import ShowError from "./utils/ShowError";
 import BackSlash from "./tokens/basic/BackSlash";
 import Locator from "./utils/Locator";
+import InjectId from "./utils/InjectId";
 
 export default class Lexer {
   private space = false;
@@ -35,6 +36,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
+  @InjectId
   protected getNextToken(): Token {
     const char = this.peek();
 
