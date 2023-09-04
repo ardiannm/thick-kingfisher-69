@@ -27,7 +27,6 @@ import Exponentiation from "./tokens/expressions/Exponentiation";
 import String from "./tokens/expressions/String";
 import Parenthesis from "./tokens/expressions/Parenthesis";
 import CloseTag from "./tokens/html/CloseTag";
-import InjectId from "./utils/InjectId";
 import LessThan from "./tokens/basic/LessThan";
 import OpenScriptTag from "./tokens/html/OpenScriptTag";
 import CloseScriptTag from "./tokens/html/CloseScriptTag";
@@ -49,14 +48,16 @@ export default class Parser extends Service {
     try {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
+      console.log(Array.from(this.tokenStates));
+
       return program;
     } catch (error) {
-      console.log(error);
+      console.log("program threw an error");
+      console.log();
       return error;
     }
   }
 
-  @InjectId
   private parseProgram() {
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
@@ -65,13 +66,11 @@ export default class Parser extends Service {
     return new Program(expressions);
   }
 
-  @InjectId
   private parseHTML() {
     if (this.peekToken() instanceof LessThan) return this.parseComponent();
     return this.parseAddition();
   }
 
-  @InjectId
   private parseComponent() {
     const left = this.parseScript();
     if (left instanceof OpenTag) {
@@ -80,7 +79,7 @@ export default class Parser extends Service {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
-            this.throw(`unmatching \`${right.tag}\` found for the \`${left.tag}\` open tag`);
+            this.throw(`unmatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
         }
@@ -92,7 +91,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
@@ -107,7 +105,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
@@ -127,8 +124,8 @@ export default class Parser extends Service {
         attributes.push(this.parseAttribute());
       }
       if (this.peekToken() instanceof Slash) {
-        this.getNextToken();
-        this.expect(this.getNextToken(), GreaterThan, "expecting `>` token for tag");
+        const token = this.getNextToken() as Character;
+        this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
         return new StandaloneComponent(identifier.view, attributes);
       }
       this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
@@ -139,7 +136,6 @@ export default class Parser extends Service {
     return this.parseContent();
   }
 
-  @InjectId
   private parseContent() {
     let view = "";
     while (this.hasMoreTokens()) {
@@ -149,7 +145,6 @@ export default class Parser extends Service {
     return new TextContent(view);
   }
 
-  @InjectId
   private parseTagIdentifier() {
     const identifier = this.expect(this.getNextToken(), Identifier, "expecting leading identifier for html tag name");
     let view = identifier.view;
@@ -165,7 +160,6 @@ export default class Parser extends Service {
     return new Identifier(view);
   }
 
-  @InjectId
   private parseComment() {
     this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
     const message = "expecting two consecutive `--` after `!` for a comment";
@@ -190,7 +184,6 @@ export default class Parser extends Service {
     this.throw("unexpected end of comment");
   }
 
-  @InjectId
   private parseAttribute() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
@@ -201,7 +194,6 @@ export default class Parser extends Service {
     return new Attribute(identifier.view, view);
   }
 
-  @InjectId
   private parseAddition() {
     const left = this.parseMultiplication();
     if (this.peekToken() instanceof Plus) {
@@ -221,7 +213,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseMultiplication() {
     const left = this.parsePower();
     if (this.peekToken() instanceof Product) {
@@ -241,7 +232,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
@@ -254,7 +244,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
@@ -266,7 +255,6 @@ export default class Parser extends Service {
     return this.parseParanthesis();
   }
 
-  @InjectId
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -278,7 +266,6 @@ export default class Parser extends Service {
     return this.parseString();
   }
 
-  @InjectId
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken();

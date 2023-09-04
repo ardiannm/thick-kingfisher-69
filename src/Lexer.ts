@@ -19,13 +19,10 @@ import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
 import Illegal from "./utils/Illegal";
-import PreserveState from "./utils/PreserveState";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
-import InjectId from "./utils/InjectId";
-import Printf from "./utils/Printf";
+import ShowError from "./utils/ShowError";
 import BackSlash from "./tokens/basic/BackSlash";
-import Location from "./utils/Location";
 
 export default class Lexer {
   private space = false;
@@ -33,11 +30,10 @@ export default class Lexer {
   protected line = 1;
   protected column = 1;
   protected id = 1;
-  protected tokenStates = new Map<number, Printf>();
+  protected tokenStates = new Map<number, ShowError>();
 
   constructor(protected input: string) {}
 
-  @InjectId
   protected getNextToken(): Token {
     const char = this.peek();
 
@@ -69,17 +65,24 @@ export default class Lexer {
 
     if (char) {
       const token = new Illegal(next);
-      const location = new Location(this.line, this.column);
-      new Printf(location).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
+      new ShowError(this.line, this.column, this.line, this.column).printf(this.input, `character \`${next}\` found in the lexer has not been implemented`);
       return token;
     }
 
     return new EOF();
   }
 
-  @PreserveState
   protected peekToken(): Token {
-    return this.getNextToken();
+    const pointer = this.pointer;
+    const line = this.line;
+    const column = this.column;
+    const id = this.id;
+    const token = this.getNextToken();
+    this.pointer = pointer;
+    this.line = line;
+    this.column = column;
+    this.id = id;
+    return token;
   }
 
   private getNumber() {

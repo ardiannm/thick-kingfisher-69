@@ -1,9 +1,7 @@
 import Token from "../tokens/basic/Token";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
-import Printf from "./Printf";
-import Location from "./Location";
-import Space from "../tokens/basic/Space";
+import ShowError from "./ShowError";
 
 export default class Service extends Lexer {
   //
@@ -14,28 +12,25 @@ export default class Service extends Lexer {
 
   protected expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    this.printf(token, message);
+    this.printf(message);
     throw token;
   }
 
   protected doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
-      this.printf(token, message);
+      this.printf(message);
       throw token;
     }
     return token as T;
   }
 
-  protected printf(token: Token, message: string) {
-    const target = this.tokenStates.get(token.id as number);
-    if (target) return target.printf(this.input, message);
-    const location = new Location(this.line, this.column);
-    new Printf(location).printf(this.input, `for some reason token with id \`${token.id}\` has not been mapped in the token states`);
+  protected printf(message: string) {
+    new ShowError(this.line, this.column, this.line, this.column).printf(this.input, message);
   }
 
   protected throw(message: string) {
     const token = this.getNextToken();
-    this.printf(token, message);
+    this.printf(message);
     throw token;
   }
 }
