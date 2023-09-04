@@ -29,7 +29,7 @@ export default class Service extends Lexer {
   }
 
   protected throw(message: string) {
-    const token = this.parseToken();
+    const token = this.getNextToken();
     this.printf(message);
     throw token;
   }

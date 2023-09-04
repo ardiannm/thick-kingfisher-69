@@ -38,7 +38,7 @@ import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
-import InjectId from "./utils/InjectId";
+import UnknownCharacter from "./utils/UnknownCharacter";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -58,7 +58,6 @@ export default class Parser extends Service {
     }
   }
 
-  @InjectId
   private parseProgram() {
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
@@ -72,7 +71,6 @@ export default class Parser extends Service {
     return this.parseAddition();
   }
 
-  @InjectId
   private parseComponent() {
     const left = this.parseScript();
     if (left instanceof OpenTag) {
@@ -93,7 +91,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
@@ -108,7 +105,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseTag() {
     if (this.peekToken() instanceof LessThan) {
       const left = this.parseComment();
@@ -138,7 +134,6 @@ export default class Parser extends Service {
     return this.parseContent();
   }
 
-  @InjectId
   private parseComment() {
     const left = this.expect(this.parseToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
@@ -167,7 +162,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseContent() {
     let view = "";
     while (this.hasMoreTokens()) {
@@ -177,7 +171,6 @@ export default class Parser extends Service {
     return new TextContent(view);
   }
 
-  @InjectId
   private parseTagIdentifier() {
     const identifier = this.expect(this.parseToken(), Identifier, "expecting leading identifier for html tag name");
     let view = identifier.view;
@@ -193,7 +186,6 @@ export default class Parser extends Service {
     return new Identifier(view);
   }
 
-  @InjectId
   private parseAttribute() {
     const identifier = this.parseToken() as Identifier;
     let view = "";
@@ -204,7 +196,6 @@ export default class Parser extends Service {
     return new Attribute(identifier.view, view);
   }
 
-  @InjectId
   private parseAddition() {
     const left = this.parseMultiplication();
     if (this.peekToken() instanceof Plus) {
@@ -224,7 +215,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseMultiplication() {
     const left = this.parsePower();
     if (this.peekToken() instanceof Product) {
@@ -244,7 +234,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
@@ -257,7 +246,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @InjectId
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.parseToken();
@@ -269,7 +257,6 @@ export default class Parser extends Service {
     return this.parseParanthesis();
   }
 
-  @InjectId
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.parseToken();
@@ -281,7 +268,6 @@ export default class Parser extends Service {
     return this.parseString();
   }
 
-  @InjectId
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.parseToken();
@@ -298,5 +284,10 @@ export default class Parser extends Service {
       return new String(view);
     }
     return this.parseToken();
+  }
+
+  private parseToken() {
+    const token = this.getNextToken() as Character;
+    return this.doNotExpect(token, UnknownCharacter, `unknown character \`${token.view}\` found in the lexer`);
   }
 }

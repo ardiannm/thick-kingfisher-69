@@ -23,7 +23,6 @@ import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import BackSlash from "./tokens/basic/BackSlash";
 import Locator from "./utils/Locator";
-import InjectId from "./utils/InjectId";
 
 export default class Lexer {
   private space = false;
@@ -31,11 +30,10 @@ export default class Lexer {
   protected line = 1;
   protected column = 1;
   protected id = 1;
-  protected locators = new Map<number, Locator>();
 
   constructor(protected input: string) {}
 
-  private getNextToken(): Token {
+  protected getNextToken(): Token {
     const char = this.peek();
 
     if (/\s/.test(char)) return this.getSpace();
@@ -64,11 +62,7 @@ export default class Lexer {
     if (char == "/") return new Slash(next);
     if (char == "^") return new Power(next);
 
-    if (char) {
-      const token = new UnknownCharacter(next);
-      new Locator(this.line, this.column, this.line, this.column).printf(this.input, `unknown character \`${next}\` found in the lexer`);
-      return token;
-    }
+    if (char) return new UnknownCharacter(next);
 
     return new EOF();
   }
@@ -84,11 +78,6 @@ export default class Lexer {
     this.column = column;
     this.id = id;
     return token;
-  }
-
-  @InjectId
-  protected parseToken() {
-    return this.getNextToken();
   }
 
   private getNumber() {
