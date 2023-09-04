@@ -22,7 +22,6 @@ import UnknownCharacter from "./utils/UnknownCharacter";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import BackSlash from "./tokens/basic/BackSlash";
-import Locator from "./utils/Locator";
 
 export default class Lexer {
   private space = false;
@@ -36,9 +35,9 @@ export default class Lexer {
   protected getNextToken(): Token {
     const char = this.peek();
 
-    if (/\s/.test(char)) return this.getSpace();
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
     if (/[0-9]/.test(char)) return this.getNumber();
+    if (/\s/.test(char)) return this.getSpace();
 
     const next = this.getNext();
 

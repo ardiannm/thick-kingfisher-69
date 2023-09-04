@@ -38,7 +38,6 @@ import ExclamationMark from "./tokens/basic/ExclamationMark";
 import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
-import UnknownCharacter from "./utils/UnknownCharacter";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -49,10 +48,9 @@ export default class Parser extends Service {
     try {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
-
       return program;
     } catch (error) {
-      console.log("program threw an error");
+      console.log("error");
       console.log();
       return error;
     }
@@ -110,9 +108,9 @@ export default class Parser extends Service {
       const left = this.parseComment();
       if (left instanceof Comment) return left;
       if (this.peekToken() instanceof Slash) {
-        this.parseToken();
+        this.getNextToken();
         const identifier = this.expect(this.parseTagIdentifier(), Identifier, "expecting identifier for closing tag");
-        this.expect(this.parseToken(), GreaterThan, "expecting `>` for closing tag");
+        this.expect(this.getNextToken(), GreaterThan, "expecting `>` for closing tag");
         if (identifier.view === "script") return new CloseScriptTag();
         return new CloseTag(identifier.view);
       }
@@ -122,11 +120,11 @@ export default class Parser extends Service {
         attributes.push(this.parseAttribute());
       }
       if (this.peekToken() instanceof Slash) {
-        const token = this.parseToken() as Character;
-        this.expect(this.parseToken(), GreaterThan, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
+        const token = this.getNextToken() as Character;
+        this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
         return new StandaloneComponent(identifier.view, attributes);
       }
-      this.expect(this.parseToken(), GreaterThan, "expecting `>` for tag");
+      this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
       if (identifier.view === "script") return new OpenScriptTag();
       if (AmbigousTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
       return new OpenTag(identifier.view, attributes);
@@ -135,22 +133,22 @@ export default class Parser extends Service {
   }
 
   private parseComment() {
-    const left = this.expect(this.parseToken(), LessThan, "expecting `<` for an html tag");
+    const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
-      this.expect(this.parseToken(), ExclamationMark, "expecting `!` for a comment");
+      this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
       const message = "expecting two consecutive `--` after `!` for a comment";
-      this.expect(this.parseToken(), Minus, message);
-      this.expect(this.parseToken(), Minus, message);
+      this.expect(this.getNextToken(), Minus, message);
+      this.expect(this.getNextToken(), Minus, message);
       let view = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Minus) {
           const keep = this.pointer;
-          this.parseToken();
+          this.getNextToken();
           const token = this.peekToken();
           this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
           if (token instanceof Minus) {
-            this.parseToken();
-            this.expect(this.parseToken(), GreaterThan, "expecting `>` for comment");
+            this.getNextToken();
+            this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
             return new Comment(view);
           }
           this.pointer = keep;
@@ -172,11 +170,11 @@ export default class Parser extends Service {
   }
 
   private parseTagIdentifier() {
-    const identifier = this.expect(this.parseToken(), Identifier, "expecting leading identifier for html tag name");
+    const identifier = this.expect(this.getNextToken(), Identifier, "expecting leading identifier for html tag name");
     let view = identifier.view;
     this.keepSpace();
     while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
-      const token = this.parseToken() as Identifier | Minus | Number;
+      const token = this.getNextToken() as Identifier | Minus | Number;
       if (token instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
         this.throw("expecting an ending number or identifier for the name tag");
       }
@@ -187,10 +185,10 @@ export default class Parser extends Service {
   }
 
   private parseAttribute() {
-    const identifier = this.parseToken() as Identifier;
+    const identifier = this.getNextToken() as Identifier;
     let view = "";
     if (this.peekToken() instanceof Equals) {
-      this.parseToken();
+      this.getNextToken();
       view = this.expect(this.parseString(), String, "expecting a string value after `=` following a tag property").view;
     }
     return new Attribute(identifier.view, view);
@@ -200,14 +198,14 @@ export default class Parser extends Service {
     const left = this.parseMultiplication();
     if (this.peekToken() instanceof Plus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
-      this.parseToken();
+      this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parseAddition(), Expression, "invalid right hand side in binary expression");
       return new Addition(left, right);
     }
     if (this.peekToken() instanceof Minus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
-      this.parseToken();
+      this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parseAddition(), Expression, "invalid right hand side in binary expression");
       return new Substraction(left, right);
@@ -219,14 +217,14 @@ export default class Parser extends Service {
     const left = this.parsePower();
     if (this.peekToken() instanceof Product) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
-      this.parseToken();
+      this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parseMultiplication(), Expression, "invalid right hand side in binary expression");
       return new Multiplication(left, right);
     }
     if (this.peekToken() instanceof Slash) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
-      this.parseToken();
+      this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parseMultiplication(), Expression, "invalid right hand side in binary expression");
       return new Division(left, right);
@@ -237,7 +235,7 @@ export default class Parser extends Service {
   private parsePower() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
-      this.parseToken();
+      this.getNextToken();
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parsePower(), Expression, "invalid right hand side in binary expression");
@@ -248,7 +246,7 @@ export default class Parser extends Service {
 
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
-      const operator = this.parseToken();
+      const operator = this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of unary expression");
       const right = this.expect(this.parseUnary(), Expression, "invalid expression in unary expression");
       if (operator instanceof Plus) return new Positive(right);
@@ -259,10 +257,10 @@ export default class Parser extends Service {
 
   private parseParanthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
-      this.parseToken();
+      this.getNextToken();
       this.doNotExpect(this.peekToken(), CloseParenthesis, "parenthesis closed with no expression");
       const expression = this.expect(this.parseAddition(), Expression, "expecting expression after an open parenthesis");
-      this.expect(this.parseToken(), CloseParenthesis, "expecting to close this parenthesis");
+      this.expect(this.getNextToken(), CloseParenthesis, "expecting to close this parenthesis");
       return new Parenthesis(expression);
     }
     return this.parseString();
@@ -270,24 +268,19 @@ export default class Parser extends Service {
 
   private parseString() {
     if (this.peekToken() instanceof Quote) {
-      this.parseToken();
+      this.getNextToken();
       let view = "";
       this.keepSpace();
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof Quote) break;
-        if (token instanceof BackSlash) this.parseToken();
-        view += (this.parseToken() as Character).view;
+        if (token instanceof BackSlash) this.getNextToken();
+        view += (this.getNextToken() as Character).view;
       }
-      this.expect(this.parseToken(), Quote, "expecting a closing quote for the string");
+      this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
       return new String(view);
     }
-    return this.parseToken();
-  }
-
-  private parseToken() {
-    const token = this.getNextToken() as Character;
-    return this.doNotExpect(token, UnknownCharacter, `unknown character \`${token.view}\` found in the lexer`);
+    return this.getNextToken();
   }
 }
