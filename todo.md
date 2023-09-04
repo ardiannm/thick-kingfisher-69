@@ -29,3 +29,10 @@
 - [ ] using rust like only line and column properties in the ast is not enough to point out the problematic token within line
 - [x] simplify html component structure, do not include uneccessary tag structures, after all said and done
 - [ ] decorators are not properly locating errors while parsing
+
+
+
+
+
+changes:
+replace InjectId decorator for a simple Service.inject(from: Token) -> id as number

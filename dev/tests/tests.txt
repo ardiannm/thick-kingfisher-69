@@ -1,14 +1,3 @@
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title> Document </title>
-  </head>
-  <body>
-    <ng-component> Angular WebApp </ng-component>
-    <h4>this is an header</h4>
-    <script>
-      // Write your own script
-    </script>
-  </body>
-</html>
+<div>
+  <script>Some script</script>
+</x>
