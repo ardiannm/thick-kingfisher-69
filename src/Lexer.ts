@@ -88,10 +88,7 @@ export default class Lexer {
 
   private getSpace() {
     let view = "";
-    while (/\s/.test(this.peek())) {
-      if (this.peek() === "\n") this.line = this.line + 1;
-      view += this.getNext();
-    }
+    while (/\s/.test(this.peek())) view += this.getNext();
     if (this.space) return new Space(view);
     return this.getNextToken();
   }
@@ -109,6 +106,7 @@ export default class Lexer {
   protected getNext() {
     const character = this.peek();
     if (character) this.pointer = this.pointer + 1;
+    if (character === "\n") this.line = this.line + 1;
     return character;
   }
 
