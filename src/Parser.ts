@@ -71,7 +71,7 @@ export default class Parser extends Service {
   @Inject
   private parseExpressions() {
     if (this.peekToken() instanceof LessThan) return this.parseComponent();
-    return this.parseAddition();
+    return this.parseTerm();
   }
 
   @Inject
@@ -214,53 +214,53 @@ export default class Parser extends Service {
   }
 
   @Inject
-  private parseAddition() {
-    const left = this.parseMultiplication();
+  private parseTerm() {
+    const left = this.parseFactor();
     if (this.peekToken() instanceof Plus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      const right = this.expect(this.parseAddition(), Expression, "invalid right hand side in binary expression");
+      const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
       return new Addition(left, right);
     }
     if (this.peekToken() instanceof Minus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      const right = this.expect(this.parseAddition(), Expression, "invalid right hand side in binary expression");
+      const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
       return new Substraction(left, right);
     }
     return left;
   }
 
   @Inject
-  private parseMultiplication() {
-    const left = this.parsePower();
+  private parseFactor() {
+    const left = this.parseExponent();
     if (this.peekToken() instanceof Product) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      const right = this.expect(this.parseMultiplication(), Expression, "invalid right hand side in binary expression");
+      const right = this.expect(this.parseFactor(), Expression, "invalid right hand side in binary expression");
       return new Multiplication(left, right);
     }
     if (this.peekToken() instanceof Slash) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      const right = this.expect(this.parseMultiplication(), Expression, "invalid right hand side in binary expression");
+      const right = this.expect(this.parseFactor(), Expression, "invalid right hand side in binary expression");
       return new Division(left, right);
     }
     return left;
   }
 
   @Inject
-  private parsePower() {
+  private parseExponent() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
       this.getNextToken();
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      const right = this.expect(this.parsePower(), Expression, "invalid right hand side in binary expression");
+      const right = this.expect(this.parseExponent(), Expression, "invalid right hand side in binary expression");
       left = new Exponentiation(left, right);
     }
     return left;
@@ -283,7 +283,7 @@ export default class Parser extends Service {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
       this.doNotExpect(this.peekToken(), CloseParenthesis, "parenthesis closed with no expression");
-      const expression = this.expect(this.parseAddition(), Expression, "expecting expression after an open parenthesis");
+      const expression = this.expect(this.parseTerm(), Expression, "expecting expression after an open parenthesis");
       this.expect(this.getNextToken(), CloseParenthesis, "expecting to close this parenthesis");
       return new Parenthesis(expression);
     }
