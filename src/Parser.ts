@@ -39,7 +39,6 @@ import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
 import Inject from "./utils/Inject";
-import Space from "./tokens/basic/Space";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -51,10 +50,9 @@ export default class Parser extends Service {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
       return program;
-    } catch (error) {
-      console.log("program threw an error");
-      console.log();
-      return error;
+    } catch (logger) {
+      console.log(logger);
+      return logger;
     }
   }
 
@@ -81,7 +79,7 @@ export default class Parser extends Service {
         const right = this.parseComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
-            this.throw(`unmatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+            this.throwError(`unmatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
         }
@@ -91,7 +89,7 @@ export default class Parser extends Service {
         }
         children.push(component);
       }
-      this.throw(`expecting a closing token for \`${left.tag}\` tag`);
+      this.throwError(`expecting a closing token for \`${left.tag}\` tag`);
     }
     return left;
   }
@@ -106,7 +104,7 @@ export default class Parser extends Service {
         if (!(right instanceof CloseScriptTag)) throw right;
         return new Script(content.view);
       } catch (right) {
-        this.throw(`expecting a closing \`script\` tag`);
+        this.throwError(`expecting a closing \`script\` tag`);
       }
     }
     return left;
@@ -166,7 +164,7 @@ export default class Parser extends Service {
         }
         view += this.getNext();
       }
-      this.throw("unexpected end of comment");
+      this.throwError("unexpected end of comment");
     }
     return left;
   }
@@ -189,7 +187,7 @@ export default class Parser extends Service {
     while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
       const token = this.parseToken() as Identifier | Minus | Number;
       if (token instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
-        this.throw("expecting an ending number or identifier for the name tag");
+        this.throwError("expecting an ending number or identifier for the name tag");
       }
       view += token.view;
     }

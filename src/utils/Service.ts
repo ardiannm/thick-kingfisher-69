@@ -9,36 +9,34 @@ export default class Service extends Lexer {
 
   protected expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
-    this.printf(message);
-    throw token;
+    throw this.format(message);
   }
 
   protected doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
-      this.printf(message);
-      throw token;
+      throw this.format(message);
     }
     return token as T;
   }
 
-  protected printf(message: string) {
-    //
-    const lineNumber = this.line;
-    const lineContent = this.input.split("\n")[lineNumber - 1];
-    const lineNumberWidth = this.line.toString().replace(/.+/g, " ");
-
-    console.log();
-    console.log(`error: ${message}`);
-    console.log(` -- ./dev/tests/tests.txt:${lineNumber}:1`);
-    console.log();
-    console.log(`${lineNumberWidth}  |  `);
-    console.log(`${lineNumber}  |  ${lineContent}`);
-    console.log(`${lineNumberWidth}  |  `);
-    console.log();
+  protected throwError(message: string) {
+    throw this.format(message);
   }
 
-  protected throw(message: string) {
-    this.printf(message);
-    throw "";
+  private format(message: string) {
+    const lineNumber = this.line;
+    const lineContent = this.input.split("\n")[lineNumber - 1];
+    const logger = new Array<string>();
+
+    logger.push("");
+    logger.push(`error: ${message}`);
+    logger.push(` -- ./dev/tests/tests.txt:${lineNumber}:1`);
+    logger.push("");
+    logger.push(`  ${lineNumber - 1}  |  `);
+    logger.push(`> ${lineNumber}  |  ${lineContent}`);
+    logger.push(`  ${lineNumber + 1}  |  `);
+    logger.push("");
+
+    return logger;
   }
 }
