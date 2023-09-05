@@ -3,20 +3,6 @@ import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 
 export default class Service extends Lexer {
-  private space = false;
-
-  protected considerSpace() {
-    this.space = true;
-  }
-
-  protected ignoreSpace() {
-    this.space = false;
-  }
-
-  protected whiteSpace() {
-    return this.space;
-  }
-
   private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
     return instance instanceof tokenType;
   }
@@ -36,25 +22,19 @@ export default class Service extends Lexer {
   }
 
   protected printf(message: string) {
-    console.log();
-    console.log(`error: ${message}`);
-    console.log(` -- ./dev/tests/tests.txt:${this.line}:1`);
-    console.log();
-    this.renderLine(this.line);
-    console.log();
-  }
-
-  private renderLine(lineNumber: number) {
-    const lines = this.input.split("\n");
-
-    console.log(lines);
-
-    const lineContent = lines[lineNumber - 1];
+    //
+    const lineNumber = this.line;
+    const lineContent = this.input.split("\n")[lineNumber - 1];
     const lineNumberWidth = this.line.toString().replace(/.+/g, " ");
 
+    console.log();
+    console.log(`error: ${message}`);
+    console.log(` -- ./dev/tests/tests.txt:${lineNumber}:1`);
+    console.log();
     console.log(`${lineNumberWidth}  |  `);
     console.log(`${lineNumber}  |  ${lineContent}`);
     console.log(`${lineNumberWidth}  |  `);
+    console.log();
   }
 
   protected throw(message: string) {

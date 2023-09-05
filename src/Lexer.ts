@@ -27,8 +27,24 @@ export default class Lexer {
   protected pointer = 0;
   protected id = 1;
   protected line = 1;
+  private space = false;
 
   constructor(protected input: string) {}
+
+  protected peekToken(): Token {
+    const pointer = this.pointer;
+    const id = this.id;
+    const line = this.line;
+    const token = this.getNextToken();
+    this.pointer = pointer;
+    this.id = id;
+    this.line = line;
+    return token;
+  }
+
+  public hasMoreTokens(): boolean {
+    return !(this.peekToken() instanceof EOF);
+  }
 
   protected getNextToken(): Token {
     const char = this.peek();
@@ -64,17 +80,6 @@ export default class Lexer {
     return new EOF();
   }
 
-  protected peekToken(): Token {
-    const pointer = this.pointer;
-    const id = this.id;
-    const line = this.line;
-    const token = this.getNextToken();
-    this.pointer = pointer;
-    this.id = id;
-    this.line = line;
-    return token;
-  }
-
   private getNumber() {
     let view = "";
     while (/[0-9]/.test(this.peek())) view += this.getNext();
@@ -87,17 +92,14 @@ export default class Lexer {
       if (this.peek() === "\n") this.line = this.line + 1;
       view += this.getNext();
     }
-    return new Space(view);
+    if (this.space) return new Space(view);
+    return this.getNextToken();
   }
 
   private getIdentifier() {
     let view = "";
     while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
     return new Identifier(view);
-  }
-
-  public hasMoreTokens(): boolean {
-    return !(this.peekToken() instanceof EOF);
   }
 
   private peek() {
@@ -108,5 +110,17 @@ export default class Lexer {
     const character = this.peek();
     if (character) this.pointer = this.pointer + 1;
     return character;
+  }
+
+  protected considerSpace() {
+    this.space = true;
+  }
+
+  protected ignoreSpace() {
+    this.space = false;
+  }
+
+  protected whiteSpace() {
+    return this.space;
   }
 }

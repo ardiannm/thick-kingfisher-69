@@ -306,11 +306,6 @@ export default class Parser extends Service {
 
   @Inject
   private parseToken() {
-    const token = this.getNextToken();
-    if (token instanceof Space) {
-      if (this.whiteSpace()) return token;
-      return this.parseToken();
-    }
-    return token;
+    return this.getNextToken();
   }
 }
