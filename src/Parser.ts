@@ -87,6 +87,9 @@ export default class Parser extends Service {
           return new HTMLElement(left.tag, children);
         }
         const component = this.expect(right, Component, "token is not a valid html component");
+        if (component instanceof TextContent) {
+          if (/^\s+$/.test(component.view)) continue;
+        }
         children.push(component);
       }
       this.throw(`expecting a closing token for \`${left.tag}\` tag`);
@@ -182,7 +185,7 @@ export default class Parser extends Service {
   private parseTagIdentifier() {
     const identifier = this.expect(this.parseToken(), Identifier, "expecting leading identifier for html tag name");
     let view = identifier.view;
-    this.keepSpace();
+    this.considerSpace();
     while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
       const token = this.parseToken() as Identifier | Minus | Number;
       if (token instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
@@ -287,7 +290,7 @@ export default class Parser extends Service {
     if (this.peekToken() instanceof Quote) {
       this.parseToken();
       let view = "";
-      this.keepSpace();
+      this.considerSpace();
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof Quote) break;

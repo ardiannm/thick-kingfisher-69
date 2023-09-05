@@ -6,7 +6,7 @@ import Locator from "./Locator";
 export default class Service extends Lexer {
   private space = false;
 
-  protected keepSpace() {
+  protected considerSpace() {
     this.space = true;
   }
 
@@ -41,7 +41,7 @@ export default class Service extends Lexer {
   }
 
   protected throw(message: string) {
-    const token = this.getNextToken();
+    const token = this.peekToken();
     this.printf(message);
     throw token;
   }
