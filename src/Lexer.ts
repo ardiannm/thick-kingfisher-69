@@ -119,8 +119,4 @@ export default class Lexer {
   protected ignoreSpace() {
     this.space = false;
   }
-
-  protected whiteSpace() {
-    return this.space;
-  }
 }

@@ -24,17 +24,21 @@ export default class Service extends Lexer {
   }
 
   private format(message: string) {
-    const lineNumber = this.line;
-    const lineContent = this.input.split("\n")[lineNumber - 1];
+    const input = this.input.split("\n");
     const logger = new Array<string>();
+    const n = this.line;
 
     logger.push("");
     logger.push(`error: ${message}`);
-    logger.push(` -- dev/tests/tests.txt:${lineNumber}:1`);
+    logger.push(` -- dev/tests/tests.txt:${n}:1`);
     logger.push("");
-    logger.push(`  ${lineNumber - 1} | `);
-    logger.push(`> ${lineNumber} | ${lineContent}`);
-    logger.push(`  ${lineNumber + 1} | `);
+
+    if (input[n - 3] !== undefined) logger.push(`  ${n - 2} |   ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) logger.push(`  ${n - 1} |   ${input[n - 2]}`);
+    if (input[n - 1] !== undefined) logger.push(`> ${n + 0} |   ${input[n - 1]}`);
+    if (input[n - 0] !== undefined) logger.push(`  ${n + 1} |   ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) logger.push(`  ${n + 2} |   ${input[n + 1]}`);
+
     logger.push("");
 
     return logger;

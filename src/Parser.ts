@@ -48,16 +48,19 @@ export default class Parser extends Service {
   public parse() {
     try {
       const program = this.parseProgram();
-      console.log(JSON.stringify(program, undefined, 3));
+      const format = JSON.stringify(program, undefined, 3);
+      console.log(format);
       return program;
     } catch (logger) {
-      console.log(logger.join("\n"));
+      const format = logger.join("\n");
+      console.log(format);
       return logger;
     }
   }
 
   @Inject
   private parseProgram() {
+    this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
       expressions.push(this.parseExpressions());
