@@ -30,11 +30,11 @@ export default class Service extends Lexer {
 
     logger.push("");
     logger.push(`error: ${message}`);
-    logger.push(` -- ./dev/tests/tests.txt:${lineNumber}:1`);
+    logger.push(` -- dev/tests/tests.txt:${lineNumber}:1`);
     logger.push("");
-    logger.push(`  ${lineNumber - 1}  |  `);
-    logger.push(`> ${lineNumber}  |  ${lineContent}`);
-    logger.push(`  ${lineNumber + 1}  |  `);
+    logger.push(`  ${lineNumber - 1} | `);
+    logger.push(`> ${lineNumber} | ${lineContent}`);
+    logger.push(`  ${lineNumber + 1} | `);
     logger.push("");
 
     return logger;

@@ -51,7 +51,7 @@ export default class Parser extends Service {
       console.log(JSON.stringify(program, undefined, 3));
       return program;
     } catch (logger) {
-      console.log(logger);
+      console.log(logger.join("\n"));
       return logger;
     }
   }
@@ -145,7 +145,7 @@ export default class Parser extends Service {
     const left = this.expect(this.parseToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
       this.expect(this.parseToken(), ExclamationMark, "expecting `!` for a comment");
-      const message = "expecting two consecutive `--` after `!` for a comment";
+      const message = "expecting `--` after `!` for a comment";
       this.expect(this.parseToken(), Minus, message);
       this.expect(this.parseToken(), Minus, message);
       let view = "";
@@ -154,7 +154,7 @@ export default class Parser extends Service {
           const keep = this.pointer;
           this.parseToken();
           const token = this.peekToken();
-          this.doNotExpect(token, GreaterThan, "expecting two consecutive `--` before `>` for a comment");
+          this.doNotExpect(token, GreaterThan, "expecting `--` before `>` for a comment");
           if (token instanceof Minus) {
             this.parseToken();
             this.expect(this.parseToken(), GreaterThan, "expecting `>` for comment");
