@@ -25,8 +25,6 @@ import BackSlash from "./tokens/basic/BackSlash";
 
 export default class Lexer {
   protected pointer = 0;
-  protected line = 1;
-  protected column = 1;
   protected id = 1;
 
   constructor(protected input: string) {}
@@ -67,13 +65,9 @@ export default class Lexer {
 
   protected peekToken(): Token {
     const pointer = this.pointer;
-    const line = this.line;
-    const column = this.column;
     const id = this.id;
     const token = this.getNextToken();
     this.pointer = pointer;
-    this.line = line;
-    this.column = column;
     this.id = id;
     return token;
   }
@@ -86,13 +80,7 @@ export default class Lexer {
 
   private getSpace() {
     let view = "";
-    while (/\s/.test(this.peek())) {
-      if (this.peek() === "\n") {
-        this.line = this.line + 1;
-        this.column = 1;
-      }
-      view += this.getNext();
-    }
+    while (/\s/.test(this.peek())) view += this.getNext();
     return new Space(view);
   }
 
@@ -112,12 +100,7 @@ export default class Lexer {
 
   protected getNext() {
     const character = this.peek();
-    if (character) {
-      this.pointer = this.pointer + 1;
-      if (character !== "\r" && character !== "\n") {
-        this.column = this.column + 1;
-      }
-    }
+    if (character) this.pointer = this.pointer + 1;
     return character;
   }
 }

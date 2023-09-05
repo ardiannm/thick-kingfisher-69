@@ -37,7 +37,7 @@ export default class Service extends Lexer {
   }
 
   protected printf(message: string) {
-    new Locator(this.line, this.column, this.line, this.column).printf(this.input, message);
+    console.log(message);
   }
 
   protected throw(message: string) {
