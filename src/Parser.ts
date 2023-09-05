@@ -40,7 +40,7 @@ import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
 import Inject from "./utils/Inject";
 
-const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
+const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
 export default class Parser extends Service {
   //
