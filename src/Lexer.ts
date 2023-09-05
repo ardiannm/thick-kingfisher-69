@@ -24,7 +24,7 @@ import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import BackSlash from "./tokens/basic/BackSlash";
 
 export default class Lexer {
-  private space = false;
+  protected space = false;
   protected pointer = 0;
   protected line = 1;
   protected column = 1;
@@ -94,8 +94,7 @@ export default class Lexer {
       }
       view += this.getNext();
     }
-    if (this.space) return new Space(view);
-    return this.getNextToken();
+    return new Space(view);
   }
 
   private getIdentifier() {

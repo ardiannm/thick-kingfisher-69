@@ -39,6 +39,7 @@ import Comment from "./tokens/html/Comment";
 import TextContent from "./tokens/html/TextContent";
 import Number from "./tokens/expressions/Number";
 import Inject from "./utils/Inject";
+import Space from "./tokens/basic/Space";
 
 const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 
@@ -302,6 +303,13 @@ export default class Parser extends Service {
 
   @Inject
   private parseToken() {
-    return this.getNextToken();
+    const token = this.getNextToken();
+    if (token instanceof Space) {
+      console.log(token);
+
+      if (this.space) return token;
+      return this.parseToken();
+    }
+    return token;
   }
 }
