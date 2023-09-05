@@ -1,7 +1,6 @@
 import Token from "../tokens/basic/Token";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
-import Locator from "./Locator";
 
 export default class Service extends Lexer {
   private space = false;
@@ -41,8 +40,7 @@ export default class Service extends Lexer {
   }
 
   protected throw(message: string) {
-    const token = this.peekToken();
     this.printf(message);
-    throw token;
+    throw "";
   }
 }

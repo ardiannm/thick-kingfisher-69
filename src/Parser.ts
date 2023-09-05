@@ -46,14 +46,13 @@ const AmbigousTags = ["link", "br", "input", "img", "hr", "meta", "col"];
 export default class Parser extends Service {
   //
 
-  @Inject
   public parse() {
     try {
       const program = this.parseProgram();
       console.log(JSON.stringify(program, undefined, 3));
       return program;
     } catch (error) {
-      console.log("error");
+      console.log("program threw an error");
       console.log();
       return error;
     }
