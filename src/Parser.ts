@@ -102,9 +102,10 @@ export default class Parser extends Service {
     if (left instanceof OpenScriptTag) {
       const content = this.parseContent();
       try {
-        this.expect(this.parseTag(), CloseScriptTag, `expecting a closing \`script\` tag`);
+        const right = this.parseTag();
+        if (!(right instanceof CloseScriptTag)) throw right;
         return new Script(content.view);
-      } catch {
+      } catch (right) {
         this.throw(`expecting a closing \`script\` tag`);
       }
     }
