@@ -18,8 +18,8 @@ import CloseParenthesis from "./tokens/basic/CloseParenthesis";
 import Character from "./tokens/basic/Character";
 import Quote from "./tokens/basic/Quote";
 import Substraction from "./tokens/expressions/Substraction";
-import Positive from "./tokens/expressions/Positive";
-import Negative from "./tokens/expressions/Negative";
+import Identity from "./tokens/expressions/Identity";
+import Negation from "./tokens/expressions/Negation";
 import Division from "./tokens/expressions/Division";
 import Addition from "./tokens/expressions/Addition";
 import Multiplication from "./tokens/expressions/Multiplication";
@@ -272,8 +272,8 @@ export default class Parser extends Service {
       const operator = this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of unary expression");
       const right = this.expect(this.parseUnary(), Expression, "invalid expression in unary expression");
-      if (operator instanceof Plus) return new Positive(right);
-      return new Negative(right);
+      if (operator instanceof Plus) return new Identity(right);
+      return new Negation(right);
     }
     return this.parseParanthesis();
   }
