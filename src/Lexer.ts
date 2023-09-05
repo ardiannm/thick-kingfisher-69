@@ -24,7 +24,6 @@ import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import BackSlash from "./tokens/basic/BackSlash";
 
 export default class Lexer {
-  protected space = false;
   protected pointer = 0;
   protected line = 1;
   protected column = 1;
@@ -105,14 +104,6 @@ export default class Lexer {
 
   public hasMoreTokens(): boolean {
     return !(this.peekToken() instanceof EOF);
-  }
-
-  protected keepSpace() {
-    this.space = true;
-  }
-
-  protected ignoreSpace() {
-    this.space = false;
   }
 
   private peek() {

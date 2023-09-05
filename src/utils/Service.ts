@@ -4,7 +4,19 @@ import Lexer from "../Lexer";
 import Locator from "./Locator";
 
 export default class Service extends Lexer {
-  //
+  private space = false;
+
+  protected keepSpace() {
+    this.space = true;
+  }
+
+  protected ignoreSpace() {
+    this.space = false;
+  }
+
+  protected whiteSpace() {
+    return this.space;
+  }
 
   private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
     return instance instanceof tokenType;

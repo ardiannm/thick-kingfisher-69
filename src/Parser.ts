@@ -305,9 +305,7 @@ export default class Parser extends Service {
   private parseToken() {
     const token = this.getNextToken();
     if (token instanceof Space) {
-      console.log(token);
-
-      if (this.space) return token;
+      if (this.whiteSpace()) return token;
       return this.parseToken();
     }
     return token;
