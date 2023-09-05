@@ -18,7 +18,7 @@ import Product from "./tokens/operators/Product";
 import Space from "./tokens/basic/Space";
 import SemiColon from "./tokens/basic/SemiColon";
 import Colon from "./tokens/basic/Colon";
-import UnknownCharacter from "./utils/UnknownCharacter";
+import BadToken from "./utils/BadToken";
 import EOF from "./tokens/basic/EOF";
 import OpenParenthesis from "./tokens/basic/OpenParenthesis";
 import BackSlash from "./tokens/basic/BackSlash";
@@ -75,7 +75,7 @@ export default class Lexer {
     if (char == "/") return new Slash(next);
     if (char == "^") return new Power(next);
 
-    if (char) return new UnknownCharacter(next);
+    if (char) return new BadToken(next);
 
     return new EOF();
   }
