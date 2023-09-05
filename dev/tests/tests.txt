@@ -1,4 +1,5 @@
+
 <div>
-  <script> Some script </ascript>
+  <script> Some script </script>
   <!-- Expected error in the `x` tag -->
-</div>
+</x>

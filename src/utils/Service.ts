@@ -36,7 +36,25 @@ export default class Service extends Lexer {
   }
 
   protected printf(message: string) {
-    console.log(message);
+    console.log();
+    console.log(`error: ${message}`);
+    console.log(` -- ./dev/tests/tests.txt:${this.line}:1`);
+    console.log();
+    this.renderLine(this.line);
+    console.log();
+  }
+
+  private renderLine(lineNumber: number) {
+    const lines = this.input.split("\n");
+
+    console.log(lines);
+
+    const lineContent = lines[lineNumber - 1];
+    const lineNumberWidth = this.line.toString().replace(/.+/g, " ");
+
+    console.log(`${lineNumberWidth}  |  `);
+    console.log(`${lineNumber}  |  ${lineContent}`);
+    console.log(`${lineNumberWidth}  |  `);
   }
 
   protected throw(message: string) {
