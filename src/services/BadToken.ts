@@ -1,3 +1,3 @@
-import Character from "../tokens/basic/Character";
+import Character from "../ast/tokens/Character";
 
 export default class BadToken extends Character {}

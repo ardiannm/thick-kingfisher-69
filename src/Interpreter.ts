@@ -1,16 +1,16 @@
-import RuntimeValue from "./values/RuntimeValue";
-import InterpreterException from "./utils/InterpreterException";
-import Binary from "./tokens/expressions/Binary";
-import Program from "./tokens/expressions/Program";
-import Unary from "./tokens/expressions/Unary";
-import Token from "./tokens/basic/Token";
-import RuntimeNumber from "./values/RuntimeNumber";
-import Substraction from "./tokens/expressions/Substraction";
-import Multiplication from "./tokens/expressions/Multiplication";
-import Division from "./tokens/expressions/Division";
-import Number from "./tokens/expressions/Number";
-import Exponentiation from "./tokens/expressions/Exponentiation";
-import Negative from "./tokens/expressions/Negative";
+import RuntimeValue from "./runtime/RuntimeValue";
+import InterpreterException from "./services/InterpreterException";
+import Binary from "./ast/expressions/Binary";
+import Program from "./ast/expressions/Program";
+import Unary from "./ast/expressions/Unary";
+import Token from "./ast/tokens/Token";
+import RuntimeNumber from "./runtime/RuntimeNumber";
+import Substraction from "./ast/expressions/Substraction";
+import Multiplication from "./ast/expressions/Multiplication";
+import Division from "./ast/expressions/Division";
+import Number from "./ast/expressions/Number";
+import Exponentiation from "./ast/expressions/Exponentiation";
+import Negation from "./ast/expressions/Negation";
 
 export default class Interpreter {
   evaluate<T extends Token>(token: T): RuntimeValue {
@@ -61,7 +61,7 @@ export default class Interpreter {
     }
 
     switch (true) {
-      case token instanceof Negative:
+      case token instanceof Negation:
         return new RuntimeNumber(-right.value);
       default:
         return new RuntimeNumber(+right.value);

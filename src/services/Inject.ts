@@ -1,4 +1,4 @@
-import Token from "../tokens/basic/Token";
+import Token from "../ast/tokens/Token";
 import Parser from "../Parser";
 
 function Inject(_target: Parser, _propertyKey: string, descriptor: PropertyDescriptor) {

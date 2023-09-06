@@ -1,4 +1,4 @@
-import Token from "../tokens/basic/Token";
+import Token from "../ast/tokens/Token";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 
