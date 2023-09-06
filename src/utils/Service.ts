@@ -33,14 +33,19 @@ export default class Service extends Lexer {
     logger.push(` -- dev/tests/tests.txt:${n}:1`);
     logger.push("");
 
-    if (input[n - 3] !== undefined) logger.push(`  ${n - 2} |   ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) logger.push(`  ${n - 1} |   ${input[n - 2]}`);
-    if (input[n - 1] !== undefined) logger.push(`> ${n + 0} |   ${input[n - 1]}`);
-    if (input[n - 0] !== undefined) logger.push(`  ${n + 1} |   ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) logger.push(`  ${n + 2} |   ${input[n + 1]}`);
+    if (input[n - 3] !== undefined) logger.push(`   ${this.formatNumber(n - 2, n + 2)} |  ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) logger.push(`   ${this.formatNumber(n - 1, n + 2)} |  ${input[n - 2]}`);
+    if (input[n - 1] !== undefined) logger.push(` > ${this.formatNumber(n + 0, n + 2)} |  ${input[n - 1]}`);
+    if (input[n - 0] !== undefined) logger.push(`   ${this.formatNumber(n + 1, n + 2)} |  ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) logger.push(`   ${this.formatNumber(n + 2, n + 2)} |  ${input[n + 1]}`);
 
     logger.push("");
 
     return logger;
+  }
+
+  private formatNumber(num: number, offset: number) {
+    const numString = num.toString();
+    return " ".repeat(offset.toString().length - numString.length) + numString;
   }
 }
