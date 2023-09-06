@@ -264,11 +264,11 @@ export default class Parser extends Service {
       if (operator instanceof Plus) return new Identity(right);
       return new Negation(right);
     }
-    return this.parseParanthesis();
+    return this.parseParenthesis();
   }
 
   @Inject
-  private parseParanthesis() {
+  private parseParenthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
       this.doNotExpect(this.peekToken(), CloseParenthesis, "parenthesis closed with no expression");

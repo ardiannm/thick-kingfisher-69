@@ -21,6 +21,7 @@
 - [ ] implement regular expression for picking specific patterns while parsing html
 - [x] implement parsing html comments
 - [x] parse html text content children within html elements
+- [ ] parse interporlation within strings; e.g. "type System.{identifier} is not implemented"
 
 ### issues
 
