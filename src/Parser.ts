@@ -51,10 +51,9 @@ export default class Parser extends Service {
       const format = JSON.stringify(program, undefined, 3);
       console.log(format);
       return program;
-    } catch (logger) {
-      const format = logger.join("\n");
-      console.log(format);
-      return logger;
+    } catch (report) {
+      console.log(report);
+      return report;
     }
   }
 

@@ -6,12 +6,10 @@ import Power from "./ast/operators/Power";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
 import Minus from "./ast/operators/Minus";
 import Slash from "./ast/operators/Slash";
-import QuestionMark from "./ast/tokens/QuestionMark";
 import Quote from "./ast/tokens/Quote";
 import LessThan from "./ast/tokens/LessThan";
 import Plus from "./ast/operators/Plus";
 import Comma from "./ast/tokens/Comma";
-import Underline from "./ast/tokens/Underline";
 import GreaterThan from "./ast/tokens/GreaterThan";
 import Equals from "./ast/tokens/Equals";
 import Product from "./ast/operators/Product";
@@ -28,6 +26,7 @@ export default class Lexer {
   protected id = 1;
   protected line = 1;
   protected column = 1;
+
   private space = false;
 
   constructor(protected input: string) {}
@@ -58,29 +57,46 @@ export default class Lexer {
 
     const next = this.getNext();
 
-    if (char == ",") return new Comma(next);
-    if (char == ";") return new SemiColon(next);
-    if (char == ":") return new Colon(next);
-    if (char == "(") return new OpenParenthesis(next);
-    if (char == ")") return new CloseParenthesis(next);
-    if (char == "!") return new ExclamationMark(next);
-    if (char == "?") return new QuestionMark(next);
-    if (char == '"') return new Quote(next);
-    if (char == "<") return new LessThan(next);
-    if (char == ">") return new GreaterThan(next);
-    if (char == "=") return new Equals(next);
-    if (char == "_") return new Underline(next);
-    if (char == "\\") return new BackSlash(next);
+    switch (char) {
+      case "":
+        return new EOF();
+      case ",":
+        return new Comma(next);
+      case ":":
+        return new Colon(next);
+      case ";":
+        return new SemiColon(next);
+      case "(":
+        return new OpenParenthesis(next);
+      case ")":
+        return new CloseParenthesis(next);
+      case "!":
+        return new ExclamationMark(next);
+      case "<":
+        return new LessThan(next);
+      case ">":
+        return new GreaterThan(next);
+      case "+":
+        return new Plus(next);
+      case "-":
+        return new Minus(next);
+      case "*":
+        return new Product(next);
+      case "/":
+        return new Slash(next);
+      case "^":
+        return new Power(next);
+      case "\\":
+        return new BackSlash(next);
+      case '"':
+        return new Quote(next);
+      case "=":
+        return new Equals(next);
 
-    if (char == "+") return new Plus(next);
-    if (char == "-") return new Minus(next);
-    if (char == "*") return new Product(next);
-    if (char == "/") return new Slash(next);
-    if (char == "^") return new Power(next);
-
-    if (char) return new BadToken(next);
-
-    return new EOF();
+      default:
+        console.log(this.report(`bad token character \`${next}\` found`));
+        return new BadToken(next);
+    }
   }
 
   private getNumber() {
@@ -126,5 +142,31 @@ export default class Lexer {
 
   protected ignoreSpace() {
     this.space = false;
+  }
+
+  protected report(msg: string) {
+    const input = this.input.split("\n");
+    const report = new Array<string>();
+    const n = this.line;
+    const m = this.column;
+
+    report.push("");
+    report.push(`error: ${msg}`);
+    report.push(` -- dev/tests/tests.txt:${n}:${m}`);
+    report.push("");
+
+    if (input[n - 3] !== undefined) report.push(`   ${this.formatNumber(n - 2, n + 2)} |  ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) report.push(`   ${this.formatNumber(n - 1, n + 2)} |  ${input[n - 2]}`);
+    if (input[n - 1] !== undefined) report.push(` > ${this.formatNumber(n + 0, n + 2)} |  ${input[n - 1]}`);
+    if (input[n - 0] !== undefined) report.push(`   ${this.formatNumber(n + 1, n + 2)} |  ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) report.push(`   ${this.formatNumber(n + 2, n + 2)} |  ${input[n + 1]}`);
+
+    report.push("");
+    return report.join("\n");
+  }
+
+  private formatNumber(num: number, offset: number) {
+    const numString = num.toString();
+    return " ".repeat(offset.toString().length - numString.length) + numString;
   }
 }
