@@ -151,9 +151,9 @@ export default class Lexer {
 
   protected report(msg: string) {
     const input = this.input.split("\n");
-    const report = new Array<string>();
     const n = this.line;
     const m = this.column;
+    const report = new Array<string>();
 
     report.push("");
     report.push(`error: ${msg}`);

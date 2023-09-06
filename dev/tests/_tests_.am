@@ -1,1 +1,2 @@
 "some string {1+2+3} interpolation {1}"
+"type System.\{identifier} is not implemented"
