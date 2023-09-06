@@ -289,13 +289,16 @@ export default class Parser extends Service {
       this.getNextToken();
       let view = "";
       this.considerSpace();
+      const terms = new Array<Expression>();
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof Quote) break;
         if (token instanceof BackSlash) this.getNextToken();
         if (token instanceof OpenBrace) {
+          if (view) terms.push(new String(view));
+          view = "";
           const interpolation = this.parseInterpolation();
-          view += interpolation.view;
+          terms.push(interpolation);
           continue;
         }
         const character = this.getNextToken() as Character;
@@ -303,20 +306,20 @@ export default class Parser extends Service {
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
-      return new String(view);
+      if (view) terms.push(new String(view));
+      if (terms.length == 1) return new String(view);
+      return new Interpolation(terms);
     }
     return this.getNextToken();
   }
 
+  @Inject
   private parseInterpolation() {
-    let view = "";
+    this.ignoreSpace();
     this.expect(this.getNextToken(), OpenBrace, "expecting '{' for string interpolation");
-    while (this.hasMoreTokens()) {
-      if (this.peekToken() instanceof CloseBrace) break;
-      const character = this.getNextToken() as Character;
-      view += character.view;
-    }
+    const expression = this.parseTerm();
     this.expect(this.getNextToken(), CloseBrace, "expecting '}' for string interpolation");
-    return new Interpolation(view);
+    this.considerSpace();
+    return expression;
   }
 }

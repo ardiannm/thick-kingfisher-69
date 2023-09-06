@@ -1,11 +1,10 @@
 
-
-"Name {LastName}"" 
-
 <div>
   <script> Some script </script>
   <!-- Expected error in the `x` tag -->
   Name
 </x>
 Name
+
+
 

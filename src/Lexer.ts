@@ -157,7 +157,7 @@ export default class Lexer {
 
     report.push("");
     report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/tests.txt:${n}:${m}`);
+    report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
     report.push("");
 
     if (input[n - 3] !== undefined) report.push(`   ${this.formatNumber(n - 2, n + 2)} |  ${input[n - 3]}`);
