@@ -43,18 +43,8 @@ import Inject from "./services/Inject";
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
 export default class Parser extends Service {
-  //
-
   public parse() {
-    try {
-      const program = this.parseProgram();
-      const format = JSON.stringify(program, undefined, 3);
-      console.log(format);
-      return program;
-    } catch (report) {
-      console.log(report);
-      return report;
-    }
+    return this.parseProgram();
   }
 
   @Inject

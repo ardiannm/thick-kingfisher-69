@@ -1,3 +1,3 @@
 export default class InterpreterException {
-  constructor(public message: string) {}
+  constructor(public value: string) {}
 }
