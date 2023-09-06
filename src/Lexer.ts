@@ -27,6 +27,7 @@ export default class Lexer {
   protected pointer = 0;
   protected id = 1;
   protected line = 1;
+  protected column = 1;
   private space = false;
 
   constructor(protected input: string) {}
@@ -35,10 +36,12 @@ export default class Lexer {
     const pointer = this.pointer;
     const id = this.id;
     const line = this.line;
+    const column = this.column;
     const token = this.getNextToken();
     this.pointer = pointer;
     this.id = id;
     this.line = line;
+    this.column = column;
     return token;
   }
 
@@ -105,8 +108,15 @@ export default class Lexer {
 
   protected getNext() {
     const character = this.peek();
-    if (character) this.pointer = this.pointer + 1;
-    if (character === "\n") this.line = this.line + 1;
+    if (character) {
+      this.pointer = this.pointer + 1;
+      if (character === "\n") {
+        this.line = this.line + 1;
+        this.column = 1;
+      } else {
+        this.column = this.column + 1;
+      }
+    }
     return character;
   }
 

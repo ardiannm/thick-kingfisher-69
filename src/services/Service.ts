@@ -27,10 +27,11 @@ export default class Service extends Lexer {
     const input = this.input.split("\n");
     const logger = new Array<string>();
     const n = this.line;
+    const m = this.column;
 
     logger.push("");
     logger.push(`error: ${message}`);
-    logger.push(` -- dev/tests/tests.txt:${n}:1`);
+    logger.push(` -- dev/tests/tests.txt:${n}:${m}`);
     logger.push("");
 
     if (input[n - 3] !== undefined) logger.push(`   ${this.formatNumber(n - 2, n + 2)} |  ${input[n - 3]}`);
