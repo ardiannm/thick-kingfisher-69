@@ -38,7 +38,11 @@ import ExclamationMark from "./ast/tokens/ExclamationMark";
 import Comment from "./ast/html/Comment";
 import TextContent from "./ast/html/TextContent";
 import Number from "./ast/expressions/Number";
+import Interpolation from "./ast/expressions/Interpolation";
 import Inject from "./services/Inject";
+import OpenBrace from "./ast/tokens/OpenBrace";
+import CloseBrace from "./ast/tokens/CloseBrace";
+import BadToken from "./services/BadToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -289,12 +293,30 @@ export default class Parser extends Service {
         const token = this.peekToken();
         if (token instanceof Quote) break;
         if (token instanceof BackSlash) this.getNextToken();
-        view += (this.getNextToken() as Character).view;
+        if (token instanceof OpenBrace) {
+          const interpolation = this.parseInterpolation();
+          view += interpolation.view;
+          continue;
+        }
+        const character = this.getNextToken() as Character;
+        view += character.view;
       }
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
       return new String(view);
     }
     return this.getNextToken();
+  }
+
+  private parseInterpolation() {
+    let view = "";
+    this.expect(this.getNextToken(), OpenBrace, "expecting '{' for string interpolation");
+    while (this.hasMoreTokens()) {
+      if (this.peekToken() instanceof CloseBrace) break;
+      const character = this.getNextToken() as Character;
+      view += character.view;
+    }
+    this.expect(this.getNextToken(), CloseBrace, "expecting '}' for string interpolation");
+    return new Interpolation(view);
   }
 }

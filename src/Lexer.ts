@@ -20,6 +20,8 @@ import BadToken from "./services/BadToken";
 import EOF from "./ast/tokens/EOF";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import BackSlash from "./ast/tokens/BackSlash";
+import OpenBrace from "./ast/tokens/OpenBrace";
+import CloseBrace from "./ast/tokens/CloseBrace";
 
 export default class Lexer {
   protected pointer = 0;
@@ -92,9 +94,12 @@ export default class Lexer {
         return new Quote(next);
       case "=":
         return new Equals(next);
+      case "{":
+        return new OpenBrace(next);
+      case "}":
+        return new CloseBrace(next);
 
       default:
-        console.log(this.report(`bad token character \`${next}\` found`));
         return new BadToken(next);
     }
   }
