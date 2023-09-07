@@ -5,12 +5,13 @@ import Interpreter from "./src/Interpreter";
 import System from "./src/system/System";
 import SystemNumber from "./src/system/SystemNumber";
 import SystemString from "./src/system/SystemString";
+import InterpreterException from "./src/services/InterpreterException";
 
 let showTree = false;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const input = prompt({ sigint: true })(">> ") || ReadFile("./dev/tests/_tests_.am");
+  const input = prompt({ sigint: true })(">> ") || ReadFile("_parse_html_content_.am");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     continue;
@@ -24,6 +25,7 @@ while (true) {
     else report(system);
   } catch (err) {
     if (err instanceof System) report(err);
-    console.log(err);
+    else if (err instanceof InterpreterException) console.log(err.value);
+    else console.log(err);
   }
 }

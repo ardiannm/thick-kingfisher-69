@@ -42,7 +42,6 @@ import Interpolation from "./ast/expressions/Interpolation";
 import Inject from "./services/Inject";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
-import BadToken from "./ast/tokens/BadToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -81,9 +80,6 @@ export default class Parser extends Service {
           return new HTMLElement(left.tag, children);
         }
         const component = this.expect(right, Component, "token is not a valid html component");
-        if (component instanceof TextContent) {
-          if (/^\s+$/.test(component.view)) continue;
-        }
         children.push(component);
       }
       this.throwError(`expecting a closing token for \`${left.tag}\` tag`);
@@ -104,6 +100,9 @@ export default class Parser extends Service {
       view += this.getNext();
     }
     this.ignoreSpace();
+    // if (/^\s+$/.test(view)) {
+    //   return this.parseContent();
+    // }
     return new TextContent(view);
   }
 
