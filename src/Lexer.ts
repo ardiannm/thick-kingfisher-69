@@ -16,7 +16,7 @@ import Product from "./ast/operators/Product";
 import Space from "./ast/tokens/Space";
 import SemiColon from "./ast/tokens/SemiColon";
 import Colon from "./ast/tokens/Colon";
-import BadToken from "./services/BadToken";
+import BadToken from "./ast/tokens/BadToken";
 import EOF from "./ast/tokens/EOF";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import BackSlash from "./ast/tokens/BackSlash";

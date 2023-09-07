@@ -42,7 +42,7 @@ import Interpolation from "./ast/expressions/Interpolation";
 import Inject from "./services/Inject";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
-import BadToken from "./services/BadToken";
+import BadToken from "./ast/tokens/BadToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
