@@ -1,7 +1,7 @@
 import Expression from "./Expression";
 
 export default class Interpolation extends Expression {
-  constructor(public expressions: Array<Expression>) {
+  constructor(public strings: Array<Expression>) {
     super();
   }
 }

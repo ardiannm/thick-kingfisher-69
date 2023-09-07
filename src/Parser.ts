@@ -295,8 +295,10 @@ export default class Parser extends Service {
         if (token instanceof Quote) break;
         if (token instanceof BackSlash) this.getNextToken();
         if (token instanceof OpenBrace) {
-          if (view) terms.push(new String(view));
-          view = "";
+          if (view) {
+            terms.push(new String(view));
+            view = "";
+          }
           const interpolation = this.parseInterpolation();
           terms.push(interpolation);
           continue;

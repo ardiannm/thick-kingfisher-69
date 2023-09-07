@@ -1,2 +1,1 @@
-"some string {1+2+3} interpolation {1}"
-"type System.\{identifier} is not implemented"
+"Expression '\{1+1+1}' has been successfully interpolated into value {1+1+1}"
