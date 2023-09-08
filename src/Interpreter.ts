@@ -20,15 +20,25 @@ import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
+import HTMLElement from "./ast/html/HTMLElement";
+import HTMLScript from "./ast/html/HTMLScript";
+import HTMLComment from "./ast/html/HTMLComment";
+import Identifier from "./ast/expressions/Identifier";
+import SystemStringArray from "./system/SystemStringArray";
 
 export default class Interpreter {
-  evaluate<T extends Token>(token: T): System {
+  evaluate<T extends Token>(token: T) {
     if (token instanceof Program) return this.evaluateProgram(token);
-    if (token instanceof Binary) return this.evaluateBinary(token);
+    if (token instanceof Identifier) return this.evaluateIdentifier(token);
     if (token instanceof Number) return this.evaluateNumber(token);
-    if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof String) return this.evaluateString(token);
     if (token instanceof Interpolation) return this.evaluateInterpolation(token);
+    if (token instanceof Unary) return this.evaluateUnary(token);
+    if (token instanceof Binary) return this.evaluateBinary(token);
+    if (token instanceof HTMLElement) return this.evaluateHTMLElement(token);
+    if (token instanceof HTMLTextContent) return this.evaluateHTMLTextContent(token);
+    if (token instanceof HTMLScript) return this.evaluateHTMLScript(token);
+    if (token instanceof HTMLComment) return this.evaluateHTMLComment(token);
     if (token instanceof SpreadsheetCell) return this.evaluateSpreadsheetCell(token);
     if (token instanceof SpreadsheetRange) return this.evaluateSpreadsheetRange(token);
 
@@ -109,7 +119,23 @@ export default class Interpreter {
     return new SystemSpreadsheetRange(left, right);
   }
 
-  private evaluateTextContent(token: HTMLTextContent) {
-    return;
+  private evaluateHTMLTextContent(token: HTMLTextContent) {
+    return new SystemString(token.view);
+  }
+
+  private evaluateHTMLScript(token: HTMLScript) {
+    return new SystemString(token.view);
+  }
+
+  private evaluateHTMLComment(token: HTMLComment) {
+    return new SystemString(token.view);
+  }
+
+  private evaluateHTMLElement(token: HTMLElement) {
+    return new SystemStringArray(token.children.map((e) => this.evaluate(e)));
+  }
+
+  private evaluateIdentifier(token: Identifier) {
+    return new SystemString(token.view);
   }
 }

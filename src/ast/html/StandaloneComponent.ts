@@ -1,7 +1,7 @@
 import Attribute from "./Attribute";
-import Component from "./Component";
+import HTMLComponent from "./HTMLComponent";
 
-export default class StandaloneComponent extends Component {
+export default class StandaloneComponent extends HTMLComponent {
   constructor(public tag: string, public attributes: Array<Attribute>) {
     super();
   }

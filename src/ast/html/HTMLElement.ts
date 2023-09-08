@@ -1,7 +1,7 @@
-import Component from "./Component";
+import HTMLComponent from "./HTMLComponent";
 
-export default class HTMLElement extends Component {
-  constructor(public tag: string, public children: Array<Component>) {
+export default class HTMLElement extends HTMLComponent {
+  constructor(public tag: string, public children: Array<HTMLComponent>) {
     super();
   }
 }

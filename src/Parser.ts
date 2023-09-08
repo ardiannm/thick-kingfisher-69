@@ -30,12 +30,12 @@ import CloseTag from "./ast/html/CloseTag";
 import LessThan from "./ast/tokens/LessThan";
 import OpenScriptTag from "./ast/html/OpenScriptTag";
 import CloseScriptTag from "./ast/html/CloseScriptTag";
-import Script from "./ast/html/Script";
+import HTMLScript from "./ast/html/HTMLScript";
 import HTMLElement from "./ast/html/HTMLElement";
-import Component from "./ast/html/Component";
+import HTMLComponent from "./ast/html/HTMLComponent";
 import Service from "./services/Service";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
-import Comment from "./ast/html/Comment";
+import HTMLComment from "./ast/html/HTMLComment";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
 import Number from "./ast/expressions/Number";
 import Interpolation from "./ast/expressions/Interpolation";
@@ -71,24 +71,24 @@ export default class Parser extends Service {
       this.getNextToken();
       return this.parseRange();
     }
-    if (this.peekToken() instanceof LessThan) return this.parseComponent();
+    if (this.peekToken() instanceof LessThan) return this.parseHTMLComponent();
     return this.parseTerm();
   }
 
   @Inject
-  private parseComponent() {
+  private parseHTMLComponent() {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
-      const children = new Array<Component>();
+      const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
-        const right = this.parseComponent();
+        const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
             this.throwError(`unmatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
         }
-        const component = this.expect(right, Component, "token is not a valid html component");
+        const component = this.expect(right, HTMLComponent, "token is not a valid html component");
         children.push(component);
       }
       this.throwError(`expecting a closing token for \`${left.tag}\` tag`);
@@ -102,7 +102,7 @@ export default class Parser extends Service {
     this.considerSpace();
     if (this.peekToken() instanceof LessThan) {
       this.ignoreSpace();
-      return this.parseScript();
+      return this.parseHTMLScript();
     }
     while (this.hasMoreTokens()) {
       if (this.peekToken() instanceof LessThan) break;
@@ -116,14 +116,14 @@ export default class Parser extends Service {
   }
 
   @Inject
-  private parseScript() {
+  private parseHTMLScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
       const content = this.parseHTMLTextContent();
       try {
         const right = this.parseTag();
         if (!(right instanceof CloseScriptTag)) throw right;
-        return new Script(content.view);
+        return new HTMLScript(content.view);
       } catch (right) {
         this.throwError(`expecting a closing \`script\` tag`);
       }
@@ -133,8 +133,8 @@ export default class Parser extends Service {
 
   @Inject
   private parseTag() {
-    const left = this.parseComment();
-    if (left instanceof Comment) return left;
+    const left = this.parseHTMLComment();
+    if (left instanceof HTMLComment) return left;
     if (this.peekToken() instanceof Slash) {
       this.getNextToken();
       const identifier = this.expect(this.parseTagIdentifier(), Identifier, "expecting identifier for closing tag");
@@ -159,7 +159,7 @@ export default class Parser extends Service {
   }
 
   @Inject
-  private parseComment() {
+  private parseHTMLComment() {
     const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
       this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
@@ -176,7 +176,7 @@ export default class Parser extends Service {
           if (token instanceof Minus) {
             this.getNextToken();
             this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
-            return new Comment(view);
+            return new HTMLComment(view);
           }
           this.pointer = keep;
         }
