@@ -28,28 +28,6 @@ export default class Service extends Lexer {
     throw this.report(message);
   }
 
-  protected parseKeyword() {
-    let token = this.peekToken();
-    if (token instanceof Identifier) {
-      if (token.view === "using") {
-        this.getNextToken();
-        return new UsingKeyword(token.view);
-      }
-      if (token.view === "DOCTYPE") {
-        this.getNextToken();
-        return new DoctypeKeyword(token.view);
-      }
-    }
-    return token;
-  }
-
-  protected matchKeyword<T extends SyntaxToken>(tokenType: Constructor<T>) {
-    if (this.assert(this.parseKeyword(), tokenType)) {
-      return true;
-    }
-    return false;
-  }
-
   protected report(msg: string) {
     const input = this.input.split("\n");
     const n = this.line;
@@ -59,7 +37,7 @@ export default class Service extends Lexer {
 
     report.push("");
     report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/tests.code:${n}:${m}`);
+    report.push(` -- dev/tests/parse_html_content.code:${n}:${m}`);
     report.push("");
 
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);

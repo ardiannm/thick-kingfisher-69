@@ -64,25 +64,30 @@ export default class Parser extends Service {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseExpression());
+      const expression = this.parseExpression();
+      expressions.push(expression);
     }
     return new Program(expressions);
   }
 
   private parseExpression(): Expression {
-    if (this.matchKeyword(UsingKeyword)) return this.parseImport();
-    if (this.matchKeyword(DoctypeKeyword)) {
+    if ((this.peekToken() as Identifier).view === "using") {
+      this.getNextToken();
+      return this.parseImport();
+    }
+    if ((this.peekToken() as Identifier).view === "DOCTYPE") {
+      this.getNextToken();
       return this.parseHTMLComponent();
     }
-    return this.parseTerm();
   }
 
   private parseImport() {
-    const token = this.expect(this.getNextToken(), Identifier, "namespace for import expected");
+    const message = "no namespace identifier for import was provided";
+    const token = this.expect(this.getNextToken(), Identifier, message);
     let path = "./" + token.view;
     while (this.peekToken() instanceof Dot) {
       this.getNextToken();
-      path += "/" + this.expect(this.getNextToken(), Identifier, "namespace for import expected").view;
+      path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
     }
     path += ".code";
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
@@ -98,7 +103,7 @@ export default class Parser extends Service {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
-            this.throwError(`unmatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+            this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
         }

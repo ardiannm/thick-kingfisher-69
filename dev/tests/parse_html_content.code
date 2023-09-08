@@ -1,5 +1,4 @@
-DOCTYPE
-
+using
 <div>
   <script> some random js </script>
   <!-- error exception expected -->
