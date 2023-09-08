@@ -28,21 +28,21 @@ export default class Service extends Lexer {
   protected report(msg: string) {
     const input = this.input.split("\n");
     const n = this.line;
-    const m = this.storeColumn || this.column;
+    const m = this.storeColumn ?? this.column;
 
     const report = new Array<string>();
 
     report.push("");
     report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
+    report.push(` -- dev/tests/_parse_html_content_.am:${n}:${m}`);
     report.push("");
 
-    if (input[n - 3] !== undefined) report.push(`    ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) report.push(`    ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
-    if (input[n - 1] !== undefined) report.push(` >  ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`);
-    if (input[n - 1] !== undefined) report.push(`    ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(this.storeColumn - 1)}^`);
-    if (input[n - 0] !== undefined) report.push(`    ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) report.push(`    ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
+    if (input[n - 3] !== undefined) report.push(`   ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) report.push(`   ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
+    if (input[n - 1] !== undefined) report.push(` > ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`);
+    if (input[n - 1] !== undefined) report.push(`   ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 2)}^`);
+    if (input[n - 0] !== undefined) report.push(`   ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) report.push(`   ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
 
     report.push("");
 
