@@ -1,9 +1,9 @@
 
 <div>
-  <script> Some script </script>
-  <!-- Expected error in the `x` tag -->
-  Name
-   <//div>
+  <script> some random js </script>
+  <!-- error exception expected -->
+  name
+   </what>
 
 
 
