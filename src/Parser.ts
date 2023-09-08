@@ -322,7 +322,7 @@ export default class Parser extends Service {
       if (terms.length == 1) return new String(view);
       return new Interpolation(terms);
     }
-    return this.getNextToken();
+    return this.parseRange();
   }
 
   @Inject
@@ -364,16 +364,21 @@ export default class Parser extends Service {
 
   @Inject
   private parseCell() {
-    const left = this.getNextToken() as Identifier | Number;
+    const left = this.parseToken() as Identifier | Number;
     if (left instanceof Identifier) {
       this.considerSpace();
       if (this.peekToken() instanceof Number) {
-        const right = this.getNextToken() as Number;
+        const right = this.parseToken() as Number;
         this.ignoreSpace();
         return new SpreadsheetCell(left.view, right.view);
       }
       this.ignoreSpace();
     }
     return left;
+  }
+
+  @Inject
+  private parseToken() {
+    return this.getNextToken();
   }
 }
