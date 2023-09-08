@@ -45,8 +45,6 @@ import CloseBrace from "./ast/tokens/CloseBrace";
 import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
-import Literal from "./ast/expressions/Literal";
-import Space from "./ast/tokens/Space";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -338,24 +336,25 @@ export default class Parser extends Service {
   @Inject
   private parseRange() {
     let left = this.parseCell();
-    if (left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number) {
+    const parsableCell = left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number;
+    if (parsableCell) {
       this.considerSpace();
       if (this.peekToken() instanceof Colon) {
         this.getNextToken();
-        const keep = this.column;
-        if (!(left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number)) {
+        if (!parsableCell) {
           this.throwError(`invalid left hand side for range expression`);
         }
         if (left instanceof Number) left = new SpreadsheetCell("", left.view);
         if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
+        this.trackColumn();
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
         if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
-          this.column = keep;
           this.throwError(`invalid right hand side for range expression`);
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
         if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
+        this.untrackColumn();
         this.ignoreSpace();
         return new SpreadsheetRange(left, right);
       }
