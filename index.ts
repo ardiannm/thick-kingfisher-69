@@ -11,7 +11,7 @@ let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const path = "dev/tests/tests.code";
+  const path = "tests/index.txt";
   const input = prompt({ sigint: true })(">> ") || ImportFile(path);
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;

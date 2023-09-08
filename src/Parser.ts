@@ -83,7 +83,7 @@ export default class Parser extends Service {
   private parseImport() {
     const message = "expecting a namespace identifier for module import";
     const token = this.expect(this.getNextToken(), Identifier, message);
-    let path = "./" + token.view;
+    let path = token.view;
     while (this.peekToken() instanceof Dot) {
       this.getNextToken();
       path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
