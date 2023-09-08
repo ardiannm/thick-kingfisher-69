@@ -45,6 +45,15 @@ import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import BadToken from "./ast/tokens/BadToken";
+import UsingKeyword from "./ast/expressions/UsingKeyword";
+import SpreadsheetKeyword from "./ast/expressions/SpreadsheetKeyword";
+import DoctypeKeyword from "./ast/expressions/DoctypeKeyword";
+import Constructor from "./services/Constructor";
+import SyntaxToken from "./ast/tokens/SyntaxToken";
+import Dot from "./ast/tokens/Dot";
+import SemiColon from "./ast/tokens/SemiColon";
+import Import from "./ast/expressions/Import";
+import ImportFile from "../dev/ImportFile";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -57,20 +66,28 @@ export default class Parser extends Service {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      const right = this.parseExpressions();
-      // this.expect(right, Expression, `token type \`${right.type}\` found in the program is not a valid expression`);
-      expressions.push(right);
+      expressions.push(this.parseExpression());
     }
     return new Program(expressions);
   }
 
-  private parseExpressions(): Expression {
-    if ((this.peekToken() as Identifier).view === "spreadsheet") {
-      this.getNextToken();
-      return this.parseRange();
-    }
-    if (this.peekToken() instanceof LessThan) return this.parseHTMLComponent();
+  private parseExpression(): Expression {
+    if (this.matchKeyword(UsingKeyword)) return this.parseImport();
+    if (this.matchKeyword(DoctypeKeyword)) return this.parseHTMLComponent();
     return this.parseTerm();
+  }
+
+  private parseImport() {
+    const token = this.expect(this.getNextToken(), Identifier, "namespace for import expected");
+    let path = "./" + token.view;
+    while (this.peekToken() instanceof Dot) {
+      this.getNextToken();
+      path += "/" + this.expect(this.getNextToken(), Identifier, "namespace for import expected").view;
+    }
+    path += ".code";
+    this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
+    const moduleContent = ImportFile(path);
+    return new Import(path, moduleContent);
   }
 
   private parseHTMLComponent() {
@@ -364,5 +381,28 @@ export default class Parser extends Service {
     const token = this.getNextToken();
     if (token instanceof BadToken) this.throwError(`bad input character \`${token.view}\` found`);
     return token;
+  }
+
+  private parseKeyword() {
+    let token = this.peekToken();
+    if (token instanceof Identifier) {
+      switch (token.view) {
+        case "using":
+          this.getNextToken();
+          return new UsingKeyword(token.view);
+        case "spreadsheet":
+          this.getNextToken();
+          return new SpreadsheetKeyword(token.view);
+        case "DOCTYPE":
+          this.getNextToken();
+          return new DoctypeKeyword(token.view);
+      }
+    }
+    return token;
+  }
+
+  private matchKeyword<T extends SyntaxToken>(tokenType: Constructor<T>) {
+    if (this.assert(this.parseKeyword(), tokenType)) return true;
+    return false;
   }
 }

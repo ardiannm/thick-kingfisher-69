@@ -1,5 +1,5 @@
 import prompt from "prompt-sync";
-import ReadFile from "./dev/ReadFile";
+import ImportFile from "./dev/ImportFile";
 import Parser from "./src/Parser";
 import Interpreter from "./src/Interpreter";
 import System from "./src/system/System";
@@ -11,7 +11,7 @@ let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const input = prompt({ sigint: true })(">> ") || ReadFile("_tests_.am");
+  const input = prompt({ sigint: true })(">> ") || ImportFile("./dev/tests/tests.code");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     continue;

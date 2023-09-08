@@ -5,7 +5,7 @@ import Lexer from "../Lexer";
 export default class Service extends Lexer {
   private storeColumn?: number;
 
-  private assert<T extends SyntaxToken>(instance: SyntaxToken, tokenType: Constructor<T>): boolean {
+  protected assert<T extends SyntaxToken>(instance: SyntaxToken, tokenType: Constructor<T>): boolean {
     return instance instanceof tokenType;
   }
 
@@ -34,7 +34,7 @@ export default class Service extends Lexer {
 
     report.push("");
     report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
+    report.push(` -- dev/tests/tests.code:${n}:${m}`);
     report.push("");
 
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
@@ -62,9 +62,9 @@ export default class Service extends Lexer {
   }
 
   private colorize(text: string) {
-    const blueColor = "\x1b[34m"; // 32 represents green color code
+    const greenColor = "\x1b[32m"; // 32 represents green color code
     const resetColor = "\x1b[0m"; // Reset color to default
-    return `${blueColor}${text}${resetColor}`;
+    return `${greenColor}${text}${resetColor}`;
   }
 
   protected trackColumn() {

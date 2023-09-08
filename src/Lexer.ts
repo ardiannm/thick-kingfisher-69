@@ -22,6 +22,7 @@ import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import BackSlash from "./ast/tokens/BackSlash";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
+import Dot from "./ast/tokens/Dot";
 
 export default class Lexer {
   protected pointer = 0;
@@ -98,6 +99,8 @@ export default class Lexer {
         return new OpenBrace(next);
       case "}":
         return new CloseBrace(next);
+      case ".":
+        return new Dot(next);
 
       default:
         return new BadToken(next);
