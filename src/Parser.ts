@@ -39,7 +39,6 @@ import HTMLComment from "./ast/html/HTMLComment";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
 import Number from "./ast/expressions/Number";
 import Interpolation from "./ast/expressions/Interpolation";
-import Inject from "./services/Inject";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
 import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
@@ -53,7 +52,6 @@ export default class Parser extends Service {
     return this.parseProgram();
   }
 
-  @Inject
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     const expressions = new Array<Expression>();
@@ -65,7 +63,6 @@ export default class Parser extends Service {
     return new Program(expressions);
   }
 
-  @Inject
   private parseExpressions(): Expression {
     if ((this.peekToken() as Identifier).view === "spreadsheet") {
       this.getNextToken();
@@ -75,7 +72,6 @@ export default class Parser extends Service {
     return this.parseTerm();
   }
 
-  @Inject
   private parseHTMLComponent() {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
@@ -96,7 +92,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseHTMLTextContent() {
     let view = "";
     this.considerSpace();
@@ -115,7 +110,6 @@ export default class Parser extends Service {
     return new HTMLTextContent(view);
   }
 
-  @Inject
   private parseHTMLScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
@@ -131,7 +125,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseTag() {
     const left = this.parseHTMLComment();
     if (left instanceof HTMLComment) return left;
@@ -158,7 +151,6 @@ export default class Parser extends Service {
     return new OpenTag(identifier.view, attributes);
   }
 
-  @Inject
   private parseHTMLComment() {
     const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
@@ -187,7 +179,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseTagIdentifier() {
     const identifier = this.expect(this.getNextToken(), Identifier, "expecting leading identifier for html tag name");
     let view = identifier.view;
@@ -203,7 +194,6 @@ export default class Parser extends Service {
     return new Identifier(view);
   }
 
-  @Inject
   private parseAttribute() {
     const identifier = this.getNextToken() as Identifier;
     let view = "";
@@ -214,7 +204,6 @@ export default class Parser extends Service {
     return new Attribute(identifier.view, view);
   }
 
-  @Inject
   private parseTerm() {
     const left = this.parseFactor();
     if (this.peekToken() instanceof Plus) {
@@ -234,7 +223,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseFactor() {
     const left = this.parseExponent();
     if (this.peekToken() instanceof Product) {
@@ -254,7 +242,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseExponent() {
     let left = this.parseUnary();
     if (this.peekToken() instanceof Power) {
@@ -267,7 +254,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseUnary(): Expression {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
@@ -279,7 +265,6 @@ export default class Parser extends Service {
     return this.parseParenthesis();
   }
 
-  @Inject
   private parseParenthesis() {
     if (this.peekToken() instanceof OpenParenthesis) {
       this.getNextToken();
@@ -291,7 +276,6 @@ export default class Parser extends Service {
     return this.parseString();
   }
 
-  @Inject
   private parseString() {
     if (this.peekToken() instanceof Quote) {
       this.getNextToken();
@@ -323,7 +307,6 @@ export default class Parser extends Service {
     return this.parseRange();
   }
 
-  @Inject
   private parseInterpolation() {
     this.ignoreSpace();
     this.expect(this.getNextToken(), OpenBrace, "expecting '{' for string interpolation");
@@ -333,7 +316,6 @@ export default class Parser extends Service {
     return expression;
   }
 
-  @Inject
   private parseRange() {
     let left = this.parseCell();
     const parsableCell = left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number;
@@ -363,7 +345,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseCell() {
     const left = this.parseToken() as Identifier | Number;
     if (left instanceof Identifier) {
@@ -378,7 +359,6 @@ export default class Parser extends Service {
     return left;
   }
 
-  @Inject
   private parseToken() {
     return this.getNextToken();
   }
