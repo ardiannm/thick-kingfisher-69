@@ -148,31 +148,4 @@ export default class Lexer {
   protected ignoreSpace() {
     this.space = false;
   }
-
-  protected report(msg: string) {
-    const input = this.input.split("\n");
-    const n = this.line;
-    const m = this.column;
-    const report = new Array<string>();
-
-    report.push("");
-    report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
-    report.push("");
-
-    if (input[n - 3] !== undefined) report.push(`    ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) report.push(`    ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
-    if (input[n - 1] !== undefined) report.push(` >  ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`);
-    if (input[n - 1] !== undefined) report.push(`    ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(this.column - 1)}^`);
-    if (input[n - 0] !== undefined) report.push(`    ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) report.push(`    ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
-
-    report.push("");
-    return report.join("\n");
-  }
-
-  private formatNumber(num: number, offset: number) {
-    const numString = num.toString();
-    return " ".repeat(offset.toString().length - numString.length) + numString;
-  }
 }
