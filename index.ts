@@ -7,11 +7,11 @@ import SystemNumber from "./src/system/SystemNumber";
 import SystemString from "./src/system/SystemString";
 import InterpreterException from "./src/services/InterpreterException";
 
-let showTree = false;
+let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const input = prompt({ sigint: true })(">> ") || ReadFile("_parse_html_content_.am");
+  const input = prompt({ sigint: true })(">> ") || ReadFile("_tests_.am");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     continue;

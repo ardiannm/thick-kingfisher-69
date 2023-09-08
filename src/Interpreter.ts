@@ -1,11 +1,12 @@
 import System from "./system/System";
-import InterpreterException from "./services/InterpreterException";
+import SystemException from "./services/InterpreterException";
 import Binary from "./ast/expressions/Binary";
 import Program from "./ast/expressions/Program";
 import Unary from "./ast/expressions/Unary";
 import Token from "./ast/tokens/Token";
 import SystemNumber from "./system/SystemNumber";
 import SystemString from "./system/SystemString";
+import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import Substraction from "./ast/expressions/Substraction";
 import Multiplication from "./ast/expressions/Multiplication";
 import Division from "./ast/expressions/Division";
@@ -14,6 +15,8 @@ import Exponentiation from "./ast/expressions/Exponentiation";
 import Negation from "./ast/expressions/Negation";
 import String from "./ast/expressions/String";
 import Interpolation from "./ast/expressions/Interpolation";
+import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
+import ColumnToNumber from "./services/ColumnToNumber";
 
 export default class Interpreter {
   evaluate<T extends Token>(token: T): System {
@@ -23,8 +26,9 @@ export default class Interpreter {
     if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof String) return this.evaluateString(token);
     if (token instanceof Interpolation) return this.evaluateInterpolation(token);
+    if (token instanceof SpreadsheetCell) return this.evaluateSpreadsheetCell(token);
 
-    throw new InterpreterException(`token type \`${token.type}\` has not been implemented for interpretation`);
+    throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   }
 
   private evaluateProgram(token: Program) {
@@ -42,7 +46,7 @@ export default class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new InterpreterException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
+      return new SystemException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
     }
 
     switch (true) {
@@ -63,7 +67,7 @@ export default class Interpreter {
     const right = this.evaluate(token.right);
 
     if (!(right instanceof SystemNumber)) {
-      return new InterpreterException(`can't perform unary operation over "${token.right.type}" token`);
+      return new SystemException(`can't perform unary operation over "${token.right.type}" token`);
     }
 
     switch (true) {
@@ -89,5 +93,9 @@ export default class Interpreter {
       }
     });
     return new SystemString(string);
+  }
+
+  private evaluateSpreadsheetCell(token: SpreadsheetCell) {
+    return new SystemSpreadsheetCell(parseFloat(token.row), ColumnToNumber(token.column));
   }
 }

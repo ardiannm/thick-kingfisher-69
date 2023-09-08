@@ -42,6 +42,10 @@ import Interpolation from "./ast/expressions/Interpolation";
 import Inject from "./services/Inject";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
+import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
+import Colon from "./ast/tokens/Colon";
+import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
+import Literal from "./ast/expressions/Literal";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -62,6 +66,10 @@ export default class Parser extends Service {
 
   @Inject
   private parseExpressions() {
+    if ((this.peekToken() as Identifier).view === "spreadsheet") {
+      this.getNextToken();
+      return this.parseRange();
+    }
     if (this.peekToken() instanceof LessThan) return this.parseComponent();
     return this.parseTerm();
   }
@@ -322,5 +330,34 @@ export default class Parser extends Service {
     this.expect(this.getNextToken(), CloseBrace, "expecting '}' for string interpolation");
     this.considerSpace();
     return expression;
+  }
+
+  private parseRange() {
+    let left = this.parseCell();
+    if (this.peekToken() instanceof Colon) {
+      this.considerSpace();
+      let view = "";
+      if (left instanceof SpreadsheetCell) view = left.column + left.row;
+      if (left instanceof Number) {
+        view = left.view;
+        left = new SpreadsheetCell("", left.view);
+      }
+      if (left instanceof Identifier) {
+        view = left.view;
+        left = new SpreadsheetCell(left.view, "");
+      }
+      this.expect(this.getNextToken(), Colon, `colon \`:\` expected right after \`${view}\``);
+      return new SpreadsheetRange(left, left);
+    }
+    return left;
+  }
+
+  private parseCell() {
+    const left = this.getNextToken() as Identifier | Number;
+    if (left instanceof Identifier && this.peekToken() instanceof Number) {
+      const right = this.getNextToken() as Number;
+      return new SpreadsheetCell(left.view, right.view);
+    }
+    return left;
   }
 }
