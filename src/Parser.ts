@@ -46,10 +46,7 @@ import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import BadToken from "./ast/tokens/BadToken";
 import UsingKeyword from "./ast/expressions/UsingKeyword";
-import SpreadsheetKeyword from "./ast/expressions/SpreadsheetKeyword";
 import DoctypeKeyword from "./ast/expressions/DoctypeKeyword";
-import Constructor from "./services/Constructor";
-import SyntaxToken from "./ast/tokens/SyntaxToken";
 import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
@@ -381,28 +378,5 @@ export default class Parser extends Service {
     const token = this.getNextToken();
     if (token instanceof BadToken) this.throwError(`bad input character \`${token.view}\` found`);
     return token;
-  }
-
-  private parseKeyword() {
-    let token = this.peekToken();
-    if (token instanceof Identifier) {
-      switch (token.view) {
-        case "using":
-          this.getNextToken();
-          return new UsingKeyword(token.view);
-        case "spreadsheet":
-          this.getNextToken();
-          return new SpreadsheetKeyword(token.view);
-        case "DOCTYPE":
-          this.getNextToken();
-          return new DoctypeKeyword(token.view);
-      }
-    }
-    return token;
-  }
-
-  private matchKeyword<T extends SyntaxToken>(tokenType: Constructor<T>) {
-    if (this.assert(this.parseKeyword(), tokenType)) return true;
-    return false;
   }
 }

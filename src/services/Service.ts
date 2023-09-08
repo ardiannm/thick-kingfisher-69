@@ -1,6 +1,9 @@
 import SyntaxToken from "../ast/tokens/SyntaxToken";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
+import UsingKeyword from "../ast/expressions/UsingKeyword";
+import DoctypeKeyword from "../ast/expressions/DoctypeKeyword";
+import Identifier from "../ast/expressions/Identifier";
 
 export default class Service extends Lexer {
   private storeColumn?: number;
@@ -23,6 +26,26 @@ export default class Service extends Lexer {
 
   protected throwError(message: string) {
     throw this.report(message);
+  }
+
+  protected parseKeyword() {
+    let token = this.peekToken();
+    if (token instanceof Identifier) {
+      switch (token.view) {
+        case "using":
+          this.getNextToken();
+          return new UsingKeyword(token.view);
+        case "DOCTYPE":
+          this.getNextToken();
+          return new DoctypeKeyword(token.view);
+      }
+    }
+    return token;
+  }
+
+  protected matchKeyword<T extends SyntaxToken>(tokenType: Constructor<T>) {
+    if (this.assert(this.parseKeyword(), tokenType)) return true;
+    return false;
   }
 
   protected report(msg: string) {
