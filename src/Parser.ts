@@ -90,8 +90,9 @@ export default class Parser extends Service {
     }
     path += ".txt";
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    const moduleContent = ImportFile(path);
-    return new Import(path, moduleContent);
+    const sourceCode = ImportFile(path);
+    const program = new Parser(sourceCode, path).parse();
+    return new Import(path, sourceCode, program);
   }
 
   private parseHTMLComponent(): HTML {
