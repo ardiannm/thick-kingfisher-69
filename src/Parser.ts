@@ -45,8 +45,6 @@ import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import BadToken from "./ast/tokens/BadToken";
-import UsingKeyword from "./ast/expressions/UsingKeyword";
-import DoctypeKeyword from "./ast/expressions/DoctypeKeyword";
 import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
