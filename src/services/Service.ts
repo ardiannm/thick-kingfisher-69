@@ -1,20 +1,20 @@
-import Token from "../ast/tokens/Token";
+import SyntaxToken from "../ast/tokens/SyntaxToken";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 
 export default class Service extends Lexer {
   private storeColumn?: number;
 
-  private assert<T extends Token>(instance: Token, tokenType: Constructor<T>): boolean {
+  private assert<T extends SyntaxToken>(instance: SyntaxToken, tokenType: Constructor<T>): boolean {
     return instance instanceof tokenType;
   }
 
-  protected expect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
+  protected expect<T extends SyntaxToken>(token: SyntaxToken, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) return token as T;
     throw this.report(message);
   }
 
-  protected doNotExpect<T extends Token>(token: Token, tokenType: Constructor<T>, message: string): T {
+  protected doNotExpect<T extends SyntaxToken>(token: SyntaxToken, tokenType: Constructor<T>, message: string): T {
     if (this.assert(token, tokenType)) {
       throw this.report(message);
     }
@@ -37,18 +37,18 @@ export default class Service extends Lexer {
     report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
     report.push("");
 
-    if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)} ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)} ${input[n - 2]}`);
+    if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
-    const line = `> ${this.formatNumber(n + 0, n + 2)} ${input[n - 1]}`;
+    const line = `> ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
 
     if (input[n - 1] !== undefined) report.push(this.colorize(line));
 
-    const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")} ${" ".repeat(m - 1)}^`;
+    const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}^`;
 
     if (input[n - 1] !== undefined) report.push(this.colorize(cursor));
-    if (input[n - 0] !== undefined) report.push(`  ${this.formatNumber(n + 1, n + 2)} ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) report.push(`  ${this.formatNumber(n + 2, n + 2)} ${input[n + 1]}`);
+    if (input[n - 0] !== undefined) report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) report.push(`  ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
 
     report.push("");
 

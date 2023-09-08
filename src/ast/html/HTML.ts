@@ -1,3 +1,3 @@
-import Token from "../tokens/Token";
+import SyntaxToken from "../tokens/SyntaxToken";
 
-export default class HTML extends Token {}
+export default class HTML extends SyntaxToken {}

@@ -1,4 +1,4 @@
-import Token from "./ast/tokens/Token";
+import SyntaxToken from "./ast/tokens/SyntaxToken";
 import CloseParenthesis from "./ast/tokens/CloseParenthesis";
 import Number from "./ast/expressions/Number";
 import Identifier from "./ast/expressions/Identifier";
@@ -33,7 +33,7 @@ export default class Lexer {
 
   constructor(protected input: string) {}
 
-  protected peekToken(): Token {
+  protected peekToken(): SyntaxToken {
     const pointer = this.pointer;
     const id = this.id;
     const line = this.line;
@@ -50,7 +50,7 @@ export default class Lexer {
     return !(this.peekToken() instanceof EOF);
   }
 
-  protected getNextToken(): Token {
+  protected getNextToken(): SyntaxToken {
     const char = this.peek();
 
     if (/[a-zA-Z]/.test(char)) return this.getIdentifier();

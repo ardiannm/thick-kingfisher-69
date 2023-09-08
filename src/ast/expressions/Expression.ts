@@ -1,3 +1,3 @@
-import Token from "../tokens/Token";
+import SyntaxToken from "../tokens/SyntaxToken";
 
-export default class Expression extends Token {}
+export default class Expression extends SyntaxToken {}

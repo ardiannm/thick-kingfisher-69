@@ -44,6 +44,7 @@ import CloseBrace from "./ast/tokens/CloseBrace";
 import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
+import BadToken from "./ast/tokens/BadToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -360,6 +361,8 @@ export default class Parser extends Service {
   }
 
   private parseToken() {
-    return this.getNextToken();
+    const token = this.getNextToken();
+    if (token instanceof BadToken) this.throwError(`bad input character \`${token.view}\` found`);
+    return token;
   }
 }

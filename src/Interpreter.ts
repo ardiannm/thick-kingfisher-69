@@ -3,7 +3,7 @@ import SystemException from "./system/SystemException";
 import Binary from "./ast/expressions/Binary";
 import Program from "./ast/expressions/Program";
 import Unary from "./ast/expressions/Unary";
-import Token from "./ast/tokens/Token";
+import SyntaxToken from "./ast/tokens/SyntaxToken";
 import SystemNumber from "./system/SystemNumber";
 import SystemString from "./system/SystemString";
 import Substraction from "./ast/expressions/Substraction";
@@ -27,7 +27,7 @@ import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
 
 export default class Interpreter {
-  evaluate<T extends Token>(token: T) {
+  evaluate<T extends SyntaxToken>(token: T) {
     if (token instanceof Program) return this.evaluateProgram(token);
     if (token instanceof Identifier) return this.evaluateIdentifier(token);
     if (token instanceof Number) return this.evaluateNumber(token);
