@@ -81,7 +81,7 @@ export default class Parser extends Service {
   }
 
   private parseImport() {
-    const message = "no namespace identifier for import was provided";
+    const message = "expecting a namespace identifier for module import";
     const token = this.expect(this.getNextToken(), Identifier, message);
     let path = "./" + token.view;
     while (this.peekToken() instanceof Dot) {
@@ -89,10 +89,12 @@ export default class Parser extends Service {
       path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
     }
     path += ".txt";
+    this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
     const sourceCode = ImportFile(path);
     const program = new Parser(sourceCode, path).parse();
-    return new Import(path, sourceCode, program);
+    this.untrackPosition();
+    return new Import(path, program);
   }
 
   private parseHTMLComponent(): HTML {
@@ -351,7 +353,7 @@ export default class Parser extends Service {
         }
         if (left instanceof Number) left = new SpreadsheetCell("", left.view);
         if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
-        this.trackColumn();
+        this.trackPosition();
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
         if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
@@ -359,7 +361,7 @@ export default class Parser extends Service {
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
         if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
-        this.untrackColumn();
+        this.untrackPosition();
         this.ignoreSpace();
         return new SpreadsheetRange(left, right);
       }

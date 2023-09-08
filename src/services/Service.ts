@@ -10,6 +10,7 @@ enum ColorCode {
 }
 
 export default class Service extends Lexer {
+  private storeLine?: number;
   private storeColumn?: number;
   constructor(public input: string, public path: string) {
     super(input);
@@ -37,7 +38,8 @@ export default class Service extends Lexer {
 
   protected report(msg: string) {
     const input = this.input.split("\n");
-    const n = this.line;
+    
+    const n = this.storeLine || this.line;
     const m = this.storeColumn || this.column;
 
     const report = new Array<string>();
@@ -75,11 +77,13 @@ export default class Service extends Lexer {
     return `${startColor}${text}${endColor}`;
   }
 
-  protected trackColumn() {
+  protected trackPosition() {
+    this.storeLine = this.line;
     this.storeColumn = this.column;
   }
 
-  protected untrackColumn() {
+  protected untrackPosition() {
+    this.storeLine = undefined;
     this.storeColumn = undefined;
   }
 }
