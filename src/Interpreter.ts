@@ -6,7 +6,6 @@ import Unary from "./ast/expressions/Unary";
 import Token from "./ast/tokens/Token";
 import SystemNumber from "./system/SystemNumber";
 import SystemString from "./system/SystemString";
-import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import Substraction from "./ast/expressions/Substraction";
 import Multiplication from "./ast/expressions/Multiplication";
 import Division from "./ast/expressions/Division";
@@ -17,6 +16,9 @@ import String from "./ast/expressions/String";
 import Interpolation from "./ast/expressions/Interpolation";
 import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import ColumnToNumber from "./services/ColumnToNumber";
+import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
+import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
+import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
 
 export default class Interpreter {
   evaluate<T extends Token>(token: T): System {
@@ -27,6 +29,7 @@ export default class Interpreter {
     if (token instanceof String) return this.evaluateString(token);
     if (token instanceof Interpolation) return this.evaluateInterpolation(token);
     if (token instanceof SpreadsheetCell) return this.evaluateSpreadsheetCell(token);
+    if (token instanceof SpreadsheetRange) return this.evaluateSpreadsheetRange(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   }
@@ -83,19 +86,25 @@ export default class Interpreter {
   }
 
   private evaluateInterpolation(token: Interpolation) {
-    let string = "";
+    let view = "";
     token.strings.forEach((token) => {
       const runtime = this.evaluate(token);
       if (runtime instanceof SystemNumber) {
-        string += runtime.value.toString();
+        view += runtime.value.toString();
       } else if (runtime instanceof SystemString) {
-        string += runtime.value;
+        view += runtime.value;
       }
     });
-    return new SystemString(string);
+    return new SystemString(view);
   }
 
   private evaluateSpreadsheetCell(token: SpreadsheetCell) {
-    return new SystemSpreadsheetCell(parseFloat(token.row), ColumnToNumber(token.column));
+    return new SystemSpreadsheetCell(parseFloat(token.row) || 0, ColumnToNumber(token.column));
+  }
+
+  private evaluateSpreadsheetRange(token: SpreadsheetRange) {
+    const left = this.evaluate(token.left) as SystemSpreadsheetCell;
+    const right = this.evaluate(token.right) as SystemSpreadsheetCell;
+    return new SystemSpreadsheetRange(left, right);
   }
 }
