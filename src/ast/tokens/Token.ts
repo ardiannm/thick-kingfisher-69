@@ -1,4 +1,4 @@
 export default class Token {
-  public type = this.constructor.name;
+  public type = "tree." + this.constructor.name;
   constructor(public id?: number) {}
 }
