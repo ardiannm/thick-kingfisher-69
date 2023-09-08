@@ -19,6 +19,7 @@ import ColumnToNumber from "./services/ColumnToNumber";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
+import HTMLTextContent from "./ast/html/HTMLTextContent";
 
 export default class Interpreter {
   evaluate<T extends Token>(token: T): System {
@@ -106,5 +107,9 @@ export default class Interpreter {
     const left = this.evaluate(token.left) as SystemSpreadsheetCell;
     const right = this.evaluate(token.right) as SystemSpreadsheetCell;
     return new SystemSpreadsheetRange(left, right);
+  }
+
+  private evaluateTextContent(token: HTMLTextContent) {
+    return;
   }
 }

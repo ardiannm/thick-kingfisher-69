@@ -36,7 +36,7 @@ import Component from "./ast/html/Component";
 import Service from "./services/Service";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
 import Comment from "./ast/html/Comment";
-import TextContent from "./ast/html/TextContent";
+import HTMLTextContent from "./ast/html/HTMLTextContent";
 import Number from "./ast/expressions/Number";
 import Interpolation from "./ast/expressions/Interpolation";
 import Inject from "./services/Inject";
@@ -59,7 +59,7 @@ export default class Parser extends Service {
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
       const right = this.parseExpressions();
-      this.expect(right, Expression, `token type \`${right.type}\` found in the program is not a valid expression`);
+      // this.expect(right, Expression, `token type \`${right.type}\` found in the program is not a valid expression`);
       expressions.push(right);
     }
     return new Program(expressions);
@@ -77,7 +77,7 @@ export default class Parser extends Service {
 
   @Inject
   private parseComponent() {
-    const left = this.parseContent();
+    const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
       const children = new Array<Component>();
       while (this.hasMoreTokens()) {
@@ -97,7 +97,7 @@ export default class Parser extends Service {
   }
 
   @Inject
-  private parseContent() {
+  private parseHTMLTextContent() {
     let view = "";
     this.considerSpace();
     if (this.peekToken() instanceof LessThan) {
@@ -109,17 +109,17 @@ export default class Parser extends Service {
       view += this.getNext();
     }
     this.ignoreSpace();
-    // if (/^\s+$/.test(view)) {
-    //   return this.parseContent();
-    // }
-    return new TextContent(view);
+    if (/^\s+$/.test(view)) {
+      return this.parseHTMLTextContent();
+    }
+    return new HTMLTextContent(view);
   }
 
   @Inject
   private parseScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
-      const content = this.parseContent();
+      const content = this.parseHTMLTextContent();
       try {
         const right = this.parseTag();
         if (!(right instanceof CloseScriptTag)) throw right;
