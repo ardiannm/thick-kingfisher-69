@@ -160,11 +160,12 @@ export default class Lexer {
     report.push(` -- dev/tests/_tests_.am:${n}:${m}`);
     report.push("");
 
-    if (input[n - 3] !== undefined) report.push(`   ${this.formatNumber(n - 2, n + 2)} |  ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) report.push(`   ${this.formatNumber(n - 1, n + 2)} |  ${input[n - 2]}`);
-    if (input[n - 1] !== undefined) report.push(` > ${this.formatNumber(n + 0, n + 2)} |  ${input[n - 1]}`);
-    if (input[n - 0] !== undefined) report.push(`   ${this.formatNumber(n + 1, n + 2)} |  ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) report.push(`   ${this.formatNumber(n + 2, n + 2)} |  ${input[n + 1]}`);
+    if (input[n - 3] !== undefined) report.push(`    ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) report.push(`    ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
+    if (input[n - 1] !== undefined) report.push(` >  ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`);
+    if (input[n - 1] !== undefined) report.push(`    ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(this.column - 1)}^`);
+    if (input[n - 0] !== undefined) report.push(`    ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) report.push(`    ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
 
     report.push("");
     return report.join("\n");

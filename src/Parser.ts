@@ -341,15 +341,17 @@ export default class Parser extends Service {
     if (left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number) {
       this.considerSpace();
       if (this.peekToken() instanceof Colon) {
+        this.getNextToken();
+        const keep = this.column;
         if (!(left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number)) {
           this.throwError(`invalid left hand side for range expression`);
         }
         if (left instanceof Number) left = new SpreadsheetCell("", left.view);
         if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
-        this.getNextToken();
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
         if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
+          this.column = keep;
           this.throwError(`invalid right hand side for range expression`);
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
