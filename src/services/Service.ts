@@ -63,7 +63,7 @@ export default class Service extends Lexer {
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
     if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
-    const line = `${this.colorize("-", 31, 32)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
+    const line = `${this.colorize("-", 31, 34)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
 
     if (input[n - 1] !== undefined) report.push(this.colorize(line));
 
@@ -84,7 +84,7 @@ export default class Service extends Lexer {
     return " ".repeat(offset.toString().length - numString.length) + numString;
   }
 
-  private colorize(text: string, colorCode = 32, endsWith = 0) {
+  private colorize(text: string, colorCode = 34, endsWith = 0) {
     const greenColor = `\x1b[${colorCode}m`; // 32 represents green color code
     const resetColor = `\x1b[${endsWith}m`; // Reset color to default
     return `${greenColor}${text}${resetColor}`;
