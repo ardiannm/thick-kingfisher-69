@@ -11,6 +11,9 @@ enum ColorCode {
 
 export default class Service extends Lexer {
   private storeColumn?: number;
+  constructor(public input: string, public path: string) {
+    super(input);
+  }
 
   protected assert<T extends SyntaxToken>(instance: SyntaxToken, tokenType: Constructor<T>): boolean {
     return instance instanceof tokenType;
@@ -41,7 +44,7 @@ export default class Service extends Lexer {
 
     report.push("");
     report.push(`error: ${msg}`);
-    report.push(` -- dev/tests/parse_html_content.code:${n}:${m}`);
+    report.push(` -- ${this.path}:${n}:${m}`);
     report.push("");
 
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);

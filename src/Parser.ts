@@ -88,7 +88,7 @@ export default class Parser extends Service {
       this.getNextToken();
       path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
     }
-    path += ".code";
+    path += ".txt";
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
     const moduleContent = ImportFile(path);
     return new Import(path, moduleContent);

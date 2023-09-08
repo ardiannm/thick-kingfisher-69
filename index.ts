@@ -11,13 +11,14 @@ let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const input = prompt({ sigint: true })(">> ") || ImportFile("./dev/tests/parse_html_content.code");
+  const path = "dev/tests/tests.code";
+  const input = prompt({ sigint: true })(">> ") || ImportFile(path);
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     continue;
   }
   try {
-    const program = new Parser(input).parse();
+    const program = new Parser(input, path).parse();
     if (showTree) report(program);
     const system = new Interpreter().evaluate(program);
     if (system instanceof SystemNumber) report(system.value);
