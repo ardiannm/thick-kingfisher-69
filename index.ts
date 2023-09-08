@@ -1,5 +1,5 @@
 import prompt from "prompt-sync";
-import ImportFile from "./dev/ImportFile";
+import ImportFile from "./src/services/ImportFile";
 import Parser from "./src/Parser";
 import Interpreter from "./src/Interpreter";
 import System from "./src/system/System";

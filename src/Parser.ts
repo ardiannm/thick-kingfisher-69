@@ -48,7 +48,7 @@ import BadToken from "./ast/tokens/BadToken";
 import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
-import ImportFile from "../dev/ImportFile";
+import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
