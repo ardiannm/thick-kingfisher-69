@@ -79,6 +79,7 @@ export default class Parser extends Service {
       this.getNextToken();
       return this.parseHTMLComponent();
     }
+    return this.parseTerm();
   }
 
   private parseImport() {

@@ -1,9 +1,13 @@
 import SyntaxToken from "../ast/tokens/SyntaxToken";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
-import UsingKeyword from "../ast/expressions/UsingKeyword";
-import DoctypeKeyword from "../ast/expressions/DoctypeKeyword";
-import Identifier from "../ast/expressions/Identifier";
+
+enum ColorCode {
+  redColor = `\x1b[31m`,
+  greenColor = `\x1b[32m`,
+  blueColor = `\x1b[34m`,
+  resetColor = `\x1b[0m`,
+}
 
 export default class Service extends Lexer {
   private storeColumn?: number;
@@ -43,11 +47,11 @@ export default class Service extends Lexer {
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
     if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
-    const line = `${this.colorize("-", 31, 34)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
+    const line = `${this.colorize("-", ColorCode.redColor, ColorCode.blueColor)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
 
     if (input[n - 1] !== undefined) report.push(this.colorize(line));
 
-    const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}${this.colorize("^", 31)}`;
+    const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}${this.colorize("^", ColorCode.redColor)}`;
 
     if (input[n - 1] !== undefined) report.push(this.colorize(cursor));
     if (input[n - 0] !== undefined) report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
@@ -64,10 +68,8 @@ export default class Service extends Lexer {
     return " ".repeat(offset.toString().length - numString.length) + numString;
   }
 
-  private colorize(text: string, colorCode = 34, endsWith = 0) {
-    const greenColor = `\x1b[${colorCode}m`; // 32 represents green color code
-    const resetColor = `\x1b[${endsWith}m`; // Reset color to default
-    return `${greenColor}${text}${resetColor}`;
+  private colorize(text: string, startColor = ColorCode.blueColor, endColor = ColorCode.resetColor) {
+    return `${startColor}${text}${endColor}`;
   }
 
   protected trackColumn() {
