@@ -11,7 +11,7 @@ let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const input = prompt({ sigint: true })(">> ") || ImportFile("./dev/tests/tests.code");
+  const input = prompt({ sigint: true })(">> ") || ImportFile("./dev/tests/parse_html_content.code");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     continue;

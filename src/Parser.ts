@@ -51,6 +51,7 @@ import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
 import ImportFile from "../dev/ImportFile";
+import HTML from "./ast/html/HTML";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -70,7 +71,9 @@ export default class Parser extends Service {
 
   private parseExpression(): Expression {
     if (this.matchKeyword(UsingKeyword)) return this.parseImport();
-    if (this.matchKeyword(DoctypeKeyword)) return this.parseHTMLComponent();
+    if (this.matchKeyword(DoctypeKeyword)) {
+      return this.parseHTMLComponent();
+    }
     return this.parseTerm();
   }
 
@@ -87,7 +90,7 @@ export default class Parser extends Service {
     return new Import(path, moduleContent);
   }
 
-  private parseHTMLComponent() {
+  private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
