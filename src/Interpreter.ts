@@ -1,5 +1,5 @@
 import System from "./system/System";
-import SystemException from "./services/InterpreterException";
+import SystemException from "./system/SystemException";
 import Binary from "./ast/expressions/Binary";
 import Program from "./ast/expressions/Program";
 import Unary from "./ast/expressions/Unary";

@@ -46,6 +46,7 @@ import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
 import Colon from "./ast/tokens/Colon";
 import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
 import Literal from "./ast/expressions/Literal";
+import Space from "./ast/tokens/Space";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
@@ -59,13 +60,15 @@ export default class Parser extends Service {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     const expressions = new Array<Expression>();
     while (this.hasMoreTokens()) {
-      expressions.push(this.parseExpressions());
+      const right = this.parseExpressions();
+      this.expect(right, Expression, `token type \`${right.type}\` found in the program is not a valid expression`);
+      expressions.push(right);
     }
     return new Program(expressions);
   }
 
   @Inject
-  private parseExpressions() {
+  private parseExpressions(): Expression {
     if ((this.peekToken() as Identifier).view === "spreadsheet") {
       this.getNextToken();
       return this.parseRange();
@@ -332,31 +335,44 @@ export default class Parser extends Service {
     return expression;
   }
 
+  @Inject
   private parseRange() {
     let left = this.parseCell();
-    if (this.peekToken() instanceof Colon) {
+    if (left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number) {
       this.considerSpace();
-      let view = "";
-      if (left instanceof SpreadsheetCell) view = left.column + left.row;
-      if (left instanceof Number) {
-        view = left.view;
-        left = new SpreadsheetCell("", left.view);
+      if (this.peekToken() instanceof Colon) {
+        if (!(left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number)) {
+          this.throwError(`invalid left hand side for range expression`);
+        }
+        if (left instanceof Number) left = new SpreadsheetCell("", left.view);
+        if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
+        this.getNextToken();
+        let right = this.parseCell();
+        this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
+        if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
+          this.throwError(`invalid right hand side for range expression`);
+        }
+        if (right instanceof Number) right = new SpreadsheetCell("", right.view);
+        if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
+        this.ignoreSpace();
+        return new SpreadsheetRange(left, right);
       }
-      if (left instanceof Identifier) {
-        view = left.view;
-        left = new SpreadsheetCell(left.view, "");
-      }
-      this.expect(this.getNextToken(), Colon, `colon \`:\` expected right after \`${view}\``);
-      return new SpreadsheetRange(left, left);
+      this.ignoreSpace();
     }
     return left;
   }
 
+  @Inject
   private parseCell() {
     const left = this.getNextToken() as Identifier | Number;
-    if (left instanceof Identifier && this.peekToken() instanceof Number) {
-      const right = this.getNextToken() as Number;
-      return new SpreadsheetCell(left.view, right.view);
+    if (left instanceof Identifier) {
+      this.considerSpace();
+      if (this.peekToken() instanceof Number) {
+        const right = this.getNextToken() as Number;
+        this.ignoreSpace();
+        return new SpreadsheetCell(left.view, right.view);
+      }
+      this.ignoreSpace();
     }
     return left;
   }

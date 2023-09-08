@@ -5,7 +5,7 @@ import Interpreter from "./src/Interpreter";
 import System from "./src/system/System";
 import SystemNumber from "./src/system/SystemNumber";
 import SystemString from "./src/system/SystemString";
-import InterpreterException from "./src/services/InterpreterException";
+import SystemException from "./src/system/SystemException";
 
 let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
@@ -25,7 +25,7 @@ while (true) {
     else report(system);
   } catch (err) {
     if (err instanceof System) report(err);
-    else if (err instanceof InterpreterException) console.log(err.value);
+    else if (err instanceof SystemException) console.log(err.value);
     else console.log(err);
   }
 }
