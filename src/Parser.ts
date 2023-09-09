@@ -88,13 +88,16 @@ export default class Parser extends Service {
       this.getNextToken();
       path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
     }
-    path += ".txt";
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    const sourceCode = ImportFile(path);
-    const program = new Parser(sourceCode, path).parse();
     this.untrackPosition();
-    return new Import(path, program);
+    try {
+      const sourceCode = ImportFile(path + ".txt");
+      const program = new Parser(sourceCode, path).parse();
+      return new Import(path, program);
+    } catch (error) {
+      this.throwError(`namespace \`${path.replace(/\//g, " ").trim().replace(/ /g, ".")}\` does not exist`);
+    }
   }
 
   private parseHTMLComponent(): HTML {
@@ -310,7 +313,6 @@ export default class Parser extends Service {
       while (this.hasMoreTokens()) {
         const token = this.peekToken();
         if (token instanceof Quote) break;
-        if (token instanceof BackSlash) this.getNextToken();
         if (token instanceof OpenBrace) {
           if (view) {
             terms.push(new String(view));
