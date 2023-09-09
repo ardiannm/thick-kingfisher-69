@@ -86,17 +86,17 @@ export default class Parser extends Service {
     let path = token.view;
     while (this.peekToken() instanceof Dot) {
       this.getNextToken();
-      path += "/" + this.expect(this.getNextToken(), Identifier, message).view;
+      path += "." + this.expect(this.getNextToken(), Identifier, message).view;
     }
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
     this.untrackPosition();
     try {
-      const sourceCode = ImportFile(path + ".txt");
+      const sourceCode = ImportFile(path.replace(/\./g, "/") + ".txt");
       const program = new Parser(sourceCode, path).parse();
       return new Import(path, program);
     } catch (error) {
-      this.throwError(`namespace \`${path.replace(/\//g, " ").trim().replace(/ /g, ".")}\` does not exist`);
+      this.throwError(`namespace \`${path}\` does not exist`);
     }
   }
 

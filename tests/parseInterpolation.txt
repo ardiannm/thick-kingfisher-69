@@ -1,1 +1,1 @@
-"expression '\{1+1+1}' has been successfully interpolated into value {1+1+1}"
+"expression has been successfully interpolated into value {1+1+1}"
