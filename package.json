@@ -3,14 +3,16 @@
   "description": "",
   "scripts": {
     "dev": "npm start",
-    "start": "node dist/index.js",
+    "start": "node bin/obj/index.js",
     "prestart": "npm run build",
     "build": "tsc"
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^20.6.0",
     "@types/prompt-sync": "^4.2.0",
     "concurrently": "^8.0.1",
+    "fs": "^0.0.1-security",
     "typescript": "^4.9.5"
   },
   "dependencies": {

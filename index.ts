@@ -1,17 +1,17 @@
 import prompt from "prompt-sync";
-import ImportFile from "./src/services/ImportFile";
-import Parser from "./src/Parser";
-import Interpreter from "./src/Interpreter";
-import System from "./src/system/System";
-import SystemNumber from "./src/system/SystemNumber";
-import SystemString from "./src/system/SystemString";
-import SystemException from "./src/system/SystemException";
+import ImportFile from "./koto/services/ImportFile";
+import Parser from "./koto/Parser";
+import Interpreter from "./koto/Interpreter";
+import System from "./koto/system/System";
+import SystemNumber from "./koto/system/SystemNumber";
+import SystemString from "./koto/system/SystemString";
+import SystemException from "./koto/system/SystemException";
 
 let showTree = true;
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
-  const path = "tests/index.txt";
+  const path = "bin/index.txt";
   const input = prompt({ sigint: true })(">> ") || ImportFile(path);
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
