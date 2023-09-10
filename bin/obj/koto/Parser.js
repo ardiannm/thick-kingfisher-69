@@ -85,9 +85,9 @@ class Parser extends ParserService_1.default {
             this.getNextToken();
             nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
-        this.trackPosition();
+        this.markPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
-        this.untrackPosition();
+        this.unmarkPosition();
         const path = nameSpace.replace(/\./g, "/") + ".txt";
         let sourceCode = "";
         try {
@@ -148,10 +148,11 @@ class Parser extends ParserService_1.default {
             let view = "";
             // if there is no text content this method call with return the tag so 'content' will be the actual tag
             const right = this.parseHTMLTextContent();
-            const errorMessage = `expecting a closing \`CloseScriptTag\` tag but received an \`${right.type}\` token`;
+            const errorMessage = `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`;
             if (right instanceof HTMLTextContent_1.default) {
                 view = right.view;
                 this.expect(this.parseTag(), CloseScriptTag_1.default, errorMessage);
+                return new HTMLScript_1.default(view);
             }
             this.expect(right, CloseScriptTag_1.default, errorMessage);
             return new HTMLScript_1.default(view);
@@ -191,6 +192,7 @@ class Parser extends ParserService_1.default {
     parseHTMLComment() {
         const left = this.expect(this.getNextToken(), LessThan_1.default, "expecting `<` for an html tag");
         if (this.peekToken() instanceof ExclamationMark_1.default) {
+            this.markPosition();
             this.expect(this.getNextToken(), ExclamationMark_1.default, "expecting `!` for a comment");
             const errorMessage = "expecting `--` after `!` for a comment";
             this.expect(this.getNextToken(), Minus_1.default, errorMessage);
@@ -205,6 +207,7 @@ class Parser extends ParserService_1.default {
                     if (token instanceof Minus_1.default) {
                         this.getNextToken();
                         this.expect(this.getNextToken(), GreaterThan_1.default, "expecting `>` for comment");
+                        this.unmarkPosition();
                         return new HTMLComment_1.default(view);
                     }
                     this.pointer = keep;
@@ -369,7 +372,7 @@ class Parser extends ParserService_1.default {
                     left = new SpreadsheetCell_1.default("", left.view);
                 if (left instanceof Identifier_1.default)
                     left = new SpreadsheetCell_1.default(left.view, "");
-                this.trackPosition();
+                this.markPosition();
                 let right = this.parseCell();
                 this.doNotExpect(right, EOF_1.default, "oops! missing the right hand side for range expression");
                 if (!(right instanceof SpreadsheetCell_1.default || right instanceof Identifier_1.default || right instanceof Number_1.default)) {
@@ -379,7 +382,7 @@ class Parser extends ParserService_1.default {
                     right = new SpreadsheetCell_1.default("", right.view);
                 if (right instanceof Identifier_1.default)
                     right = new SpreadsheetCell_1.default(right.view, "");
-                this.untrackPosition();
+                this.unmarkPosition();
                 this.ignoreSpace();
                 return new SpreadsheetRange_1.default(left, right);
             }

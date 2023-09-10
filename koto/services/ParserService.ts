@@ -77,12 +77,12 @@ export default class ParserService extends Lexer {
     return `${startColor}${text}${endColor}`;
   }
 
-  protected trackPosition() {
+  protected markPosition() {
     this.storeLine = this.line;
     this.storeColumn = this.column;
   }
 
-  protected untrackPosition() {
+  protected unmarkPosition() {
     this.storeLine = undefined;
     this.storeColumn = undefined;
   }

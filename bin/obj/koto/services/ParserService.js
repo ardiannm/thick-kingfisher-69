@@ -72,11 +72,11 @@ class ParserService extends Lexer_1.default {
     colorize(text, startColor = ColorCode.blueColor, endColor = ColorCode.resetColor) {
         return `${startColor}${text}${endColor}`;
     }
-    trackPosition() {
+    markPosition() {
         this.storeLine = this.line;
         this.storeColumn = this.column;
     }
-    untrackPosition() {
+    unmarkPosition() {
         this.storeLine = undefined;
         this.storeColumn = undefined;
     }

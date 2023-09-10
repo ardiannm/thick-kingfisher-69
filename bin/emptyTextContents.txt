@@ -9,6 +9,6 @@ DOCTYPE
     <app-root> WebApp </app-root>
     <ng-component></ng-component>
     <script>
-        <name>
+        <!--Name-->
     </script>
 </div>
