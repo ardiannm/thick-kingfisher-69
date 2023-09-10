@@ -80,29 +80,29 @@ class Parser extends Service_1.default {
     parseImport() {
         const message = "expecting a namespace identifier for module import";
         const token = this.expect(this.getNextToken(), Identifier_1.default, message);
-        let namespace = token.view;
+        let nameSpace = token.view;
         while (this.peekToken() instanceof Dot_1.default) {
             this.getNextToken();
-            namespace += "." + this.expect(this.getNextToken(), Identifier_1.default, message).view;
+            nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, message).view;
         }
         this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
         this.untrackPosition();
-        const path = namespace.replace(/\./g, "/") + ".txt";
+        const path = nameSpace.replace(/\./g, "/") + ".txt";
         let sourceCode = "";
         try {
             sourceCode = (0, ImportFile_1.default)(path);
         }
         catch (error) {
-            this.throwError(`namespace \`${namespace}\` does not exist`);
+            this.throwError(`namespace \`${nameSpace}\` does not exist`);
         }
         try {
             const program = new Parser(sourceCode, path).parse();
-            return new Import_1.default(namespace, program);
+            return new Import_1.default(nameSpace, program);
         }
         catch (error) {
             console.log(error);
-            this.throwError(`internal error found in \`${namespace}\``);
+            this.throwError(`internal error found in \`${nameSpace}\``);
         }
     }
     parseHTMLComponent() {

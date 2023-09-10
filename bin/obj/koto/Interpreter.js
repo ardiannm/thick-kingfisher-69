@@ -29,8 +29,11 @@ const HTMLScript_1 = __importDefault(require("./ast/html/HTMLScript"));
 const HTMLComment_1 = __importDefault(require("./ast/html/HTMLComment"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const SystemStringArray_1 = __importDefault(require("./system/SystemStringArray"));
+const Import_1 = __importDefault(require("./ast/expressions/Import"));
 class Interpreter {
     evaluate(token) {
+        if (token instanceof Import_1.default)
+            return this.evaluateImport(token);
         if (token instanceof Program_1.default)
             return this.evaluateProgram(token);
         if (token instanceof Identifier_1.default)
@@ -58,6 +61,9 @@ class Interpreter {
         if (token instanceof SpreadsheetRange_1.default)
             return this.evaluateSpreadsheetRange(token);
         throw new SystemException_1.default(`token type \`${token.type}\` has not been implemented for interpretation`);
+    }
+    evaluateImport(token) {
+        return this.evaluate(token.module);
     }
     evaluateProgram(token) {
         let value = new System_1.default();

@@ -24,6 +24,7 @@ while (true) {
         const program = new Parser_1.default(input, path).parse();
         if (showTree)
             report(program);
+        console.log();
         const system = new Interpreter_1.default().evaluate(program);
         if (system instanceof SystemNumber_1.default)
             report(system.value);
