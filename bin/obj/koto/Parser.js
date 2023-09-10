@@ -152,8 +152,9 @@ class Parser extends Service_1.default {
                     throw right;
                 return new HTMLScript_1.default(content.view);
             }
-            catch (right) {
-                this.throwError(`expecting a closing \`script\` tag`);
+            catch (error) {
+                const right = error;
+                this.throwError(`expecting a closing \`script\` tag but received \`${right.type}\``);
             }
         }
         return left;
@@ -181,7 +182,7 @@ class Parser extends Service_1.default {
             return new StandaloneComponent_1.default(identifier.view, attributes);
         }
         const token = this.getNextToken();
-        this.expect(token, GreaterThan_1.default, `expecting a closing \`>\` for \`${identifier.view}\` open tag, but received \`${token.view}\` character`);
+        this.expect(token, GreaterThan_1.default, `expecting a closing \`>\` for \`${identifier.view}\` open tag but received \`${token.view}\` character`);
         if (identifier.view === "script")
             return new OpenScriptTag_1.default();
         if (AmbiguosTags.includes(identifier.view))
@@ -230,13 +231,23 @@ class Parser extends Service_1.default {
         return new Identifier_1.default(view);
     }
     parseAttribute() {
-        const identifier = this.getNextToken();
-        let view = "";
+        let property = "";
+        if (this.peekToken() instanceof Identifier_1.default) {
+            this.considerSpace();
+            property += this.getNextToken().view;
+        }
+        while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default) {
+            property += this.getNextToken().view;
+        }
+        this.ignoreSpace();
+        let value = "";
         if (this.peekToken() instanceof Equals_1.default) {
             this.getNextToken();
-            view = this.expect(this.parseString(), String_1.default, "expecting a string value after `=` following a tag property").view;
+            const token = this.peekToken();
+            value = this.expect(this.parseString(), String_1.default, `expecting a string value after \`=\` following a tag property but received \`${token.view}\``).view;
         }
-        return new Attribute_1.default(identifier.view, view);
+        console.log(`${property}="${value}"`);
+        return new Attribute_1.default(property, value);
     }
     parseTerm() {
         const left = this.parseFactor();
@@ -332,9 +343,9 @@ class Parser extends Service_1.default {
             this.ignoreSpace();
             if (view)
                 terms.push(new String_1.default(view));
-            if (terms.length == 1)
-                return new String_1.default(view);
-            return new Interpolation_1.default(terms);
+            if (terms.length > 1)
+                return new Interpolation_1.default(terms);
+            return new String_1.default(view);
         }
         return this.parseRange();
     }

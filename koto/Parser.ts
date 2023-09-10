@@ -50,6 +50,7 @@ import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
+import SyntaxToken from "./ast/tokens/SyntaxToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
@@ -153,8 +154,9 @@ export default class Parser extends Service {
         const right = this.parseTag();
         if (!(right instanceof CloseScriptTag)) throw right;
         return new HTMLScript(content.view);
-      } catch (right) {
-        this.throwError(`expecting a closing \`script\` tag`);
+      } catch (error) {
+        const right = error as SyntaxToken;
+        this.throwError(`expecting a closing \`script\` tag but received \`${right.type}\``);
       }
     }
     return left;
@@ -181,7 +183,7 @@ export default class Parser extends Service {
       return new StandaloneComponent(identifier.view, attributes);
     }
     const token = this.getNextToken() as Character;
-    this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag, but received \`${token.view}\` character`);
+    this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but received \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag();
     if (AmbiguosTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
@@ -231,13 +233,23 @@ export default class Parser extends Service {
   }
 
   private parseAttribute() {
-    const identifier = this.getNextToken() as Identifier;
-    let view = "";
+    let property = "";
+    if (this.peekToken() instanceof Identifier) {
+      this.considerSpace();
+      property += (this.getNextToken() as Character).view;
+    }
+    while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
+      property += (this.getNextToken() as Character).view;
+    }
+    this.ignoreSpace();
+    let value = "";
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
-      view = this.expect(this.parseString(), String, "expecting a string value after `=` following a tag property").view;
+      const token = this.peekToken() as Character;
+      value = this.expect(this.parseString(), String, `expecting a string value after \`=\` following a tag property but received \`${token.view}\``).view;
     }
-    return new Attribute(identifier.view, view);
+    console.log(`${property}="${value}"`);
+    return new Attribute(property, value);
   }
 
   private parseTerm() {
@@ -336,8 +348,8 @@ export default class Parser extends Service {
       this.expect(this.getNextToken(), Quote, "expecting a closing quote for the string");
       this.ignoreSpace();
       if (view) terms.push(new String(view));
-      if (terms.length == 1) return new String(view);
-      return new Interpolation(terms);
+      if (terms.length > 1) return new Interpolation(terms);
+      return new String(view);
     }
     return this.parseRange();
   }
