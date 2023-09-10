@@ -52,7 +52,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -108,11 +108,13 @@ class Parser extends ParserService_1.default {
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
+            const pos = this.writePath();
             const children = new Array();
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
                     if (right.tag !== left.tag) {
+                        console.log("////", pos);
                         this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
                     }
                     return new HTMLElement_1.default(left.tag, children);
@@ -146,7 +148,6 @@ class Parser extends ParserService_1.default {
         const left = this.parseTag();
         if (left instanceof OpenScriptTag_1.default) {
             let view = "";
-            // if there is no text content this method call with return the tag so 'content' will be the actual tag
             const right = this.parseHTMLTextContent();
             const errorMessage = `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`;
             if (right instanceof HTMLTextContent_1.default) {

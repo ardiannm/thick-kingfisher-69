@@ -45,23 +45,25 @@ export default class ParserService extends Lexer {
     const report = new Array<string>();
 
     report.push("");
-    report.push(`error: ${msg}`);
-    report.push(` -- ${this.path}:${n}:${m}`);
     report.push("");
-
+    report.push("");
+    
     if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
     if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
     const line = `${this.colorize("-", ColorCode.redColor, ColorCode.blueColor)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
-
+    
     if (input[n - 1] !== undefined) report.push(this.colorize(line));
 
     const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}${this.colorize("^", ColorCode.redColor)}`;
-
+    
     if (input[n - 1] !== undefined) report.push(this.colorize(cursor));
     if (input[n - 0] !== undefined) report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
     if (input[n + 1] !== undefined) report.push(`  ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
-
+    
+    report.push("");
+    report.push(`error: ${msg}`);
+    report.push(` -- ${this.path}:${n}:${m}`);
     report.push("");
 
     this.storeColumn = undefined;
@@ -85,5 +87,9 @@ export default class ParserService extends Lexer {
   protected unmarkPosition() {
     this.storeLine = undefined;
     this.storeColumn = undefined;
+  }
+
+  protected writePath() {
+    return `${this.path}:${this.line}:${this.column}`;
   }
 }

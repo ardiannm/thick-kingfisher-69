@@ -44,8 +44,7 @@ class ParserService extends Lexer_1.default {
         const m = this.storeColumn || this.column;
         const report = new Array();
         report.push("");
-        report.push(`error: ${msg}`);
-        report.push(` -- ${this.path}:${n}:${m}`);
+        report.push("");
         report.push("");
         if (input[n - 3] !== undefined)
             report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
@@ -61,6 +60,9 @@ class ParserService extends Lexer_1.default {
             report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
         if (input[n + 1] !== undefined)
             report.push(`  ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
+        report.push("");
+        report.push(`error: ${msg}`);
+        report.push(` -- ${this.path}:${n}:${m}`);
         report.push("");
         this.storeColumn = undefined;
         return report.join("\n");
@@ -79,6 +81,9 @@ class ParserService extends Lexer_1.default {
     unmarkPosition() {
         this.storeLine = undefined;
         this.storeColumn = undefined;
+    }
+    writePath() {
+        return `${this.path}:${this.line}:${this.column}`;
     }
 }
 exports.default = ParserService;

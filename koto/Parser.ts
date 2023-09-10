@@ -50,9 +50,8 @@ import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
-import SyntaxToken from "./ast/tokens/SyntaxToken";
 
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
 export default class Parser extends ParserService {
   public parse() {
@@ -111,11 +110,13 @@ export default class Parser extends ParserService {
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
+      const pos = this.writePath();
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
+            console.log("////", pos);
             this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
