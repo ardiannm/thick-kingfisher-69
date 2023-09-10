@@ -146,6 +146,7 @@ class Parser extends Service_1.default {
         const left = this.parseTag();
         if (left instanceof OpenScriptTag_1.default) {
             const content = this.parseHTMLTextContent();
+            // if there is no text content this method call with return the tag so 'content' will be the actual tag
             try {
                 console.log("content --> ");
                 console.log(content);
