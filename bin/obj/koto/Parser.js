@@ -36,7 +36,7 @@ const CloseScriptTag_1 = __importDefault(require("./ast/html/CloseScriptTag"));
 const HTMLScript_1 = __importDefault(require("./ast/html/HTMLScript"));
 const HTMLElement_1 = __importDefault(require("./ast/html/HTMLElement"));
 const HTMLComponent_1 = __importDefault(require("./ast/html/HTMLComponent"));
-const Service_1 = __importDefault(require("./services/Service"));
+const ParserService_1 = __importDefault(require("./services/ParserService"));
 const ExclamationMark_1 = __importDefault(require("./ast/tokens/ExclamationMark"));
 const HTMLComment_1 = __importDefault(require("./ast/html/HTMLComment"));
 const HTMLTextContent_1 = __importDefault(require("./ast/html/HTMLTextContent"));
@@ -53,7 +53,7 @@ const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
-class Parser extends Service_1.default {
+class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
     }
@@ -78,12 +78,12 @@ class Parser extends Service_1.default {
         return this.parseTerm();
     }
     parseImport() {
-        const message = "expecting a namespace identifier for module import";
-        const token = this.expect(this.getNextToken(), Identifier_1.default, message);
+        const errorMessage = "expecting a namespace identifier for module import";
+        const token = this.expect(this.getNextToken(), Identifier_1.default, errorMessage);
         let nameSpace = token.view;
         while (this.peekToken() instanceof Dot_1.default) {
             this.getNextToken();
-            nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, message).view;
+            nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
         this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
@@ -145,20 +145,16 @@ class Parser extends Service_1.default {
     parseHTMLScript() {
         const left = this.parseTag();
         if (left instanceof OpenScriptTag_1.default) {
-            const content = this.parseHTMLTextContent();
+            let view = "";
             // if there is no text content this method call with return the tag so 'content' will be the actual tag
-            try {
-                console.log("content --> ");
-                console.log(content);
-                const right = this.parseTag();
-                if (!(right instanceof CloseScriptTag_1.default))
-                    throw right;
-                return new HTMLScript_1.default(content.view);
+            const right = this.parseHTMLTextContent();
+            const errorMessage = `expecting a closing \`CloseScriptTag\` tag but received an \`${right.type}\` token`;
+            if (right instanceof HTMLTextContent_1.default) {
+                view = right.view;
+                this.expect(this.parseTag(), CloseScriptTag_1.default, errorMessage);
             }
-            catch (error) {
-                const right = error;
-                this.throwError(`expecting a closing \`script\` tag but received an \`${right.type}\` token`);
-            }
+            this.expect(right, CloseScriptTag_1.default, errorMessage);
+            return new HTMLScript_1.default(view);
         }
         return left;
     }
@@ -196,9 +192,9 @@ class Parser extends Service_1.default {
         const left = this.expect(this.getNextToken(), LessThan_1.default, "expecting `<` for an html tag");
         if (this.peekToken() instanceof ExclamationMark_1.default) {
             this.expect(this.getNextToken(), ExclamationMark_1.default, "expecting `!` for a comment");
-            const message = "expecting `--` after `!` for a comment";
-            this.expect(this.getNextToken(), Minus_1.default, message);
-            this.expect(this.getNextToken(), Minus_1.default, message);
+            const errorMessage = "expecting `--` after `!` for a comment";
+            this.expect(this.getNextToken(), Minus_1.default, errorMessage);
+            this.expect(this.getNextToken(), Minus_1.default, errorMessage);
             let view = "";
             while (this.hasMoreTokens()) {
                 if (this.peekToken() instanceof Minus_1.default) {

@@ -8,5 +8,7 @@ DOCTYPE
     <h4></h4>
     <app-root> WebApp </app-root>
     <ng-component></ng-component>
+    <script>
+        <name>
+    </script>
 </div>
-<script></script>

@@ -9,7 +9,7 @@ enum ColorCode {
   resetColor = `\x1b[0m`,
 }
 
-export default class Service extends Lexer {
+export default class ParserService extends Lexer {
   private storeLine?: number;
   private storeColumn?: number;
   constructor(public input: string, public path: string) {
@@ -38,7 +38,7 @@ export default class Service extends Lexer {
 
   protected report(msg: string) {
     const input = this.input.split("\n");
-    
+
     const n = this.storeLine || this.line;
     const m = this.storeColumn || this.column;
 

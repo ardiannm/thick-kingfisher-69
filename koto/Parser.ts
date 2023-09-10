@@ -33,7 +33,7 @@ import CloseScriptTag from "./ast/html/CloseScriptTag";
 import HTMLScript from "./ast/html/HTMLScript";
 import HTMLElement from "./ast/html/HTMLElement";
 import HTMLComponent from "./ast/html/HTMLComponent";
-import Service from "./services/Service";
+import ParserService from "./services/ParserService";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
 import HTMLComment from "./ast/html/HTMLComment";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
@@ -54,7 +54,7 @@ import SyntaxToken from "./ast/tokens/SyntaxToken";
 
 const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
-export default class Parser extends Service {
+export default class Parser extends ParserService {
   public parse() {
     return this.parseProgram();
   }
@@ -82,12 +82,12 @@ export default class Parser extends Service {
   }
 
   private parseImport() {
-    const message = "expecting a namespace identifier for module import";
-    const token = this.expect(this.getNextToken(), Identifier, message);
+    const errorMessage = "expecting a namespace identifier for module import";
+    const token = this.expect(this.getNextToken(), Identifier, errorMessage);
     let nameSpace = token.view;
     while (this.peekToken() instanceof Dot) {
       this.getNextToken();
-      nameSpace += "." + this.expect(this.getNextToken(), Identifier, message).view;
+      nameSpace += "." + this.expect(this.getNextToken(), Identifier, errorMessage).view;
     }
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
@@ -149,18 +149,16 @@ export default class Parser extends Service {
   private parseHTMLScript() {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
-      const content = this.parseHTMLTextContent();
+      let view = "";
       // if there is no text content this method call with return the tag so 'content' will be the actual tag
-      try {
-        console.log("content --> ");
-        console.log(content);
-        const right = this.parseTag();
-        if (!(right instanceof CloseScriptTag)) throw right;
-        return new HTMLScript(content.view);
-      } catch (error) {
-        const right = error as SyntaxToken;
-        this.throwError(`expecting a closing \`script\` tag but received an \`${right.type}\` token`);
+      const right = this.parseHTMLTextContent();
+      const errorMessage = `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`;
+      if (right instanceof HTMLTextContent) {
+        view = right.view;
+        this.expect(this.parseTag(), CloseScriptTag, errorMessage);
       }
+      this.expect(right, CloseScriptTag, errorMessage);
+      return new HTMLScript(view);
     }
     return left;
   }
@@ -196,9 +194,9 @@ export default class Parser extends Service {
     const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
       this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
-      const message = "expecting `--` after `!` for a comment";
-      this.expect(this.getNextToken(), Minus, message);
-      this.expect(this.getNextToken(), Minus, message);
+      const errorMessage = "expecting `--` after `!` for a comment";
+      this.expect(this.getNextToken(), Minus, errorMessage);
+      this.expect(this.getNextToken(), Minus, errorMessage);
       let view = "";
       while (this.hasMoreTokens()) {
         if (this.peekToken() instanceof Minus) {
