@@ -52,7 +52,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends Service_1.default {
     parse() {
         return this.parseProgram();
@@ -102,7 +102,7 @@ class Parser extends Service_1.default {
         }
         catch (error) {
             console.log(error);
-            this.throwError(`internal error found in \`${nameSpace}\``);
+            this.throwError(`internal code base error found in \`${nameSpace}\``);
         }
     }
     parseHTMLComponent() {
@@ -180,7 +180,8 @@ class Parser extends Service_1.default {
             this.expect(this.getNextToken(), GreaterThan_1.default, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
             return new StandaloneComponent_1.default(identifier.view, attributes);
         }
-        this.expect(this.getNextToken(), GreaterThan_1.default, "expecting `>` for tag");
+        const token = this.getNextToken();
+        this.expect(token, GreaterThan_1.default, `expecting a closing \`>\` for \`${identifier.view}\` open tag, but received \`${token.view}\` character`);
         if (identifier.view === "script")
             return new OpenScriptTag_1.default();
         if (AmbiguosTags.includes(identifier.view))

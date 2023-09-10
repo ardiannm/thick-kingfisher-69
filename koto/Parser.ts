@@ -51,7 +51,7 @@ import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
 export default class Parser extends Service {
   public parse() {
@@ -103,7 +103,7 @@ export default class Parser extends Service {
       return new Import(nameSpace, program);
     } catch (error) {
       console.log(error);
-      this.throwError(`internal error found in \`${nameSpace}\``);
+      this.throwError(`internal code base error found in \`${nameSpace}\``);
     }
   }
 
@@ -180,7 +180,8 @@ export default class Parser extends Service {
       this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
       return new StandaloneComponent(identifier.view, attributes);
     }
-    this.expect(this.getNextToken(), GreaterThan, "expecting `>` for tag");
+    const token = this.getNextToken() as Character;
+    this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag, but received \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag();
     if (AmbiguosTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
