@@ -3,7 +3,7 @@ DOCTYPE
   <script> some random js </script>
   <!-- error exception expected -->
   name
-   </what>
+   <//x>
 
 
 

@@ -83,20 +83,27 @@ export default class Parser extends Service {
   private parseImport() {
     const message = "expecting a namespace identifier for module import";
     const token = this.expect(this.getNextToken(), Identifier, message);
-    let path = token.view;
+    let nameSpace = token.view;
     while (this.peekToken() instanceof Dot) {
       this.getNextToken();
-      path += "." + this.expect(this.getNextToken(), Identifier, message).view;
+      nameSpace += "." + this.expect(this.getNextToken(), Identifier, message).view;
     }
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
     this.untrackPosition();
+    const path = nameSpace.replace(/\./g, "/") + ".txt";
+    let sourceCode = "";
     try {
-      const sourceCode = ImportFile(path.replace(/\./g, "/") + ".txt");
-      const program = new Parser(sourceCode, path).parse();
-      return new Import(path, program);
+      sourceCode = ImportFile(path);
     } catch (error) {
-      this.throwError(`namespace \`${path}\` does not exist`);
+      this.throwError(`namespace \`${nameSpace}\` does not exist`);
+    }
+    try {
+      const program = new Parser(sourceCode, path).parse();
+      return new Import(nameSpace, program);
+    } catch (error) {
+      console.log(error);
+      this.throwError(`internal error found in \`${nameSpace}\``);
     }
   }
 
