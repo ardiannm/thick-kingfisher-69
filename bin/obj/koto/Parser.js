@@ -239,7 +239,7 @@ class Parser extends ParserService_1.default {
             this.considerSpace();
             property += this.getNextToken().view;
         }
-        while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default) {
+        while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default || this.peekToken() instanceof Colon_1.default) {
             property += this.getNextToken().view;
         }
         this.ignoreSpace();
