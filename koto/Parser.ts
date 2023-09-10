@@ -150,13 +150,16 @@ export default class Parser extends Service {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
       const content = this.parseHTMLTextContent();
+      // if there is no text content this method call with return the tag so 'content' will be the actual tag
       try {
+        console.log("content --> ");
+        console.log(content);
         const right = this.parseTag();
         if (!(right instanceof CloseScriptTag)) throw right;
         return new HTMLScript(content.view);
       } catch (error) {
         const right = error as SyntaxToken;
-        this.throwError(`expecting a closing \`script\` tag but received \`${right.type}\``);
+        this.throwError(`expecting a closing \`script\` tag but received an \`${right.type}\` token`);
       }
     }
     return left;
@@ -248,7 +251,6 @@ export default class Parser extends Service {
       const token = this.peekToken() as Character;
       value = this.expect(this.parseString(), String, `expecting a string value after \`=\` following a tag property but received \`${token.view}\``).view;
     }
-    console.log(`${property}="${value}"`);
     return new Attribute(property, value);
   }
 

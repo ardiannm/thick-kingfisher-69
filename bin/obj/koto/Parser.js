@@ -147,6 +147,8 @@ class Parser extends Service_1.default {
         if (left instanceof OpenScriptTag_1.default) {
             const content = this.parseHTMLTextContent();
             try {
+                console.log("content --> ");
+                console.log(content);
                 const right = this.parseTag();
                 if (!(right instanceof CloseScriptTag_1.default))
                     throw right;
@@ -154,7 +156,7 @@ class Parser extends Service_1.default {
             }
             catch (error) {
                 const right = error;
-                this.throwError(`expecting a closing \`script\` tag but received \`${right.type}\``);
+                this.throwError(`expecting a closing \`script\` tag but received an \`${right.type}\` token`);
             }
         }
         return left;
@@ -246,7 +248,6 @@ class Parser extends Service_1.default {
             const token = this.peekToken();
             value = this.expect(this.parseString(), String_1.default, `expecting a string value after \`=\` following a tag property but received \`${token.view}\``).view;
         }
-        console.log(`${property}="${value}"`);
         return new Attribute_1.default(property, value);
     }
     parseTerm() {
