@@ -51,7 +51,7 @@ const SpreadsheetRange_1 = __importDefault(require("./ast/spreadsheet/Spreadshee
 const BadToken_1 = __importDefault(require("./ast/tokens/BadToken"));
 const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
-const Import_1 = __importDefault(require("./ast/expressions/Import"));
+const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
 const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends ParserService_1.default {
@@ -60,25 +60,24 @@ class Parser extends ParserService_1.default {
     }
     parseProgram() {
         this.doNotExpect(this.peekToken(), EOF_1.default, "source file is empty");
-        const expressions = new Array();
+        let expressions = new Array();
         while (this.hasMoreTokens()) {
-            const expression = this.parseExpression();
-            expressions.push(expression);
+            if (this.peekToken().view === "DOCTYPE") {
+                this.getNextToken();
+                expressions = [...expressions, ...this.parseHTML()];
+            }
+            if (this.peekToken().view === "USING") {
+                this.getNextToken();
+                expressions = [...expressions, ...this.parseImportStatements()];
+            }
+            else {
+                const expression = this.parseTerm();
+                expressions.push(expression);
+            }
         }
         return new Program_1.default(expressions);
     }
-    parseExpression() {
-        if (this.peekToken().view === "using") {
-            this.getNextToken();
-            return this.parseImport();
-        }
-        if (this.peekToken().view === "DOCTYPE") {
-            this.getNextToken();
-            return this.parseHTMLComponent();
-        }
-        return this.parseTerm();
-    }
-    parseImport() {
+    ImportStatement() {
         const errorMessage = "expecting a namespace identifier for module import";
         const token = this.expect(this.getNextToken(), Identifier_1.default, errorMessage);
         let nameSpace = token.view;
@@ -103,21 +102,32 @@ class Parser extends ParserService_1.default {
             this.trackPosition();
             const program = new Parser(sourceCode, path).parse();
             this.untrackPosition();
-            return new Import_1.default(nameSpace, program);
+            return new ImportStatement_1.default(nameSpace, program);
         }
         catch (error) {
             console.log(error);
             this.throwError(`internal error found in \`${lastNameSpace}\` code base at \`./${path}\``);
         }
     }
-    // this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-    // this.throwError(`expecting a closing \`${left.tag}\` tag`);
+    parseImportStatements() {
+        const expressions = new Array();
+        while (this.hasMoreTokens()) {
+            expressions.push(this.ImportStatement());
+        }
+        return expressions;
+    }
+    parseHTML() {
+        const expressions = new Array();
+        while (this.hasMoreTokens()) {
+            expressions.push(this.parseHTMLComponent());
+        }
+        return expressions;
+    }
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         const pointer = this.pointer;
         const line = this.line;
         const column = this.column;
-        const errorMessage = `expecting a closing \`${left.tag}\` tag`;
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
@@ -126,7 +136,7 @@ class Parser extends ParserService_1.default {
                     children.push(token);
                     continue;
                 }
-                const right = this.expect(token, CloseTag_1.default, errorMessage);
+                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag`);
                 if (left.tag !== right.tag) {
                     if (lenientTags.includes(left.tag)) {
                         this.pointer = pointer;
@@ -140,7 +150,7 @@ class Parser extends ParserService_1.default {
             }
             if (lenientTags.includes(left.tag))
                 return left;
-            this.throwError(errorMessage);
+            this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
     }

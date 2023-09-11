@@ -25,11 +25,11 @@ import HTMLScript from "./ast/html/HTMLScript";
 import HTMLComment from "./ast/html/HTMLComment";
 import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
-import Import from "./ast/expressions/Import";
+import ImportStatement from "./ast/expressions/ImportStatement";
 
 export default class Interpreter {
   evaluate<T extends SyntaxToken>(token: T) {
-    if (token instanceof Import) return this.evaluateImport(token);
+    if (token instanceof ImportStatement) return this.evaluateImport(token);
     if (token instanceof Program) return this.evaluateProgram(token);
     if (token instanceof Identifier) return this.evaluateIdentifier(token);
     if (token instanceof Number) return this.evaluateNumber(token);
@@ -47,7 +47,7 @@ export default class Interpreter {
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   }
 
-  private evaluateImport(token: Import) {
+  private evaluateImport(token: ImportStatement) {
     return this.evaluate(token.module);
   }
 

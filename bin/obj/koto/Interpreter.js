@@ -29,10 +29,10 @@ const HTMLScript_1 = __importDefault(require("./ast/html/HTMLScript"));
 const HTMLComment_1 = __importDefault(require("./ast/html/HTMLComment"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const SystemStringArray_1 = __importDefault(require("./system/SystemStringArray"));
-const Import_1 = __importDefault(require("./ast/expressions/Import"));
+const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 class Interpreter {
     evaluate(token) {
-        if (token instanceof Import_1.default)
+        if (token instanceof ImportStatement_1.default)
             return this.evaluateImport(token);
         if (token instanceof Program_1.default)
             return this.evaluateProgram(token);

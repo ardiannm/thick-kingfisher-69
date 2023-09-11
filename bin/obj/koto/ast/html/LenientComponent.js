@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const HTMLComponent_1 = __importDefault(require("./HTMLComponent"));
-class LinientComponent extends HTMLComponent_1.default {
+class LenientComponent extends HTMLComponent_1.default {
     tag;
     attributes;
     constructor(tag, attributes) {
@@ -13,4 +13,4 @@ class LinientComponent extends HTMLComponent_1.default {
         this.attributes = attributes;
     }
 }
-exports.default = LinientComponent;
+exports.default = LenientComponent;
