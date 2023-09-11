@@ -88,9 +88,9 @@ export default class Parser extends ParserService {
       this.getNextToken();
       nameSpace += "." + this.expect(this.getNextToken(), Identifier, errorMessage).view;
     }
-    this.markPosition();
+    this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    this.unmarkPosition();
+    this.untrackPosition();
     const path = nameSpace.replace(/\./g, "/") + ".txt";
     let sourceCode = "";
     try {
@@ -110,13 +110,11 @@ export default class Parser extends ParserService {
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
-      const pos = this.writePath();
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
           if (right.tag !== left.tag) {
-            console.log("////", pos);
             this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
@@ -194,7 +192,7 @@ export default class Parser extends ParserService {
   private parseHTMLComment() {
     const left = this.expect(this.getNextToken(), LessThan, "expecting `<` for an html tag");
     if (this.peekToken() instanceof ExclamationMark) {
-      this.markPosition();
+      this.trackPosition();
       this.expect(this.getNextToken(), ExclamationMark, "expecting `!` for a comment");
       const errorMessage = "expecting `--` after `!` for a comment";
       this.expect(this.getNextToken(), Minus, errorMessage);
@@ -209,7 +207,7 @@ export default class Parser extends ParserService {
           if (token instanceof Minus) {
             this.getNextToken();
             this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
-            this.unmarkPosition();
+            this.untrackPosition();
             return new HTMLComment(view);
           }
           this.pointer = keep;
@@ -378,7 +376,7 @@ export default class Parser extends ParserService {
         }
         if (left instanceof Number) left = new SpreadsheetCell("", left.view);
         if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
-        this.markPosition();
+        this.trackPosition();
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
         if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
@@ -386,7 +384,7 @@ export default class Parser extends ParserService {
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
         if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
-        this.unmarkPosition();
+        this.untrackPosition();
         this.ignoreSpace();
         return new SpreadsheetRange(left, right);
       }

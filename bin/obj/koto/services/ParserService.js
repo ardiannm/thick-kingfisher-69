@@ -45,30 +45,7 @@ class ParserService extends Lexer_1.default {
         const report = new Array();
         report.push("");
         report.push("");
-        report.push("");
-        if (input[n - 3] !== undefined)
-            report.push(`${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
-        if (input[n - 2] !== undefined)
-            report.push(`${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
-        const line = n - 1;
-        const column = m - 1;
-        let target = input[line];
-        let part1 = "";
-        if (m > 100) {
-            part1 = this.colorize("// ", ColorCode.redColor, ColorCode.blueColor) + target.substring(column - 100, column);
-        }
-        else {
-            part1 = target.substring(0, column);
-        }
-        const part2 = target.substring(column, column + 20);
-        const lineNumber = `${this.formatNumber(n + 0, n + 2)}   `;
-        let format = lineNumber + part1 + this.colorize("//", ColorCode.redColor, ColorCode.blueColor) + part2;
-        if (input[n - 1] !== undefined)
-            report.push(this.colorize(format));
-        if (input[n - 0] !== undefined)
-            report.push(`${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
-        if (input[n + 1] !== undefined)
-            report.push(`${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
+        report.push(this.displayLine(input, n, m));
         report.push("");
         report.push(`error: ${msg}`);
         report.push(` -- ${this.path}:${n}:${m}`);
@@ -93,6 +70,19 @@ class ParserService extends Lexer_1.default {
     }
     writePath() {
         return `${this.path}:${this.line}:${this.column}`;
+    }
+    displayLine(input, n, m) {
+        const line = n - 1;
+        const column = m - 1;
+        let target = input[line];
+        let part1 = "";
+        if (m > 100)
+            part1 = this.colorize("// ", ColorCode.redColor, ColorCode.blueColor) + target.substring(column - 100, column);
+        else
+            part1 = target.substring(0, column);
+        const lineNumber = `${this.formatNumber(line + 1, line + 3)}   `;
+        let format = lineNumber + part1 + this.colorize("//", ColorCode.redColor, ColorCode.blueColor) + target.substring(column, column + 20);
+        return this.colorize(format);
     }
 }
 exports.default = ParserService;
