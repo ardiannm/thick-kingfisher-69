@@ -117,6 +117,7 @@ export default class Parser extends ParserService {
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     const from = this.pointer;
+    const errorMessage = `expecting a closing \`${left.tag}\` tag`;
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
@@ -125,7 +126,7 @@ export default class Parser extends ParserService {
           children.push(token);
           continue;
         }
-        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${token.type}\``);
+        const right = this.expect(token, CloseTag, errorMessage);
         if (left.tag !== right.tag) {
           if (lenientTags.includes(left.tag)) {
             this.pointer = from;
@@ -133,10 +134,10 @@ export default class Parser extends ParserService {
           }
           this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
         }
-        return new HTMLElement(left.tag, children);
+        return new HTMLElement(left.tag, left.attributes, children);
       }
       if (lenientTags.includes(left.tag)) return left;
-      this.throwError(`expecting a closing \`${left.tag}\` tag`);
+      this.throwError(errorMessage);
     }
     return left;
   }
@@ -252,9 +253,9 @@ export default class Parser extends ParserService {
   private parseAttribute() {
     let property = "";
     if (this.peekToken() instanceof Identifier) {
-      this.considerSpace();
       property += (this.getNextToken() as Character).view;
     }
+    this.considerSpace();
     while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number || this.peekToken() instanceof Colon) {
       property += (this.getNextToken() as Character).view;
     }

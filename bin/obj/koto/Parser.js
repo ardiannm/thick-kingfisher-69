@@ -115,6 +115,7 @@ class Parser extends ParserService_1.default {
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         const from = this.pointer;
+        const errorMessage = `expecting a closing \`${left.tag}\` tag`;
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
@@ -123,7 +124,7 @@ class Parser extends ParserService_1.default {
                     children.push(token);
                     continue;
                 }
-                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag but mached \`${token.type}\``);
+                const right = this.expect(token, CloseTag_1.default, errorMessage);
                 if (left.tag !== right.tag) {
                     if (lenientTags.includes(left.tag)) {
                         this.pointer = from;
@@ -131,11 +132,11 @@ class Parser extends ParserService_1.default {
                     }
                     this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
                 }
-                return new HTMLElement_1.default(left.tag, children);
+                return new HTMLElement_1.default(left.tag, left.attributes, children);
             }
             if (lenientTags.includes(left.tag))
                 return left;
-            this.throwError(`expecting a closing \`${left.tag}\` tag`);
+            this.throwError(errorMessage);
         }
         return left;
     }
@@ -249,9 +250,9 @@ class Parser extends ParserService_1.default {
     parseAttribute() {
         let property = "";
         if (this.peekToken() instanceof Identifier_1.default) {
-            this.considerSpace();
             property += this.getNextToken().view;
         }
+        this.considerSpace();
         while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default || this.peekToken() instanceof Colon_1.default) {
             property += this.getNextToken().view;
         }
