@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const prompt_sync_1 = __importDefault(require("prompt-sync"));
-const ImportFile_1 = __importDefault(require("./koto/services/ImportFile"));
-const Parser_1 = __importDefault(require("./koto/Parser"));
-const Interpreter_1 = __importDefault(require("./koto/Interpreter"));
-const System_1 = __importDefault(require("./koto/system/System"));
-const SystemNumber_1 = __importDefault(require("./koto/system/SystemNumber"));
-const SystemString_1 = __importDefault(require("./koto/system/SystemString"));
-const SystemException_1 = __importDefault(require("./koto/system/SystemException"));
+const ImportFile_1 = __importDefault(require("./src/services/ImportFile"));
+const Parser_1 = __importDefault(require("./src/Parser"));
+const Interpreter_1 = __importDefault(require("./src/Interpreter"));
+const System_1 = __importDefault(require("./src/system/System"));
+const SystemNumber_1 = __importDefault(require("./src/system/SystemNumber"));
+const SystemString_1 = __importDefault(require("./src/system/SystemString"));
+const SystemException_1 = __importDefault(require("./src/system/SystemException"));
 let showTree = true;
 const report = (tree) => console.log(JSON.stringify(tree, undefined, 3));
 while (true) {
