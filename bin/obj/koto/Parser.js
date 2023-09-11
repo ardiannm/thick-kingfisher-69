@@ -149,13 +149,15 @@ class Parser extends ParserService_1.default {
         if (left instanceof OpenScriptTag_1.default) {
             let view = "";
             const right = this.parseHTMLTextContent();
-            const errorMessage = `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`;
             if (right instanceof HTMLTextContent_1.default) {
                 view = right.view;
-                this.expect(this.parseTag(), CloseScriptTag_1.default, errorMessage);
+                this.trackPosition();
+                const token = this.parseTag();
+                this.expect(token, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received an \`${token.type}\` token`);
+                this.untrackPosition();
                 return new HTMLScript_1.default(view);
             }
-            this.expect(right, CloseScriptTag_1.default, errorMessage);
+            this.expect(right, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`);
             return new HTMLScript_1.default(view);
         }
         return left;
@@ -257,14 +259,18 @@ class Parser extends ParserService_1.default {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
+            this.trackPosition();
             const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
+            this.untrackPosition();
             return new Addition_1.default(left, right);
         }
         if (this.peekToken() instanceof Minus_1.default) {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
+            this.trackPosition();
             const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
+            this.untrackPosition();
             return new Substraction_1.default(left, right);
         }
         return left;

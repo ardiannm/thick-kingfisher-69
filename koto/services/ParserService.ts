@@ -48,7 +48,7 @@ export default class ParserService extends Lexer {
     this.storeColumn = undefined;
   }
 
-  protected report(msg: string) {
+  protected report(errorMessage: string) {
     const input = this.input.split("\n");
 
     const line = this.storeLine || this.line;
@@ -59,8 +59,7 @@ export default class ParserService extends Lexer {
     report.push("");
     report.push("");
 
-    report.push(this.colorize(`message: ${msg}`, ColorCode.Orange));
-    report.push(this.displayLine(input, line, column));
+    report.push(this.displayLine(input, line, column, errorMessage));
 
     report.push("");
 
@@ -68,15 +67,16 @@ export default class ParserService extends Lexer {
     return report.join("\n");
   }
 
-  private displayLine(input: Array<string>, line: number, column: number) {
+  private displayLine(input: Array<string>, line: number, column: number, errorMessage: string) {
     let target = input[line - 1];
     let textContent1 = "";
-    if (column > 70) textContent1 += target.substring(column - 1 - 70, column - 1);
+    if (column > 50) textContent1 += target.substring(column - 1 - 40, column - 1);
     else textContent1 += target.substring(0, column - 1);
     let textContent2 = textContent1 + target.substring(column - 1, column - 1 + 30);
     const lineNumber = ` -- ${line} -- `;
-    const adjustSpace = " ".repeat(textContent1.length + lineNumber.length + 1);
-    textContent2 += "\n" + adjustSpace + this.colorize(`\`--- ${this.path}:${line}:${column}`, ColorCode.Orange);
+    const adjustSpace = " ".repeat(textContent1.length + lineNumber.length);
+    textContent2 += "\n" + adjustSpace + this.colorize(`^^^ ${errorMessage}`, ColorCode.Brown);
+    textContent2 += "\n" + adjustSpace + this.colorize(`   --  ${this.path}:${line}:${column}`, ColorCode.Brown);
     return this.colorize(lineNumber + textContent2, ColorCode.Blue);
   }
 

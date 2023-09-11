@@ -152,13 +152,15 @@ export default class Parser extends ParserService {
     if (left instanceof OpenScriptTag) {
       let view = "";
       const right = this.parseHTMLTextContent();
-      const errorMessage = `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`;
       if (right instanceof HTMLTextContent) {
         view = right.view;
-        this.expect(this.parseTag(), CloseScriptTag, errorMessage);
+        this.trackPosition();
+        const token = this.parseTag();
+        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` but received an \`${token.type}\` token`);
+        this.untrackPosition();
         return new HTMLScript(view);
       }
-      this.expect(right, CloseScriptTag, errorMessage);
+      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`);
       return new HTMLScript(view);
     }
     return left;
@@ -261,14 +263,18 @@ export default class Parser extends ParserService {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
+      this.trackPosition();
       const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
+      this.untrackPosition();
       return new Addition(left, right);
     }
     if (this.peekToken() instanceof Minus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
+      this.trackPosition();
       const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
+      this.untrackPosition();
       return new Substraction(left, right);
     }
     return left;
