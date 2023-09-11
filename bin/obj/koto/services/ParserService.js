@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Lexer_1 = __importDefault(require("../Lexer"));
+const Identifier_1 = __importDefault(require("../ast/expressions/Identifier"));
 var ColorCode;
 (function (ColorCode) {
     ColorCode["Red"] = "\u001B[31m";
@@ -47,6 +48,14 @@ class ParserService extends Lexer_1.default {
     untrackPosition() {
         this.storeLine = undefined;
         this.storeColumn = undefined;
+    }
+    matchKeyword(keyword) {
+        const token = this.peekToken();
+        if (token instanceof Identifier_1.default) {
+            if (token.view === keyword)
+                return this.getNextToken();
+        }
+        return false;
     }
     report(errorMessage) {
         const input = this.input.split("\n");

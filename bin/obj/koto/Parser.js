@@ -61,17 +61,13 @@ class Parser extends ParserService_1.default {
     parseProgram() {
         this.doNotExpect(this.peekToken(), EOF_1.default, "source file is empty");
         let expressions = new Array();
-        if (this.peekToken() instanceof Identifier_1.default) {
-            if (this.peekToken().view === "USING") {
-                this.getNextToken();
-                while (this.hasMoreTokens()) {
-                    expressions.push(this.parseImportStatement());
-                }
+        if (this.matchKeyword("USING")) {
+            while (this.hasMoreTokens()) {
+                expressions.push(this.parseImportStatement());
             }
         }
         if (this.peekToken() instanceof Identifier_1.default) {
-            if (this.peekToken().view === "DOCTYPE") {
-                this.getNextToken();
+            if (this.matchKeyword("DOCTYPE")) {
                 while (this.hasMoreTokens()) {
                     expressions.push(this.parseHTMLComponent());
                 }

@@ -1,6 +1,7 @@
 import SyntaxToken from "../ast/tokens/SyntaxToken";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
+import Identifier from "../ast/expressions/Identifier";
 
 enum ColorCode {
   Red = `\x1b[31m`,
@@ -46,6 +47,14 @@ export default class ParserService extends Lexer {
   protected untrackPosition() {
     this.storeLine = undefined;
     this.storeColumn = undefined;
+  }
+
+  protected matchKeyword(keyword: string) {
+    const token = this.peekToken();
+    if (token instanceof Identifier) {
+      if (token.view === keyword) return this.getNextToken();
+    }
+    return false;
   }
 
   protected report(errorMessage: string) {
