@@ -119,7 +119,7 @@ export default class Parser extends ParserService {
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
-        const right = this.parseHTMLTextContent();
+        const right = this.parseHTMLComponent();
         if (right instanceof HTMLComponent) {
           children.push(right);
           continue;

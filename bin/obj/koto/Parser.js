@@ -116,7 +116,7 @@ class Parser extends ParserService_1.default {
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
-                const right = this.parseHTMLTextContent();
+                const right = this.parseHTMLComponent();
                 if (right instanceof HTMLComponent_1.default) {
                     children.push(right);
                     continue;
@@ -126,6 +126,7 @@ class Parser extends ParserService_1.default {
                     this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
                 return new HTMLElement_1.default(left.tag, children);
             }
+            console.log(left);
             this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
