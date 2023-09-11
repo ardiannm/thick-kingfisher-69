@@ -1,4 +1,4 @@
 DOCTYPE
-<div>
-    <head>
-</div>
+<p>
+    <meta>
+</p>

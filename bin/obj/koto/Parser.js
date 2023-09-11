@@ -109,6 +109,8 @@ class Parser extends ParserService_1.default {
             this.throwError(`internal error found in \`${lastNameSpace}\` code base at \`./${path}\``);
         }
     }
+    // this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+    // this.throwError(`expecting a closing \`${left.tag}\` tag`);
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
@@ -116,14 +118,14 @@ class Parser extends ParserService_1.default {
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
-                    if (right.tag === left.tag)
-                        return new HTMLElement_1.default(left.tag, children);
-                    this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+                    if (left.tag !== right.tag)
+                        this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+                    return new HTMLElement_1.default(left.tag, children);
                 }
-                const component = this.expect(right, HTMLComponent_1.default, "token is not a valid html component");
-                children.push(component);
+                const comp = this.expect(right, HTMLComponent_1.default, "expecting HTMLComponent");
+                children.push(comp);
             }
-            this.throwError(`expecting a closing token for \`${left.tag}\` tag`);
+            this.throwError(`expecting a closing \`${left.tag}\` tag for component`);
         }
         return left;
     }
