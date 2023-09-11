@@ -10,6 +10,7 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
+const LenientComponent_1 = __importDefault(require("./ast/html/LenientComponent"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -52,6 +53,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
+const console_1 = require("console");
 const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends ParserService_1.default {
     parse() {
@@ -118,14 +120,23 @@ class Parser extends ParserService_1.default {
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
-                    if (left.tag !== right.tag)
-                        this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+                    if (left.tag !== right.tag) {
+                        if (lenientTags.includes(left.tag)) {
+                            const comp = new LenientComponent_1.default(left.tag, left.attributes);
+                            children.push(comp);
+                            (0, console_1.log)(right);
+                            this.expect(right, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag for component {2}`);
+                        }
+                        else {
+                            this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+                        }
+                    }
                     return new HTMLElement_1.default(left.tag, children);
                 }
                 const comp = this.expect(right, HTMLComponent_1.default, "expecting HTMLComponent");
                 children.push(comp);
             }
-            this.throwError(`expecting a closing \`${left.tag}\` tag for component`);
+            this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
         }
         return left;
     }

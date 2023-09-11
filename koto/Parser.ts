@@ -50,6 +50,7 @@ import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
+import { log } from "console";
 
 const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
@@ -121,13 +122,22 @@ export default class Parser extends ParserService {
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
-          if (left.tag !== right.tag) this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+          if (left.tag !== right.tag) {
+            if (lenientTags.includes(left.tag)) {
+              const comp = new LinientComponent(left.tag, left.attributes);
+              children.push(comp);
+              log(right)
+              this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag for component {2}`);
+            } else {
+              this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+            }
+          }
           return new HTMLElement(left.tag, children);
         }
         const comp = this.expect(right, HTMLComponent, "expecting HTMLComponent");
         children.push(comp);
       }
-      this.throwError(`expecting a closing \`${left.tag}\` tag for component`);
+      this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
     }
     return left;
   }
