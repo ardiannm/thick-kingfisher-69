@@ -9,7 +9,7 @@ const Slash_1 = __importDefault(require("./ast/operators/Slash"));
 const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
-const StandaloneComponent_1 = __importDefault(require("./ast/html/StandaloneComponent"));
+const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -52,7 +52,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
+const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -116,10 +116,9 @@ class Parser extends ParserService_1.default {
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
-                    if (right.tag !== left.tag && !AmbiguosTags.includes(right.tag)) {
-                        this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-                    }
-                    return new HTMLElement_1.default(left.tag, children);
+                    if (right.tag === left.tag)
+                        return new HTMLElement_1.default(left.tag, children);
+                    this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
                 }
                 const component = this.expect(right, HTMLComponent_1.default, "token is not a valid html component");
                 children.push(component);
@@ -184,14 +183,12 @@ class Parser extends ParserService_1.default {
         if (this.peekToken() instanceof Slash_1.default) {
             const token = this.getNextToken();
             this.expect(this.getNextToken(), GreaterThan_1.default, `expecting closing token \`>\` but matched \`${token.view}\` after tag name identifier \`${identifier.view}\``);
-            return new StandaloneComponent_1.default(identifier.view, attributes);
+            return new SelfClosingHTMLElement_1.default(identifier.view, attributes);
         }
         const token = this.getNextToken();
         this.expect(token, GreaterThan_1.default, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
         if (identifier.view === "script")
             return new OpenScriptTag_1.default();
-        if (AmbiguosTags.includes(identifier.view))
-            return new StandaloneComponent_1.default(identifier.view, attributes);
         return new OpenTag_1.default(identifier.view, attributes);
     }
     parseHTMLComment() {

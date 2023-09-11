@@ -4,8 +4,8 @@ import Slash from "./ast/operators/Slash";
 import Power from "./ast/operators/Power";
 import Identifier from "./ast/expressions/Identifier";
 import GreaterThan from "./ast/tokens/GreaterThan";
-import BackSlash from "./ast/tokens/BackSlash";
-import StandaloneComponent from "./ast/html/StandaloneComponent";
+import SelfClosingHTMLElement from "./ast/html/SelfClosingHTMLElement";
+import LinientComponent from "./ast/html/LenientComponent";
 import Equals from "./ast/tokens/Equals";
 import Minus from "./ast/operators/Minus";
 import EOF from "./ast/tokens/EOF";
@@ -118,10 +118,8 @@ export default class Parser extends ParserService {
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
-          if (right.tag !== left.tag && !lenientTags.includes(right.tag)) {
-            this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-          }
-          return new HTMLElement(left.tag, children);
+          if (right.tag === left.tag) return new HTMLElement(left.tag, children);
+          this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
         }
         const component = this.expect(right, HTMLComponent, "token is not a valid html component");
         children.push(component);
@@ -186,12 +184,11 @@ export default class Parser extends ParserService {
     if (this.peekToken() instanceof Slash) {
       const token = this.getNextToken() as Character;
       this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but matched \`${token.view}\` after tag name identifier \`${identifier.view}\``);
-      return new StandaloneComponent(identifier.view, attributes);
+      return new SelfClosingHTMLElement(identifier.view, attributes);
     }
     const token = this.getNextToken() as Character;
     this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag();
-    if (lenientTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
   }
 

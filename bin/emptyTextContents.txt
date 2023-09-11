@@ -1,15 +1,4 @@
 DOCTYPE
 <div>
-    <input />
-    <p></p>
-    <p>
-       Lorum ipsum
-    </p>
-    <h4></h4>
-    <app-root> WebApp </app-root>
-    <ng-component></ng-component>
-    <script>
-        Name
-    </script>
     <head>
 </div>
