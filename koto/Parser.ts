@@ -51,7 +51,7 @@ import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
 export default class Parser extends ParserService {
   public parse() {
@@ -118,8 +118,8 @@ export default class Parser extends ParserService {
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();
         if (right instanceof CloseTag) {
-          if (right.tag !== left.tag) {
-            this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+          if (right.tag !== left.tag && !lenientTags.includes(right.tag)) {
+            this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
           }
           return new HTMLElement(left.tag, children);
         }
@@ -191,7 +191,7 @@ export default class Parser extends ParserService {
     const token = this.getNextToken() as Character;
     this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag();
-    if (AmbiguosTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
+    if (lenientTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
   }
 

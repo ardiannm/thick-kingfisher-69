@@ -52,7 +52,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -116,8 +116,8 @@ class Parser extends ParserService_1.default {
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
-                    if (right.tag !== left.tag) {
-                        this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+                    if (right.tag !== left.tag && !AmbiguosTags.includes(right.tag)) {
+                        this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
                     }
                     return new HTMLElement_1.default(left.tag, children);
                 }
