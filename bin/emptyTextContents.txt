@@ -6,4 +6,3 @@ DOCTYPE
     <head xlmns:header-tag="w">
     <head prop:prop="v"></head>
     <script> jsScript </script>
-</p>

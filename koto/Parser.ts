@@ -61,23 +61,26 @@ export default class Parser extends ParserService {
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     let expressions = new Array<Expression>();
-    while (this.hasMoreTokens()) {
-      if ((this.peekToken() as Identifier).view === "DOCTYPE") {
-        this.getNextToken();
-        expressions = [...expressions, ...this.parseHTML()];
-      }
+    if (this.peekToken() instanceof Identifier) {
       if ((this.peekToken() as Identifier).view === "USING") {
         this.getNextToken();
-        expressions = [...expressions, ...this.parseImportStatements()];
-      } else {
-        const expression = this.parseTerm();
-        expressions.push(expression);
+        while (this.hasMoreTokens()) {
+          expressions.push(this.parseImportStatement());
+        }
+      }
+    }
+    if (this.peekToken() instanceof Identifier) {
+      if ((this.peekToken() as Identifier).view === "DOCTYPE") {
+        this.getNextToken();
+        while (this.hasMoreTokens()) {
+          expressions.push(this.parseHTMLComponent());
+        }
       }
     }
     return new Program(expressions);
   }
 
-  private ImportStatement() {
+  private parseImportStatement() {
     const errorMessage = "expecting a namespace identifier for module import";
     const token = this.expect(this.getNextToken(), Identifier, errorMessage);
     let nameSpace = token.view;
@@ -108,22 +111,6 @@ export default class Parser extends ParserService {
     }
   }
 
-  private parseImportStatements() {
-    const expressions = new Array<ImportStatement>();
-    while (this.hasMoreTokens()) {
-      expressions.push(this.ImportStatement());
-    }
-    return expressions;
-  }
-
-  private parseHTML() {
-    const expressions = new Array<HTMLComponent>();
-    while (this.hasMoreTokens()) {
-      expressions.push(this.parseHTMLComponent());
-    }
-    return expressions;
-  }
-
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     const pointer = this.pointer;
@@ -137,7 +124,7 @@ export default class Parser extends ParserService {
           children.push(token);
           continue;
         }
-        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag {1}`);
+        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag`);
         if (left.tag !== right.tag) {
           if (lenientTags.includes(left.tag)) {
             this.pointer = pointer;
@@ -150,7 +137,7 @@ export default class Parser extends ParserService {
         return new HTMLElement(left.tag, left.attributes, children);
       }
       if (lenientTags.includes(left.tag)) return new LenientComponent(left.tag, left.attributes);
-      this.throwError(`expecting a closing \`${left.tag}\` tag {2}`);
+      this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;
   }

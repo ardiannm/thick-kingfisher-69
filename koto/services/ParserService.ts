@@ -75,7 +75,7 @@ export default class ParserService extends Lexer {
     else textContent += target.substring(0, column - 1);
     const lineNumber = `-- ${line} -- `;
     const space = " ".repeat(textContent.length + lineNumber.length);
-    const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ ./${this.path}:${line}:${column}`;
+    const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
     const format = this.colorize(lineNumber, ColorCode.Yellow, ColorCode.Blue) + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Yellow);
     return this.colorize(format, ColorCode.Blue);
   }
