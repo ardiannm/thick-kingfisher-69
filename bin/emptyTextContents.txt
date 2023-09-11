@@ -1,2 +1,2 @@
 DOCTYPE
-<p>Name<input></p>
+<p>Name<input>

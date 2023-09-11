@@ -10,6 +10,7 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
+const LenientComponent_1 = __importDefault(require("./ast/html/LenientComponent"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -113,6 +114,7 @@ class Parser extends ParserService_1.default {
     // this.throwError(`expecting a closing \`${left.tag}\` tag`);
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
+        const from = this.pointer;
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
@@ -122,11 +124,17 @@ class Parser extends ParserService_1.default {
                     continue;
                 }
                 const closing = this.expect(right, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
-                if (left.tag !== closing.tag)
+                if (left.tag !== closing.tag) {
+                    if (lenientTags.includes(left.tag)) {
+                        this.pointer = from;
+                        return new LenientComponent_1.default(left.tag, left.attributes);
+                    }
                     this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
+                }
                 return new HTMLElement_1.default(left.tag, children);
             }
-            console.log(left);
+            if (lenientTags.includes(left.tag))
+                return left;
             this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;

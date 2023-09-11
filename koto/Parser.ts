@@ -116,6 +116,7 @@ export default class Parser extends ParserService {
 
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
+    const from = this.pointer;
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
@@ -124,10 +125,17 @@ export default class Parser extends ParserService {
           children.push(right);
           continue;
         }
-        const closing = this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
-        if (left.tag !== closing.tag) this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
+        const rightClose = this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
+        if (left.tag !== rightClose.tag) {
+          if (lenientTags.includes(left.tag)) {
+            this.pointer = from;
+            return new LinientComponent(left.tag, left.attributes);
+          }
+          this.throwError(`\`${rightClose.tag}\` is not a match for \`${left.tag}\` tag`);
+        }
         return new HTMLElement(left.tag, children);
       }
+      if (lenientTags.includes(left.tag)) return left;
       this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;
