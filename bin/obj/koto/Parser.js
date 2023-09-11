@@ -104,7 +104,7 @@ class Parser extends ParserService_1.default {
         }
         catch (error) {
             console.log(error);
-            this.throwError(`internal error found in \`${lastNameSpace}\` code base at \`./${path}\``);
+            this.throwError(`internal error found in \`${lastNameSpace}\` module, with file path \`./${path}\``);
         }
     }
     parseHTMLComponent() {
@@ -232,15 +232,16 @@ class Parser extends ParserService_1.default {
         return left;
     }
     parseTagIdentifier() {
-        const identifier = this.expect(this.getNextToken(), Identifier_1.default, "expecting leading identifier for html tag name");
+        const left = this.getNextToken();
+        const identifier = this.expect(left, Identifier_1.default, `expecting an identifier but matched \`${left.view}\` for tag name`);
         let view = identifier.view;
         this.considerSpace();
         while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default) {
-            const token = this.getNextToken();
-            if (token instanceof Minus_1.default && !(this.peekToken() instanceof Identifier_1.default) && !(this.peekToken() instanceof Number_1.default)) {
+            const right = this.getNextToken();
+            if (right instanceof Minus_1.default && !(this.peekToken() instanceof Identifier_1.default) && !(this.peekToken() instanceof Number_1.default)) {
                 this.throwError("expecting an ending number or identifier for the name tag");
             }
-            view += token.view;
+            view += right.view;
         }
         this.ignoreSpace();
         return new Identifier_1.default(view);

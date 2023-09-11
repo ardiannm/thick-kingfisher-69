@@ -103,7 +103,7 @@ export default class Parser extends ParserService {
       return new ImportStatement(nameSpace, program);
     } catch (error) {
       console.log(error);
-      this.throwError(`internal error found in \`${lastNameSpace}\` code base at \`./${path}\``);
+      this.throwError(`internal error found in \`${lastNameSpace}\` module, with file path \`./${path}\``);
     }
   }
 
@@ -232,15 +232,16 @@ export default class Parser extends ParserService {
   }
 
   private parseTagIdentifier() {
-    const identifier = this.expect(this.getNextToken(), Identifier, "expecting leading identifier for html tag name");
+    const left = this.getNextToken() as Character;
+    const identifier = this.expect(left, Identifier, `expecting an identifier but matched \`${left.view}\` for tag name`);
     let view = identifier.view;
     this.considerSpace();
     while (this.peekToken() instanceof Identifier || this.peekToken() instanceof Minus || this.peekToken() instanceof Number) {
-      const token = this.getNextToken() as Identifier | Minus | Number;
-      if (token instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
+      const right = this.getNextToken() as Identifier | Minus | Number;
+      if (right instanceof Minus && !(this.peekToken() instanceof Identifier) && !(this.peekToken() instanceof Number)) {
         this.throwError("expecting an ending number or identifier for the name tag");
       }
-      view += token.view;
+      view += right.view;
     }
     this.ignoreSpace();
     return new Identifier(view);
