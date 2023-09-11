@@ -85,9 +85,9 @@ class Parser extends ParserService_1.default {
             this.getNextToken();
             nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
-        this.markPosition();
+        this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
-        this.unmarkPosition();
+        this.untrackPosition();
         const path = nameSpace.replace(/\./g, "/") + ".txt";
         let sourceCode = "";
         try {
@@ -97,24 +97,24 @@ class Parser extends ParserService_1.default {
             this.throwError(`namespace \`${nameSpace}\` does not exist`);
         }
         try {
+            this.trackPosition();
             const program = new Parser(sourceCode, path).parse();
+            this.untrackPosition();
             return new Import_1.default(nameSpace, program);
         }
         catch (error) {
             console.log(error);
-            this.throwError(`internal code base error found in \`${nameSpace}\``);
+            this.throwError(`internal error found in \`${nameSpace}\` code base`);
         }
     }
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
-            const pos = this.writePath();
             const children = new Array();
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
                     if (right.tag !== left.tag) {
-                        console.log("////", pos);
                         this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
                     }
                     return new HTMLElement_1.default(left.tag, children);
@@ -193,7 +193,7 @@ class Parser extends ParserService_1.default {
     parseHTMLComment() {
         const left = this.expect(this.getNextToken(), LessThan_1.default, "expecting `<` for an html tag");
         if (this.peekToken() instanceof ExclamationMark_1.default) {
-            this.markPosition();
+            this.trackPosition();
             this.expect(this.getNextToken(), ExclamationMark_1.default, "expecting `!` for a comment");
             const errorMessage = "expecting `--` after `!` for a comment";
             this.expect(this.getNextToken(), Minus_1.default, errorMessage);
@@ -208,7 +208,7 @@ class Parser extends ParserService_1.default {
                     if (token instanceof Minus_1.default) {
                         this.getNextToken();
                         this.expect(this.getNextToken(), GreaterThan_1.default, "expecting `>` for comment");
-                        this.unmarkPosition();
+                        this.untrackPosition();
                         return new HTMLComment_1.default(view);
                     }
                     this.pointer = keep;
@@ -373,7 +373,7 @@ class Parser extends ParserService_1.default {
                     left = new SpreadsheetCell_1.default("", left.view);
                 if (left instanceof Identifier_1.default)
                     left = new SpreadsheetCell_1.default(left.view, "");
-                this.markPosition();
+                this.trackPosition();
                 let right = this.parseCell();
                 this.doNotExpect(right, EOF_1.default, "oops! missing the right hand side for range expression");
                 if (!(right instanceof SpreadsheetCell_1.default || right instanceof Identifier_1.default || right instanceof Number_1.default)) {
@@ -383,7 +383,7 @@ class Parser extends ParserService_1.default {
                     right = new SpreadsheetCell_1.default("", right.view);
                 if (right instanceof Identifier_1.default)
                     right = new SpreadsheetCell_1.default(right.view, "");
-                this.unmarkPosition();
+                this.untrackPosition();
                 this.ignoreSpace();
                 return new SpreadsheetRange_1.default(left, right);
             }

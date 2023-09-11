@@ -99,11 +99,13 @@ export default class Parser extends ParserService {
       this.throwError(`namespace \`${nameSpace}\` does not exist`);
     }
     try {
+      this.trackPosition();
       const program = new Parser(sourceCode, path).parse();
+      this.untrackPosition();
       return new Import(nameSpace, program);
     } catch (error) {
       console.log(error);
-      this.throwError(`internal code base error found in \`${nameSpace}\``);
+      this.throwError(`internal error found in \`${nameSpace}\` code base`);
     }
   }
 

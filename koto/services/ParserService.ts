@@ -3,10 +3,12 @@ import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 
 enum ColorCode {
-  redColor = `\x1b[31m`,
-  greenColor = `\x1b[32m`,
-  blueColor = `\x1b[34m`,
-  resetColor = `\x1b[0m`,
+  Red = `\x1b[31m`,
+  Blue = `\x1b[38;2;86;156;214m`,
+  White = `\x1b[0m`,
+  Green = `\x1b[38;2;78;201;176m`,
+  Orange = `\x1b[38;2;215;186;125m`,
+  Brown = `\x1b[38;2;206;145;120m`,
 }
 
 export default class ParserService extends Lexer {
@@ -36,37 +38,6 @@ export default class ParserService extends Lexer {
     throw this.report(message);
   }
 
-  protected report(msg: string) {
-    const input = this.input.split("\n");
-
-    const n = this.storeLine || this.line;
-    const m = this.storeColumn || this.column;
-
-    const report = new Array<string>();
-
-    report.push("");
-    report.push("");
-
-    report.push(this.displayLine(input, n, m));
-
-    report.push("");
-    report.push(`error: ${msg}`);
-    report.push(` -- ${this.path}:${n}:${m}`);
-    report.push("");
-
-    this.storeColumn = undefined;
-    return report.join("\n");
-  }
-
-  private formatNumber(num: number, offset: number) {
-    const numString = num.toString();
-    return " ".repeat(offset.toString().length - numString.length) + numString;
-  }
-
-  private colorize(text: string, startColor = ColorCode.blueColor, endColor = ColorCode.resetColor) {
-    return `${startColor}${text} ${endColor}`;
-  }
-
   protected trackPosition() {
     this.storeLine = this.line;
     this.storeColumn = this.column;
@@ -77,15 +48,39 @@ export default class ParserService extends Lexer {
     this.storeColumn = undefined;
   }
 
-  private displayLine(input: Array<string>, n: number, m: number) {
-    const line = n - 1;
-    const column = m - 1;
-    let target = input[line];
-    let part1 = "";
-    if (m > 100) part1 = this.colorize("// ", ColorCode.redColor, ColorCode.blueColor) + target.substring(column - 100, column);
-    else part1 = target.substring(0, column);
-    const lineNumber = `${this.formatNumber(line + 1, line + 3)}   `;
-    let format = lineNumber + part1 + this.colorize("//", ColorCode.redColor, ColorCode.blueColor) + target.substring(column, column + 20);
-    return this.colorize(format);
+  protected report(msg: string) {
+    const input = this.input.split("\n");
+
+    const line = this.storeLine || this.line;
+    const column = this.storeColumn || this.column;
+
+    const report = new Array<string>();
+
+    report.push("");
+    report.push("");
+
+    report.push(this.colorize(`message: ${msg}`, ColorCode.Orange));
+    report.push(this.displayLine(input, line, column));
+
+    report.push("");
+
+    this.storeColumn = undefined;
+    return report.join("\n");
+  }
+
+  private displayLine(input: Array<string>, line: number, column: number) {
+    let target = input[line - 1];
+    let textContent1 = "";
+    if (column > 70) textContent1 += target.substring(column - 1 - 70, column - 1);
+    else textContent1 += target.substring(0, column - 1);
+    let textContent2 = textContent1 + target.substring(column - 1, column - 1 + 30);
+    const lineNumber = ` -- ${line} -- `;
+    const adjustSpace = " ".repeat(textContent1.length + lineNumber.length + 1);
+    textContent2 += "\n" + adjustSpace + this.colorize(`\`--- ${this.path}:${line}:${column}`, ColorCode.Orange);
+    return this.colorize(lineNumber + textContent2, ColorCode.Blue);
+  }
+
+  private colorize(text: string, startColor: ColorCode, endColor = ColorCode.White) {
+    return `${startColor}${text} ${endColor}`;
   }
 }
