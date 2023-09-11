@@ -120,18 +120,18 @@ export default class Parser extends ParserService {
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
-        const right = this.parseHTMLComponent();
-        if (right instanceof HTMLComponent) {
-          children.push(right);
+        const token = this.parseHTMLComponent();
+        if (token instanceof HTMLComponent) {
+          children.push(token);
           continue;
         }
-        const rightClose = this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
-        if (left.tag !== rightClose.tag) {
+        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${token.type}\``);
+        if (left.tag !== right.tag) {
           if (lenientTags.includes(left.tag)) {
             this.pointer = from;
             return new LinientComponent(left.tag, left.attributes);
           }
-          this.throwError(`\`${rightClose.tag}\` is not a match for \`${left.tag}\` tag`);
+          this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
         }
         return new HTMLElement(left.tag, children);
       }
@@ -139,31 +139,6 @@ export default class Parser extends ParserService {
       this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;
-    // const left = this.parseHTMLTextContent();
-    // if (left instanceof OpenTag) {
-    //   const children = new Array<HTMLComponent>();
-    //   while (this.hasMoreTokens()) {
-    //     const from = this.pointer;
-    //     const right = this.parseHTMLComponent();
-    //     if (right instanceof CloseTag) {
-    //       if (left.tag !== right.tag) {
-    //         if (lenientTags.includes(left.tag)) {
-    //           const comp = new LinientComponent(left.tag, left.attributes);
-    //           children.push(comp);
-    //           this.pointer = from;
-    //         } else {
-    //           this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-    //         }
-    //       }
-    //       return new HTMLElement(left.tag, children);
-    //     }
-    //     const comp = this.expect(right, HTMLComponent, `expecting \`HTMLComponent\` but matched \`${right.type}\``);
-    //     children.push(comp);
-    //   }
-    //   // if (lenientTags.includes(left.tag)) return new LinientComponent(left.tag, left.attributes);
-    //   this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
-    // }
-    // return left;
   }
 
   private parseHTMLTextContent() {

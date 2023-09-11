@@ -118,18 +118,18 @@ class Parser extends ParserService_1.default {
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
-                const right = this.parseHTMLComponent();
-                if (right instanceof HTMLComponent_1.default) {
-                    children.push(right);
+                const token = this.parseHTMLComponent();
+                if (token instanceof HTMLComponent_1.default) {
+                    children.push(token);
                     continue;
                 }
-                const closing = this.expect(right, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
-                if (left.tag !== closing.tag) {
+                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag but mached \`${token.type}\``);
+                if (left.tag !== right.tag) {
                     if (lenientTags.includes(left.tag)) {
                         this.pointer = from;
                         return new LenientComponent_1.default(left.tag, left.attributes);
                     }
-                    this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
+                    this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
                 }
                 return new HTMLElement_1.default(left.tag, children);
             }
@@ -138,31 +138,6 @@ class Parser extends ParserService_1.default {
             this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
-        // const left = this.parseHTMLTextContent();
-        // if (left instanceof OpenTag) {
-        //   const children = new Array<HTMLComponent>();
-        //   while (this.hasMoreTokens()) {
-        //     const from = this.pointer;
-        //     const right = this.parseHTMLComponent();
-        //     if (right instanceof CloseTag) {
-        //       if (left.tag !== right.tag) {
-        //         if (lenientTags.includes(left.tag)) {
-        //           const comp = new LinientComponent(left.tag, left.attributes);
-        //           children.push(comp);
-        //           this.pointer = from;
-        //         } else {
-        //           this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-        //         }
-        //       }
-        //       return new HTMLElement(left.tag, children);
-        //     }
-        //     const comp = this.expect(right, HTMLComponent, `expecting \`HTMLComponent\` but matched \`${right.type}\``);
-        //     children.push(comp);
-        //   }
-        //   // if (lenientTags.includes(left.tag)) return new LinientComponent(left.tag, left.attributes);
-        //   this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
-        // }
-        // return left;
     }
     parseHTMLTextContent() {
         let view = "";
