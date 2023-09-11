@@ -153,11 +153,11 @@ class Parser extends ParserService_1.default {
                 view = right.view;
                 this.trackPosition();
                 const token = this.parseTag();
-                this.expect(token, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received an \`${token.type}\` token`);
+                this.expect(token, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received \`${token.type}\` token`);
                 this.untrackPosition();
                 return new HTMLScript_1.default(view);
             }
-            this.expect(right, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received an \`${right.type}\` token`);
+            this.expect(right, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but received \`${right.type}\` token`);
             return new HTMLScript_1.default(view);
         }
         return left;
@@ -255,40 +255,32 @@ class Parser extends ParserService_1.default {
     }
     parseTerm() {
         const left = this.parseFactor();
-        if (this.peekToken() instanceof Plus_1.default) {
+        const token = this.peekToken();
+        if (token instanceof Plus_1.default || token instanceof Minus_1.default) {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
             this.trackPosition();
             const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
             this.untrackPosition();
-            return new Addition_1.default(left, right);
-        }
-        if (this.peekToken() instanceof Minus_1.default) {
-            this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
-            this.getNextToken();
-            this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
-            this.trackPosition();
-            const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
-            this.untrackPosition();
+            if (token instanceof Plus_1.default)
+                return new Addition_1.default(left, right);
             return new Substraction_1.default(left, right);
         }
         return left;
     }
     parseFactor() {
         const left = this.parseExponent();
-        if (this.peekToken() instanceof Product_1.default) {
+        const token = this.peekToken();
+        if (token instanceof Product_1.default || token instanceof Slash_1.default) {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
+            this.trackPosition();
             const right = this.expect(this.parseFactor(), Expression_1.default, "invalid right hand side in binary expression");
-            return new Multiplication_1.default(left, right);
-        }
-        if (this.peekToken() instanceof Slash_1.default) {
-            this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
-            this.getNextToken();
-            this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
-            const right = this.expect(this.parseFactor(), Expression_1.default, "invalid right hand side in binary expression");
+            this.untrackPosition();
+            if (token instanceof Product_1.default)
+                return new Multiplication_1.default(left, right);
             return new Division_1.default(left, right);
         }
         return left;

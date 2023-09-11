@@ -69,15 +69,14 @@ export default class ParserService extends Lexer {
 
   private displayLine(input: Array<string>, line: number, column: number, errorMessage: string) {
     let target = input[line - 1];
-    let textContent1 = "";
-    if (column > 50) textContent1 += target.substring(column - 1 - 40, column - 1);
-    else textContent1 += target.substring(0, column - 1);
-    let textContent2 = textContent1 + target.substring(column - 1, column - 1 + 30);
-    const lineNumber = ` -- ${line} -- `;
-    const adjustSpace = " ".repeat(textContent1.length + lineNumber.length);
-    textContent2 += "\n" + adjustSpace + this.colorize(`^^^ ${errorMessage}`, ColorCode.Brown);
-    textContent2 += "\n" + adjustSpace + this.colorize(`   --  ${this.path}:${line}:${column}`, ColorCode.Brown);
-    return this.colorize(lineNumber + textContent2, ColorCode.Blue);
+    let textContent = "";
+    if (column > 50) textContent += target.substring(column - 1 - 40, column - 1);
+    else textContent += target.substring(0, column - 1);
+    const lineNumber = ` - ${line} - `;
+    const space = " ".repeat(textContent.length + lineNumber.length);
+    const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ ./${this.path}:${line}:${column}`;
+    const format = lineNumber + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Orange);
+    return this.colorize(format, ColorCode.Blue);
   }
 
   private colorize(text: string, startColor: ColorCode, endColor = ColorCode.White) {
