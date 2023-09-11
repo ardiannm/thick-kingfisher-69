@@ -69,6 +69,7 @@ export default class ParserService extends Lexer {
 
   private displayLine(input: Array<string>, line: number, column: number, errorMessage: string) {
     let target = input[line - 1];
+
     let textContent = "";
     if (column > 50) textContent += target.substring(column - 1 - 40, column - 1);
     else textContent += target.substring(0, column - 1);
