@@ -137,7 +137,7 @@ export default class Parser extends ParserService {
           children.push(token);
           continue;
         }
-        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag`);
+        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag {1}`);
         if (left.tag !== right.tag) {
           if (lenientTags.includes(left.tag)) {
             this.pointer = pointer;
@@ -149,8 +149,8 @@ export default class Parser extends ParserService {
         }
         return new HTMLElement(left.tag, left.attributes, children);
       }
-      if (lenientTags.includes(left.tag)) return left;
-      this.throwError(`expecting a closing \`${left.tag}\` tag`);
+      if (lenientTags.includes(left.tag)) return new LenientComponent(left.tag, left.attributes);
+      this.throwError(`expecting a closing \`${left.tag}\` tag {2}`);
     }
     return left;
   }

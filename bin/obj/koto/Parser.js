@@ -136,21 +136,15 @@ class Parser extends ParserService_1.default {
                     children.push(token);
                     continue;
                 }
-                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag`);
+                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag {1}`);
                 if (left.tag !== right.tag) {
-                    if (lenientTags.includes(left.tag)) {
-                        this.pointer = pointer;
-                        this.line = line;
-                        this.column = column;
-                        return new LenientComponent_1.default(left.tag, left.attributes);
-                    }
                     this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
                 }
                 return new HTMLElement_1.default(left.tag, left.attributes, children);
             }
             if (lenientTags.includes(left.tag))
-                return left;
-            this.throwError(`expecting a closing \`${left.tag}\` tag`);
+                return new LenientComponent_1.default(left.tag, left.attributes);
+            this.throwError(`expecting a closing \`${left.tag}\` tag {2}`);
         }
         return left;
     }
