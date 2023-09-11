@@ -47,19 +47,28 @@ class ParserService extends Lexer_1.default {
         report.push("");
         report.push("");
         if (input[n - 3] !== undefined)
-            report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
+            report.push(`${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
         if (input[n - 2] !== undefined)
-            report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
-        const line = `${this.colorize("-", ColorCode.redColor, ColorCode.blueColor)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
+            report.push(`${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
+        const line = n - 1;
+        const column = m - 1;
+        let target = input[line];
+        let part1 = "";
+        if (m > 100) {
+            part1 = this.colorize("// ", ColorCode.redColor, ColorCode.blueColor) + target.substring(column - 100, column);
+        }
+        else {
+            part1 = target.substring(0, column);
+        }
+        const part2 = target.substring(column, column + 20);
+        const lineNumber = `${this.formatNumber(n + 0, n + 2)}   `;
+        let format = lineNumber + part1 + this.colorize("//", ColorCode.redColor, ColorCode.blueColor) + part2;
         if (input[n - 1] !== undefined)
-            report.push(this.colorize(line));
-        const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}${this.colorize("^", ColorCode.redColor)}`;
-        if (input[n - 1] !== undefined)
-            report.push(this.colorize(cursor));
+            report.push(this.colorize(format));
         if (input[n - 0] !== undefined)
-            report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
+            report.push(`${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
         if (input[n + 1] !== undefined)
-            report.push(`  ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
+            report.push(`${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
         report.push("");
         report.push(`error: ${msg}`);
         report.push(` -- ${this.path}:${n}:${m}`);
@@ -72,7 +81,7 @@ class ParserService extends Lexer_1.default {
         return " ".repeat(offset.toString().length - numString.length) + numString;
     }
     colorize(text, startColor = ColorCode.blueColor, endColor = ColorCode.resetColor) {
-        return `${startColor}${text}${endColor}`;
+        return `${startColor}${text} ${endColor}`;
     }
     markPosition() {
         this.storeLine = this.line;

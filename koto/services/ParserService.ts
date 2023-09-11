@@ -47,20 +47,31 @@ export default class ParserService extends Lexer {
     report.push("");
     report.push("");
     report.push("");
-    
-    if (input[n - 3] !== undefined) report.push(`  ${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
-    if (input[n - 2] !== undefined) report.push(`  ${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
-    const line = `${this.colorize("-", ColorCode.redColor, ColorCode.blueColor)} ${this.formatNumber(n + 0, n + 2)}   ${input[n - 1]}`;
-    
-    if (input[n - 1] !== undefined) report.push(this.colorize(line));
+    if (input[n - 3] !== undefined) report.push(`${this.formatNumber(n - 2, n + 2)}   ${input[n - 3]}`);
+    if (input[n - 2] !== undefined) report.push(`${this.formatNumber(n - 1, n + 2)}   ${input[n - 2]}`);
 
-    const cursor = `  ${this.formatNumber(n + 0, n + 2).replace(/.+/g, " ")}   ${" ".repeat(m - 1)}${this.colorize("^", ColorCode.redColor)}`;
-    
-    if (input[n - 1] !== undefined) report.push(this.colorize(cursor));
-    if (input[n - 0] !== undefined) report.push(`  ${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
-    if (input[n + 1] !== undefined) report.push(`  ${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
-    
+    const line = n - 1;
+    const column = m - 1;
+
+    let target = input[line];
+    let part1 = "";
+
+    if (m > 100) {
+      part1 = this.colorize("// ", ColorCode.redColor, ColorCode.blueColor) + target.substring(column - 100, column);
+    } else {
+      part1 = target.substring(0, column);
+    }
+
+    const part2 = target.substring(column, column + 20);
+
+    const lineNumber = `${this.formatNumber(n + 0, n + 2)}   `;
+    let format = lineNumber + part1 + this.colorize("//", ColorCode.redColor, ColorCode.blueColor) + part2;
+
+    if (input[n - 1] !== undefined) report.push(this.colorize(format));
+    if (input[n - 0] !== undefined) report.push(`${this.formatNumber(n + 1, n + 2)}   ${input[n - 0]}`);
+    if (input[n + 1] !== undefined) report.push(`${this.formatNumber(n + 2, n + 2)}   ${input[n + 1]}`);
+
     report.push("");
     report.push(`error: ${msg}`);
     report.push(` -- ${this.path}:${n}:${m}`);
@@ -76,7 +87,7 @@ export default class ParserService extends Lexer {
   }
 
   private colorize(text: string, startColor = ColorCode.blueColor, endColor = ColorCode.resetColor) {
-    return `${startColor}${text}${endColor}`;
+    return `${startColor}${text} ${endColor}`;
   }
 
   protected markPosition() {
