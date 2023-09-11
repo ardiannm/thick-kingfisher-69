@@ -50,7 +50,6 @@ import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
-import { log } from "console";
 
 const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 
@@ -120,26 +119,43 @@ export default class Parser extends ParserService {
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
-        const right = this.parseHTMLComponent();
-        if (right instanceof CloseTag) {
-          if (left.tag !== right.tag) {
-            if (lenientTags.includes(left.tag)) {
-              const comp = new LinientComponent(left.tag, left.attributes);
-              children.push(comp);
-              log(right)
-              this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag for component {2}`);
-            } else {
-              this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-            }
-          }
-          return new HTMLElement(left.tag, children);
+        const right = this.parseHTMLTextContent();
+        if (right instanceof HTMLComponent) {
+          children.push(right);
+          continue;
         }
-        const comp = this.expect(right, HTMLComponent, "expecting HTMLComponent");
-        children.push(comp);
+        const closing = this.expect(right, CloseTag, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
+        if (left.tag !== closing.tag) this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
+        return new HTMLElement(left.tag, children);
       }
-      this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
+      this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;
+    // const left = this.parseHTMLTextContent();
+    // if (left instanceof OpenTag) {
+    //   const children = new Array<HTMLComponent>();
+    //   while (this.hasMoreTokens()) {
+    //     const from = this.pointer;
+    //     const right = this.parseHTMLComponent();
+    //     if (right instanceof CloseTag) {
+    //       if (left.tag !== right.tag) {
+    //         if (lenientTags.includes(left.tag)) {
+    //           const comp = new LinientComponent(left.tag, left.attributes);
+    //           children.push(comp);
+    //           this.pointer = from;
+    //         } else {
+    //           this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+    //         }
+    //       }
+    //       return new HTMLElement(left.tag, children);
+    //     }
+    //     const comp = this.expect(right, HTMLComponent, `expecting \`HTMLComponent\` but matched \`${right.type}\``);
+    //     children.push(comp);
+    //   }
+    //   // if (lenientTags.includes(left.tag)) return new LinientComponent(left.tag, left.attributes);
+    //   this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
+    // }
+    // return left;
   }
 
   private parseHTMLTextContent() {

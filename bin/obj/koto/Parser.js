@@ -10,7 +10,6 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
-const LenientComponent_1 = __importDefault(require("./ast/html/LenientComponent"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -53,7 +52,6 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const console_1 = require("console");
 const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
 class Parser extends ParserService_1.default {
     parse() {
@@ -118,27 +116,44 @@ class Parser extends ParserService_1.default {
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
-                const right = this.parseHTMLComponent();
-                if (right instanceof CloseTag_1.default) {
-                    if (left.tag !== right.tag) {
-                        if (lenientTags.includes(left.tag)) {
-                            const comp = new LenientComponent_1.default(left.tag, left.attributes);
-                            children.push(comp);
-                            (0, console_1.log)(right);
-                            this.expect(right, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag for component {2}`);
-                        }
-                        else {
-                            this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
-                        }
-                    }
-                    return new HTMLElement_1.default(left.tag, children);
+                const right = this.parseHTMLTextContent();
+                if (right instanceof HTMLComponent_1.default) {
+                    children.push(right);
+                    continue;
                 }
-                const comp = this.expect(right, HTMLComponent_1.default, "expecting HTMLComponent");
-                children.push(comp);
+                const closing = this.expect(right, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag but mached \`${right.type}\``);
+                if (left.tag !== closing.tag)
+                    this.throwError(`\`${closing.tag}\` is not a match for \`${left.tag}\` tag`);
+                return new HTMLElement_1.default(left.tag, children);
             }
-            this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
+            this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
+        // const left = this.parseHTMLTextContent();
+        // if (left instanceof OpenTag) {
+        //   const children = new Array<HTMLComponent>();
+        //   while (this.hasMoreTokens()) {
+        //     const from = this.pointer;
+        //     const right = this.parseHTMLComponent();
+        //     if (right instanceof CloseTag) {
+        //       if (left.tag !== right.tag) {
+        //         if (lenientTags.includes(left.tag)) {
+        //           const comp = new LinientComponent(left.tag, left.attributes);
+        //           children.push(comp);
+        //           this.pointer = from;
+        //         } else {
+        //           this.throwError(`mismatching \`${right.tag}\` found for the \`${left.tag}\` tag`);
+        //         }
+        //       }
+        //       return new HTMLElement(left.tag, children);
+        //     }
+        //     const comp = this.expect(right, HTMLComponent, `expecting \`HTMLComponent\` but matched \`${right.type}\``);
+        //     children.push(comp);
+        //   }
+        //   // if (lenientTags.includes(left.tag)) return new LinientComponent(left.tag, left.attributes);
+        //   this.throwError(`expecting a closing \`${left.tag}\` tag for component {1}`);
+        // }
+        // return left;
     }
     parseHTMLTextContent() {
         let view = "";
