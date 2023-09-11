@@ -10,7 +10,7 @@ var ColorCode;
     ColorCode["Blue"] = "\u001B[38;2;86;156;214m";
     ColorCode["White"] = "\u001B[0m";
     ColorCode["Green"] = "\u001B[38;2;78;201;176m";
-    ColorCode["Orange"] = "\u001B[38;2;215;186;125m";
+    ColorCode["Yellow"] = "\u001B[38;2;215;186;125m";
     ColorCode["Brown"] = "\u001B[38;2;206;145;120m";
 })(ColorCode || (ColorCode = {}));
 class ParserService extends Lexer_1.default {
@@ -67,14 +67,14 @@ class ParserService extends Lexer_1.default {
             textContent += target.substring(column - 1 - 40, column - 1);
         else
             textContent += target.substring(0, column - 1);
-        const lineNumber = ` - ${line} - `;
+        const lineNumber = `-- ${line} -- `;
         const space = " ".repeat(textContent.length + lineNumber.length);
-        const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ ./${this.path}:${line}:${column}`;
-        const format = lineNumber + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Orange);
+        const description = "\n".repeat(1) + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ ./${this.path}:${line}:${column}`;
+        const format = this.colorize(lineNumber, ColorCode.Yellow, ColorCode.Blue) + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Yellow);
         return this.colorize(format, ColorCode.Blue);
     }
     colorize(text, startColor, endColor = ColorCode.White) {
-        return `${startColor}${text} ${endColor}`;
+        return `${startColor}${text}${endColor}`;
     }
 }
 exports.default = ParserService;

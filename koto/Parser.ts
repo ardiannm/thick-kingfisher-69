@@ -93,10 +93,12 @@ export default class Parser extends ParserService {
     this.untrackPosition();
     const path = nameSpace.replace(/\./g, "/") + ".txt";
     let sourceCode = "";
+    let namesSpaces = nameSpace.split(".");
+    let lastNameSpace = namesSpaces[namesSpaces.length - 1];
     try {
       sourceCode = ImportFile(path);
     } catch (error) {
-      this.throwError(`namespace \`${nameSpace}\` does not exist`);
+      this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
     }
     try {
       this.trackPosition();
@@ -105,7 +107,7 @@ export default class Parser extends ParserService {
       return new Import(nameSpace, program);
     } catch (error) {
       console.log(error);
-      this.throwError(`internal error found in \`${nameSpace}\` code base`);
+      this.throwError(`internal error found in \`${lastNameSpace}\` code base at \`./${path}\``);
     }
   }
 
@@ -156,11 +158,11 @@ export default class Parser extends ParserService {
         view = right.view;
         this.trackPosition();
         const token = this.parseTag();
-        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` but received \`${token.type}\` token`);
+        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` but matched \`${token.type}\``);
         this.untrackPosition();
         return new HTMLScript(view);
       }
-      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` but received \`${right.type}\` token`);
+      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` but matched \`${right.type}\``);
       return new HTMLScript(view);
     }
     return left;
@@ -183,11 +185,11 @@ export default class Parser extends ParserService {
     }
     if (this.peekToken() instanceof Slash) {
       const token = this.getNextToken() as Character;
-      this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
+      this.expect(this.getNextToken(), GreaterThan, `expecting closing token \`>\` but matched \`${token.view}\` after tag name identifier \`${identifier.view}\``);
       return new StandaloneComponent(identifier.view, attributes);
     }
     const token = this.getNextToken() as Character;
-    this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but received \`${token.view}\` character`);
+    this.expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag();
     if (AmbiguosTags.includes(identifier.view)) return new StandaloneComponent(identifier.view, attributes);
     return new OpenTag(identifier.view, attributes);
@@ -252,7 +254,7 @@ export default class Parser extends ParserService {
     if (this.peekToken() instanceof Equals) {
       this.getNextToken();
       const token = this.peekToken() as Character;
-      value = this.expect(this.parseString(), String, `expecting a string value after \`=\` following a tag property but received \`${token.view}\``).view;
+      value = this.expect(this.parseString(), String, `expecting a string value after \`=\` following a tag property but matched \`${token.view}\``).view;
     }
     return new Attribute(property, value);
   }

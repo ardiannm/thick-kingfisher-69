@@ -7,7 +7,7 @@ enum ColorCode {
   Blue = `\x1b[38;2;86;156;214m`,
   White = `\x1b[0m`,
   Green = `\x1b[38;2;78;201;176m`,
-  Orange = `\x1b[38;2;215;186;125m`,
+  Yellow = `\x1b[38;2;215;186;125m`,
   Brown = `\x1b[38;2;206;145;120m`,
 }
 
@@ -72,14 +72,14 @@ export default class ParserService extends Lexer {
     let textContent = "";
     if (column > 50) textContent += target.substring(column - 1 - 40, column - 1);
     else textContent += target.substring(0, column - 1);
-    const lineNumber = ` - ${line} - `;
+    const lineNumber = `-- ${line} -- `;
     const space = " ".repeat(textContent.length + lineNumber.length);
     const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ ./${this.path}:${line}:${column}`;
-    const format = lineNumber + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Orange);
+    const format = this.colorize(lineNumber, ColorCode.Yellow, ColorCode.Blue) + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Yellow);
     return this.colorize(format, ColorCode.Blue);
   }
 
   private colorize(text: string, startColor: ColorCode, endColor = ColorCode.White) {
-    return `${startColor}${text} ${endColor}`;
+    return `${startColor}${text}${endColor}`;
   }
 }
