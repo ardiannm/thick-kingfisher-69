@@ -5,7 +5,7 @@ import Power from "./ast/operators/Power";
 import Identifier from "./ast/expressions/Identifier";
 import GreaterThan from "./ast/tokens/GreaterThan";
 import SelfClosingHTMLElement from "./ast/html/SelfClosingHTMLElement";
-import VoidHTMLElement from "./ast/html/VoidHTMLElement";
+import HTMLVoidElement from "./ast/html/HTMLVoidElement";
 import Equals from "./ast/tokens/Equals";
 import Minus from "./ast/operators/Minus";
 import EOF from "./ast/tokens/EOF";
@@ -51,7 +51,7 @@ import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const voidHTMLElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
+const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
 export default class Parser extends ParserService {
   public parse() {
@@ -111,8 +111,8 @@ export default class Parser extends ParserService {
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
-      if (voidHTMLElements.includes(left.tag)) {
-        return new VoidHTMLElement(left.tag, left.attributes);
+      if (HTMLVoidElements.includes(left.tag)) {
+        return new HTMLVoidElement(left.tag, left.attributes);
       }
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {

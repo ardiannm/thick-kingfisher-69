@@ -26,6 +26,7 @@ import HTMLComment from "./ast/html/HTMLComment";
 import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
 import ImportStatement from "./ast/expressions/ImportStatement";
+import HTMLVoidElement from "./ast/html/HTMLVoidElement";
 
 export default class Interpreter {
   evaluate<T extends SyntaxToken>(token: T) {
@@ -38,6 +39,7 @@ export default class Interpreter {
     if (token instanceof Unary) return this.evaluateUnary(token);
     if (token instanceof Binary) return this.evaluateBinary(token);
     if (token instanceof HTMLElement) return this.evaluateHTMLElement(token);
+    if (token instanceof HTMLVoidElement) return this.evaluateVoidHTMLElement(token);
     if (token instanceof HTMLTextContent) return this.evaluateHTMLTextContent(token);
     if (token instanceof HTMLScript) return this.evaluateHTMLScript(token);
     if (token instanceof HTMLComment) return this.evaluateHTMLComment(token);
@@ -135,6 +137,10 @@ export default class Interpreter {
 
   private evaluateHTMLComment(token: HTMLComment) {
     return new SystemString(token.view);
+  }
+
+  private evaluateVoidHTMLElement(_: HTMLVoidElement) {
+    return new SystemString("");
   }
 
   private evaluateHTMLElement(token: HTMLElement) {

@@ -1,5 +1,5 @@
 USING bin.emptyTextContents;
-USING bin.scriptTagWithHTMLElementsInContent
+USING bin.scriptTagWithHTMLElementsInContent;
 
 
 

@@ -137,6 +137,9 @@ class Interpreter {
     evaluateHTMLComment(token) {
         return new SystemString_1.default(token.view);
     }
+    evaluateVoidHTMLElement(token) {
+        return new SystemString_1.default("");
+    }
     evaluateHTMLElement(token) {
         return new SystemStringArray_1.default(token.children.map((e) => this.evaluate(e)));
     }
