@@ -2,14 +2,9 @@ DOCTYPE
 
 <div>
     <p>
-        Name
-        <input>
-        <div></div>
-        <head prop:prop="v"></head>
-        <script> jsScript </script>
-        <br>
-        <br/>
-        <link>
-        <link/>
-    </p>
+        HTML (shkurtim i Hypertext Markup Language, lexo: Hajpër Tekst Markap Lenguiç) 
+        është gjuha markup (sqt. gjuhë me shënime) mbizotëruese për krijimin e fletave të rrjetit
+        HTML lejon autorët e faqeve të internetit të formulojnë dokumente që mund të kuptohen nga 
+        PC, Unix, Macintosh etj, dhe që mund të shikohen duke përdorur programe të quajtura browser
+    </x>
 </div>

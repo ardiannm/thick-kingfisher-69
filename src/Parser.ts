@@ -50,10 +50,23 @@ import SemiColon from "./ast/tokens/SemiColon";
 import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
+import logExecutionTime from "./services/dev/logExecutionTime";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
 export default class Parser extends ParserService {
+  //
+
+  private nameSpace: string;
+
+  constructor(public input: string, public path: string) {
+    super(input, path);
+    const modules = path.replace(/.txt$/, "").split("/");
+    let lastNameSpace = modules[modules.length - 1];
+    this.nameSpace = lastNameSpace;
+  }
+
+  @logExecutionTime
   public parse() {
     return this.parseProgram();
   }
@@ -72,6 +85,7 @@ export default class Parser extends ParserService {
       if (this.matchKeyword("USING")) {
         expressions.push(this.parseImportStatement());
       }
+      return this.parseTerm();
     }
     return new Program(expressions);
   }
@@ -82,11 +96,8 @@ export default class Parser extends ParserService {
     let nameSpace = token.view;
     while (this.peekToken() instanceof Dot) {
       const token = this.getNextToken() as Dot;
-
       nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
     }
-    console.log(nameSpace);
-
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
     this.untrackPosition();
@@ -168,7 +179,6 @@ export default class Parser extends ParserService {
           }
         }
         const token = this.getNextToken() as Character;
-        console.log(token);
         view += token.view;
       }
       this.throwError(`expecting a closing script tag`);

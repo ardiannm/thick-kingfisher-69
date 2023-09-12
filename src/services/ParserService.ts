@@ -3,7 +3,7 @@ import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 import Identifier from "../ast/expressions/Identifier";
 
-enum ColorCode {
+export enum ColorCode {
   Red = `\x1b[31m`,
   Blue = `\x1b[38;2;86;156;214m`,
   White = `\x1b[0m`,

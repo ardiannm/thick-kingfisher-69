@@ -1,4 +1,13 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -53,8 +62,21 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
+const logExecutionTime_1 = __importDefault(require("./services/dev/logExecutionTime"));
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 class Parser extends ParserService_1.default {
+    input;
+    path;
+    //
+    nameSpace;
+    constructor(input, path) {
+        super(input, path);
+        this.input = input;
+        this.path = path;
+        const modules = path.replace(/.txt$/, "").split("/");
+        let lastNameSpace = modules[modules.length - 1];
+        this.nameSpace = lastNameSpace;
+    }
     parse() {
         return this.parseProgram();
     }
@@ -72,6 +94,7 @@ class Parser extends ParserService_1.default {
             if (this.matchKeyword("USING")) {
                 expressions.push(this.parseImportStatement());
             }
+            return this.parseTerm();
         }
         return new Program_1.default(expressions);
     }
@@ -83,7 +106,6 @@ class Parser extends ParserService_1.default {
             const token = this.getNextToken();
             nameSpace += token.view + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
-        console.log(nameSpace);
         this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
         this.untrackPosition();
@@ -166,7 +188,6 @@ class Parser extends ParserService_1.default {
                     }
                 }
                 const token = this.getNextToken();
-                console.log(token);
                 view += token.view;
             }
             this.throwError(`expecting a closing script tag`);
@@ -419,4 +440,10 @@ class Parser extends ParserService_1.default {
         return token;
     }
 }
+__decorate([
+    logExecutionTime_1.default,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Parser.prototype, "parse", null);
 exports.default = Parser;
