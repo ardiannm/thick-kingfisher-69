@@ -51,7 +51,7 @@ import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
+const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
 export default class Parser extends ParserService {
   public parse() {
@@ -103,36 +103,25 @@ export default class Parser extends ParserService {
       return new ImportStatement(nameSpace, program);
     } catch (error) {
       console.log(error);
-      this.throwError(`internal error found in \`${lastNameSpace}\` module, with file path \`./${path}\``);
+      this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
     }
   }
 
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
-    const pointer = this.pointer;
-    const line = this.line;
-    const column = this.column;
     if (left instanceof OpenTag) {
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
-        const token = this.parseHTMLComponent();
-        if (token instanceof HTMLComponent) {
-          children.push(token);
-          continue;
-        }
-        const right = this.expect(token, CloseTag, `expecting a closing \`${left.tag}\` tag`);
-        if (left.tag !== right.tag) {
-          if (lenientTags.includes(left.tag)) {
-            this.pointer = pointer;
-            this.line = line;
-            this.column = column;
-            return new VoidHTMLElement(left.tag, left.attributes);
+        const right = this.parseHTMLComponent();
+        if (right instanceof CloseTag) {
+          if (left.tag !== right.tag) {
+            this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
           }
-          this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
+          return new HTMLElement(left.tag, left.attributes, children);
         }
-        return new HTMLElement(left.tag, left.attributes, children);
+        this.expect(right, HTMLComponent, `\`${right.type}\` is not a valid \`HTMLComponent\``);
+        children.push(right);
       }
-      if (lenientTags.includes(left.tag)) return new VoidHTMLElement(left.tag, left.attributes);
       this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;

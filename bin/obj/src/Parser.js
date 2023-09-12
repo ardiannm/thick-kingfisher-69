@@ -10,7 +10,6 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
-const VoidHTMLElement_1 = __importDefault(require("./ast/html/VoidHTMLElement"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -53,7 +52,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea", "head"];
+const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -109,31 +108,19 @@ class Parser extends ParserService_1.default {
     }
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
-        const pointer = this.pointer;
-        const line = this.line;
-        const column = this.column;
         if (left instanceof OpenTag_1.default) {
             const children = new Array();
             while (this.hasMoreTokens()) {
-                const token = this.parseHTMLComponent();
-                if (token instanceof HTMLComponent_1.default) {
-                    children.push(token);
-                    continue;
-                }
-                const right = this.expect(token, CloseTag_1.default, `expecting a closing \`${left.tag}\` tag`);
-                if (left.tag !== right.tag) {
-                    if (lenientTags.includes(left.tag)) {
-                        this.pointer = pointer;
-                        this.line = line;
-                        this.column = column;
-                        return new VoidHTMLElement_1.default(left.tag, left.attributes);
+                const right = this.parseHTMLComponent();
+                if (right instanceof CloseTag_1.default) {
+                    if (left.tag !== right.tag) {
+                        this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
                     }
-                    this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
+                    return new HTMLElement_1.default(left.tag, left.attributes, children);
                 }
-                return new HTMLElement_1.default(left.tag, left.attributes, children);
+                this.expect(right, HTMLComponent_1.default, `\`${right.type}\` is not a valid \`HTMLComponent\``);
+                children.push(right);
             }
-            if (lenientTags.includes(left.tag))
-                return new VoidHTMLElement_1.default(left.tag, left.attributes);
             this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
