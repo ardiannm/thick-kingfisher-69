@@ -153,17 +153,20 @@ export default class Parser extends ParserService {
     const left = this.parseTag();
     if (left instanceof OpenScriptTag) {
       let view = "";
-      const right = this.parseHTMLTextContent();
-      if (right instanceof HTMLTextContent) {
-        view = right.view;
-        this.trackPosition();
-        const token = this.parseTag();
-        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` after an open script tag but matched \`${token.type}\``);
-        this.untrackPosition();
-        return new HTMLScript(view);
+      while (this.hasMoreTokens()) {
+        if (this.peekToken() instanceof LessThan) {
+          const from = this.pointer;
+          try {
+            const tag = this.parseTag();
+            if (tag instanceof CloseScriptTag) return new HTMLScript(view);
+            view += this.input.substring(from, this.pointer);
+          } catch (error) {
+            this.throwError(`expecting a closing script tag`);
+          }
+        }
+        view += this.getNext();
       }
-      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` after an open script tag but matched \`${right.type}\``);
-      return new HTMLScript(view);
+      this.throwError(`expecting a closing script tag`);
     }
     return left;
   }
