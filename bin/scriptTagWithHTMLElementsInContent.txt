@@ -3,4 +3,6 @@ DOCTYPE
 <script>
   Name <br/>
   <meta>
+  </name.>
+  textContent
 </script>
