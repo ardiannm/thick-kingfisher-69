@@ -72,7 +72,7 @@ class ParserService extends Lexer_1.default {
     }
     displayLine(input, line, column, errorMessage) {
         let target = input[line - 1];
-        let start = `-- ${this.digitToFixedLengthString(line, 3)} -- `;
+        let start = ` - `;
         if (column > 50)
             start += target.substring(column - 1 - 40, column - 1).trimStart();
         else
@@ -85,11 +85,6 @@ class ParserService extends Lexer_1.default {
     }
     colorize(text, startColor, endColor = ColorCode.White) {
         return `${startColor}${text}${endColor}`;
-    }
-    digitToFixedLengthString(digit, fixedLength) {
-        const digitStr = digit.toString();
-        const leadingSpacesCount = Math.max(0, fixedLength - digitStr.length);
-        return digitStr + " ".repeat(leadingSpacesCount);
     }
 }
 exports.default = ParserService;
