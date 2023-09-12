@@ -5,7 +5,7 @@ import Power from "./ast/operators/Power";
 import Identifier from "./ast/expressions/Identifier";
 import GreaterThan from "./ast/tokens/GreaterThan";
 import SelfClosingHTMLElement from "./ast/html/SelfClosingHTMLElement";
-import LenientComponent from "./ast/html/LenientComponent";
+import VoidHTMLElement from "./ast/html/VoidHTMLElement";
 import Equals from "./ast/tokens/Equals";
 import Minus from "./ast/operators/Minus";
 import EOF from "./ast/tokens/EOF";
@@ -61,16 +61,16 @@ export default class Parser extends ParserService {
   private parseProgram() {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     let expressions = new Array<Expression>();
-    if (this.matchKeyword("USING")) {
-      while (this.hasMoreTokens()) {
-        expressions.push(this.parseImportStatement());
-      }
-    }
     if (this.peekToken() instanceof Identifier) {
       if (this.matchKeyword("DOCTYPE")) {
         while (this.hasMoreTokens()) {
           expressions.push(this.parseHTMLComponent());
         }
+      }
+    }
+    if (this.matchKeyword("USING")) {
+      while (this.hasMoreTokens()) {
+        expressions.push(this.parseImportStatement());
       }
     }
     return new Program(expressions);
@@ -126,13 +126,13 @@ export default class Parser extends ParserService {
             this.pointer = pointer;
             this.line = line;
             this.column = column;
-            return new LenientComponent(left.tag, left.attributes);
+            return new VoidHTMLElement(left.tag, left.attributes);
           }
           this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
         }
         return new HTMLElement(left.tag, left.attributes, children);
       }
-      if (lenientTags.includes(left.tag)) return new LenientComponent(left.tag, left.attributes);
+      if (lenientTags.includes(left.tag)) return new VoidHTMLElement(left.tag, left.attributes);
       this.throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;

@@ -10,7 +10,7 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
-const LenientComponent_1 = __importDefault(require("./ast/html/LenientComponent"));
+const VoidHTMLElement_1 = __importDefault(require("./ast/html/VoidHTMLElement"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -61,16 +61,16 @@ class Parser extends ParserService_1.default {
     parseProgram() {
         this.doNotExpect(this.peekToken(), EOF_1.default, "source file is empty");
         let expressions = new Array();
-        if (this.matchKeyword("USING")) {
-            while (this.hasMoreTokens()) {
-                expressions.push(this.parseImportStatement());
-            }
-        }
         if (this.peekToken() instanceof Identifier_1.default) {
             if (this.matchKeyword("DOCTYPE")) {
                 while (this.hasMoreTokens()) {
                     expressions.push(this.parseHTMLComponent());
                 }
+            }
+        }
+        if (this.matchKeyword("USING")) {
+            while (this.hasMoreTokens()) {
+                expressions.push(this.parseImportStatement());
             }
         }
         return new Program_1.default(expressions);
@@ -126,14 +126,14 @@ class Parser extends ParserService_1.default {
                         this.pointer = pointer;
                         this.line = line;
                         this.column = column;
-                        return new LenientComponent_1.default(left.tag, left.attributes);
+                        return new VoidHTMLElement_1.default(left.tag, left.attributes);
                     }
                     this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
                 }
                 return new HTMLElement_1.default(left.tag, left.attributes, children);
             }
             if (lenientTags.includes(left.tag))
-                return new LenientComponent_1.default(left.tag, left.attributes);
+                return new VoidHTMLElement_1.default(left.tag, left.attributes);
             this.throwError(`expecting a closing \`${left.tag}\` tag`);
         }
         return left;
