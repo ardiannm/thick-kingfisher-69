@@ -53,7 +53,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const voidHTMLElements = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const voidHTMLElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -68,8 +68,8 @@ class Parser extends ParserService_1.default {
                 }
             }
         }
-        if (this.matchKeyword("USING")) {
-            while (this.hasMoreTokens()) {
+        while (this.hasMoreTokens()) {
+            if (this.matchKeyword("USING")) {
                 expressions.push(this.parseImportStatement());
             }
         }
@@ -80,12 +80,11 @@ class Parser extends ParserService_1.default {
         const token = this.expect(this.getNextToken(), Identifier_1.default, errorMessage);
         let nameSpace = token.view;
         while (this.peekToken() instanceof Dot_1.default) {
-            this.getNextToken();
-            nameSpace += "." + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
+            const token = this.getNextToken();
+            nameSpace += token.view + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
-        this.trackPosition();
+        console.log(nameSpace);
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
-        this.untrackPosition();
         const path = nameSpace.replace(/\./g, "/") + ".txt";
         let sourceCode = "";
         let namesSpaces = nameSpace.split(".");
@@ -97,9 +96,7 @@ class Parser extends ParserService_1.default {
             this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
         }
         try {
-            this.trackPosition();
             const program = new Parser(sourceCode, path).parse();
-            this.untrackPosition();
             return new ImportStatement_1.default(nameSpace, program);
         }
         catch (error) {

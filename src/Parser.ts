@@ -68,8 +68,8 @@ export default class Parser extends ParserService {
         }
       }
     }
-    if (this.matchKeyword("USING")) {
-      while (this.hasMoreTokens()) {
+    while (this.hasMoreTokens()) {
+      if (this.matchKeyword("USING")) {
         expressions.push(this.parseImportStatement());
       }
     }
@@ -81,12 +81,13 @@ export default class Parser extends ParserService {
     const token = this.expect(this.getNextToken(), Identifier, errorMessage);
     let nameSpace = token.view;
     while (this.peekToken() instanceof Dot) {
-      this.getNextToken();
-      nameSpace += "." + this.expect(this.getNextToken(), Identifier, errorMessage).view;
+      const token = this.getNextToken() as Dot;
+
+      nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
     }
-    this.trackPosition();
+    console.log(nameSpace);
+
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    this.untrackPosition();
     const path = nameSpace.replace(/\./g, "/") + ".txt";
     let sourceCode = "";
     let namesSpaces = nameSpace.split(".");
@@ -97,9 +98,7 @@ export default class Parser extends ParserService {
       this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
     }
     try {
-      this.trackPosition();
       const program = new Parser(sourceCode, path).parse();
-      this.untrackPosition();
       return new ImportStatement(nameSpace, program);
     } catch (error) {
       console.log(error);
