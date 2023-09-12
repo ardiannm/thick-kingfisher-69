@@ -398,12 +398,16 @@ export default class Parser extends ParserService {
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
         if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
-          this.throwError(`invalid right hand side for range expression`);
+          this.throwError(`expecting a valid spreadsheet reference right after \`:\``);
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
         if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
         this.untrackPosition();
         this.ignoreSpace();
+        const view = left.column + left.row + ":" + right.column + right.row;
+        const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
+        if (left.column !== left.column.toUpperCase()) this.throwError(errorMessage);
+        if (right.column !== right.column.toUpperCase()) this.throwError(errorMessage);
         return new SpreadsheetRange(left, right);
       }
       this.ignoreSpace();
@@ -418,6 +422,9 @@ export default class Parser extends ParserService {
       if (this.peekToken() instanceof Number) {
         const right = this.parseToken() as Number;
         this.ignoreSpace();
+        const view = left.view + right.view;
+        const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
+        if (left.view !== left.view.toUpperCase()) this.throwError(errorMessage);
         return new SpreadsheetCell(left.view, right.view);
       }
       this.ignoreSpace();
