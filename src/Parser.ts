@@ -51,7 +51,7 @@ import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const voidHTMLElements = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 
 export default class Parser extends ParserService {
   public parse() {
@@ -110,6 +110,9 @@ export default class Parser extends ParserService {
   private parseHTMLComponent(): HTML {
     const left = this.parseHTMLTextContent();
     if (left instanceof OpenTag) {
+      if (voidHTMLElements.includes(left.tag)) {
+        return new VoidHTMLElement(left.tag, left.attributes);
+      }
       const children = new Array<HTMLComponent>();
       while (this.hasMoreTokens()) {
         const right = this.parseHTMLComponent();

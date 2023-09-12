@@ -10,6 +10,7 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
+const VoidHTMLElement_1 = __importDefault(require("./ast/html/VoidHTMLElement"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -52,7 +53,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const lenientTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const voidHTMLElements = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -103,12 +104,15 @@ class Parser extends ParserService_1.default {
         }
         catch (error) {
             console.log(error);
-            this.throwError(`internal error found in \`${lastNameSpace}\` module, with file path \`./${path}\``);
+            this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
         }
     }
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
+            if (voidHTMLElements.includes(left.tag)) {
+                return new VoidHTMLElement_1.default(left.tag, left.attributes);
+            }
             const children = new Array();
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
