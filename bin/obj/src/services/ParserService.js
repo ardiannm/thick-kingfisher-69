@@ -71,19 +71,24 @@ class ParserService extends Lexer_1.default {
     }
     displayLine(input, line, column, errorMessage) {
         let target = input[line - 1];
-        let textContent = "";
+        let start = `-- ${this.digitToFixedLengthString(line, 3)} -- `;
         if (column > 50)
-            textContent += target.substring(column - 1 - 40, column - 1);
+            start += target.substring(column - 1 - 40, column - 1).trimStart();
         else
-            textContent += target.substring(0, column - 1);
-        const lineNumber = `-- ${line} -- `;
-        const space = " ".repeat(textContent.length + lineNumber.length);
+            start += target.substring(0, column - 1).trimStart();
+        const space = " ".repeat(start.length);
         const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
-        const format = this.colorize(lineNumber, ColorCode.Yellow, ColorCode.Blue) + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Yellow);
-        return this.colorize(format, ColorCode.Blue);
+        const end = target.substring(column - 1, column - 1 + 30);
+        const text = start + end;
+        return this.colorize(text, ColorCode.Blue) + this.colorize(description, ColorCode.Red);
     }
     colorize(text, startColor, endColor = ColorCode.White) {
         return `${startColor}${text}${endColor}`;
+    }
+    digitToFixedLengthString(digit, fixedLength) {
+        const digitStr = digit.toString();
+        const leadingSpacesCount = Math.max(0, fixedLength - digitStr.length);
+        return digitStr + " ".repeat(leadingSpacesCount);
     }
 }
 exports.default = ParserService;

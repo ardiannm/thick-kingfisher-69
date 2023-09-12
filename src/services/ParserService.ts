@@ -78,18 +78,23 @@ export default class ParserService extends Lexer {
 
   private displayLine(input: Array<string>, line: number, column: number, errorMessage: string) {
     let target = input[line - 1];
-
-    let textContent = "";
-    if (column > 50) textContent += target.substring(column - 1 - 40, column - 1);
-    else textContent += target.substring(0, column - 1);
-    const lineNumber = `-- ${line} -- `;
-    const space = " ".repeat(textContent.length + lineNumber.length);
+    let start = `-- ${this.digitToFixedLengthString(line, 3)} -- `;
+    if (column > 50) start += target.substring(column - 1 - 40, column - 1).trimStart();
+    else start += target.substring(0, column - 1).trimStart();
+    const space = " ".repeat(start.length);
     const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
-    const format = this.colorize(lineNumber, ColorCode.Yellow, ColorCode.Blue) + textContent + target.substring(column - 1, column - 1 + 30) + this.colorize(description, ColorCode.Yellow);
-    return this.colorize(format, ColorCode.Blue);
+    const end = target.substring(column - 1, column - 1 + 30);
+    const text = start + end;
+    return this.colorize(text, ColorCode.Blue) + this.colorize(description, ColorCode.Red);
   }
 
   private colorize(text: string, startColor: ColorCode, endColor = ColorCode.White) {
     return `${startColor}${text}${endColor}`;
+  }
+
+  private digitToFixedLengthString(digit: number, fixedLength: number) {
+    const digitStr: string = digit.toString();
+    const leadingSpacesCount: number = Math.max(0, fixedLength - digitStr.length);
+    return digitStr + " ".repeat(leadingSpacesCount);
   }
 }
