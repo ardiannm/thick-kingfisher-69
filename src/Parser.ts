@@ -51,7 +51,7 @@ import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
-const voidHTMLElements = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+const voidHTMLElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
 export default class Parser extends ParserService {
   public parse() {
