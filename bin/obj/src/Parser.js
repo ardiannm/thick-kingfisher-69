@@ -84,7 +84,9 @@ class Parser extends ParserService_1.default {
             nameSpace += token.view + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
         }
         console.log(nameSpace);
+        this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
+        this.untrackPosition();
         const path = nameSpace.replace(/\./g, "/") + ".txt";
         let sourceCode = "";
         let namesSpaces = nameSpace.split(".");

@@ -87,7 +87,9 @@ export default class Parser extends ParserService {
     }
     console.log(nameSpace);
 
+    this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
+    this.untrackPosition();
     const path = nameSpace.replace(/\./g, "/") + ".txt";
     let sourceCode = "";
     let namesSpaces = nameSpace.split(".");
