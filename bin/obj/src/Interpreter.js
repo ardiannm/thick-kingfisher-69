@@ -30,6 +30,7 @@ const HTMLComment_1 = __importDefault(require("./ast/html/HTMLComment"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const SystemStringArray_1 = __importDefault(require("./system/SystemStringArray"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
+const HTMLVoidElement_1 = __importDefault(require("./ast/html/HTMLVoidElement"));
 class Interpreter {
     evaluate(token) {
         if (token instanceof ImportStatement_1.default)
@@ -50,6 +51,8 @@ class Interpreter {
             return this.evaluateBinary(token);
         if (token instanceof HTMLElement_1.default)
             return this.evaluateHTMLElement(token);
+        if (token instanceof HTMLVoidElement_1.default)
+            return this.evaluateVoidHTMLElement(token);
         if (token instanceof HTMLTextContent_1.default)
             return this.evaluateHTMLTextContent(token);
         if (token instanceof HTMLScript_1.default)
@@ -137,7 +140,7 @@ class Interpreter {
     evaluateHTMLComment(token) {
         return new SystemString_1.default(token.view);
     }
-    evaluateVoidHTMLElement(token) {
+    evaluateVoidHTMLElement(_) {
         return new SystemString_1.default("");
     }
     evaluateHTMLElement(token) {

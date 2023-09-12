@@ -158,11 +158,11 @@ export default class Parser extends ParserService {
         view = right.view;
         this.trackPosition();
         const token = this.parseTag();
-        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` but matched \`${token.type}\``);
+        this.expect(token, CloseScriptTag, `expecting \`CloseScriptTag\` after an open script tag but matched \`${token.type}\``);
         this.untrackPosition();
         return new HTMLScript(view);
       }
-      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` but matched \`${right.type}\``);
+      this.expect(right, CloseScriptTag, `expecting \`CloseScriptTag\` after an open script tag but matched \`${right.type}\``);
       return new HTMLScript(view);
     }
     return left;

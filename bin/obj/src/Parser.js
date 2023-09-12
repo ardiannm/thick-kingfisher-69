@@ -10,7 +10,7 @@ const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
 const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
-const VoidHTMLElement_1 = __importDefault(require("./ast/html/VoidHTMLElement"));
+const HTMLVoidElement_1 = __importDefault(require("./ast/html/HTMLVoidElement"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -53,7 +53,7 @@ const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
 const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const voidHTMLElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
+const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 class Parser extends ParserService_1.default {
     parse() {
         return this.parseProgram();
@@ -109,8 +109,8 @@ class Parser extends ParserService_1.default {
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
-            if (voidHTMLElements.includes(left.tag)) {
-                return new VoidHTMLElement_1.default(left.tag, left.attributes);
+            if (HTMLVoidElements.includes(left.tag)) {
+                return new HTMLVoidElement_1.default(left.tag, left.attributes);
             }
             const children = new Array();
             while (this.hasMoreTokens()) {
@@ -155,11 +155,11 @@ class Parser extends ParserService_1.default {
                 view = right.view;
                 this.trackPosition();
                 const token = this.parseTag();
-                this.expect(token, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but matched \`${token.type}\``);
+                this.expect(token, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` after an open script tag but matched \`${token.type}\``);
                 this.untrackPosition();
                 return new HTMLScript_1.default(view);
             }
-            this.expect(right, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` but matched \`${right.type}\``);
+            this.expect(right, CloseScriptTag_1.default, `expecting \`CloseScriptTag\` after an open script tag but matched \`${right.type}\``);
             return new HTMLScript_1.default(view);
         }
         return left;
