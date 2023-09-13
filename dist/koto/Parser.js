@@ -9,8 +9,7 @@ const Slash_1 = __importDefault(require("./ast/operators/Slash"));
 const Power_1 = __importDefault(require("./ast/operators/Power"));
 const Identifier_1 = __importDefault(require("./ast/expressions/Identifier"));
 const GreaterThan_1 = __importDefault(require("./ast/tokens/GreaterThan"));
-const SelfClosingHTMLElement_1 = __importDefault(require("./ast/html/SelfClosingHTMLElement"));
-const HTMLVoidElement_1 = __importDefault(require("./ast/html/HTMLVoidElement"));
+const StandaloneComponent_1 = __importDefault(require("./ast/html/StandaloneComponent"));
 const Equals_1 = __importDefault(require("./ast/tokens/Equals"));
 const Minus_1 = __importDefault(require("./ast/operators/Minus"));
 const EOF_1 = __importDefault(require("./ast/tokens/EOF"));
@@ -37,7 +36,7 @@ const CloseScriptTag_1 = __importDefault(require("./ast/html/CloseScriptTag"));
 const HTMLScript_1 = __importDefault(require("./ast/html/HTMLScript"));
 const HTMLElement_1 = __importDefault(require("./ast/html/HTMLElement"));
 const HTMLComponent_1 = __importDefault(require("./ast/html/HTMLComponent"));
-const ParserService_1 = __importDefault(require("./services/ParserService"));
+const Service_1 = __importDefault(require("./services/Service"));
 const ExclamationMark_1 = __importDefault(require("./ast/tokens/ExclamationMark"));
 const HTMLComment_1 = __importDefault(require("./ast/html/HTMLComment"));
 const HTMLTextContent_1 = __importDefault(require("./ast/html/HTMLTextContent"));
@@ -51,92 +50,69 @@ const SpreadsheetRange_1 = __importDefault(require("./ast/spreadsheet/Spreadshee
 const BadToken_1 = __importDefault(require("./ast/tokens/BadToken"));
 const Dot_1 = __importDefault(require("./ast/tokens/Dot"));
 const SemiColon_1 = __importDefault(require("./ast/tokens/SemiColon"));
-const ImportStatement_1 = __importDefault(require("./ast/expressions/ImportStatement"));
+const Import_1 = __importDefault(require("./ast/expressions/Import"));
 const ImportFile_1 = __importDefault(require("./services/ImportFile"));
-const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
-class Parser extends ParserService_1.default {
-    input;
-    path;
-    //
-    nameSpace;
-    constructor(input, path) {
-        super(input, path);
-        this.input = input;
-        this.path = path;
-        const nameSpaces = path.replace(/.txt$/, "").split("/");
-        let lastNameSpace = nameSpaces[nameSpaces.length - 1];
-        this.nameSpace = lastNameSpace;
-    }
+const AmbiguosTags = ["link", "br", "input", "img", "hr", "meta", "col", "textarea"];
+class Parser extends Service_1.default {
     parse() {
         return this.parseProgram();
     }
     parseProgram() {
         this.doNotExpect(this.peekToken(), EOF_1.default, "source file is empty");
-        let expressions = new Array();
-        if (this.peekToken() instanceof Identifier_1.default) {
-            if (this.matchKeyword("DOCTYPE")) {
-                while (this.hasMoreTokens()) {
-                    expressions.push(this.parseHTMLComponent());
-                }
-            }
-        }
+        const expressions = new Array();
         while (this.hasMoreTokens()) {
-            if (this.matchKeyword("import")) {
-                expressions.push(this.parseImportStatement());
-            }
-            return this.parseTerm();
+            const expression = this.parseExpression();
+            expressions.push(expression);
         }
         return new Program_1.default(expressions);
     }
-    parseImportStatement() {
-        const errorMessage = "expecting a namespace identifier for module import";
-        const token = this.expect(this.getNextToken(), Identifier_1.default, errorMessage);
-        let nameSpace = token.view;
+    parseExpression() {
+        if (this.peekToken().view === "using") {
+            this.getNextToken();
+            return this.parseImport();
+        }
+        if (this.peekToken().view === "DOCTYPE") {
+            this.getNextToken();
+            return this.parseHTMLComponent();
+        }
+        return this.parseTerm();
+    }
+    parseImport() {
+        const message = "expecting a namespace identifier for module import";
+        const token = this.expect(this.getNextToken(), Identifier_1.default, message);
+        let path = token.view;
         while (this.peekToken() instanceof Dot_1.default) {
-            const token = this.getNextToken();
-            nameSpace += token.view + this.expect(this.getNextToken(), Identifier_1.default, errorMessage).view;
+            this.getNextToken();
+            path += "." + this.expect(this.getNextToken(), Identifier_1.default, message).view;
         }
         this.trackPosition();
         this.expect(this.getNextToken(), SemiColon_1.default, "semicolon `;` expected after an import statement");
         this.untrackPosition();
-        const path = nameSpace.replace(/\./g, "/") + ".txt";
-        let sourceCode = "";
-        let namesSpaces = nameSpace.split(".");
-        let lastNameSpace = namesSpaces[namesSpaces.length - 1];
         try {
-            sourceCode = (0, ImportFile_1.default)(path);
-        }
-        catch (error) {
-            this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
-        }
-        try {
+            const sourceCode = (0, ImportFile_1.default)(path.replace(/\./g, "/") + ".txt");
             const program = new Parser(sourceCode, path).parse();
-            return new ImportStatement_1.default(nameSpace, program);
+            return new Import_1.default(path, program);
         }
         catch (error) {
-            // console.log(error);
-            this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
+            this.throwError(`namespace \`${path}\` does not exist`);
         }
     }
     parseHTMLComponent() {
         const left = this.parseHTMLTextContent();
         if (left instanceof OpenTag_1.default) {
-            if (HTMLVoidElements.includes(left.tag)) {
-                return new HTMLVoidElement_1.default(left.tag, left.attributes);
-            }
             const children = new Array();
             while (this.hasMoreTokens()) {
                 const right = this.parseHTMLComponent();
                 if (right instanceof CloseTag_1.default) {
-                    if (left.tag !== right.tag) {
-                        this.throwError(`\`${right.tag}\` is not a match for \`${left.tag}\` tag`);
+                    if (right.tag !== left.tag) {
+                        this.throwError(`non-matching \`${right.tag}\` found for the \`${left.tag}\` tag`);
                     }
-                    return new HTMLElement_1.default(left.tag, left.attributes, children);
+                    return new HTMLElement_1.default(left.tag, children);
                 }
-                this.expect(right, HTMLComponent_1.default, `\`${right.type}\` is not a valid \`HTMLComponent\``);
-                children.push(right);
+                const component = this.expect(right, HTMLComponent_1.default, "token is not a valid html component");
+                children.push(component);
             }
-            this.throwError(`expecting a closing \`${left.tag}\` tag`);
+            this.throwError(`expecting a closing token for \`${left.tag}\` tag`);
         }
         return left;
     }
@@ -161,26 +137,16 @@ class Parser extends ParserService_1.default {
     parseHTMLScript() {
         const left = this.parseTag();
         if (left instanceof OpenScriptTag_1.default) {
-            let view = "";
-            while (this.hasMoreTokens()) {
-                this.considerSpace();
-                if (this.peekToken() instanceof LessThan_1.default) {
-                    const from = this.pointer;
-                    try {
-                        const tag = this.parseTag();
-                        if (tag instanceof CloseScriptTag_1.default) {
-                            this.ignoreSpace();
-                            return new HTMLScript_1.default(view);
-                        }
-                    }
-                    catch {
-                        view += this.input.substring(from, this.pointer);
-                    }
-                }
-                const token = this.getNextToken();
-                view += token.view;
+            const content = this.parseHTMLTextContent();
+            try {
+                const right = this.parseTag();
+                if (!(right instanceof CloseScriptTag_1.default))
+                    throw right;
+                return new HTMLScript_1.default(content.view);
             }
-            this.throwError(`expecting a closing script tag`);
+            catch (right) {
+                this.throwError(`expecting a closing \`script\` tag`);
+            }
         }
         return left;
     }
@@ -203,23 +169,23 @@ class Parser extends ParserService_1.default {
         }
         if (this.peekToken() instanceof Slash_1.default) {
             const token = this.getNextToken();
-            this.expect(this.getNextToken(), GreaterThan_1.default, `expecting closing token \`>\` but matched \`${token.view}\` after tag name identifier \`${identifier.view}\``);
-            return new SelfClosingHTMLElement_1.default(identifier.view, attributes);
+            this.expect(this.getNextToken(), GreaterThan_1.default, `expecting closing token \`>\` but received \`${token.view}\` after tag name identifier \`${identifier.view}\``);
+            return new StandaloneComponent_1.default(identifier.view, attributes);
         }
-        const token = this.getNextToken();
-        this.expect(token, GreaterThan_1.default, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
+        this.expect(this.getNextToken(), GreaterThan_1.default, "expecting `>` for tag");
         if (identifier.view === "script")
             return new OpenScriptTag_1.default();
+        if (AmbiguosTags.includes(identifier.view))
+            return new StandaloneComponent_1.default(identifier.view, attributes);
         return new OpenTag_1.default(identifier.view, attributes);
     }
     parseHTMLComment() {
         const left = this.expect(this.getNextToken(), LessThan_1.default, "expecting `<` for an html tag");
         if (this.peekToken() instanceof ExclamationMark_1.default) {
-            this.trackPosition();
             this.expect(this.getNextToken(), ExclamationMark_1.default, "expecting `!` for a comment");
-            const errorMessage = "expecting `--` after `!` for a comment";
-            this.expect(this.getNextToken(), Minus_1.default, errorMessage);
-            this.expect(this.getNextToken(), Minus_1.default, errorMessage);
+            const message = "expecting `--` after `!` for a comment";
+            this.expect(this.getNextToken(), Minus_1.default, message);
+            this.expect(this.getNextToken(), Minus_1.default, message);
             let view = "";
             while (this.hasMoreTokens()) {
                 if (this.peekToken() instanceof Minus_1.default) {
@@ -230,7 +196,6 @@ class Parser extends ParserService_1.default {
                     if (token instanceof Minus_1.default) {
                         this.getNextToken();
                         this.expect(this.getNextToken(), GreaterThan_1.default, "expecting `>` for comment");
-                        this.untrackPosition();
                         return new HTMLComment_1.default(view);
                     }
                     this.pointer = keep;
@@ -242,66 +207,60 @@ class Parser extends ParserService_1.default {
         return left;
     }
     parseTagIdentifier() {
-        const left = this.getNextToken();
-        const identifier = this.expect(left, Identifier_1.default, `expecting an identifier but matched \`${left.view}\` for tag name`);
+        const identifier = this.expect(this.getNextToken(), Identifier_1.default, "expecting leading identifier for html tag name");
         let view = identifier.view;
         this.considerSpace();
         while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default) {
-            const right = this.getNextToken();
-            if (right instanceof Minus_1.default && !(this.peekToken() instanceof Identifier_1.default) && !(this.peekToken() instanceof Number_1.default)) {
+            const token = this.getNextToken();
+            if (token instanceof Minus_1.default && !(this.peekToken() instanceof Identifier_1.default) && !(this.peekToken() instanceof Number_1.default)) {
                 this.throwError("expecting an ending number or identifier for the name tag");
             }
-            view += right.view;
+            view += token.view;
         }
         this.ignoreSpace();
         return new Identifier_1.default(view);
     }
     parseAttribute() {
-        let property = "";
-        if (this.peekToken() instanceof Identifier_1.default) {
-            property += this.getNextToken().view;
-        }
-        this.considerSpace();
-        while (this.peekToken() instanceof Identifier_1.default || this.peekToken() instanceof Minus_1.default || this.peekToken() instanceof Number_1.default || this.peekToken() instanceof Colon_1.default) {
-            property += this.getNextToken().view;
-        }
-        this.ignoreSpace();
-        let value = "";
+        const identifier = this.getNextToken();
+        let view = "";
         if (this.peekToken() instanceof Equals_1.default) {
             this.getNextToken();
-            const token = this.peekToken();
-            value = this.expect(this.parseString(), String_1.default, `expecting a string value after \`=\` following a tag property but matched \`${token.view}\``).view;
+            view = this.expect(this.parseString(), String_1.default, "expecting a string value after `=` following a tag property").view;
         }
-        return new Attribute_1.default(property, value);
+        return new Attribute_1.default(identifier.view, view);
     }
     parseTerm() {
         const left = this.parseFactor();
-        const token = this.peekToken();
-        if (token instanceof Plus_1.default || token instanceof Minus_1.default) {
+        if (this.peekToken() instanceof Plus_1.default) {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
-            this.trackPosition();
             const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
-            this.untrackPosition();
-            if (token instanceof Plus_1.default)
-                return new Addition_1.default(left, right);
+            return new Addition_1.default(left, right);
+        }
+        if (this.peekToken() instanceof Minus_1.default) {
+            this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
+            this.getNextToken();
+            this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
+            const right = this.expect(this.parseTerm(), Expression_1.default, "invalid right hand side in binary expression");
             return new Substraction_1.default(left, right);
         }
         return left;
     }
     parseFactor() {
         const left = this.parseExponent();
-        const token = this.peekToken();
-        if (token instanceof Product_1.default || token instanceof Slash_1.default) {
+        if (this.peekToken() instanceof Product_1.default) {
             this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
             this.getNextToken();
             this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
-            this.trackPosition();
             const right = this.expect(this.parseFactor(), Expression_1.default, "invalid right hand side in binary expression");
-            this.untrackPosition();
-            if (token instanceof Product_1.default)
-                return new Multiplication_1.default(left, right);
+            return new Multiplication_1.default(left, right);
+        }
+        if (this.peekToken() instanceof Slash_1.default) {
+            this.expect(left, Expression_1.default, "invalid left hand side in binary expression");
+            this.getNextToken();
+            this.doNotExpect(this.peekToken(), EOF_1.default, "unexpected end of binary expression");
+            const right = this.expect(this.parseFactor(), Expression_1.default, "invalid right hand side in binary expression");
             return new Division_1.default(left, right);
         }
         return left;
@@ -364,9 +323,9 @@ class Parser extends ParserService_1.default {
             this.ignoreSpace();
             if (view)
                 terms.push(new String_1.default(view));
-            if (terms.length > 1)
-                return new Interpolation_1.default(terms);
-            return new String_1.default(view);
+            if (terms.length == 1)
+                return new String_1.default(view);
+            return new Interpolation_1.default(terms);
         }
         return this.parseRange();
     }
@@ -396,7 +355,7 @@ class Parser extends ParserService_1.default {
                 let right = this.parseCell();
                 this.doNotExpect(right, EOF_1.default, "oops! missing the right hand side for range expression");
                 if (!(right instanceof SpreadsheetCell_1.default || right instanceof Identifier_1.default || right instanceof Number_1.default)) {
-                    this.throwError(`expecting a valid spreadsheet reference right after \`:\``);
+                    this.throwError(`invalid right hand side for range expression`);
                 }
                 if (right instanceof Number_1.default)
                     right = new SpreadsheetCell_1.default("", right.view);
@@ -404,12 +363,6 @@ class Parser extends ParserService_1.default {
                     right = new SpreadsheetCell_1.default(right.view, "");
                 this.untrackPosition();
                 this.ignoreSpace();
-                const view = left.column + left.row + ":" + right.column + right.row;
-                const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
-                if (left.column !== left.column.toUpperCase())
-                    this.throwError(errorMessage);
-                if (right.column !== right.column.toUpperCase())
-                    this.throwError(errorMessage);
                 return new SpreadsheetRange_1.default(left, right);
             }
             this.ignoreSpace();
@@ -423,10 +376,6 @@ class Parser extends ParserService_1.default {
             if (this.peekToken() instanceof Number_1.default) {
                 const right = this.parseToken();
                 this.ignoreSpace();
-                const view = left.view + right.view;
-                const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
-                if (left.view !== left.view.toUpperCase())
-                    this.throwError(errorMessage);
                 return new SpreadsheetCell_1.default(left.view, right.view);
             }
             this.ignoreSpace();

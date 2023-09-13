@@ -50,7 +50,6 @@ import SemiColon from "./ast/tokens/SemiColon";
 import ImportStatement from "./ast/expressions/ImportStatement";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
-import logExecutionTime from "./services/dev/logExecutionTime";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
@@ -66,7 +65,6 @@ export default class Parser extends ParserService {
     this.nameSpace = lastNameSpace;
   }
 
-  @logExecutionTime
   public parse() {
     return this.parseProgram();
   }
@@ -114,7 +112,7 @@ export default class Parser extends ParserService {
       const program = new Parser(sourceCode, path).parse();
       return new ImportStatement(nameSpace, program);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
     }
   }

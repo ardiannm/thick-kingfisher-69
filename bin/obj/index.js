@@ -36,7 +36,8 @@ while (true) {
     }
     console.log();
     try {
-        const program = new Parser_1.default(input, path).parse();
+        const parser = new Parser_1.default(input, path);
+        const program = parser.parse();
         if (showTree)
             report(program);
         if (doEvaluate) {

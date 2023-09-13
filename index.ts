@@ -17,6 +17,7 @@ console.log();
 
 while (true) {
   const path = "bin/index.txt";
+
   const input = prompt({ sigint: true })("> ") || ImportFile(path);
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
@@ -34,7 +35,8 @@ while (true) {
   }
   console.log();
   try {
-    const program = new Parser(input, path).parse();
+    const parser = new Parser(input, path);
+    const program = parser.parse();
     if (showTree) report(program);
     if (doEvaluate) {
       const system = new Interpreter().evaluate(program);
