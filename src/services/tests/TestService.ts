@@ -29,12 +29,12 @@ export default class TestService {
 }
 
 class TestResult {
-  constructor(public success: boolean, public sourceCode: string, public result: string = "PASSED!!!") {
-    this.sourceCode = this.colorize(this.sourceCode, Color.Blue);
+  constructor(public success: boolean, public path: string, public result = "") {
+    this.path = this.colorize(this.path, Color.Blue);
     if (success) {
-      this.result = this.colorize(this.result, Color.Green);
+      this.result = this.path + this.colorize(" PASSED!!!", Color.Green) + this.result;
     } else {
-      this.result = this.colorize("FAILED!!!" + this.result, Color.Red);
+      this.result = this.path + this.colorize(" FAILED!!!", Color.Red) + this.result;
     }
   }
 

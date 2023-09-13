@@ -12,7 +12,6 @@
   "devDependencies": {
     "@types/node": "^20.6.0",
     "@types/prompt-sync": "^4.2.0",
-    "concurrently": "^8.0.1",
     "fs": "^0.0.1-security",
     "typescript": "^4.9.5"
   },

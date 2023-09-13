@@ -87,7 +87,7 @@ export default class ParserService extends Lexer {
     const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
     const end = target.substring(column - 1, column - 1 + 30);
     const text = start + end;
-    return this.colorize(text, Color.Blue) + this.colorize(description, Color.Green);
+    return this.colorize(text, Color.Blue) + this.colorize(description, Color.Brown);
   }
 
   private colorize(text: string, startColor: Color, endColor = Color.White) {
