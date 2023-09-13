@@ -2,17 +2,7 @@ import SyntaxToken from "../ast/tokens/SyntaxToken";
 import Constructor from "./Constructor";
 import Lexer from "../Lexer";
 import Identifier from "../ast/expressions/Identifier";
-
-export enum Color {
-  Red = `\x1b[31m`,
-  Blue = `\x1b[38;2;86;156;214m`,
-  White = `\x1b[0m`,
-  Green = `\x1b[38;2;78;201;176m`,
-  Yellow = `\x1b[38;2;215;186;125m`,
-  Brown = `\x1b[38;2;206;145;120m`,
-  SkyBlue = `\x1b[38;2;156;220;254m`,
-  DimSkyBlue = `\x1b[38;2;62;88;128m`,
-}
+import Color, { colorize } from "../services/Color";
 
 export default class ParserService extends Lexer {
   private storeLine?: number;
@@ -61,17 +51,13 @@ export default class ParserService extends Lexer {
 
   protected report(errorMessage: string) {
     const input = this.input.split("\n");
-
     const line = this.storeLine || this.line;
     const column = this.storeColumn || this.column;
-
     const report = new Array<string>();
 
     report.push("");
     report.push("");
-
     report.push(this.displayLine(input, line, column, errorMessage));
-
     report.push("");
 
     this.storeColumn = undefined;
@@ -87,10 +73,6 @@ export default class ParserService extends Lexer {
     const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
     const end = target.substring(column - 1, column - 1 + 30);
     const text = start + end;
-    return this.colorize(text, Color.Blue) + this.colorize(description, Color.DimSkyBlue);
-  }
-
-  private colorize(text: string, startColor: Color, endColor = Color.White) {
-    return `${startColor}${text}${endColor}`;
+    return colorize(text, Color.Blue) + colorize(description, Color.DimSkyBlue);
   }
 }

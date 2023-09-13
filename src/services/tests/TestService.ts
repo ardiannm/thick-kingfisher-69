@@ -1,7 +1,7 @@
 import Parser from "../../Parser";
 import ImportFile from "../ImportFile";
-import { Color as Color } from "../ParserService";
 import DirectoryFiles from "./DirectoryFiles";
+import Color, { colorize } from "../Color";
 
 export default class TestService {
   private paths = new Array<string>();
@@ -30,15 +30,11 @@ export default class TestService {
 
 class TestResult {
   constructor(public success: boolean, public path: string, public result = "") {
-    this.path = this.colorize(this.path, Color.Blue);
+    this.path = colorize(this.path, Color.Blue);
     if (success) {
-      this.result = this.path + this.colorize(" PASSED!!!", Color.Green) + this.result;
+      this.result = this.path + colorize(" PASSED!!!", Color.Green) + this.result;
     } else {
-      this.result = this.path + this.colorize(" FAILED!!!", Color.Red) + this.result;
+      this.result = this.path + colorize(" FAILED!!!", Color.Red) + this.result;
     }
-  }
-
-  private colorize(text: string, startColor: Color, endColor = Color.White) {
-    return `${startColor}${text}${endColor}`;
   }
 }

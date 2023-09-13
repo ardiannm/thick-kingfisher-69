@@ -37,6 +37,7 @@ while (true) {
   try {
     const parser = new Parser(input, path);
     const program = parser.parse();
+    console.log(program.toString());
     if (showTree) report(program);
     if (doEvaluate) {
       const system = new Interpreter().evaluate(program);
