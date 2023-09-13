@@ -1,6 +1,6 @@
 import Parser from "../../Parser";
 import ImportFile from "../ImportFile";
-import { ColorCode } from "../ParserService";
+import { Color as Color } from "../ParserService";
 import DirectoryFiles from "./DirectoryFiles";
 
 export default class TestService {
@@ -15,26 +15,30 @@ export default class TestService {
     return this.paths.map((path) => {
       try {
         const input = ImportFile(path);
-        new Parser(input, input).parse();
+        new Parser(input, path).parse();
         return new TestResult(true, path);
       } catch (error) {
         return new TestResult(false, path, error);
       }
     });
   }
+
+  public colorize(text: string, startColor: Color, endColor = Color.White) {
+    return `${startColor}${text}${endColor}`;
+  }
 }
 
 class TestResult {
   constructor(public success: boolean, public sourceCode: string, public result: string = "PASSED!!!") {
-    this.sourceCode = this.colorize(this.sourceCode, ColorCode.Blue);
+    this.sourceCode = this.colorize(this.sourceCode, Color.Blue);
     if (success) {
-      this.result = this.colorize(this.result, ColorCode.Green);
+      this.result = this.colorize(this.result, Color.Green);
     } else {
-      this.result = this.colorize("FAILED!!!\n" + this.result, ColorCode.Red);
+      this.result = this.colorize("FAILED!!!" + this.result, Color.Red);
     }
   }
 
-  private colorize(text: string, startColor: ColorCode, endColor = ColorCode.White) {
+  private colorize(text: string, startColor: Color, endColor = Color.White) {
     return `${startColor}${text}${endColor}`;
   }
 }

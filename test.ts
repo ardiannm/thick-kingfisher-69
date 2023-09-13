@@ -1,8 +1,12 @@
+import { Color } from "./src/services/ParserService";
 import TestService from "./src/services/tests/TestService";
 
-const res = new TestService().loadDirectoryFiles("bin").run();
+const service = new TestService();
+const res = service.loadDirectoryFiles("bin").run();
 
 res.forEach((res) => {
-  const str = `${res.sourceCode}\n${res.result}` + "\n--------------------------------------------------------\n";
+  let str = `${res.sourceCode}\n${res.result}`;
+  const n = Math.max(...str.split("\n").map((s) => s.length));
+  str += service.colorize("\n" + "-".repeat(n), Color.DimSkyBlue);
   console.log(str);
 });

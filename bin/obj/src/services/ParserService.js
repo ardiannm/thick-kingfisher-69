@@ -3,18 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ColorCode = void 0;
+exports.Color = void 0;
 const Lexer_1 = __importDefault(require("../Lexer"));
 const Identifier_1 = __importDefault(require("../ast/expressions/Identifier"));
-var ColorCode;
-(function (ColorCode) {
-    ColorCode["Red"] = "\u001B[31m";
-    ColorCode["Blue"] = "\u001B[38;2;86;156;214m";
-    ColorCode["White"] = "\u001B[0m";
-    ColorCode["Green"] = "\u001B[38;2;78;201;176m";
-    ColorCode["Yellow"] = "\u001B[38;2;215;186;125m";
-    ColorCode["Brown"] = "\u001B[38;2;206;145;120m";
-})(ColorCode = exports.ColorCode || (exports.ColorCode = {}));
+var Color;
+(function (Color) {
+    Color["Red"] = "\u001B[31m";
+    Color["Blue"] = "\u001B[38;2;86;156;214m";
+    Color["White"] = "\u001B[0m";
+    Color["Green"] = "\u001B[38;2;78;201;176m";
+    Color["Yellow"] = "\u001B[38;2;215;186;125m";
+    Color["Brown"] = "\u001B[38;2;206;145;120m";
+    Color["SkyBlue"] = "\u001B[38;2;156;220;254m";
+    Color["DimSkyBlue"] = "\u001B[38;2;62;88;128m";
+})(Color = exports.Color || (exports.Color = {}));
 class ParserService extends Lexer_1.default {
     input;
     path;
@@ -81,9 +83,9 @@ class ParserService extends Lexer_1.default {
         const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;
         const end = target.substring(column - 1, column - 1 + 30);
         const text = start + end;
-        return this.colorize(text, ColorCode.Blue) + this.colorize(description, ColorCode.Red);
+        return this.colorize(text, Color.Blue) + this.colorize(description, Color.Green);
     }
-    colorize(text, startColor, endColor = ColorCode.White) {
+    colorize(text, startColor, endColor = Color.White) {
         return `${startColor}${text}${endColor}`;
     }
 }
