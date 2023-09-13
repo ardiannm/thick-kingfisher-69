@@ -3,8 +3,8 @@
   "description": "",
   "scripts": {
     "dev": "npm start",
-    "test": "npm run build && node bin/obj/test.js",
-    "start": "node bin/obj/index.js",
+    "test": "npm run build && node obj/test.js",
+    "start": "node obj/index.js",
     "prestart": "npm run build",
     "build": "tsc"
   },
