@@ -57,12 +57,12 @@ const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "p
 export default class Parser extends ParserService {
   //
 
-  private nameSpace: string;
+  protected nameSpace: string;
 
   constructor(public input: string, public path: string) {
     super(input, path);
-    const modules = path.replace(/.txt$/, "").split("/");
-    let lastNameSpace = modules[modules.length - 1];
+    const nameSpaces = path.replace(/.txt$/, "").split("/");
+    let lastNameSpace = nameSpaces[nameSpaces.length - 1];
     this.nameSpace = lastNameSpace;
   }
 
@@ -82,7 +82,7 @@ export default class Parser extends ParserService {
       }
     }
     while (this.hasMoreTokens()) {
-      if (this.matchKeyword("USING")) {
+      if (this.matchKeyword("import")) {
         expressions.push(this.parseImportStatement());
       }
       return this.parseTerm();

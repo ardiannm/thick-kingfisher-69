@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Expression_1 = __importDefault(require("./Expression"));
 class ImportStatement extends Expression_1.default {
     path;
-    module;
-    constructor(path, module) {
+    program;
+    constructor(path, program) {
         super();
         this.path = path;
-        this.module = module;
+        this.program = program;
     }
 }
 exports.default = ImportStatement;

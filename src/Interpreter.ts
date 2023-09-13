@@ -50,7 +50,7 @@ export default class Interpreter {
   }
 
   private evaluateImport(token: ImportStatement) {
-    return this.evaluate(token.module);
+    return this.evaluate(token.program);
   }
 
   private evaluateProgram(token: Program) {

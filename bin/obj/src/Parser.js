@@ -73,8 +73,8 @@ class Parser extends ParserService_1.default {
         super(input, path);
         this.input = input;
         this.path = path;
-        const modules = path.replace(/.txt$/, "").split("/");
-        let lastNameSpace = modules[modules.length - 1];
+        const nameSpaces = path.replace(/.txt$/, "").split("/");
+        let lastNameSpace = nameSpaces[nameSpaces.length - 1];
         this.nameSpace = lastNameSpace;
     }
     parse() {
@@ -91,7 +91,7 @@ class Parser extends ParserService_1.default {
             }
         }
         while (this.hasMoreTokens()) {
-            if (this.matchKeyword("USING")) {
+            if (this.matchKeyword("import")) {
                 expressions.push(this.parseImportStatement());
             }
             return this.parseTerm();
@@ -404,6 +404,7 @@ class Parser extends ParserService_1.default {
                     left = new SpreadsheetCell_1.default(left.view, "");
                 this.trackPosition();
                 let right = this.parseCell();
+                console.log(right.type);
                 this.doNotExpect(right, EOF_1.default, "oops! missing the right hand side for range expression");
                 if (!(right instanceof SpreadsheetCell_1.default || right instanceof Identifier_1.default || right instanceof Number_1.default)) {
                     this.throwError(`expecting a valid spreadsheet reference right after \`:\``);

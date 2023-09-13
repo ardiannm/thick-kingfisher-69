@@ -66,7 +66,7 @@ class Interpreter {
         throw new SystemException_1.default(`token type \`${token.type}\` has not been implemented for interpretation`);
     }
     evaluateImport(token) {
-        return this.evaluate(token.module);
+        return this.evaluate(token.program);
     }
     evaluateProgram(token) {
         let value = new System_1.default();
