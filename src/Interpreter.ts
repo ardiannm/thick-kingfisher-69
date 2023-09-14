@@ -14,9 +14,9 @@ import Exponentiation from "./ast/expressions/Exponentiation";
 import Negation from "./ast/expressions/Negation";
 import String from "./ast/expressions/String";
 import Interpolation from "./ast/expressions/Interpolation";
-import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
+import Cell from "./ast/spreadsheet/Cell";
 import ColumnToNumber from "./services/ColumnToNumber";
-import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
+import Range from "./ast/spreadsheet/Range";
 import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
@@ -25,12 +25,12 @@ import HTMLScript from "./ast/html/HTMLScript";
 import HTMLComment from "./ast/html/HTMLComment";
 import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
-import ImportStatement from "./ast/expressions/ImportStatement";
+import Import from "./ast/expressions/Import";
 import HTMLVoidElement from "./ast/html/HTMLVoidElement";
 
 export default class Interpreter {
   evaluate<T extends SyntaxToken>(token: T) {
-    if (token instanceof ImportStatement) return this.evaluateImport(token);
+    if (token instanceof Import) return this.evaluateImport(token);
     if (token instanceof Program) return this.evaluateProgram(token);
     if (token instanceof Identifier) return this.evaluateIdentifier(token);
     if (token instanceof Number) return this.evaluateNumber(token);
@@ -43,13 +43,13 @@ export default class Interpreter {
     if (token instanceof HTMLTextContent) return this.evaluateHTMLTextContent(token);
     if (token instanceof HTMLScript) return this.evaluateHTMLScript(token);
     if (token instanceof HTMLComment) return this.evaluateHTMLComment(token);
-    if (token instanceof SpreadsheetCell) return this.evaluateSpreadsheetCell(token);
-    if (token instanceof SpreadsheetRange) return this.evaluateSpreadsheetRange(token);
+    if (token instanceof Cell) return this.evaluateSpreadsheetCell(token);
+    if (token instanceof Range) return this.evaluateSpreadsheetRange(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   }
 
-  private evaluateImport(token: ImportStatement) {
+  private evaluateImport(token: Import) {
     return this.evaluate(token.program);
   }
 
@@ -117,11 +117,11 @@ export default class Interpreter {
     return new SystemString(view);
   }
 
-  private evaluateSpreadsheetCell(token: SpreadsheetCell) {
+  private evaluateSpreadsheetCell(token: Cell) {
     return new SystemSpreadsheetCell(parseFloat(token.row) || 0, ColumnToNumber(token.column));
   }
 
-  private evaluateSpreadsheetRange(token: SpreadsheetRange) {
+  private evaluateSpreadsheetRange(token: Range) {
     const left = this.evaluate(token.left) as SystemSpreadsheetCell;
     const right = this.evaluate(token.right) as SystemSpreadsheetCell;
     return new SystemSpreadsheetRange(left, right);

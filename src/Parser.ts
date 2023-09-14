@@ -41,13 +41,13 @@ import Number from "./ast/expressions/Number";
 import Interpolation from "./ast/expressions/Interpolation";
 import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
-import SpreadsheetCell from "./ast/spreadsheet/SpreadsheetCell";
+import Cell from "./ast/spreadsheet/Cell";
 import Colon from "./ast/tokens/Colon";
-import SpreadsheetRange from "./ast/spreadsheet/SpreadsheetRange";
+import Range from "./ast/spreadsheet/Range";
 import BadToken from "./ast/tokens/BadToken";
 import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
-import ImportStatement from "./ast/expressions/ImportStatement";
+import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 
@@ -66,54 +66,58 @@ export default class Parser extends ParserService {
   }
 
   public parse() {
+    this.doNotExpect(this.peekToken(), EOF, "source file is empty");
+    if (this.matchKeyword("DOCTYPE")) {
+      const tree = this.parseHTMLComponent();
+      if (this.hasMoreTokens()) this.throwError(`only one single \`HTMLComponent\` per file is allowed`);
+      return tree;
+    }
+    if (this.matchKeyword("GoogleSheets")) {
+      const tree = this.parseRange();
+      if (this.hasMoreTokens()) this.throwError(`only one single \`HTMLComponent\` per file is allowed`);
+      return tree;
+    }
     return this.parseProgram();
   }
 
   private parseProgram() {
-    this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     let expressions = new Array<Expression>();
-    if (this.peekToken() instanceof Identifier) {
-      if (this.matchKeyword("DOCTYPE")) {
-        while (this.hasMoreTokens()) {
-          expressions.push(this.parseHTMLComponent());
-        }
-      }
-    }
     while (this.hasMoreTokens()) {
-      if (this.matchKeyword("import")) {
-        expressions.push(this.parseImportStatement());
-      }
-      return this.parseTerm();
+      const expression = this.parseImport();
+      expressions.push(expression);
     }
     return new Program(expressions);
   }
 
-  private parseImportStatement() {
-    const errorMessage = "expecting a namespace identifier for module import";
-    const token = this.expect(this.getNextToken(), Identifier, errorMessage);
-    let nameSpace = token.view;
-    while (this.peekToken() instanceof Dot) {
-      const token = this.getNextToken() as Character;
-      nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
+  private parseImport() {
+    if (this.matchKeyword("import")) {
+      const errorMessage = "expecting a namespace identifier for module import";
+      const token = this.expect(this.getNextToken(), Identifier, errorMessage);
+      let nameSpace = token.view;
+      while (this.peekToken() instanceof Dot) {
+        const token = this.getNextToken() as Character;
+        nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
+      }
+      this.trackPosition();
+      this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
+      const path = nameSpace.replace(/\./g, "/") + ".txt";
+      let sourceCode = "";
+      let namesSpaces = nameSpace.split(".");
+      let lastNameSpace = namesSpaces[namesSpaces.length - 1];
+      try {
+        sourceCode = ImportFile(path);
+      } catch (error) {
+        this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
+      }
+      try {
+        const program = new Parser(sourceCode, path).parseProgram();
+        return new Import(nameSpace, program);
+      } catch (error) {
+        // console.log(error);
+        this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
+      }
     }
-    this.trackPosition();
-    this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    const path = nameSpace.replace(/\./g, "/") + ".txt";
-    let sourceCode = "";
-    let namesSpaces = nameSpace.split(".");
-    let lastNameSpace = namesSpaces[namesSpaces.length - 1];
-    try {
-      sourceCode = ImportFile(path);
-    } catch (error) {
-      this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
-    }
-    try {
-      const program = new Parser(sourceCode, path).parse();
-      return new ImportStatement(nameSpace, program);
-    } catch (error) {
-      // console.log(error);
-      this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
-    }
+    return this.parseTerm();
   }
 
   private parseHTMLComponent(): HTML {
@@ -380,7 +384,7 @@ export default class Parser extends ParserService {
 
   private parseRange() {
     let left = this.parseCell();
-    const parsableCell = left instanceof SpreadsheetCell || left instanceof Identifier || left instanceof Number;
+    const parsableCell = left instanceof Cell || left instanceof Identifier || left instanceof Number;
     if (parsableCell) {
       this.considerSpace();
       if (this.peekToken() instanceof Colon) {
@@ -388,22 +392,22 @@ export default class Parser extends ParserService {
         if (!parsableCell) {
           this.throwError(`invalid left hand side for range expression`);
         }
-        if (left instanceof Number) left = new SpreadsheetCell("", left.view);
-        if (left instanceof Identifier) left = new SpreadsheetCell(left.view, "");
+        if (left instanceof Number) left = new Cell("", left.view);
+        if (left instanceof Identifier) left = new Cell(left.view, "");
         this.trackPosition();
         let right = this.parseCell();
         this.doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
-        if (!(right instanceof SpreadsheetCell || right instanceof Identifier || right instanceof Number)) {
+        if (!(right instanceof Cell || right instanceof Identifier || right instanceof Number)) {
           this.throwError(`expecting a valid spreadsheet reference right after \`:\``);
         }
-        if (right instanceof Number) right = new SpreadsheetCell("", right.view);
-        if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
+        if (right instanceof Number) right = new Cell("", right.view);
+        if (right instanceof Identifier) right = new Cell(right.view, "");
         this.ignoreSpace();
         const view = left.column + left.row + ":" + right.column + right.row;
         const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
         if (left.column !== left.column.toUpperCase()) this.throwError(errorMessage);
         if (right.column !== right.column.toUpperCase()) this.throwError(errorMessage);
-        return new SpreadsheetRange(left, right);
+        return new Range(left, right);
       }
       this.ignoreSpace();
     }
@@ -420,7 +424,7 @@ export default class Parser extends ParserService {
         const view = left.view + right.view;
         const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
         if (left.view !== left.view.toUpperCase()) this.throwError(errorMessage);
-        return new SpreadsheetCell(left.view, right.view);
+        return new Cell(left.view, right.view);
       }
       this.ignoreSpace();
     }
