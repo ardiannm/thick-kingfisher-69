@@ -281,6 +281,7 @@ export default class Parser extends ParserService {
     if (token instanceof Plus || token instanceof Minus) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
+      this.trackPosition();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       this.trackPosition();
       const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
@@ -297,6 +298,7 @@ export default class Parser extends ParserService {
     if (token instanceof Product || token instanceof Slash) {
       this.expect(left, Expression, "invalid left hand side in binary expression");
       this.getNextToken();
+      this.trackPosition();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       this.trackPosition();
       const right = this.expect(this.parseFactor(), Expression, "invalid right hand side in binary expression");
