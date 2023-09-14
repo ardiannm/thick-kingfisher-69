@@ -71,7 +71,7 @@ export default class ParserService extends Lexer {
   private displayLine(input: Array<string>, line: number, column: number, errorMessage: string) {
     let target = input[line - 1];
     let start = ` - `;
-    if (column > 50) start += target.substring(column - 1 - 40, column - 1).trimStart();
+    if (column > 50) start += target.substring(column - 1 - 50, column - 1).trimStart();
     else start += target.substring(0, column - 1).trimStart();
     const space = " ".repeat(start.length);
     const description = "\n" + space + `\\__ ${errorMessage}` + "\n" + space + ` \\__ at position ./${this.path}:${line}:${column}`;

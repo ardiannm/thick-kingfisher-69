@@ -51,12 +51,11 @@ import Import from "./ast/expressions/Import";
 import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 import Binary from "./ast/expressions/Binary";
+import Spreadsheet from "./ast/spreadsheet/Spreadsheet";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
 export default class Parser extends ParserService {
-  //
-
   protected nameSpace: string;
 
   constructor(public input: string, public path: string) {
@@ -70,12 +69,18 @@ export default class Parser extends ParserService {
     this.doNotExpect(this.peekToken(), EOF, "source file is empty");
     if (this.matchKeyword("DOCTYPE")) {
       const tree = this.parseHTMLComponent();
-      if (this.hasMoreTokens()) this.throwError(`only a single \`HTMLComponent\` per file is allowed`);
+      this.trackPosition();
+      this.expect(tree, HTML, `unpexpected token found in HTML content`);
+      this.trackPosition();
+      if (this.hasMoreTokens()) this.throwError(`only one single HTML element per file is allowed`);
       return tree;
     }
     if (this.matchKeyword("Spreadsheet")) {
       const tree = this.parseSpreadsheet();
-      if (this.hasMoreTokens()) this.throwError(`only a single \`HTMLComponent\` per file is allowed`);
+      this.trackPosition();
+      this.expect(tree, Spreadsheet, `unpexpected token found in Spreadsheet program`);
+      this.trackPosition();
+      if (this.hasMoreTokens()) this.throwError(`only one single Spreadsheet statement per file is allowed`);
       return tree;
     }
     return this.parseProgram();
