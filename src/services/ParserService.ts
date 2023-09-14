@@ -16,7 +16,10 @@ export default class ParserService extends Lexer {
   }
 
   protected expect<T extends SyntaxToken>(token: SyntaxToken, tokenType: Constructor<T>, message: string): T {
-    if (this.assert(token, tokenType)) return token as T;
+    if (this.assert(token, tokenType)) {
+      this.untrackPosition();
+      return token as T;
+    }
     throw this.report(message);
   }
 
@@ -24,6 +27,7 @@ export default class ParserService extends Lexer {
     if (this.assert(token, tokenType)) {
       throw this.report(message);
     }
+    this.untrackPosition();
     return token as T;
   }
 
@@ -36,7 +40,7 @@ export default class ParserService extends Lexer {
     this.storeColumn = this.column;
   }
 
-  protected untrackPosition() {
+  private untrackPosition() {
     this.storeLine = undefined;
     this.storeColumn = undefined;
   }

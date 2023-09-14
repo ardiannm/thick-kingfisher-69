@@ -93,12 +93,11 @@ export default class Parser extends ParserService {
     const token = this.expect(this.getNextToken(), Identifier, errorMessage);
     let nameSpace = token.view;
     while (this.peekToken() instanceof Dot) {
-      const token = this.getNextToken() as Dot;
+      const token = this.getNextToken() as Character;
       nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
     }
     this.trackPosition();
     this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
-    this.untrackPosition();
     const path = nameSpace.replace(/\./g, "/") + ".txt";
     let sourceCode = "";
     let namesSpaces = nameSpace.split(".");
@@ -228,7 +227,6 @@ export default class Parser extends ParserService {
           if (token instanceof Minus) {
             this.getNextToken();
             this.expect(this.getNextToken(), GreaterThan, "expecting `>` for comment");
-            this.untrackPosition();
             return new HTMLComment(view);
           }
           this.pointer = keep;
@@ -283,9 +281,7 @@ export default class Parser extends ParserService {
       this.getNextToken();
       this.trackPosition();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      this.trackPosition();
       const right = this.expect(this.parseTerm(), Expression, "invalid right hand side in binary expression");
-      this.untrackPosition();
       if (token instanceof Plus) return new Addition(left, right);
       return new Substraction(left, right);
     }
@@ -300,9 +296,7 @@ export default class Parser extends ParserService {
       this.getNextToken();
       this.trackPosition();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
-      this.trackPosition();
       const right = this.expect(this.parseFactor(), Expression, "invalid right hand side in binary expression");
-      this.untrackPosition();
       if (token instanceof Product) return new Multiplication(left, right);
       return new Division(left, right);
     }
@@ -314,6 +308,7 @@ export default class Parser extends ParserService {
     if (this.peekToken() instanceof Power) {
       this.getNextToken();
       this.expect(left, Expression, "invalid left hand side in binary expression");
+      this.trackPosition();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of binary expression");
       const right = this.expect(this.parseExponent(), Expression, "invalid right hand side in binary expression");
       left = new Exponentiation(left, right);
@@ -325,6 +320,7 @@ export default class Parser extends ParserService {
     if (this.peekToken() instanceof Plus || this.peekToken() instanceof Minus) {
       const operator = this.getNextToken();
       this.doNotExpect(this.peekToken(), EOF, "unexpected end of unary expression");
+      this.trackPosition();
       const right = this.expect(this.parseUnary(), Expression, "invalid expression in unary expression");
       if (operator instanceof Plus) return new Identity(right);
       return new Negation(right);
@@ -402,7 +398,6 @@ export default class Parser extends ParserService {
         }
         if (right instanceof Number) right = new SpreadsheetCell("", right.view);
         if (right instanceof Identifier) right = new SpreadsheetCell(right.view, "");
-        this.untrackPosition();
         this.ignoreSpace();
         const view = left.column + left.row + ":" + right.column + right.row;
         const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
