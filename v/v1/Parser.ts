@@ -48,6 +48,7 @@ import BadToken from "./ast/tokens/BadToken";
 import Dot from "./ast/tokens/Dot";
 import SemiColon from "./ast/tokens/SemiColon";
 import Import from "./ast/expressions/Import";
+import ImportFile from "./services/ImportFile";
 import HTML from "./ast/html/HTML";
 import Binary from "./ast/expressions/Binary";
 import Spreadsheet from "./ast/spreadsheet/Spreadsheet";
@@ -74,9 +75,22 @@ export default class Parser extends ParserService {
       if (this.hasMoreTokens()) this.throwError(`only one single HTML element per file is allowed`);
       return tree;
     }
+    if (this.matchKeyword("Spreadsheet")) {
+      const tree = this.parseSpreadsheet();
+      this.trackPosition();
+      this.expect(tree, Spreadsheet, `unpexpected token found in Spreadsheet program`);
+      this.trackPosition();
+      if (this.hasMoreTokens()) this.throwError(`only one single Spreadsheet statement per file is allowed`);
+      return tree;
+    }
+    return this.parseProgram();
   }
 
-  public parseRange() {
+  private parseSpreadsheet() {
+    return this.parseRange();
+  }
+
+  private parseRange() {
     let left = this.parseCell();
     const parsableCell = left instanceof Cell || left instanceof Identifier || left instanceof Number;
     if (parsableCell) {
@@ -123,6 +137,49 @@ export default class Parser extends ParserService {
       this.ignoreSpace();
     }
     return left;
+  }
+
+  private parseProgram() {
+    let expressions = new Array<Expression>();
+    while (this.hasMoreTokens()) {
+      const expression = this.parseImport();
+      if (!(expression instanceof Import || expression instanceof Binary)) {
+        this.throwError(`import statements or binary expression allowed only; matched \`${expression.type}\``);
+      }
+      expressions.push(expression);
+    }
+    return new Program(expressions);
+  }
+
+  private parseImport() {
+    if (this.matchKeyword("import")) {
+      const errorMessage = "expecting a namespace identifier for module import";
+      const token = this.expect(this.getNextToken(), Identifier, errorMessage);
+      let nameSpace = token.view;
+      while (this.peekToken() instanceof Dot) {
+        const token = this.getNextToken() as Character;
+        nameSpace += token.view + this.expect(this.getNextToken(), Identifier, errorMessage).view;
+      }
+      this.trackPosition();
+      this.expect(this.getNextToken(), SemiColon, "semicolon `;` expected after an import statement");
+      const path = nameSpace.replace(/\./g, "/") + ".txt";
+      let sourceCode = "";
+      let namesSpaces = nameSpace.split(".");
+      let lastNameSpace = namesSpaces[namesSpaces.length - 1];
+      try {
+        sourceCode = ImportFile(path);
+      } catch (error) {
+        this.throwError(`namespace \`${lastNameSpace}\` does not exist`);
+      }
+      try {
+        const program = new Parser(sourceCode, path).parseProgram();
+        return new Import(nameSpace, program);
+      } catch (error) {
+        console.log(error);
+        this.throwError(`internal error found in \`${lastNameSpace}\` module with file path \`./${path}\``);
+      }
+    }
+    return this.parseTerm();
   }
 
   private parseHTMLComponent(): HTML {
