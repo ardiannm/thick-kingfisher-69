@@ -15,7 +15,6 @@ import Negation from "./ast/expressions/Negation";
 import String from "./ast/expressions/String";
 import Interpolation from "./ast/expressions/Interpolation";
 import Cell from "./ast/spreadsheet/Cell";
-import ColumnToNumber from "./services/ColumnToNumber";
 import Range from "./ast/spreadsheet/Range";
 import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
 import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
@@ -27,45 +26,48 @@ import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
 import Import from "./ast/expressions/Import";
 import HTMLVoidElement from "./ast/html/HTMLVoidElement";
+import InterpreterService from "./InterpreterService";
 
-export default class Interpreter {
-  evaluate<T extends SyntaxToken>(token: T) {
-    if (token instanceof Import) return this.evaluateImport(token);
-    if (token instanceof Program) return this.evaluateProgram(token);
-    if (token instanceof Identifier) return this.evaluateIdentifier(token);
-    if (token instanceof Number) return this.evaluateNumber(token);
-    if (token instanceof String) return this.evaluateString(token);
-    if (token instanceof Interpolation) return this.evaluateInterpolation(token);
-    if (token instanceof Unary) return this.evaluateUnary(token);
-    if (token instanceof Binary) return this.evaluateBinary(token);
-    if (token instanceof HTMLElement) return this.evaluateHTMLElement(token);
-    if (token instanceof HTMLVoidElement) return this.evaluateVoidHTMLElement(token);
-    if (token instanceof HTMLTextContent) return this.evaluateHTMLTextContent(token);
-    if (token instanceof HTMLScript) return this.evaluateHTMLScript(token);
-    if (token instanceof HTMLComment) return this.evaluateHTMLComment(token);
-    if (token instanceof Cell) return this.evaluateSpreadsheetCell(token);
-    if (token instanceof Range) return this.evaluateSpreadsheetRange(token);
+const Interpreter = () => {
+  const { columnToNumber } = InterpreterService();
+
+  const evaluate = <T extends SyntaxToken>(token: T): System => {
+    if (token instanceof Import) return evaluateImport(token);
+    if (token instanceof Program) return evaluateProgram(token);
+    if (token instanceof Identifier) return evaluateIdentifier(token);
+    if (token instanceof Number) return evaluateNumber(token);
+    if (token instanceof String) return evaluateString(token);
+    if (token instanceof Interpolation) return evaluateInterpolation(token);
+    if (token instanceof Unary) return evaluateUnary(token);
+    if (token instanceof Binary) return evaluateBinary(token);
+    if (token instanceof HTMLElement) return evaluateHTMLElement(token);
+    if (token instanceof HTMLVoidElement) return evaluateVoidHTMLElement(token);
+    if (token instanceof HTMLTextContent) return evaluateHTMLTextContent(token);
+    if (token instanceof HTMLScript) return evaluateHTMLScript(token);
+    if (token instanceof HTMLComment) return evaluateHTMLComment(token);
+    if (token instanceof Cell) return evaluateSpreadsheetCell(token);
+    if (token instanceof Range) return evaluateSpreadsheetRange(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
-  }
+  };
 
-  private evaluateImport(token: Import) {
-    return this.evaluate(token.program);
-  }
+  const evaluateImport = (token: Import) => {
+    return evaluate(token.program);
+  };
 
-  private evaluateProgram(token: Program) {
+  const evaluateProgram = (token: Program) => {
     let value = new System();
-    token.expressions.forEach((e) => (value = this.evaluate(e)));
+    token.expressions.forEach((e) => (value = evaluate(e)));
     return value;
-  }
+  };
 
-  private evaluateNumber(token: Number) {
+  const evaluateNumber = (token: Number) => {
     return new SystemNumber(parseFloat(token.view));
-  }
+  };
 
-  private evaluateBinary(token: Binary) {
-    const left = this.evaluate(token.left);
-    const right = this.evaluate(token.right);
+  const evaluateBinary = (token: Binary) => {
+    const left = evaluate(token.left);
+    const right = evaluate(token.right);
 
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
@@ -83,10 +85,10 @@ export default class Interpreter {
       default:
         return new SystemNumber(left.value + right.value);
     }
-  }
+  };
 
-  private evaluateUnary(token: Unary) {
-    const right = this.evaluate(token.right);
+  const evaluateUnary = (token: Unary) => {
+    const right = evaluate(token.right);
 
     if (!(right instanceof SystemNumber)) {
       return new SystemException(`can't perform unary operation over "${token.right.type}" token`);
@@ -98,16 +100,16 @@ export default class Interpreter {
       default:
         return new SystemNumber(+right.value);
     }
-  }
+  };
 
-  private evaluateString(token: String) {
+  const evaluateString = (token: String) => {
     return new SystemString(token.view);
-  }
+  };
 
-  private evaluateInterpolation(token: Interpolation) {
+  const evaluateInterpolation = (token: Interpolation) => {
     let view = "";
     token.strings.forEach((token) => {
-      const runtime = this.evaluate(token);
+      const runtime = evaluate(token);
       if (runtime instanceof SystemNumber) {
         view += runtime.value.toString();
       } else if (runtime instanceof SystemString) {
@@ -115,39 +117,43 @@ export default class Interpreter {
       }
     });
     return new SystemString(view);
-  }
+  };
 
-  private evaluateSpreadsheetCell(token: Cell) {
-    return new SystemSpreadsheetCell(parseFloat(token.row) || 0, ColumnToNumber(token.column));
-  }
+  const evaluateSpreadsheetCell = (token: Cell) => {
+    return new SystemSpreadsheetCell(parseFloat(token.row) || 0, columnToNumber(token.column));
+  };
 
-  private evaluateSpreadsheetRange(token: Range) {
-    const left = this.evaluate(token.left) as SystemSpreadsheetCell;
-    const right = this.evaluate(token.right) as SystemSpreadsheetCell;
+  const evaluateSpreadsheetRange = (token: Range) => {
+    const left = evaluate(token.left) as SystemSpreadsheetCell;
+    const right = evaluate(token.right) as SystemSpreadsheetCell;
     return new SystemSpreadsheetRange(left, right);
-  }
+  };
 
-  private evaluateHTMLTextContent(token: HTMLTextContent) {
+  const evaluateHTMLTextContent = (token: HTMLTextContent) => {
     return new SystemString(token.view);
-  }
+  };
 
-  private evaluateHTMLScript(token: HTMLScript) {
+  const evaluateHTMLScript = (token: HTMLScript) => {
     return new SystemString(token.view);
-  }
+  };
 
-  private evaluateHTMLComment(token: HTMLComment) {
+  const evaluateHTMLComment = (token: HTMLComment) => {
     return new SystemString(token.view);
-  }
+  };
 
-  private evaluateVoidHTMLElement(_: HTMLVoidElement) {
+  const evaluateVoidHTMLElement = (_: HTMLVoidElement) => {
     return new SystemString("");
-  }
+  };
 
-  private evaluateHTMLElement(token: HTMLElement) {
-    return new SystemStringArray(token.children.map((e) => this.evaluate(e)));
-  }
+  const evaluateHTMLElement = (token: HTMLElement) => {
+    return new SystemStringArray(token.children.map((e) => evaluate(e) as SystemString));
+  };
 
-  private evaluateIdentifier(token: Identifier) {
+  const evaluateIdentifier = (token: Identifier) => {
     return new SystemString(token.view);
-  }
-}
+  };
+
+  return { evaluate };
+};
+
+export default Interpreter;

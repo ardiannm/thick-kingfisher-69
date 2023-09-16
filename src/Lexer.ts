@@ -24,41 +24,38 @@ import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
 import Dot from "./ast/tokens/Dot";
 
-export default class Lexer {
-  protected pointer = 0;
-  protected id = 1;
-  protected line = 1;
-  protected column = 1;
+const Lexer = (input: string) => {
+  let pointer = 0;
+  let id = 1;
+  let line = 1;
+  let column = 1;
+  let space = false;
 
-  private space = false;
-
-  constructor(protected input: string) {}
-
-  protected peekToken(): SyntaxToken {
-    const pointer = this.pointer;
-    const id = this.id;
-    const line = this.line;
-    const column = this.column;
-    const token = this.getNextToken();
-    this.pointer = pointer;
-    this.id = id;
-    this.line = line;
-    this.column = column;
+  const peekToken = (): SyntaxToken => {
+    let prevPointer = pointer;
+    const prevId = id;
+    const prevLine = line;
+    const prevColumn = column;
+    const token = getNextToken();
+    pointer = prevPointer;
+    id = prevId;
+    line = prevLine;
+    column = prevColumn;
     return token;
-  }
+  };
 
-  public hasMoreTokens(): boolean {
-    return !(this.peekToken() instanceof EOF);
-  }
+  const hasMoreTokens = (): boolean => {
+    return !(peekToken() instanceof EOF);
+  };
 
-  protected getNextToken(): SyntaxToken {
-    const char = this.peek();
+  const getNextToken = (): SyntaxToken => {
+    const char = peek();
 
-    if (/[a-zA-Z]/.test(char)) return this.getIdentifier();
-    if (/[0-9]/.test(char)) return this.getNumber();
-    if (/\s/.test(char)) return this.getSpace();
+    if (/[a-zA-Z]/.test(char)) return getIdentifier();
+    if (/[0-9]/.test(char)) return getNumber();
+    if (/\s/.test(char)) return getSpace();
 
-    const next = this.getNext();
+    const next = getNext();
 
     switch (char) {
       case "":
@@ -105,50 +102,54 @@ export default class Lexer {
       default:
         return new BadToken(next);
     }
-  }
+  };
 
-  private getNumber() {
+  const getNumber = () => {
     let view = "";
-    while (/[0-9]/.test(this.peek())) view += this.getNext();
+    while (/[0-9]/.test(peek())) view += getNext();
     return new Number(view);
-  }
+  };
 
-  private getSpace() {
+  const getSpace = () => {
     let view = "";
-    while (/\s/.test(this.peek())) view += this.getNext();
-    if (this.space) return new Space(view);
-    return this.getNextToken();
-  }
+    while (/\s/.test(peek())) view += getNext();
+    if (space) return new Space(view);
+    return getNextToken();
+  };
 
-  private getIdentifier() {
+  const getIdentifier = () => {
     let view = "";
-    while (/[a-zA-Z]/.test(this.peek())) view += this.getNext();
+    while (/[a-zA-Z]/.test(peek())) view += getNext();
     return new Identifier(view);
-  }
+  };
 
-  private peek() {
-    return this.input.charAt(this.pointer);
-  }
+  const peek = () => {
+    return input.charAt(pointer);
+  };
 
-  protected getNext() {
-    const character = this.peek();
+  const getNext = () => {
+    const character = peek();
     if (character) {
-      this.pointer = this.pointer + 1;
+      pointer = pointer + 1;
       if (character === "\n") {
-        this.line = this.line + 1;
-        this.column = 1;
+        line = line + 1;
+        column = 1;
       } else {
-        this.column = this.column + 1;
+        column = column + 1;
       }
     }
     return character;
-  }
+  };
 
-  protected considerSpace() {
-    this.space = true;
-  }
+  const considerSpace = () => {
+    space = true;
+  };
 
-  protected ignoreSpace() {
-    this.space = false;
-  }
-}
+  const ignoreSpace = () => {
+    space = false;
+  };
+
+  return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken };
+};
+
+export default Lexer;

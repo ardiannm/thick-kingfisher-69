@@ -1,4 +1,4 @@
-import Color, { colorize } from "../../services/Color";
+import Color, { colorize } from "../../Color";
 
 export default class SyntaxToken {
   public type = this.constructor.name;

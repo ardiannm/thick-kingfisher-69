@@ -1,7 +1,9 @@
-import SyntaxToken from "../ast/tokens/SyntaxToken";
-import Constructor from "../services/Constructor";
+import SyntaxToken from "./ast/tokens/SyntaxToken";
 
-const Service = () => {
+// deno-lint-ignore no-explicit-any
+type Constructor<Class> = new (...args: any[]) => Class;
+
+const ParserService = () => {
   const assert = <T extends SyntaxToken>(instance: SyntaxToken, tokenType: Constructor<T>): boolean => {
     return instance instanceof tokenType;
   };
@@ -27,4 +29,4 @@ const Service = () => {
   return { expect, doNotExpect, throwError };
 };
 
-export default Service;
+export default ParserService;
