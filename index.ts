@@ -1,10 +1,10 @@
 import prompt from "prompt-sync";
-import Parser from "./code/Parser";
-import Interpreter from "./code/Interpreter";
-import System from "./code/system/System";
-import SystemNumber from "./code/system/SystemNumber";
-import SystemString from "./code/system/SystemString";
-import SystemException from "./code/system/SystemException";
+import Parser from "./src/Parser";
+import Interpreter from "./src/Interpreter";
+import System from "./src/system/System";
+import SystemNumber from "./src/system/SystemNumber";
+import SystemString from "./src/system/SystemString";
+import SystemException from "./src/system/SystemException";
 
 let showTree = false;
 let doEvaluate = false;
