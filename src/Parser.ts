@@ -189,7 +189,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseRange };
+  return { parseRange, parseString };
 };
 
 export default Parser;

@@ -205,7 +205,7 @@ export default class Parser extends ParserService {
     return left;
   }
 
-  private parseHTMLTextContent() {
+  private parseHTMLTextContent(): HTML {
     let view = "";
     this.considerSpace();
     if (this.peekToken() instanceof LessThan) {
@@ -339,7 +339,7 @@ export default class Parser extends ParserService {
     return new Attribute(property, value);
   }
 
-  private parseTerm() {
+  private parseTerm(): Expression {
     const left = this.parseFactor();
     const token = this.peekToken();
     if (token instanceof Plus || token instanceof Minus) {
@@ -354,7 +354,7 @@ export default class Parser extends ParserService {
     return left;
   }
 
-  private parseFactor() {
+  private parseFactor(): Expression {
     const left = this.parseExponent();
     const token = this.peekToken();
     if (token instanceof Product || token instanceof Slash) {
