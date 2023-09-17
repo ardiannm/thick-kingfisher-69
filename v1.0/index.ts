@@ -1,11 +1,10 @@
 import prompt from "prompt-sync";
-import ImportFile from "./src/services/ImportFile";
-import Parser from "./src/Parser";
-import Interpreter from "./src/Interpreter";
-import System from "./src/__parse__/system/System";
-import SystemNumber from "./src/__parse__/system/SystemNumber";
-import SystemString from "./src/__parse__/system/SystemString";
-import SystemException from "./src/__parse__/system/SystemException";
+import Parser from "./code/Parser";
+import Interpreter from "./code/Interpreter";
+import System from "./code/system/System";
+import SystemNumber from "./code/system/SystemNumber";
+import SystemString from "./code/system/SystemString";
+import SystemException from "./code/system/SystemException";
 
 let showTree = false;
 let doEvaluate = false;
@@ -18,7 +17,7 @@ console.log();
 while (true) {
   const path = "bin/index.txt";
 
-  const input = prompt({ sigint: true })("> ") || ImportFile(path);
+  const input = prompt({ sigint: true })("> ");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
     console.log();
