@@ -1,6 +1,5 @@
 import SyntaxToken from "./ast/tokens/SyntaxToken";
 
-// deno-lint-ignore no-explicit-any
 type Constructor<Class> = new (...args: any[]) => Class;
 
 const ParserService = () => {
