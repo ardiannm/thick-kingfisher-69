@@ -1,10 +1,6 @@
 import prompt from "prompt-sync";
+import HTMLParser from "./src/HTMLParser";
 import Parser from "./src/Parser";
-import Interpreter from "./src/Interpreter";
-import System from "./src/system/System";
-import SystemNumber from "./src/system/SystemNumber";
-import SystemString from "./src/system/SystemString";
-import SystemException from "./src/system/SystemException";
 
 let showTree = false;
 let doEvaluate = false;
@@ -15,8 +11,6 @@ console.log(`   - interpreter ${doEvaluate ? "will" : "won't"} be evaluating`);
 console.log();
 
 while (true) {
-  const path = "bin/index.txt";
-
   const input = prompt({ sigint: true })("> ");
   if (input.toLowerCase() === "tree".toLowerCase()) {
     showTree = !showTree;
@@ -34,20 +28,12 @@ while (true) {
   }
   console.log();
   try {
-    const parser = new Parser(input, path);
-    const program = parser.parse();
-    console.log(program.toString());
-    if (showTree) report(program);
-    if (doEvaluate) {
-      const system = new Interpreter().evaluate(program);
-      if (system instanceof SystemNumber) report(system.value);
-      else if (system instanceof SystemString) report(system.value);
-      else report(system);
-    }
+    // const tree = Parser(input).parseRange(); report(tree);
+    // const tree = HTMLParser(input).parseHTMLComponent();
+    const tree = Parser(input).parseString();
+    report(tree);
   } catch (err) {
-    if (err instanceof System) report(err);
-    else if (err instanceof SystemException) console.log(err.value);
-    else console.log(err);
+    console.log(err);
   }
   console.log();
 }
