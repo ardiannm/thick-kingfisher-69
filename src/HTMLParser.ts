@@ -31,9 +31,7 @@ const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "p
 const HTMLParser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { parseString } = Parser(input);
-
   const tokenizer = Lexer(input);
-
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = tokenizer;
 
   const parseHTMLComponent = (): HTML => {

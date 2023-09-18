@@ -30,7 +30,7 @@ while (true) {
   try {
     // const tree = Parser(input).parseRange(); report(tree);
     // const tree = HTMLParser(input).parseHTMLComponent();
-    const tree = Parser(input).parseString();
+    const tree = Parser(input).parseTerm();
     report(tree);
   } catch (err) {
     console.log(err);

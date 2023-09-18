@@ -34,54 +34,6 @@ const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
 
-  const parseRange = () => {
-    let left = parseCell();
-    const parsableCell = left instanceof Cell || left instanceof Identifier || left instanceof Number;
-    if (parsableCell) {
-      considerSpace();
-      if (peekToken() instanceof Colon) {
-        getNextToken();
-        if (!parsableCell) {
-          throwError(`invalid left hand side for range expression`);
-        }
-        if (left instanceof Number) left = new Cell("", left.view);
-        if (left instanceof Identifier) left = new Cell(left.view, "");
-        let right = parseCell();
-        doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
-        if (!(right instanceof Cell || right instanceof Identifier || right instanceof Number)) {
-          throwError(`expecting a valid spreadsheet reference right after \`:\``);
-        }
-        if (right instanceof Number) right = new Cell("", right.view);
-        if (right instanceof Identifier) right = new Cell(right.view, "");
-        ignoreSpace();
-        const view = left.column + left.row + ":" + right.column + right.row;
-        const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (left.column !== left.column.toUpperCase()) throwError(errorMessage);
-        if (right.column !== right.column.toUpperCase()) throwError(errorMessage);
-        return new Range(left, right);
-      }
-      ignoreSpace();
-    }
-    return left;
-  };
-
-  const parseCell = () => {
-    const left = parseString() as Identifier | Number;
-    if (left instanceof Identifier) {
-      considerSpace();
-      if (peekToken() instanceof Number) {
-        const right = parseToken() as Number;
-        ignoreSpace();
-        const view = left.view + right.view;
-        const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (left.view !== left.view.toUpperCase()) throwError(errorMessage);
-        return new Cell(left.view, right.view);
-      }
-      ignoreSpace();
-    }
-    return left;
-  };
-
   const parseTerm = (): Expression => {
     const left = parseFactor();
     const token = peekToken();
@@ -141,7 +93,55 @@ const Parser = (input: string) => {
       expect(getNextToken(), CloseParenthesis, "expecting to close this parenthesis");
       return new Parenthesis(expression);
     }
-    return parseString();
+    return parseRange();
+  };
+
+  const parseRange = () => {
+    let left = parseCell();
+    const parsableCell = left instanceof Cell || left instanceof Identifier || left instanceof Number;
+    if (parsableCell) {
+      considerSpace();
+      if (peekToken() instanceof Colon) {
+        getNextToken();
+        if (!parsableCell) {
+          throwError(`invalid left hand side for range expression`);
+        }
+        if (left instanceof Number) left = new Cell("", left.view);
+        if (left instanceof Identifier) left = new Cell(left.view, "");
+        let right = parseCell();
+        doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
+        if (!(right instanceof Cell || right instanceof Identifier || right instanceof Number)) {
+          throwError(`expecting a valid spreadsheet reference right after \`:\``);
+        }
+        if (right instanceof Number) right = new Cell("", right.view);
+        if (right instanceof Identifier) right = new Cell(right.view, "");
+        ignoreSpace();
+        const view = left.column + left.row + ":" + right.column + right.row;
+        const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
+        if (left.column !== left.column.toUpperCase()) throwError(errorMessage);
+        if (right.column !== right.column.toUpperCase()) throwError(errorMessage);
+        return new Range(left, right);
+      }
+      ignoreSpace();
+    }
+    return left;
+  };
+
+  const parseCell = () => {
+    const left = parseString() as Identifier | Number;
+    if (left instanceof Identifier) {
+      considerSpace();
+      if (peekToken() instanceof Number) {
+        const right = parseToken() as Number;
+        ignoreSpace();
+        const view = left.view + right.view;
+        const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
+        if (left.view !== left.view.toUpperCase()) throwError(errorMessage);
+        return new Cell(left.view, right.view);
+      }
+      ignoreSpace();
+    }
+    return left;
   };
 
   const parseString = () => {
@@ -149,38 +149,17 @@ const Parser = (input: string) => {
       getNextToken();
       let view = "";
       considerSpace();
-      const terms = new Array<Expression>();
       while (hasMoreTokens()) {
         const token = peekToken();
         if (token instanceof Quote) break;
-        if (token instanceof OpenBrace) {
-          if (view) {
-            terms.push(new String(view));
-            view = "";
-          }
-          const interpolation = parseInterpolation();
-          terms.push(interpolation);
-          continue;
-        }
         const character = getNextToken() as Character;
         view += character.view;
       }
       expect(getNextToken(), Quote, "expecting a closing quote for the string");
       ignoreSpace();
-      if (view) terms.push(new String(view));
-      if (terms.length > 1) return new Interpolation(terms);
       return new String(view);
     }
     return parseToken();
-  };
-
-  const parseInterpolation = () => {
-    ignoreSpace();
-    expect(getNextToken(), OpenBrace, "expecting '{' for string interpolation");
-    const expression = parseTerm();
-    expect(getNextToken(), CloseBrace, "expecting '}' for string interpolation");
-    considerSpace();
-    return expression;
   };
 
   const parseToken = () => {
@@ -189,7 +168,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseRange, parseString };
+  return { parseTerm, parseString };
 };
 
 export default Parser;
