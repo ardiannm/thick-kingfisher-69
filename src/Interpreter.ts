@@ -13,7 +13,6 @@ import Number from "./ast/expressions/Number";
 import Exponentiation from "./ast/expressions/Exponentiation";
 import Negation from "./ast/expressions/Negation";
 import String from "./ast/expressions/String";
-import Interpolation from "./ast/expressions/Interpolation";
 import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
 import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
@@ -37,7 +36,6 @@ const Interpreter = () => {
     if (token instanceof Identifier) return evaluateIdentifier(token);
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
-    if (token instanceof Interpolation) return evaluateInterpolation(token);
     if (token instanceof Unary) return evaluateUnary(token);
     if (token instanceof Binary) return evaluateBinary(token);
     if (token instanceof HTMLElement) return evaluateHTMLElement(token);
@@ -104,19 +102,6 @@ const Interpreter = () => {
 
   const evaluateString = (token: String) => {
     return new SystemString(token.view);
-  };
-
-  const evaluateInterpolation = (token: Interpolation) => {
-    let view = "";
-    token.strings.forEach((token) => {
-      const runtime = evaluate(token);
-      if (runtime instanceof SystemNumber) {
-        view += runtime.value.toString();
-      } else if (runtime instanceof SystemString) {
-        view += runtime.value;
-      }
-    });
-    return new SystemString(view);
   };
 
   const evaluateSpreadsheetCell = (token: Cell) => {

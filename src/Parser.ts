@@ -4,7 +4,6 @@ import Exponentiation from "./ast/expressions/Exponentiation";
 import Expression from "./ast/expressions/Expression";
 import Identifier from "./ast/expressions/Identifier";
 import Identity from "./ast/expressions/Identity";
-import Interpolation from "./ast/expressions/Interpolation";
 import Multiplication from "./ast/expressions/Multiplication";
 import Negation from "./ast/expressions/Negation";
 import Number from "./ast/expressions/Number";
@@ -20,11 +19,9 @@ import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
 import BadToken from "./ast/tokens/BadToken";
 import Character from "./ast/tokens/Character";
-import CloseBrace from "./ast/tokens/CloseBrace";
 import CloseParenthesis from "./ast/tokens/CloseParenthesis";
 import Colon from "./ast/tokens/Colon";
 import EOF from "./ast/tokens/EOF";
-import OpenBrace from "./ast/tokens/OpenBrace";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
@@ -168,7 +165,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseTerm, parseString };
+  return { parseRange, parseTerm, parseString };
 };
 
 export default Parser;
