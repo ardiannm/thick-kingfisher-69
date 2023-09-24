@@ -44,9 +44,9 @@ const Parser = (input: string) => {
   };
 
   const parseAssignment = () => {
-    const left = parseCell();
+    const left = parseCell() as Cell;
     if (peekToken() instanceof Equals) {
-      expect(left, Identifier, "assignee must be an identifier");
+      expect(left, Cell, "assignee must be a spreadsheet cell");
       parseToken();
       const start = pointer();
       const right = parseTerm();

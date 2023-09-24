@@ -1,11 +1,14 @@
 import prompt from "prompt-sync";
-import HTMLParser from "./src/HTMLParser";
 import Parser from "./src/Parser";
 import Interpreter from "./src/Interpreter";
 import Environment from "./src/Environment";
 
+// import HTMLParser from "./src/HTMLParser";
+
 let showTree = false;
-let doEvaluate = false;
+let doEvaluate = true;
+const interpreter = Interpreter(new Environment());
+
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 console.log(`   - tree ${showTree ? "is" : "is not"} active for logging`);
@@ -33,8 +36,8 @@ while (true) {
     // const tree = Parser(input).parseRange(); report(tree);
     // const tree = HTMLParser(input).parseHTMLComponent();
     const tree = Parser(input).parseAssignment();
-    report(tree);
-    if (doEvaluate) report(Interpreter(new Environment()).evaluate(tree));
+    if (showTree) report(tree);
+    if (doEvaluate) report(interpreter.evaluate(tree));
   } catch (err) {
     console.log(err);
   }

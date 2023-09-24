@@ -15,8 +15,8 @@ import Negation from "./ast/expressions/Negation";
 import String from "./ast/expressions/String";
 import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
-import SystemSpreadsheetCell from "./system/SystemSpreadsheetCell";
-import SystemSpreadsheetRange from "./system/SystemSpreadsheetRange";
+import SystemCell from "./system/SystemCell";
+import SystemRange from "./system/SystemRange";
 import HTMLTextContent from "./ast/html/HTMLTextContent";
 import HTMLElement from "./ast/html/HTMLElement";
 import HTMLScript from "./ast/html/HTMLScript";
@@ -35,7 +35,7 @@ const Interpreter = (env: Environment) => {
   const evaluate = <T extends SyntaxToken>(token: T): System => {
     if (token instanceof Import) return evaluateImport(token);
     if (token instanceof Program) return evaluateProgram(token);
-    if (token instanceof Identifier) return evaluateIdentifier(token);
+    // if (token instanceof Identifier) return evaluateIdentifier(token);
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
     if (token instanceof Unary) return evaluateUnary(token);
@@ -45,8 +45,8 @@ const Interpreter = (env: Environment) => {
     if (token instanceof HTMLTextContent) return evaluateHTMLTextContent(token);
     if (token instanceof HTMLScript) return evaluateHTMLScript(token);
     if (token instanceof HTMLComment) return evaluateHTMLComment(token);
-    if (token instanceof Cell) return evaluateSpreadsheetCell(token);
-    if (token instanceof Range) return evaluateSpreadsheetRange(token);
+    if (token instanceof Cell) return evaluateCell(token);
+    if (token instanceof Range) return evaluateRange(token);
     if (token instanceof Assignment) return evaluateAssignment(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
@@ -67,8 +67,11 @@ const Interpreter = (env: Environment) => {
   };
 
   const evaluateBinary = (token: Binary) => {
-    const left = evaluate(token.left);
-    const right = evaluate(token.right);
+    let left = evaluate(token.left);
+    let right = evaluate(token.right);
+
+    if (left instanceof SystemCell) left = left.value;
+    if (right instanceof SystemCell) right = right.value;
 
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
@@ -107,14 +110,17 @@ const Interpreter = (env: Environment) => {
     return new SystemString(token.view);
   };
 
-  const evaluateSpreadsheetCell = (token: Cell) => {
-    return new SystemSpreadsheetCell(parseFloat(token.row) || 0, columnToNumber(token.column));
+  const evaluateCell = (token: Cell) => {
+    const row = parseFloat(token.row) || 0;
+    const column = columnToNumber(token.column);
+    const value = env.getVar(token.view);
+    return new SystemCell(row, column, token.view, value);
   };
 
-  const evaluateSpreadsheetRange = (token: Range) => {
-    const left = evaluate(token.left) as SystemSpreadsheetCell;
-    const right = evaluate(token.right) as SystemSpreadsheetCell;
-    return new SystemSpreadsheetRange(left, right);
+  const evaluateRange = (token: Range) => {
+    const left = evaluate(token.left) as SystemCell;
+    const right = evaluate(token.right) as SystemCell;
+    return new SystemRange(left, right);
   };
 
   const evaluateHTMLTextContent = (token: HTMLTextContent) => {
@@ -137,12 +143,8 @@ const Interpreter = (env: Environment) => {
     return new SystemStringArray(token.children.map((e) => evaluate(e) as SystemString));
   };
 
-  const evaluateIdentifier = (token: Identifier) => {
-    return new SystemString(token.view);
-  };
-
   const evaluateAssignment = (token: Assignment) => {
-    return env.assignVar(token.assignee.view, token.value);
+    return env.assignVar(token.assignee.view, evaluate(token.value));
   };
 
   return { evaluate };

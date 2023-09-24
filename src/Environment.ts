@@ -1,12 +1,15 @@
 import System from "./system/System";
 
 export default class Environment {
-  private vars = new Map<string, System>();
+  public refs = new Map<string, System>();
 
-  public assignVar<S extends System>(varName: string, varValue: S) {
-    this.vars.set(varName, varValue);
+  public assignVar(varName: string, varValue: System) {
+    this.refs.set(varName, varValue);
     return varValue;
   }
 
-  //   public declareVar<S extends System>(varName: string, varValue: S) {}
+  public getVar(varName: string) {
+    if (this.refs.has(varName)) return this.refs.get(varName);
+    throw `\`${varName}\` is not defined`;
+  }
 }
