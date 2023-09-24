@@ -26,8 +26,10 @@ import SystemStringArray from "./system/SystemStringArray";
 import Import from "./ast/expressions/Import";
 import HTMLVoidElement from "./ast/html/HTMLVoidElement";
 import InterpreterService from "./InterpreterService";
+import Assignment from "./ast/expressions/Assignment";
+import Environment from "./Environment";
 
-const Interpreter = () => {
+const Interpreter = (env: Environment) => {
   const { columnToNumber } = InterpreterService();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
@@ -45,6 +47,7 @@ const Interpreter = () => {
     if (token instanceof HTMLComment) return evaluateHTMLComment(token);
     if (token instanceof Cell) return evaluateSpreadsheetCell(token);
     if (token instanceof Range) return evaluateSpreadsheetRange(token);
+    if (token instanceof Assignment) return evaluateAssignment(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   };
@@ -136,6 +139,10 @@ const Interpreter = () => {
 
   const evaluateIdentifier = (token: Identifier) => {
     return new SystemString(token.view);
+  };
+
+  const evaluateAssignment = (token: Assignment) => {
+    return env.assignVar(token.assignee.view, token.value);
   };
 
   return { evaluate };

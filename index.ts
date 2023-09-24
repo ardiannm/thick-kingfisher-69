@@ -1,6 +1,8 @@
 import prompt from "prompt-sync";
 import HTMLParser from "./src/HTMLParser";
 import Parser from "./src/Parser";
+import Interpreter from "./src/Interpreter";
+import Environment from "./src/Environment";
 
 let showTree = false;
 let doEvaluate = false;
@@ -32,6 +34,7 @@ while (true) {
     // const tree = HTMLParser(input).parseHTMLComponent();
     const tree = Parser(input).parseAssignment();
     report(tree);
+    if (doEvaluate) report(Interpreter(new Environment()).evaluate(tree));
   } catch (err) {
     console.log(err);
   }
