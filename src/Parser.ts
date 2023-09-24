@@ -44,14 +44,14 @@ const Parser = (input: string) => {
   };
 
   const parseAssignment = () => {
-    const left = parseCell() as Cell;
+    const left = parseTerm();
     if (peekToken() instanceof Equals) {
-      expect(left, Cell, "assignee must be a spreadsheet cell");
+      const asignee = expect(left, Cell, "assignee must be a spreadsheet cell");
       parseToken();
       const start = pointer();
       const right = parseTerm();
       const refs = extractCells(input.substring(start, pointer()));
-      return new Assignment(left, right, refs);
+      return new Assignment(asignee, right, refs);
     }
     return left;
   };
