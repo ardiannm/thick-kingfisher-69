@@ -31,15 +31,27 @@ import Assignment from "./ast/expressions/Assignment";
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
-  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
+  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
+
+  const extractCells = (input: string) => {
+    const refs = new Array<string>();
+    const parser = Parser(input);
+    while (parser.hasMoreTokens()) {
+      const token = parser.parseCell();
+      if (token instanceof Cell) refs.push(token.view);
+    }
+    return refs;
+  };
 
   const parseAssignment = () => {
     const left = parseCell();
     if (peekToken() instanceof Equals) {
       expect(left, Identifier, "assignee must be an identifier");
       parseToken();
+      const start = pointer();
       const right = parseTerm();
-      return new Assignment(left, right);
+      const refs = extractCells(input.substring(start, pointer()));
+      return new Assignment(left, right, refs);
     }
     return left;
   };
@@ -180,7 +192,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseAssignment, parseTerm, parseRange, parseString };
+  return { parseAssignment, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
 };
 
 export default Parser;

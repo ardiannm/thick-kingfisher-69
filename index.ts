@@ -29,8 +29,8 @@ while (true) {
   console.log();
   try {
     // const tree = Parser(input).parseRange(); report(tree);
-    const tree = HTMLParser(input).parseHTMLComponent();
-    // const tree = Parser(input).parseAssignment();
+    // const tree = HTMLParser(input).parseHTMLComponent();
+    const tree = Parser(input).parseAssignment();
     report(tree);
   } catch (err) {
     console.log(err);
