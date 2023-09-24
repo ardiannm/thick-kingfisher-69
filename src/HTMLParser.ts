@@ -25,14 +25,14 @@ import Attribute from "./ast/html/Attribute";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
 import Equals from "./ast/tokens/Equals";
 import Parser from "./Parser";
+import Literal from "./ast/expressions/Literal";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
 const HTMLParser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { parseString } = Parser(input);
-  const tokenizer = Lexer(input);
-  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = tokenizer;
+  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer, setPointer } = Lexer(input);
 
   const parseHTMLComponent = (): HTML => {
     const left = parseHTMLTextContent();
@@ -80,22 +80,20 @@ const HTMLParser = (input: string) => {
     const left = parseTag();
     if (left instanceof OpenScriptTag) {
       let view = "";
+      considerSpace();
       while (hasMoreTokens()) {
-        considerSpace();
         if (peekToken() instanceof LessThan) {
-          const from = tokenizer.pointer;
+          const start = pointer();
           try {
             const tag = parseTag();
-            if (tag instanceof CloseScriptTag) {
-              ignoreSpace();
-              return new HTMLScript(view);
-            }
+            expect(tag, CloseScriptTag, `expecting a closing script tag`);
+            ignoreSpace();
+            return new HTMLScript(view);
           } catch {
-            view += input.substring(from, tokenizer.pointer);
+            setPointer(start);
           }
         }
-        const token = getNextToken() as Character;
-        view += token.view;
+        view += (getNextToken() as Character).view;
       }
       throwError(`expecting a closing script tag`);
     }
@@ -139,7 +137,7 @@ const HTMLParser = (input: string) => {
       considerSpace();
       while (hasMoreTokens()) {
         if (peekToken() instanceof Minus) {
-          const keep = tokenizer.pointer;
+          const keep = pointer();
           getNextToken();
           const token = peekToken();
           doNotExpect(token, GreaterThan, "expecting `--` before `>` for a comment");
@@ -149,7 +147,7 @@ const HTMLParser = (input: string) => {
             ignoreSpace();
             return new HTMLComment(view);
           }
-          tokenizer.pointer = keep;
+          setPointer(keep);
         }
         const char = getNextToken() as Character;
         view += char.view;

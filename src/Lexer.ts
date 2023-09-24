@@ -149,7 +149,7 @@ const Lexer = (input: string) => {
     space = false;
   };
 
-  return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken, pointer };
+  return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken, pointer: () => pointer, setPointer: (n: number) => (pointer = n) };
 };
 
 export default Lexer;
