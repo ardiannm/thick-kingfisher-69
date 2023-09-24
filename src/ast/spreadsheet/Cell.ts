@@ -1,7 +1,8 @@
-import Spreadsheet from "./Spreadsheet";
+import Identifier from "../expressions/Identifier";
 
-export default class Cell extends Spreadsheet {
+export default class Cell extends Identifier {
   constructor(public column: string, public row: string) {
-    super();
+    const view = column + row;
+    super(view);
   }
 }

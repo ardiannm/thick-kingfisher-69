@@ -36,6 +36,7 @@ const Parser = (input: string) => {
   const parseAssignment = () => {
     const left = parseCell();
     if (peekToken() instanceof Equals) {
+      expect(left, Identifier, "assignee must be an identifier");
       parseToken();
       const right = parseTerm();
       return new Assignment(left, right);
@@ -125,11 +126,13 @@ const Parser = (input: string) => {
         if (right instanceof Number) right = new Cell("", right.view);
         if (right instanceof Identifier) right = new Cell(right.view, "");
         ignoreSpace();
-        const view = left.column + left.row + ":" + right.column + right.row;
+        const leftc = left as Cell;
+        const rightc = right as Cell;
+        const view = leftc.column + leftc.row + ":" + rightc.column + rightc.row;
         const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (left.column !== left.column.toUpperCase()) throwError(errorMessage);
-        if (right.column !== right.column.toUpperCase()) throwError(errorMessage);
-        return new Range(left, right);
+        if (leftc.column !== leftc.column.toUpperCase()) throwError(errorMessage);
+        if (rightc.column !== rightc.column.toUpperCase()) throwError(errorMessage);
+        return new Range(leftc, rightc);
       }
       ignoreSpace();
     }
