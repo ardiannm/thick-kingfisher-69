@@ -22,14 +22,26 @@ import Character from "./ast/tokens/Character";
 import CloseParenthesis from "./ast/tokens/CloseParenthesis";
 import Colon from "./ast/tokens/Colon";
 import EOF from "./ast/tokens/EOF";
+import Equals from "./ast/tokens/Equals";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
+import Assignment from "./ast/expressions/Assignment";
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
+
+  const parseAssignment = () => {
+    const left = parseCell();
+    if (peekToken() instanceof Equals) {
+      parseToken();
+      const right = parseTerm();
+      return new Assignment(left, right);
+    }
+    return left;
+  };
 
   const parseTerm = (): Expression => {
     const left = parseFactor();
@@ -165,7 +177,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseRange, parseTerm, parseString };
+  return { parseAssignment, parseTerm, parseRange, parseString };
 };
 
 export default Parser;
