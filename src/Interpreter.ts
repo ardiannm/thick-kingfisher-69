@@ -21,7 +21,6 @@ import HTMLTextContent from "./ast/html/HTMLTextContent";
 import HTMLElement from "./ast/html/HTMLElement";
 import HTMLScript from "./ast/html/HTMLScript";
 import HTMLComment from "./ast/html/HTMLComment";
-import Identifier from "./ast/expressions/Identifier";
 import SystemStringArray from "./system/SystemStringArray";
 import Import from "./ast/expressions/Import";
 import HTMLVoidElement from "./ast/html/HTMLVoidElement";
@@ -30,7 +29,7 @@ import Assignment from "./ast/expressions/Assignment";
 import Environment from "./Environment";
 
 const Interpreter = (env: Environment) => {
-  const { columnToNumber } = InterpreterService();
+  const { columnToNumber, extractCells } = InterpreterService();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
     if (token instanceof Import) return evaluateImport(token);
@@ -113,8 +112,8 @@ const Interpreter = (env: Environment) => {
   const evaluateCell = (token: Cell) => {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
-    const value = env.getVar(token.view);
-    return new SystemCell(row, column, token.view, value);
+    const variable = env.getVar(token.view);
+    return new SystemCell(row, column, token.view, variable.value, variable.refs);
   };
 
   const evaluateRange = (token: Range) => {
@@ -144,7 +143,12 @@ const Interpreter = (env: Environment) => {
   };
 
   const evaluateAssignment = (token: Assignment) => {
-    return env.assignVar(token.assignee.view, evaluate(token.value));
+    const refs = extractCells(token.view);
+    const o = env.assignVar(token.assignee.view, evaluate(token.value));
+    for (const ref of refs) {
+      env.registerObserver(ref, token.assignee.view);
+    }
+    return o;
   };
 
   return { evaluate };

@@ -33,16 +33,6 @@ const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
 
-  const extractCells = (input: string) => {
-    const refs = new Array<string>();
-    const parser = Parser(input);
-    while (parser.hasMoreTokens()) {
-      const token = parser.parseCell();
-      if (token instanceof Cell) refs.push(token.view);
-    }
-    return refs;
-  };
-
   const parseAssignment = () => {
     const left = parseTerm();
     if (peekToken() instanceof Equals) {
@@ -50,8 +40,8 @@ const Parser = (input: string) => {
       parseToken();
       const start = pointer();
       const right = parseTerm();
-      const refs = extractCells(input.substring(start, pointer()));
-      return new Assignment(asignee, right, refs);
+      const view = input.substring(start, pointer());
+      return new Assignment(asignee, right, view);
     }
     return left;
   };
