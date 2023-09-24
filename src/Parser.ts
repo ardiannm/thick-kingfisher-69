@@ -40,8 +40,8 @@ const Parser = (input: string) => {
       parseToken();
       const start = pointer();
       const right = parseTerm();
-      const view = input.substring(start, pointer());
-      return new Assignment(asignee, right, view);
+      const formula = input.substring(start, pointer());
+      return new Assignment(asignee, right, formula);
     }
     return left;
   };

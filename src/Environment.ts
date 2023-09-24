@@ -3,8 +3,9 @@ import SystemObservable from "./system/SystemObservable";
 export default class Environment {
   public vars = new Map<string, SystemObservable>();
 
-  public assignVar(varName: string, varValue: System) {
-    const observable = new SystemObservable(varValue, []);
+  public assignVar(varName: string, textFormula: string, varValue: System) {
+    const observable = new SystemObservable(varValue, textFormula, []);
+    // if(this.vars.has(varName))
     this.vars.set(varName, observable);
     return observable;
   }

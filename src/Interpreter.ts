@@ -143,8 +143,8 @@ const Interpreter = (env: Environment) => {
   };
 
   const evaluateAssignment = (token: Assignment) => {
-    const refs = extractCells(token.view);
-    const o = env.assignVar(token.assignee.view, evaluate(token.value));
+    const refs = extractCells(token.textFormula);
+    const o = env.assignVar(token.assignee.view, token.textFormula, evaluate(token.value));
     for (const ref of refs) {
       env.registerObserver(ref, token.assignee.view);
     }
