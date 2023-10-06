@@ -31,6 +31,8 @@ const Lexer = (input: string) => {
   let column = 1;
   let space = false;
 
+  const state = () => ({ pointer, line, column });
+
   const peekToken = (): SyntaxToken => {
     let prevPointer = pointer;
     const prevId = id;
@@ -149,7 +151,7 @@ const Lexer = (input: string) => {
     space = false;
   };
 
-  return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken, pointer: () => pointer, setPointer: (n: number) => (pointer = n) };
+  return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken, pointer: () => pointer, setPointer: (n: number) => (pointer = n), state };
 };
 
 export default Lexer;

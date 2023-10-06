@@ -4,4 +4,8 @@ export default class SystemString extends System {
   constructor(public value: string) {
     super();
   }
+
+  toString() {
+    return this.value;
+  }
 }

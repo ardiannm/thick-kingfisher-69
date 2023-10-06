@@ -24,18 +24,29 @@ import GreaterThan from "./ast/tokens/GreaterThan";
 import Attribute from "./ast/html/Attribute";
 import ExclamationMark from "./ast/tokens/ExclamationMark";
 import Equals from "./ast/tokens/Equals";
-import Parser from "./Parser";
-import Literal from "./ast/expressions/Literal";
+import HTMLProgram from "./ast/html/HTMLProgram";
+import Quote from "./ast/tokens/Quote";
+import BadToken from "./ast/tokens/BadToken";
+import Tag from "./ast/html/Tag";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
+const ignoreElements = ["style", "script"];
 
 const HTMLParser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
-  const { parseString } = Parser(input);
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer, setPointer } = Lexer(input);
 
+  const parse = () => {
+    const arr = new Array<HTML>();
+    while (hasMoreTokens()) {
+      const e = parseHTMLComponent();
+      arr.push(e);
+    }
+    return new HTMLProgram(arr);
+  };
+
   const parseHTMLComponent = (): HTML => {
-    const left = parseHTMLTextContent();
+    let left = parseHTMLTextContent();
     if (left instanceof OpenTag) {
       if (HTMLVoidElements.includes(left.tag)) {
         return new HTMLVoidElement(left.tag, left.attributes);
@@ -50,6 +61,7 @@ const HTMLParser = (input: string) => {
           return new HTMLElement(left.tag, left.attributes, children);
         }
         expect(right, HTMLComponent, `\`${right.type}\` is not a valid \`HTMLComponent\``);
+        if (ignoreElements.includes(left.tag) || HTMLVoidElements.includes(left.tag)) continue; // optional protection-purpose clause only to prevent needless processing
         children.push(right);
       }
       throwError(`expecting a closing \`${left.tag}\` tag`);
@@ -77,7 +89,7 @@ const HTMLParser = (input: string) => {
   };
 
   const parseHTMLScript = () => {
-    const left = parseTag();
+    const left = parseTag() as Tag;
     if (left instanceof OpenScriptTag) {
       let view = "";
       considerSpace();
@@ -192,7 +204,31 @@ const HTMLParser = (input: string) => {
     return new Attribute(property, value);
   };
 
-  return { parseHTMLComponent };
+  const parseString = () => {
+    if (peekToken() instanceof Quote) {
+      getNextToken();
+      let view = "";
+      considerSpace();
+      while (hasMoreTokens()) {
+        const token = peekToken();
+        if (token instanceof Quote) break;
+        const character = getNextToken() as Character;
+        view += character.view;
+      }
+      expect(getNextToken(), Quote, "expecting a closing quote for the string");
+      ignoreSpace();
+      return new String(view);
+    }
+    return parseToken();
+  };
+
+  const parseToken = () => {
+    const token = getNextToken();
+    if (token instanceof BadToken) throwError(`bad input character \`${token.view}\` found`);
+    return token;
+  };
+
+  return { parse };
 };
 
 export default HTMLParser;
