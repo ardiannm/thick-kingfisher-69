@@ -27,7 +27,6 @@ import Equals from "./ast/tokens/Equals";
 import HTMLProgram from "./ast/html/HTMLProgram";
 import Quote from "./ast/tokens/Quote";
 import BadToken from "./ast/tokens/BadToken";
-import Tag from "./ast/html/Tag";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 const ignoreElements = ["style", "script"];
@@ -89,7 +88,7 @@ const HTMLParser = (input: string) => {
   };
 
   const parseHTMLScript = () => {
-    const left = parseTag() as Tag;
+    const left = parseTag();
     if (left instanceof OpenScriptTag) {
       let view = "";
       considerSpace();
@@ -100,7 +99,7 @@ const HTMLParser = (input: string) => {
             const tag = parseTag();
             expect(tag, CloseScriptTag, `expecting a closing script tag`);
             ignoreSpace();
-            return new HTMLScript(view);
+            return new HTMLScript(view, left.attributes);
           } catch {
             setPointer(start);
           }
@@ -123,10 +122,7 @@ const HTMLParser = (input: string) => {
       return new CloseTag(identifier.view);
     }
     const identifier = expect(parseTagIdentifier(), Identifier, "expecting identifier for open tag");
-    const attributes = new Array<Attribute>();
-    while (peekToken() instanceof Identifier) {
-      attributes.push(parseAttribute());
-    }
+    const attributes = parseAttributes();
     if (peekToken() instanceof Slash) {
       const token = getNextToken() as Character;
       expect(getNextToken(), GreaterThan, `expecting closing token \`>\` but matched \`${token.view}\` after tag name identifier \`${identifier.view}\``);
@@ -134,8 +130,16 @@ const HTMLParser = (input: string) => {
     }
     const token = getNextToken() as Character;
     expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
-    if (identifier.view === "script") return new OpenScriptTag();
+    if (identifier.view === "script") return new OpenScriptTag(attributes);
     return new OpenTag(identifier.view, attributes);
+  };
+
+  const parseAttributes = () => {
+    const attributes = new Array<Attribute>();
+    while (peekToken() instanceof Identifier) {
+      attributes.push(parseAttribute());
+    }
+    return attributes;
   };
 
   const parseHTMLComment = () => {

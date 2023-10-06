@@ -1,11 +1,7 @@
 import prompt from "prompt-sync";
 import HTMLInterpreter from "./src/HTMLInterpreter";
-import Environment from "./src/Environment";
 import HTMLParser from "./src/HTMLParser";
-import HTMLProgram from "./src/ast/html/HTMLProgram";
 import SystemHTMLProgram from "./src/system/SystemHTMLProgram";
-
-// import HTMLParser from "./src/HTMLParser";
 
 let showTree = false;
 let doEvaluate = true;
