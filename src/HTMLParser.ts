@@ -29,7 +29,6 @@ import Quote from "./ast/tokens/Quote";
 import BadToken from "./ast/tokens/BadToken";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
-const ignoreElements = ["style", "script"];
 
 const HTMLParser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
@@ -60,7 +59,6 @@ const HTMLParser = (input: string) => {
           return new HTMLElement(left.tag, left.attributes, children);
         }
         expect(right, HTMLComponent, `\`${right.type}\` is not a valid \`HTMLComponent\``);
-        if (ignoreElements.includes(left.tag) || HTMLVoidElements.includes(left.tag)) continue; // optional protection-purpose clause only to prevent needless processing
         children.push(right);
       }
       throwError(`expecting a closing \`${left.tag}\` tag`);

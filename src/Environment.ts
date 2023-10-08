@@ -1,22 +1,15 @@
-import System from "./system/System";
-import SystemObservable from "./system/SystemObservable";
+import SystemNumber from "./system/SystemNumber";
 export default class Environment {
-  public vars = new Map<string, SystemObservable>();
+  public vars = new Map<string, SystemNumber>();
 
-  public assignVar(varName: string, textFormula: string, varValue: System) {
-    const observable = new SystemObservable(varValue, textFormula, []);
+  public assignVar(varName: string, varValue: SystemNumber) {
     // if(this.vars.has(varName))
-    this.vars.set(varName, observable);
-    return observable;
+    this.vars.set(varName, varValue);
+    return varValue;
   }
 
   public getVar(varName: string) {
     if (this.vars.has(varName)) return this.vars.get(varName);
     throw `\`${varName}\` is not defined`;
-  }
-
-  public registerObserver(ref: string, observer: string) {
-    const refs = this.getVar(ref).refs;
-    if (!refs.includes(observer)) refs.push(observer);
   }
 }

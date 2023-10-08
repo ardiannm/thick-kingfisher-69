@@ -17,42 +17,24 @@ import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
-import HTMLTextContent from "./ast/html/HTMLTextContent";
-import HTMLElement from "./ast/html/HTMLElement";
-import HTMLScript from "./ast/html/HTMLScript";
-import HTMLComment from "./ast/html/HTMLComment";
-import SystemStringArray from "./system/SystemStringArray";
-import Import from "./ast/expressions/Import";
-import HTMLVoidElement from "./ast/html/HTMLVoidElement";
 import InterpreterService from "./InterpreterService";
-import Assignment from "./ast/expressions/Assignment";
-import Environment from "./Environment";
+// import Assignment from "./ast/expressions/Assignment";
 
-const Interpreter = (env: Environment) => {
-  const { columnToNumber, extractCells } = InterpreterService();
+const Interpreter = () => {
+  const { columnToNumber } = InterpreterService();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
-    if (token instanceof Import) return evaluateImport(token);
     if (token instanceof Program) return evaluateProgram(token);
     // if (token instanceof Identifier) return evaluateIdentifier(token);
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
     if (token instanceof Unary) return evaluateUnary(token);
     if (token instanceof Binary) return evaluateBinary(token);
-    if (token instanceof HTMLElement) return evaluateHTMLElement(token);
-    if (token instanceof HTMLVoidElement) return evaluateVoidHTMLElement(token);
-    if (token instanceof HTMLTextContent) return evaluateHTMLTextContent(token);
-    if (token instanceof HTMLScript) return evaluateHTMLScript(token);
-    if (token instanceof HTMLComment) return evaluateHTMLComment(token);
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
-    if (token instanceof Assignment) return evaluateAssignment(token);
+    // if (token instanceof Assignment) return evaluateAssignment(token);
 
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
-  };
-
-  const evaluateImport = (token: Import) => {
-    return evaluate(token.program);
   };
 
   const evaluateProgram = (token: Program) => {
@@ -68,9 +50,6 @@ const Interpreter = (env: Environment) => {
   const evaluateBinary = (token: Binary) => {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-
-    if (left instanceof SystemCell) left = left.value;
-    if (right instanceof SystemCell) right = right.value;
 
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
@@ -112,43 +91,13 @@ const Interpreter = (env: Environment) => {
   const evaluateCell = (token: Cell) => {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
-    const variable = env.getVar(token.view);
-    return new SystemCell(row, column, token.view, variable.value, variable.refs);
+    return new SystemCell(row, column, token.view);
   };
 
   const evaluateRange = (token: Range) => {
     const left = evaluate(token.left) as SystemCell;
     const right = evaluate(token.right) as SystemCell;
     return new SystemRange(left, right);
-  };
-
-  const evaluateHTMLTextContent = (token: HTMLTextContent) => {
-    return new SystemString(token.view);
-  };
-
-  const evaluateHTMLScript = (token: HTMLScript) => {
-    return new SystemString(token.view);
-  };
-
-  const evaluateHTMLComment = (token: HTMLComment) => {
-    return new SystemString(token.view);
-  };
-
-  const evaluateVoidHTMLElement = (_: HTMLVoidElement) => {
-    return new SystemString("");
-  };
-
-  const evaluateHTMLElement = (token: HTMLElement) => {
-    return new SystemStringArray(token.children.map((e) => evaluate(e) as SystemString));
-  };
-
-  const evaluateAssignment = (token: Assignment) => {
-    const refs = extractCells(token.textFormula);
-    const o = env.assignVar(token.assignee.view, token.textFormula, evaluate(token.value));
-    for (const ref of refs) {
-      env.registerObserver(ref, token.assignee.view);
-    }
-    return o;
   };
 
   return { evaluate };
