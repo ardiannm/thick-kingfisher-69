@@ -1,11 +1,11 @@
 import prompt from "prompt-sync";
-import HTMLInterpreter from "./src/HTMLInterpreter";
+import Interpreter from "./src/Interpreter";
 import Parser from "./src/Parser";
 import SystemHTMLProgram from "./src/system/SystemHTMLProgram";
 
 let showTree = true;
 let doEvaluate = false;
-const interpreter = HTMLInterpreter();
+const interpreter = Interpreter();
 
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 

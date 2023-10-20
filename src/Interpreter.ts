@@ -18,6 +18,7 @@ import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
 import InterpreterService from "./InterpreterService";
+import Addition from "./ast/expressions/Addition";
 
 const Interpreter = () => {
   const { columnToNumber } = InterpreterService();
@@ -27,7 +28,11 @@ const Interpreter = () => {
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
     if (token instanceof Unary) return evaluateUnary(token);
-    if (token instanceof Binary) return evaluateBinary(token);
+    if (token instanceof Addition) return evaluateAddition(token);
+    if (token instanceof Substraction) return evaluateSubstraction(token);
+    if (token instanceof Multiplication) return evaluateMultiplication(token);
+    if (token instanceof Division) return evaluateDivision(token);
+    if (token instanceof Exponentiation) return evaluateExponantiation(token);
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
@@ -43,33 +48,65 @@ const Interpreter = () => {
     return new SystemNumber(parseFloat(token.view));
   };
 
-  const evaluateBinary = (token: Binary) => {
+  const evaluateAddition = (token: Addition) => {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-
+    if (left instanceof SystemString && right instanceof SystemString) {
+      return new SystemString(left.value + right.value);
+    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform binary operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
+      return new SystemException(`can't perform addition operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
     }
+    return new SystemNumber(left.value + right.value);
+  };
 
-    switch (true) {
-      case token instanceof Substraction:
-        return new SystemNumber(left.value - right.value);
-      case token instanceof Multiplication:
-        return new SystemNumber(left.value * right.value);
-      case token instanceof Division:
-        return new SystemNumber(left.value / right.value);
-      case token instanceof Exponentiation:
-        return new SystemNumber(left.value ** right.value);
-      default:
-        return new SystemNumber(left.value + right.value);
+  const evaluateSubstraction = (token: Substraction) => {
+    let left = evaluate(token.left);
+    let right = evaluate(token.right);
+    if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
+      return new SystemException(`can't perform substraction operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
     }
+    return new SystemNumber(left.value - right.value);
+  };
+
+  const evaluateExponantiation = (token: Exponentiation) => {
+    let left = evaluate(token.left);
+    let right = evaluate(token.right);
+    if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
+      return new SystemException(`can't perform exponantiation operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
+    }
+    return new SystemNumber(left.value ** right.value);
+  };
+
+  const evaluateDivision = (token: Division) => {
+    let left = evaluate(token.left);
+    let right = evaluate(token.right);
+    if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
+      return new SystemException(`can't perform division operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
+    }
+    return new SystemNumber(left.value / right.value);
+  };
+
+  const evaluateMultiplication = (token: Multiplication) => {
+    let left = evaluate(token.left);
+    let right = evaluate(token.right);
+    if (left instanceof SystemString && right instanceof SystemNumber) {
+      return new SystemString(left.value.repeat(right.value));
+    }
+    if (left instanceof SystemNumber && right instanceof SystemString) {
+      return new SystemString(right.value.repeat(left.value));
+    }
+    if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
+      return new SystemException(`can't perform multiplication operations between \`${token.left.type}\` and "${token.right.type}" tokens`);
+    }
+    return new SystemNumber(left.value * right.value);
   };
 
   const evaluateUnary = (token: Unary) => {
     const right = evaluate(token.right);
 
     if (!(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform unary operation over "${token.right.type}" token`);
+      return new SystemException(`can't perform unary operations over "${token.right.type}" token`);
     }
 
     switch (true) {
