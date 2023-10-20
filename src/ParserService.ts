@@ -1,3 +1,5 @@
+import Parser from "./Parser";
+import Cell from "./ast/spreadsheet/Cell";
 import SyntaxToken from "./ast/tokens/SyntaxToken";
 
 type Constructor<Class> = new (...args: any[]) => Class;
@@ -25,7 +27,17 @@ const ParserService = () => {
     throw message;
   };
 
-  return { expect, doNotExpect, throwError };
+  const extractRefs = (input: string) => {
+    const refs = new Set<string>();
+    const parser = Parser(input);
+    while (parser.hasMoreTokens()) {
+      const token = parser.parseCell();
+      if (token instanceof Cell) refs.add(token.view);
+    }
+    return refs;
+  };
+
+  return { expect, doNotExpect, throwError, extractRefs };
 };
 
 export default ParserService;

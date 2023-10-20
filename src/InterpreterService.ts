@@ -1,6 +1,3 @@
-import Parser from "./Parser";
-import Cell from "./ast/spreadsheet/Cell";
-
 const InterpreterService = () => {
   const columnToNumber = (column: string): number => {
     let result = 0;
@@ -10,17 +7,7 @@ const InterpreterService = () => {
     return result;
   };
 
-  const extractCells = (input: string) => {
-    const refs = new Array<string>();
-    const parser = Parser(input);
-    while (parser.hasMoreTokens()) {
-      const token = parser.parseCell();
-      if (token instanceof Cell) refs.push(token.view);
-    }
-    return refs;
-  };
-
-  return { columnToNumber, extractCells };
+  return { columnToNumber };
 };
 
 export default InterpreterService;

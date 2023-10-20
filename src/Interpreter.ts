@@ -18,22 +18,18 @@ import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
 import InterpreterService from "./InterpreterService";
-// import Assignment from "./ast/expressions/Assignment";
 
 const Interpreter = () => {
   const { columnToNumber } = InterpreterService();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
     if (token instanceof Program) return evaluateProgram(token);
-    // if (token instanceof Identifier) return evaluateIdentifier(token);
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
     if (token instanceof Unary) return evaluateUnary(token);
     if (token instanceof Binary) return evaluateBinary(token);
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
-    // if (token instanceof Assignment) return evaluateAssignment(token);
-
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
   };
 

@@ -30,7 +30,7 @@ import ParserService from "./ParserService";
 import Observable from "./ast/expressions/Observable";
 
 const Parser = (input: string) => {
-  const { throwError, expect, doNotExpect } = ParserService();
+  const { throwError, expect, doNotExpect, extractRefs } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
 
   const parseObservable = () => {
@@ -41,7 +41,10 @@ const Parser = (input: string) => {
       const start = pointer();
       const right = parseTerm();
       const formula = input.substring(start, pointer());
-      return new Observable(reference.view, right, formula);
+      const refsSet = extractRefs(formula);
+      const observing = Array.from(refsSet);
+      if (refsSet.has(reference.view)) throwError(`circular dependency for "${reference.view}"`);
+      return new Observable(reference.view, right, formula, observing);
     }
     return left;
   };
@@ -132,8 +135,12 @@ const Parser = (input: string) => {
         const rightc = right as Cell;
         const view = leftc.column + leftc.row + ":" + rightc.column + rightc.row;
         const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (leftc.column !== leftc.column.toUpperCase()) throwError(errorMessage);
-        if (rightc.column !== rightc.column.toUpperCase()) throwError(errorMessage);
+        if (leftc.column !== leftc.column.toUpperCase()) {
+          throwError(errorMessage);
+        }
+        if (rightc.column !== rightc.column.toUpperCase()) {
+          throwError(errorMessage);
+        }
         return new Range(leftc, rightc);
       }
       ignoreSpace();
@@ -149,8 +156,9 @@ const Parser = (input: string) => {
         const right = parseToken() as Number;
         ignoreSpace();
         const view = left.view + right.view;
-        const errorMessage = `\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (left.view !== left.view.toUpperCase()) throwError(errorMessage);
+        if (left.view !== left.view.toUpperCase()) {
+          throwError(`\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
+        }
         return new Cell(left.view, right.view);
       }
       ignoreSpace();
