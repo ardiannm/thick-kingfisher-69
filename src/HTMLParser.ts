@@ -43,6 +43,8 @@ const HTMLParser = (input: string) => {
     return new HTMLProgram(arr);
   };
 
+  const ignore = ["style", "script", "path"];
+
   const parseHTMLComponent = (): HTML => {
     let left = parseHTMLTextContent();
     if (left instanceof OpenTag) {
@@ -58,7 +60,12 @@ const HTMLParser = (input: string) => {
           }
           return new HTMLElement(left.tag, left.attributes, children);
         }
-        expect(right, HTMLComponent, `\`${right.type}\` is not a valid \`HTMLComponent\``);
+        const comp = expect(right, HTMLComponent, `\`${right.type}\` is not a valid \`HTMLComponent\``) as HTMLElement;
+        if (right instanceof HTMLElement && right.children.length === 0) continue;
+        if (ignore.includes(comp.tag)) {
+          // ignore
+          continue;
+        }
         children.push(right);
       }
       throwError(`expecting a closing \`${left.tag}\` tag`);
