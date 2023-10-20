@@ -3,8 +3,8 @@ import HTMLInterpreter from "./src/HTMLInterpreter";
 import Parser from "./src/Parser";
 import SystemHTMLProgram from "./src/system/SystemHTMLProgram";
 
-let showTree = false;
-let doEvaluate = true;
+let showTree = true;
+let doEvaluate = false;
 const interpreter = HTMLInterpreter();
 
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
@@ -31,7 +31,7 @@ while (true) {
   }
   console.log();
   try {
-    const tree = Parser(input).parseAssignment();
+    const tree = Parser(input).parseObservable();
     if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemHTMLProgram;

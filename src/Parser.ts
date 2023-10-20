@@ -27,21 +27,21 @@ import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
-import Assignment from "./ast/expressions/Assignment";
+import Observable from "./ast/expressions/Observable";
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
 
-  const parseAssignment = () => {
+  const parseObservable = () => {
     const left = parseTerm();
     if (peekToken() instanceof Equals) {
-      const asignee = expect(left, Cell, "assignee must be a spreadsheet cell");
+      const reference = expect(left, Cell, "reference must be a spreadsheet cell");
       parseToken();
       const start = pointer();
       const right = parseTerm();
       const formula = input.substring(start, pointer());
-      return new Assignment(asignee, right, formula);
+      return new Observable(reference.view, right, formula);
     }
     return left;
   };
@@ -182,7 +182,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseAssignment, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
+  return { parseObservable, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
 };
 
 export default Parser;
