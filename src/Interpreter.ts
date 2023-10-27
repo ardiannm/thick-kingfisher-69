@@ -16,13 +16,15 @@ import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
-import InterpreterService from "./InterpreterService";
+// import InterpreterService from "./InterpreterService";
 import Addition from "./ast/expressions/Addition";
 import Observable from "./ast/expressions/Observable";
 import Environment from "./Environment";
+import SystemObservable from "./system/SystemObservable";
 
 const Interpreter = () => {
-  const { columnToNumber } = InterpreterService();
+  // const { columnToNumber } = InterpreterService();
+
   const environment = new Environment();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
@@ -57,12 +59,12 @@ const Interpreter = () => {
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
     }
-    // if (left instanceof SystemCell) {
-    // left = left.value;
-    // }
-    // if (right instanceof SystemCell) {
-    // right = right.value;
-    // }
+    if (left instanceof SystemObservable) {
+      left = left.value;
+    }
+    if (right instanceof SystemObservable) {
+      right = right.value;
+    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -146,8 +148,7 @@ const Interpreter = () => {
   const evaluateObservable = (token: Observable) => {
     const value = evaluate(token.value) as SystemNumber;
     // console.log(token);
-    const varValue = environment.assignVar(token.reference, value);
-    return varValue;
+    return environment.assignVar(token.reference, new SystemObservable(value, token.observing));
   };
 
   return { evaluate };

@@ -2,6 +2,7 @@ import System from "./system/System";
 
 export default class Environment {
   public vars = new Map<string, System>();
+  public graph = new Map<string, Set<string>>();
 
   public assignVar(varName: string, varValue: System) {
     // if(this.vars.has(varName))
