@@ -57,12 +57,12 @@ const Interpreter = () => {
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
     }
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
+    // if (left instanceof SystemCell) {
+    // left = left.value;
+    // }
+    // if (right instanceof SystemCell) {
+    // right = right.value;
+    // }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -131,10 +131,10 @@ const Interpreter = () => {
   };
 
   const evaluateCell = (token: Cell) => {
-    const row = parseFloat(token.row) || 0;
-    const column = columnToNumber(token.column);
-    const value = environment.getVar(token.view);
-    return new SystemCell(row, column, token.view, value);
+    // const row = parseFloat(token.row) || 0;
+    // const column = columnToNumber(token.column);
+    return environment.getVar(token.view);
+    // return new SystemCell(row, column, token.view, value);
   };
 
   const evaluateRange = (token: Range) => {
@@ -145,7 +145,7 @@ const Interpreter = () => {
 
   const evaluateObservable = (token: Observable) => {
     const value = evaluate(token.value) as SystemNumber;
-    console.log(token);
+    // console.log(token);
     const varValue = environment.assignVar(token.reference, value);
     return varValue;
   };
