@@ -11,6 +11,6 @@ export default class Environment {
 
   public getVar(varName: string) {
     if (this.vars.has(varName)) return this.vars.get(varName);
-    throw `\`${varName}\` is not defined`;
+    throw `Environment: \`${varName}\` is not defined`;
   }
 }

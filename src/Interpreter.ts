@@ -38,7 +38,7 @@ const Interpreter = () => {
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
     if (token instanceof Observable) return evaluateObservable(token);
-    throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
+    throw new SystemException(`Interpreter: token type \`${token.type}\` has not been implemented for interpretation`);
   };
 
   const evaluateProgram = (token: Program) => {
@@ -64,7 +64,7 @@ const Interpreter = () => {
       right = right.value;
     }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
+      return new SystemException(`Interpreter: can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value + right.value);
   };
@@ -73,7 +73,7 @@ const Interpreter = () => {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform substraction operations between \`${left.type}\` and \`${right.type}\` tokens`);
+      return new SystemException(`Interpreter: can't perform substraction operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value - right.value);
   };
@@ -82,7 +82,7 @@ const Interpreter = () => {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform exponantiation operations between \`${left.type}\` and \`${right.type}\` tokens`);
+      return new SystemException(`Interpreter: can't perform exponantiation operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value ** right.value);
   };
@@ -91,7 +91,7 @@ const Interpreter = () => {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform division operations between \`${left.type}\` and \`${right.type}\` tokens`);
+      return new SystemException(`Interpreter: can't perform division operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value / right.value);
   };
@@ -106,7 +106,7 @@ const Interpreter = () => {
       return new SystemString(right.value.repeat(left.value));
     }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform multiplication operations between \`${left.type}\` and \`${right.type}\` tokens`);
+      return new SystemException(`Interpreter: can't perform multiplication operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value * right.value);
   };
@@ -115,7 +115,7 @@ const Interpreter = () => {
     const right = evaluate(token.right);
 
     if (!(right instanceof SystemNumber)) {
-      return new SystemException(`can't perform unary operations over \`${right.type}\` token`);
+      return new SystemException(`Interpreter: can't perform unary operations over \`${right.type}\` token`);
     }
 
     switch (true) {
@@ -145,6 +145,7 @@ const Interpreter = () => {
 
   const evaluateObservable = (token: Observable) => {
     const value = evaluate(token.value) as SystemNumber;
+    console.log(token);
     const varValue = environment.assignVar(token.reference, value);
     return varValue;
   };

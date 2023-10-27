@@ -28,6 +28,7 @@ import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
 import Observable from "./ast/expressions/Observable";
+import GreaterThan from "./ast/tokens/GreaterThan";
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect, extractRefs } = ParserService();
@@ -35,15 +36,16 @@ const Parser = (input: string) => {
 
   const parseObservable = () => {
     const left = parseTerm();
-    if (peekToken() instanceof Equals) {
-      const reference = expect(left, Cell, "reference must be a spreadsheet cell");
-      parseToken();
+    if (peekToken() instanceof GreaterThan) {
+      const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      parseToken()
+      expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references")
       const start = pointer();
       const right = parseTerm();
       const formula = input.substring(start, pointer());
       const refsSet = extractRefs(formula);
       const observing = Array.from(refsSet);
-      if (refsSet.has(reference.view)) throwError(`circular dependency for "${reference.view}"`);
+      if (refsSet.has(reference.view)) throwError(`Parser: circular dependency for "${reference.view}"`);
       return new Observable(reference.view, right, formula, observing);
     }
     return left;
@@ -53,10 +55,10 @@ const Parser = (input: string) => {
     const left = parseFactor();
     const token = peekToken();
     if (token instanceof Plus || token instanceof Minus) {
-      expect(left, Expression, "invalid left hand side in binary expression");
+      expect(left, Expression, "Parser: invalid left hand side in binary expression");
       getNextToken();
-      doNotExpect(peekToken(), EOF, "unexpected end of binary expression");
-      const right = expect(parseTerm(), Expression, "invalid right hand side in binary expression");
+      doNotExpect(peekToken(), EOF, "Parser: unexpected end of binary expression");
+      const right = expect(parseTerm(), Expression, "Parser: invalid right hand side in binary expression");
       if (token instanceof Plus) return new Addition(left, right);
       return new Substraction(left, right);
     }
@@ -67,9 +69,9 @@ const Parser = (input: string) => {
     const left = parseExponent();
     const token = peekToken();
     if (token instanceof Product || token instanceof Slash) {
-      expect(left, Expression, "invalid left hand side in binary expression");
+      expect(left, Expression, "Parser: invalid left hand side in binary expression");
       getNextToken();
-      doNotExpect(peekToken(), EOF, "unexpected end of binary expression");
+      doNotExpect(peekToken(), EOF, "Parser: unexpected end of binary expression");
       const right = expect(parseFactor(), Expression, "invalid right hand side in binary expression");
       if (token instanceof Product) return new Multiplication(left, right);
       return new Division(left, right);
@@ -81,8 +83,8 @@ const Parser = (input: string) => {
     let left = parseUnary();
     if (peekToken() instanceof Power) {
       getNextToken();
-      expect(left, Expression, "invalid left hand side in binary expression");
-      doNotExpect(peekToken(), EOF, "unexpected end of binary expression");
+      expect(left, Expression, "Parser: invalid left hand side in binary expression");
+      doNotExpect(peekToken(), EOF, "Parser: unexpected end of binary expression");
       const right = expect(parseExponent(), Expression, "invalid right hand side in binary expression");
       left = new Exponentiation(left, right);
     }
@@ -92,8 +94,8 @@ const Parser = (input: string) => {
   const parseUnary = (): Expression => {
     if (peekToken() instanceof Plus || peekToken() instanceof Minus) {
       const operator = getNextToken();
-      doNotExpect(peekToken(), EOF, "unexpected end of unary expression");
-      const right = expect(parseUnary(), Expression, "invalid expression in unary expression");
+      doNotExpect(peekToken(), EOF, "Parser: unexpected end of unary expression");
+      const right = expect(parseUnary(), Expression, "Parser: invalid expression in unary expression");
       if (operator instanceof Plus) return new Identity(right);
       return new Negation(right);
     }
@@ -103,9 +105,9 @@ const Parser = (input: string) => {
   const parseParenthesis = () => {
     if (peekToken() instanceof OpenParenthesis) {
       getNextToken();
-      doNotExpect(peekToken(), CloseParenthesis, "parenthesis closed with no expression");
-      const expression = expect(parseTerm(), Expression, "expecting expression after an open parenthesis");
-      expect(getNextToken(), CloseParenthesis, "expecting to close this parenthesis");
+      doNotExpect(peekToken(), CloseParenthesis, "Parser: parenthesis closed with no expression");
+      const expression = expect(parseTerm(), Expression, "Parser: expecting expression after an open parenthesis");
+      expect(getNextToken(), CloseParenthesis, "Parser: expecting to close this parenthesis");
       return new Parenthesis(expression);
     }
     return parseRange();
@@ -119,14 +121,14 @@ const Parser = (input: string) => {
       if (peekToken() instanceof Colon) {
         getNextToken();
         if (!parsableCell) {
-          throwError(`invalid left hand side for range expression`);
+          throwError(`Parser: invalid left hand side for range expression`);
         }
         if (left instanceof Number) left = new Cell("", left.view);
         if (left instanceof Identifier) left = new Cell(left.view, "");
         let right = parseCell();
-        doNotExpect(right, EOF, "oops! missing the right hand side for range expression");
+        doNotExpect(right, EOF, "Parser: oops! missing the right hand side for range expression");
         if (!(right instanceof Cell || right instanceof Identifier || right instanceof Number)) {
-          throwError(`expecting a valid spreadsheet reference right after \`:\``);
+          throwError(`Parser: expecting a valid spreadsheet reference right after \`:\``);
         }
         if (right instanceof Number) right = new Cell("", right.view);
         if (right instanceof Identifier) right = new Cell(right.view, "");
@@ -134,7 +136,7 @@ const Parser = (input: string) => {
         const leftc = left as Cell;
         const rightc = right as Cell;
         const view = leftc.column + leftc.row + ":" + rightc.column + rightc.row;
-        const errorMessage = `\`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
+        const errorMessage = `Parser: \`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
         if (leftc.column !== leftc.column.toUpperCase()) {
           throwError(errorMessage);
         }
@@ -157,7 +159,7 @@ const Parser = (input: string) => {
         ignoreSpace();
         const view = left.view + right.view;
         if (left.view !== left.view.toUpperCase()) {
-          throwError(`\`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
+          throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
         return new Cell(left.view, right.view);
       }
@@ -177,7 +179,7 @@ const Parser = (input: string) => {
         const character = getNextToken() as Character;
         view += character.view;
       }
-      expect(getNextToken(), Quote, "expecting a closing quote for the string");
+      expect(getNextToken(), Quote, "Parser: expecting a closing quote for the string");
       ignoreSpace();
       return new String(view);
     }
@@ -186,7 +188,7 @@ const Parser = (input: string) => {
 
   const parseToken = () => {
     const token = getNextToken();
-    if (token instanceof BadToken) throwError(`bad input character \`${token.view}\` found`);
+    if (token instanceof BadToken) throwError(`Parser: bad input character \`${token.view}\` found`);
     return token;
   };
 
