@@ -1,13 +1,12 @@
 import prompt from "prompt-sync";
 import Interpreter from "./src/Interpreter";
 import Parser from "./src/Parser";
-import SystemHTMLProgram from "./src/system/SystemHTMLProgram";
 
-let showTree = true;
-let doEvaluate = false;
+let showTree = false;
+let doEvaluate = true;
 const interpreter = Interpreter();
 
-const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
+const report = (tree: Object) => console.log(tree);
 
 console.log(`   - tree ${showTree ? "is" : "is not"} active for logging`);
 console.log(`   - interpreter ${doEvaluate ? "will" : "won't"} be evaluating`);
@@ -34,8 +33,8 @@ while (true) {
     const tree = Parser(input).parseObservable();
     if (showTree) report(tree);
     if (doEvaluate) {
-      const v = interpreter.evaluate(tree) as SystemHTMLProgram;
-      report(v.toString());
+      const v = interpreter.evaluate(tree);
+      report(v);
     }
   } catch (err) {
     console.log(err);

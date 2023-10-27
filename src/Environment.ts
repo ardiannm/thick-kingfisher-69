@@ -1,8 +1,9 @@
-import SystemNumber from "./system/SystemNumber";
-export default class Environment {
-  public vars = new Map<string, SystemNumber>();
+import System from "./system/System";
 
-  public assignVar(varName: string, varValue: SystemNumber) {
+export default class Environment {
+  public vars = new Map<string, System>();
+
+  public assignVar(varName: string, varValue: System) {
     // if(this.vars.has(varName))
     this.vars.set(varName, varValue);
     return varValue;
