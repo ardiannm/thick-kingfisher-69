@@ -20,7 +20,6 @@ import SystemRange from "./system/SystemRange";
 import Addition from "./ast/expressions/Addition";
 import Observable from "./ast/expressions/Observable";
 import Environment from "./Environment";
-import SystemObservable from "./system/SystemObservable";
 
 const Interpreter = () => {
   // const { columnToNumber } = InterpreterService();
@@ -59,10 +58,10 @@ const Interpreter = () => {
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
     }
-    if (left instanceof SystemObservable) {
+    if (left instanceof SystemCell) {
       left = left.value;
     }
-    if (right instanceof SystemObservable) {
+    if (right instanceof SystemCell) {
       right = right.value;
     }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
@@ -135,8 +134,8 @@ const Interpreter = () => {
   const evaluateCell = (token: Cell) => {
     // const row = parseFloat(token.row) || 0;
     // const column = columnToNumber(token.column);
-    return environment.getVar(token.view);
-    // return new SystemCell(row, column, token.view, value);
+    const value = environment.getVar(token.view);
+    return value;
   };
 
   const evaluateRange = (token: Range) => {
@@ -146,9 +145,15 @@ const Interpreter = () => {
   };
 
   const evaluateObservable = (token: Observable) => {
-    const value = evaluate(token.value) as SystemNumber;
-    // console.log(token);
-    return environment.assignVar(token.reference, new SystemObservable(value, token.observing));
+    const value = evaluate(token.expression) as SystemCell;
+    let observers = new Set<SyntaxToken>();
+    environment.assignVar(token.reference, new SystemCell(token.reference, value, observers));
+
+    for (let reference of token.observing) {
+      if (environment.vars.has(reference)) environment.vars.get(reference).observers.add(token.expression);
+    }
+
+    return value;
   };
 
   return { evaluate };

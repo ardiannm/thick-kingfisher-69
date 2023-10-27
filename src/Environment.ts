@@ -1,10 +1,9 @@
-import System from "./system/System";
+import SystemCell from "./system/SystemCell";
 
 export default class Environment {
-  public vars = new Map<string, System>();
-  public graph = new Map<string, Set<string>>();
+  public vars = new Map<string, SystemCell>();
 
-  public assignVar(varName: string, varValue: System) {
+  public assignVar(varName: string, varValue: SystemCell) {
     // if(this.vars.has(varName))
     this.vars.set(varName, varValue);
     return varValue;

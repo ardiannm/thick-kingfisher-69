@@ -22,7 +22,7 @@ import Character from "./ast/tokens/Character";
 import CloseParenthesis from "./ast/tokens/CloseParenthesis";
 import Colon from "./ast/tokens/Colon";
 import EOF from "./ast/tokens/EOF";
-import Equals from "./ast/tokens/Equals";
+// import Equals from "./ast/tokens/Equals";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
@@ -38,15 +38,14 @@ const Parser = (input: string) => {
     const left = parseTerm();
     if (peekToken() instanceof GreaterThan) {
       const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
-      parseToken()
-      expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references")
+      parseToken();
+      expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
       const start = pointer();
       const right = parseTerm();
       const formula = input.substring(start, pointer());
-      const refsSet = extractRefs(formula);
-      const observing = Array.from(refsSet);
-      if (refsSet.has(reference.view)) throwError(`Parser: circular dependency for "${reference.view}"`);
-      return new Observable(reference.view, right, formula, observing);
+      const observing = extractRefs(formula);
+      if (observing.has(reference.view)) throwError(`Parser: circular dependency for "${reference.view}"`);
+      return new Observable(reference.view, right, observing);
     }
     return left;
   };
