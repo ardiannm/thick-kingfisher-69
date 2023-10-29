@@ -27,17 +27,7 @@ const ParserService = () => {
     throw message;
   };
 
-  const extractRefs = (input: string) => {
-    const refs = new Array<string>();
-    const parser = Parser(input);
-    while (parser.hasMoreTokens()) {
-      const token = parser.parseCell();
-      if (token instanceof Cell && !refs.includes(token.view)) refs.push(token.view);
-    }
-    return refs;
-  };
-
-  return { expect, doNotExpect, throwError, extractRefs };
+  return { expect, doNotExpect, throwError };
 };
 
 export default ParserService;

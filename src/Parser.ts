@@ -30,31 +30,45 @@ import ParserService from "./ParserService";
 import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
-const vars = new Map<string, Reference>();
+class Environment {
+  public stack = new Array<string>();
+  // public references = new Map<string, Reference>();
+
+  public clear() {
+    this.stack = [];
+  }
+
+  public register(ref: string) {
+    if (!this.stack.includes(ref)) this.stack.push(ref);
+  }
+
+  public has(ref: string) {
+    return this.stack.includes(ref);
+  }
+}
 
 const Parser = (input: string) => {
-  const { throwError, expect, doNotExpect, extractRefs } = ParserService();
-  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
+  const { throwError, expect, doNotExpect } = ParserService();
+  const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
+
+  let env = new Environment();
 
   const parseReference = () => {
-    console.log(vars);
-
     const left = parseTerm();
     if (peekToken() instanceof GreaterThan) {
-      const cell = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      env.clear(); // reset stack of cell references being parsed
+      const refernce = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
       parseToken();
       expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
-      const start = pointer();
       const right = parseTerm();
-      const formula = input.substring(start, pointer());
-      const referencing = extractRefs(formula);
-      if (referencing.includes(cell.view)) throwError(`Parser: circular dependency for "${cell.view}"`);
-      const self = new Reference(cell.view, right, []);
-      vars.set(cell.view, self);
-      for (let ref of referencing) {
-        vars.get(ref).referencedBy.push(self);
-      }
-      return self;
+      console.log(env.stack); // log registered refs since this parseReference process started
+      if (env.has(refernce.view)) throwError(`Parser: circular dependency for "${refernce.view}"`);
+      env.clear(); // reset stack of cell references being parsed
+      return new Reference(refernce.view, right, []);
+      // clear any existing registry of this same reference token in other references in env
+      // register to new cells that is referencing
+      // clear env ref stack
+      // return reference token
     }
     return left;
   };
@@ -169,6 +183,7 @@ const Parser = (input: string) => {
         if (left.view !== left.view.toUpperCase()) {
           throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
+        env.register(view);
         return new Cell(left.view, right.view);
       }
       ignoreSpace();
