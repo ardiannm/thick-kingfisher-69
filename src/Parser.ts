@@ -30,22 +30,31 @@ import ParserService from "./ParserService";
 import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
+const vars = new Map<string, Reference>();
+
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect, extractRefs } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
 
   const parseReference = () => {
+    console.log(vars);
+
     const left = parseTerm();
     if (peekToken() instanceof GreaterThan) {
-      const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      const cell = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
       parseToken();
       expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
       const start = pointer();
       const right = parseTerm();
       const formula = input.substring(start, pointer());
-      const observing = extractRefs(formula);
-      if (observing.has(reference.view)) throwError(`Parser: circular dependency for "${reference.view}"`);
-      return new Reference(reference.view, right, observing);
+      const referencing = extractRefs(formula);
+      if (referencing.includes(cell.view)) throwError(`Parser: circular dependency for "${cell.view}"`);
+      const self = new Reference(cell.view, right, []);
+      vars.set(cell.view, self);
+      for (let ref of referencing) {
+        vars.get(ref).referencedBy.push(self);
+      }
+      return self;
     }
     return left;
   };

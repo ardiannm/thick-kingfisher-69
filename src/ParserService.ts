@@ -28,11 +28,11 @@ const ParserService = () => {
   };
 
   const extractRefs = (input: string) => {
-    const refs = new Set<string>();
+    const refs = new Array<string>();
     const parser = Parser(input);
     while (parser.hasMoreTokens()) {
       const token = parser.parseCell();
-      if (token instanceof Cell) refs.add(token.view);
+      if (token instanceof Cell && !refs.includes(token.view)) refs.push(token.view);
     }
     return refs;
   };
