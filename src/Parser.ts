@@ -27,14 +27,14 @@ import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
-import Observable from "./ast/expressions/Observable";
+import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect, extractRefs } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer } = Lexer(input);
 
-  const parseObservable = () => {
+  const parseReference = () => {
     const left = parseTerm();
     if (peekToken() instanceof GreaterThan) {
       const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
@@ -45,7 +45,7 @@ const Parser = (input: string) => {
       const formula = input.substring(start, pointer());
       const observing = extractRefs(formula);
       if (observing.has(reference.view)) throwError(`Parser: circular dependency for "${reference.view}"`);
-      return new Observable(reference.view, right, observing);
+      return new Reference(reference.view, right, observing);
     }
     return left;
   };
@@ -191,7 +191,7 @@ const Parser = (input: string) => {
     return token;
   };
 
-  return { parseObservable, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
+  return { parseReference, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
 };
 
 export default Parser;

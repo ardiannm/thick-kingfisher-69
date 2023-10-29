@@ -16,14 +16,10 @@ import Cell from "./ast/spreadsheet/Cell";
 import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
-// import InterpreterService from "./InterpreterService";
 import Addition from "./ast/expressions/Addition";
-import Observable from "./ast/expressions/Observable";
 import Environment from "./Environment";
 
 const Interpreter = () => {
-  // const { columnToNumber } = InterpreterService();
-
   const environment = new Environment();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
@@ -38,7 +34,6 @@ const Interpreter = () => {
     if (token instanceof Exponentiation) return evaluateExponantiation(token);
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
-    if (token instanceof Observable) return evaluateObservable(token);
     throw new SystemException(`Interpreter: token type \`${token.type}\` has not been implemented for interpretation`);
   };
 
@@ -142,18 +137,6 @@ const Interpreter = () => {
     const left = evaluate(token.left) as SystemCell;
     const right = evaluate(token.right) as SystemCell;
     return new SystemRange(left, right);
-  };
-
-  const evaluateObservable = (token: Observable) => {
-    const value = evaluate(token.expression) as SystemCell;
-    let observers = new Set<SyntaxToken>();
-    environment.assignVar(token.reference, new SystemCell(token.reference, value, observers));
-
-    for (let reference of token.observing) {
-      if (environment.vars.has(reference)) environment.vars.get(reference).observers.add(token.expression);
-    }
-
-    return value;
   };
 
   return { evaluate };

@@ -3,8 +3,8 @@ import Interpreter from "./src/Interpreter";
 import Parser from "./src/Parser";
 import SystemNumber from "./src/system/SystemNumber";
 
-let showTree = false;
-let doEvaluate = true;
+let showTree = true;
+let doEvaluate = false;
 const interpreter = Interpreter();
 
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
@@ -31,7 +31,7 @@ while (true) {
   }
   console.log();
   try {
-    const tree = Parser(input).parseObservable();
+    const tree = Parser(input).parseReference();
     if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemNumber;
