@@ -32,7 +32,7 @@ while (true) {
   console.log();
   try {
     const tree = Parser(input).parseReference();
-    if (showTree) report(tree);
+    // if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemNumber;
       report(v.value);

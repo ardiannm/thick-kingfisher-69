@@ -31,30 +31,35 @@ import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
 class Environment {
-  public referencing = new Set<string>();
-  public vars = new Map<string, Reference>();
+  public observing = new Array<string>();
+  public references = new Map<string, Reference>();
   public service = ParserService();
 
   public clear() {
-    this.referencing = new Set();
+    this.observing = new Array<string>();
   }
 
   public register(ref: string) {
-    this.referencing.add(ref);
+    if (!this.observing.includes(ref)) this.observing.push(ref);
   }
 
   public has(ref: string) {
-    return this.referencing.has(ref);
+    return this.observing.includes(ref);
   }
 
   public setVar(ref: string, token: Reference) {
-    for (const reference of this.referencing) {
-      if (!this.vars.has(reference)) this.service.throwError(`Environment: \`${reference}\` is not defined`);
-      const curr = this.vars.get(reference).referencedBy;
-      if (!curr.map((t) => t.name).includes(token.name)) curr.push(token);
+    for (const obs of this.observing) {
+      if (!this.references.has(obs)) this.service.throwError(`Environment: \`${obs}\` is not defined`);
+      const curr = this.references.get(obs).referencedBy;
+      if (!curr.includes(token.name)) curr.push(token.name);
     }
-    this.vars.set(ref, token);
+    this.references.set(ref, token);
     return token;
+  }
+
+  public observers(ref: string) {
+    if (this.references.has(ref)) return this.references.get(ref).referencedBy;
+    return new Array<string>();
   }
 }
 
@@ -68,13 +73,18 @@ const Parser = (input: string) => {
     const left = parseTerm();
     if (peekToken() instanceof GreaterThan) {
       env.clear(); // reset stack of cell references being parsed
-      const refernce = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
       parseToken();
       expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
       const right = parseTerm();
-      if (env.has(refernce.view)) throwError(`Parser: circular dependency for "${refernce.view}"`);
-      const token = new Reference(refernce.view, right, env.vars.has(refernce.view) ? env.vars.get(refernce.view).referencedBy : []);
+      if (env.has(reference.view)) throwError(`Parser: circular dependency for \`${reference.view}\``);
+      const token = new Reference(reference.view, right, env.observers(reference.view));
       env.setVar(token.name, token);
+
+      token.referencedBy.forEach((ref) => {
+        console.log(`notifying \`${ref}\` for changes in \`${token.name}\``);
+      });
+
       // clear any existing registry of this same reference token in other references in env
       // register to new cells that is referencing
       // clear env ref stack

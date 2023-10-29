@@ -1,7 +1,7 @@
 import Expression from "./Expression";
 
 export default class Reference extends Expression {
-  constructor(public name: string, public expression: Expression, public referencedBy: Array<Reference>) {
+  constructor(public name: string, public expression: Expression, public referencedBy: Array<string>) {
     super();
   }
 }
