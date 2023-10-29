@@ -31,27 +31,38 @@ import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
 class Environment {
-  public stack = new Array<string>();
-  // public references = new Map<string, Reference>();
+  public referencing = new Set<string>();
+  public vars = new Map<string, Reference>();
+  public service = ParserService();
 
   public clear() {
-    this.stack = [];
+    this.referencing = new Set();
   }
 
   public register(ref: string) {
-    if (!this.stack.includes(ref)) this.stack.push(ref);
+    this.referencing.add(ref);
   }
 
   public has(ref: string) {
-    return this.stack.includes(ref);
+    return this.referencing.has(ref);
+  }
+
+  public setVar(ref: string, token: Reference) {
+    for (const reference of this.referencing) {
+      if (!this.vars.has(reference)) this.service.throwError(`Environment: \`${reference}\` is not defined`);
+      const curr = this.vars.get(reference).referencedBy;
+      if (!curr.map((t) => t.name).includes(token.name)) curr.push(token);
+    }
+    this.vars.set(ref, token);
+    return token;
   }
 }
+
+let env = new Environment();
 
 const Parser = (input: string) => {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
-
-  let env = new Environment();
 
   const parseReference = () => {
     const left = parseTerm();
@@ -61,14 +72,15 @@ const Parser = (input: string) => {
       parseToken();
       expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
       const right = parseTerm();
-      console.log(env.stack); // log registered refs since this parseReference process started
       if (env.has(refernce.view)) throwError(`Parser: circular dependency for "${refernce.view}"`);
-      env.clear(); // reset stack of cell references being parsed
-      return new Reference(refernce.view, right, []);
+      const token = new Reference(refernce.view, right, env.vars.has(refernce.view) ? env.vars.get(refernce.view).referencedBy : []);
+      env.setVar(token.name, token);
       // clear any existing registry of this same reference token in other references in env
       // register to new cells that is referencing
       // clear env ref stack
       // return reference token
+      env.clear(); // reset stack of cell references being parsed
+      return token;
     }
     return left;
   };
