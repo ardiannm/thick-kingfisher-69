@@ -22,39 +22,47 @@ import Character from "./ast/tokens/Character";
 import CloseParenthesis from "./ast/tokens/CloseParenthesis";
 import Colon from "./ast/tokens/Colon";
 import EOF from "./ast/tokens/EOF";
-// import Equals from "./ast/tokens/Equals";
 import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
 import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
-import Environment from "./Environment";
 
-function Parser(input: string, environment: ReturnType<typeof Environment>) {
+var stack = new Set<string>();
+var references = new Map<string, Reference>();
+
+function Parser(input: string) {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
 
   function parseReference() {
-    const left = parseCell();
+    const left = parseCell() as Cell;
     if (peekToken() instanceof Minus) {
-      const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      expect(left, Cell, "Parser: reference must be a spreadsheet cell");
+      // if reference already exists remove this reference from all other references for no future notifications
+      if (references.has(left.view)) {
+        references.get(left.view).referencing.forEach((r) => {
+          references.get(r).referencedBy.delete(left.view);
+          console.log(`popped \`${left.view}\` from \`${r}\` stack`);
+        });
+      }
       parseToken();
       expect(parseToken(), GreaterThan, "Parser: referencing operator `->` expected");
-      environment.clear(); // reset stack of cell references being parsed
+      stack = new Set<string>();
       const right = parseTerm();
-      doNotExpect(right, EOF, "Parser: unexpected end of referencing expression");
-      if (environment.observing.includes(reference.view)) {
-        throwError(`Parser: circular dependency for \`${reference.view}\``);
-      }
-      const token = new Reference(reference.view, right, environment.observing, environment.observers(reference.view));
-      environment.setVar(token.name, token);
-
-      token.observers.forEach((ref) => {
-        console.log(`notifying \`${ref}\` for changes in \`${token.name}\``);
+      // if this reference is being redefined then keep the existing references that observe it
+      let by = references.has(left.view) ? references.get(left.view).referencedBy : new Set<string>();
+      const token = new Reference(left.view, right, stack, by);
+      // for each reference being made, register this token.name into reference
+      token.referencing.forEach((r) => {
+        if (r === token.reference) throwError(`Parser: circular dependancy for \`${r}\` reference`);
+        if (references.has(r)) references.get(r).referencedBy.add(r);
+        else throwError(`Environment: reference \`${r}\` is undefined`);
       });
-
-      environment.clear(); // reset stack of cell references being parsed
+      //
+      stack = new Set<string>();
+      references.set(token.reference, token); // register in connections
       return token;
     }
     return left;
@@ -170,7 +178,7 @@ function Parser(input: string, environment: ReturnType<typeof Environment>) {
         if (left.view !== left.view.toUpperCase()) {
           throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
-        environment.register(view);
+        stack.add(view); // register reference
         return new Cell(left.view, right.view);
       }
       ignoreSpace();

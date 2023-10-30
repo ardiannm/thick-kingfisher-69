@@ -2,12 +2,10 @@ import prompt from "prompt-sync";
 import Interpreter from "./src/Interpreter";
 import Parser from "./src/Parser";
 import SystemNumber from "./src/system/SystemNumber";
-import Environment from "./src/Environment";
 
-let showTree = true;
+let showTree = false;
 let doEvaluate = false;
 const interpreter = Interpreter();
-const environment = Environment();
 
 const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
@@ -33,7 +31,7 @@ while (true) {
   }
   console.log();
   try {
-    const tree = Parser(input, environment).parseReference();
+    const tree = Parser(input).parseReference();
     if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemNumber;
