@@ -29,73 +29,38 @@ import Lexer from "./Lexer";
 import ParserService from "./ParserService";
 import Reference from "./ast/expressions/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
+import Environment from "./Environment";
 
-class Environment {
-  public observing = new Array<string>();
-  public references = new Map<string, Reference>();
-  public service = ParserService();
-
-  public clear() {
-    this.observing = new Array<string>();
-  }
-
-  public register(ref: string) {
-    if (!this.observing.includes(ref)) this.observing.push(ref);
-  }
-
-  public has(ref: string) {
-    return this.observing.includes(ref);
-  }
-
-  public setVar(ref: string, token: Reference) {
-    for (const obs of this.observing) {
-      if (!this.references.has(obs)) this.service.throwError(`Environment: \`${obs}\` is not defined`);
-      const curr = this.references.get(obs).referencedBy;
-      if (!curr.includes(token.name)) curr.push(token.name);
-    }
-    this.references.set(ref, token);
-    return token;
-  }
-
-  public observers(ref: string) {
-    if (this.references.has(ref)) return this.references.get(ref).referencedBy;
-    return new Array<string>();
-  }
-}
-
-let env = new Environment();
-
-const Parser = (input: string) => {
+function Parser(input: string, environment: ReturnType<typeof Environment>) {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
 
-  const parseReference = () => {
-    const left = parseTerm();
-    if (peekToken() instanceof GreaterThan) {
-      env.clear(); // reset stack of cell references being parsed
+  function parseReference() {
+    const left = parseCell();
+    if (peekToken() instanceof Minus) {
       const reference = expect(left, Cell, "Parser: reference must be a spreadsheet cell");
       parseToken();
-      expect(parseToken(), GreaterThan, "Parser: observing operator `>>` expected for a references");
+      expect(parseToken(), GreaterThan, "Parser: referencing operator `->` expected");
+      environment.clear(); // reset stack of cell references being parsed
       const right = parseTerm();
-      if (env.has(reference.view)) throwError(`Parser: circular dependency for \`${reference.view}\``);
-      const token = new Reference(reference.view, right, env.observers(reference.view));
-      env.setVar(token.name, token);
+      doNotExpect(right, EOF, "Parser: unexpected end of referencing expression");
+      if (environment.observing.includes(reference.view)) {
+        throwError(`Parser: circular dependency for \`${reference.view}\``);
+      }
+      const token = new Reference(reference.view, right, environment.observing, environment.observers(reference.view));
+      environment.setVar(token.name, token);
 
-      token.referencedBy.forEach((ref) => {
+      token.observers.forEach((ref) => {
         console.log(`notifying \`${ref}\` for changes in \`${token.name}\``);
       });
 
-      // clear any existing registry of this same reference token in other references in env
-      // register to new cells that is referencing
-      // clear env ref stack
-      // return reference token
-      env.clear(); // reset stack of cell references being parsed
+      environment.clear(); // reset stack of cell references being parsed
       return token;
     }
     return left;
-  };
+  }
 
-  const parseTerm = (): Expression => {
+  function parseTerm(): Expression {
     const left = parseFactor();
     const token = peekToken();
     if (token instanceof Plus || token instanceof Minus) {
@@ -107,9 +72,9 @@ const Parser = (input: string) => {
       return new Substraction(left, right);
     }
     return left;
-  };
+  }
 
-  const parseFactor = (): Expression => {
+  function parseFactor(): Expression {
     const left = parseExponent();
     const token = peekToken();
     if (token instanceof Product || token instanceof Slash) {
@@ -121,9 +86,9 @@ const Parser = (input: string) => {
       return new Division(left, right);
     }
     return left;
-  };
+  }
 
-  const parseExponent = () => {
+  function parseExponent() {
     let left = parseUnary();
     if (peekToken() instanceof Power) {
       getNextToken();
@@ -133,9 +98,9 @@ const Parser = (input: string) => {
       left = new Exponentiation(left, right);
     }
     return left;
-  };
+  }
 
-  const parseUnary = (): Expression => {
+  function parseUnary(): Expression {
     if (peekToken() instanceof Plus || peekToken() instanceof Minus) {
       const operator = getNextToken();
       doNotExpect(peekToken(), EOF, "Parser: unexpected end of unary expression");
@@ -144,9 +109,9 @@ const Parser = (input: string) => {
       return new Negation(right);
     }
     return parseParenthesis();
-  };
+  }
 
-  const parseParenthesis = () => {
+  function parseParenthesis() {
     if (peekToken() instanceof OpenParenthesis) {
       getNextToken();
       doNotExpect(peekToken(), CloseParenthesis, "Parser: parenthesis closed with no expression");
@@ -155,9 +120,9 @@ const Parser = (input: string) => {
       return new Parenthesis(expression);
     }
     return parseRange();
-  };
+  }
 
-  const parseRange = () => {
+  function parseRange() {
     let left = parseCell();
     const parsableCell = left instanceof Cell || left instanceof Identifier || left instanceof Number;
     if (parsableCell) {
@@ -192,9 +157,9 @@ const Parser = (input: string) => {
       ignoreSpace();
     }
     return left;
-  };
+  }
 
-  const parseCell = () => {
+  function parseCell() {
     const left = parseString() as Identifier | Number;
     if (left instanceof Identifier) {
       considerSpace();
@@ -205,15 +170,15 @@ const Parser = (input: string) => {
         if (left.view !== left.view.toUpperCase()) {
           throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
-        env.register(view);
+        environment.register(view);
         return new Cell(left.view, right.view);
       }
       ignoreSpace();
     }
     return left;
-  };
+  }
 
-  const parseString = () => {
+  function parseString() {
     if (peekToken() instanceof Quote) {
       getNextToken();
       let view = "";
@@ -229,15 +194,15 @@ const Parser = (input: string) => {
       return new String(view);
     }
     return parseToken();
-  };
+  }
 
-  const parseToken = () => {
+  function parseToken() {
     const token = getNextToken();
     if (token instanceof BadToken) throwError(`Parser: bad input character \`${token.view}\` found`);
     return token;
-  };
+  }
 
   return { parseReference, parseTerm, parseRange, parseCell, parseString, hasMoreTokens };
-};
+}
 
 export default Parser;

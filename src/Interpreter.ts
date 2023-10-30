@@ -17,10 +17,10 @@ import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
 import Addition from "./ast/expressions/Addition";
-import Environment from "./Environment";
+import InterpreterService from "./InterpreterService";
 
 const Interpreter = () => {
-  const environment = new Environment();
+  const { columnToNumber } = InterpreterService();
 
   const evaluate = <T extends SyntaxToken>(token: T): System => {
     if (token instanceof Program) return evaluateProgram(token);
@@ -52,12 +52,6 @@ const Interpreter = () => {
     let right = evaluate(token.right);
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
-    }
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
     }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
@@ -127,10 +121,9 @@ const Interpreter = () => {
   };
 
   const evaluateCell = (token: Cell) => {
-    // const row = parseFloat(token.row) || 0;
-    // const column = columnToNumber(token.column);
-    const value = environment.getVar(token.view);
-    return value;
+    const row = parseFloat(token.row) || 0;
+    const column = columnToNumber(token.column);
+    return new SystemCell(row, column);
   };
 
   const evaluateRange = (token: Range) => {
