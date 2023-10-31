@@ -30,22 +30,22 @@ import BadToken from "./ast/tokens/BadToken";
 
 const HTMLVoidElements = ["br", "hr", "img", "input", "link", "base", "meta", "param", "area", "embed", "col", "track", "source"];
 
-const HTMLParser = (input: string) => {
+function HTMLParser(input: string) {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens, pointer, setPointer } = Lexer(input);
 
-  const parse = () => {
+  function parse() {
     const arr = new Array<HTML>();
     while (hasMoreTokens()) {
       const e = parseHTMLComponent();
       arr.push(e);
     }
     return new HTMLProgram(arr);
-  };
+  }
 
   const ignore = ["style", "script", "path"];
 
-  const parseHTMLComponent = (): HTML => {
+  function parseHTMLComponent(): HTML {
     let left = parseHTMLTextContent();
     if (left instanceof OpenTag) {
       if (HTMLVoidElements.includes(left.tag)) {
@@ -71,9 +71,9 @@ const HTMLParser = (input: string) => {
       throwError(`expecting a closing \`${left.tag}\` tag`);
     }
     return left;
-  };
+  }
 
-  const parseHTMLTextContent = (): HTML => {
+  function parseHTMLTextContent(): HTML {
     let view = "";
     considerSpace();
     if (peekToken() instanceof LessThan) {
@@ -90,9 +90,9 @@ const HTMLParser = (input: string) => {
       return parseHTMLTextContent();
     }
     return new HTMLTextContent(view);
-  };
+  }
 
-  const parseHTMLScript = () => {
+  function parseHTMLScript() {
     const left = parseTag();
     if (left instanceof OpenScriptTag) {
       let view = "";
@@ -114,9 +114,9 @@ const HTMLParser = (input: string) => {
       throwError(`expecting a closing script tag`);
     }
     return left;
-  };
+  }
 
-  const parseTag = () => {
+  function parseTag() {
     const left = parseHTMLComment();
     if (left instanceof HTMLComment) return left;
     if (peekToken() instanceof Slash) {
@@ -137,17 +137,17 @@ const HTMLParser = (input: string) => {
     expect(token, GreaterThan, `expecting a closing \`>\` for \`${identifier.view}\` open tag but matched \`${token.view}\` character`);
     if (identifier.view === "script") return new OpenScriptTag(attributes);
     return new OpenTag(identifier.view, attributes);
-  };
+  }
 
-  const parseAttributes = () => {
+  function parseAttributes() {
     const attributes = new Array<Attribute>();
     while (peekToken() instanceof Identifier) {
       attributes.push(parseAttribute());
     }
     return attributes;
-  };
+  }
 
-  const parseHTMLComment = () => {
+  function parseHTMLComment() {
     const left = expect(getNextToken(), LessThan, "expecting `<` for an html tag");
     if (peekToken() instanceof ExclamationMark) {
       expect(getNextToken(), ExclamationMark, "expecting `!` for a comment");
@@ -176,9 +176,9 @@ const HTMLParser = (input: string) => {
       throwError("unexpected end of comment");
     }
     return left;
-  };
+  }
 
-  const parseTagIdentifier = () => {
+  function parseTagIdentifier() {
     const left = getNextToken() as Character;
     const identifier = expect(left, Identifier, `expecting an identifier but matched \`${left.view}\` for tag name`);
     let view = identifier.view;
@@ -192,9 +192,9 @@ const HTMLParser = (input: string) => {
     }
     ignoreSpace();
     return new Identifier(view);
-  };
+  }
 
-  const parseAttribute = () => {
+  function parseAttribute() {
     let property = "";
     if (peekToken() instanceof Identifier) {
       property += (getNextToken() as Character).view;
@@ -211,9 +211,9 @@ const HTMLParser = (input: string) => {
       value = expect(parseString(), String, `expecting a string value after \`=\` following a tag property but matched \`${token.view}\``).view;
     }
     return new Attribute(property, value);
-  };
+  }
 
-  const parseString = () => {
+  function parseString() {
     if (peekToken() instanceof Quote) {
       getNextToken();
       let view = "";
@@ -229,15 +229,15 @@ const HTMLParser = (input: string) => {
       return new String(view);
     }
     return parseToken();
-  };
+  }
 
-  const parseToken = () => {
+  function parseToken() {
     const token = getNextToken();
     if (token instanceof BadToken) throwError(`bad input character \`${token.view}\` found`);
     return token;
-  };
+  }
 
   return { parse };
-};
+}
 
 export default HTMLParser;

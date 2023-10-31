@@ -24,16 +24,18 @@ import OpenBrace from "./ast/tokens/OpenBrace";
 import CloseBrace from "./ast/tokens/CloseBrace";
 import Dot from "./ast/tokens/Dot";
 
-const Lexer = (input: string) => {
+function Lexer(input: string) {
   let pointer = 0;
   let id = 1;
   let line = 1;
   let column = 1;
   let space = false;
 
-  const state = () => ({ pointer, line, column });
+  function state() {
+    return { pointer, line, column };
+  }
 
-  const peekToken = (): SyntaxToken => {
+  function peekToken(): SyntaxToken {
     let prevPointer = pointer;
     const prevId = id;
     const prevLine = line;
@@ -44,13 +46,13 @@ const Lexer = (input: string) => {
     line = prevLine;
     column = prevColumn;
     return token;
-  };
+  }
 
-  const hasMoreTokens = (): boolean => {
+  function hasMoreTokens(): boolean {
     return !(peekToken() instanceof EOF);
-  };
+  }
 
-  const getNextToken = (): SyntaxToken => {
+  function getNextToken(): SyntaxToken {
     const char = peek();
 
     if (/[a-zA-Z]/.test(char)) return getIdentifier();
@@ -104,32 +106,32 @@ const Lexer = (input: string) => {
       default:
         return new BadToken(next);
     }
-  };
+  }
 
-  const getNumber = () => {
+  function getNumber() {
     let view = "";
     while (/[0-9]/.test(peek())) view += getNext();
     return new Number(view);
-  };
+  }
 
-  const getSpace = () => {
+  function getSpace() {
     let view = "";
     while (/\s/.test(peek())) view += getNext();
     if (space) return new Space(view);
     return getNextToken();
-  };
+  }
 
-  const getIdentifier = () => {
+  function getIdentifier() {
     let view = "";
     while (/[a-zA-Z]/.test(peek())) view += getNext();
     return new Identifier(view);
-  };
+  }
 
-  const peek = () => {
+  function peek() {
     return input.charAt(pointer);
-  };
+  }
 
-  const getNext = () => {
+  function getNext() {
     const character = peek();
     if (character) {
       pointer = pointer + 1;
@@ -141,17 +143,17 @@ const Lexer = (input: string) => {
       }
     }
     return character;
-  };
+  }
 
-  const considerSpace = () => {
+  function considerSpace() {
     space = true;
-  };
+  }
 
-  const ignoreSpace = () => {
+  function ignoreSpace() {
     space = false;
-  };
+  }
 
   return { getNextToken, hasMoreTokens, considerSpace, ignoreSpace, peekToken, pointer: () => pointer, setPointer: (n: number) => (pointer = n), state };
-};
+}
 
 export default Lexer;

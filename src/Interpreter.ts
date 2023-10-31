@@ -19,10 +19,10 @@ import SystemRange from "./system/SystemRange";
 import Addition from "./ast/expressions/Addition";
 import InterpreterService from "./InterpreterService";
 
-const Interpreter = () => {
+function Interpreter() {
   const { columnToNumber } = InterpreterService();
 
-  const evaluate = <T extends SyntaxToken>(token: T): System => {
+  function evaluate<T extends SyntaxToken>(token: T): System {
     if (token instanceof Program) return evaluateProgram(token);
     if (token instanceof Number) return evaluateNumber(token);
     if (token instanceof String) return evaluateString(token);
@@ -35,19 +35,19 @@ const Interpreter = () => {
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
     throw new SystemException(`Interpreter: token type \`${token.type}\` has not been implemented for interpretation`);
-  };
+  }
 
-  const evaluateProgram = (token: Program) => {
+  function evaluateProgram(token: Program) {
     let value = new System();
     token.expressions.forEach((e) => (value = evaluate(e)));
     return value;
-  };
+  }
 
-  const evaluateNumber = (token: Number) => {
+  function evaluateNumber(token: Number) {
     return new SystemNumber(parseFloat(token.view));
-  };
+  }
 
-  const evaluateAddition = (token: Addition) => {
+  function evaluateAddition(token: Addition) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (left instanceof SystemString && right instanceof SystemString) {
@@ -57,36 +57,36 @@ const Interpreter = () => {
       return new SystemException(`Interpreter: can't perform addition operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value + right.value);
-  };
+  }
 
-  const evaluateSubstraction = (token: Substraction) => {
+  function evaluateSubstraction(token: Substraction) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform substraction operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value - right.value);
-  };
+  }
 
-  const evaluateExponantiation = (token: Exponentiation) => {
+  function evaluateExponantiation(token: Exponentiation) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform exponantiation operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value ** right.value);
-  };
+  }
 
-  const evaluateDivision = (token: Division) => {
+  function evaluateDivision(token: Division) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform division operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value / right.value);
-  };
+  }
 
-  const evaluateMultiplication = (token: Multiplication) => {
+  function evaluateMultiplication(token: Multiplication) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
     if (left instanceof SystemString && right instanceof SystemNumber) {
@@ -99,9 +99,9 @@ const Interpreter = () => {
       return new SystemException(`Interpreter: can't perform multiplication operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
     return new SystemNumber(left.value * right.value);
-  };
+  }
 
-  const evaluateUnary = (token: Unary) => {
+  function evaluateUnary(token: Unary) {
     const right = evaluate(token.right);
 
     if (!(right instanceof SystemNumber)) {
@@ -114,25 +114,25 @@ const Interpreter = () => {
       default:
         return new SystemNumber(+right.value);
     }
-  };
+  }
 
-  const evaluateString = (token: String) => {
+  function evaluateString(token: String) {
     return new SystemString(token.view);
-  };
+  }
 
-  const evaluateCell = (token: Cell) => {
+  function evaluateCell(token: Cell) {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
     return new SystemCell(row, column);
-  };
+  }
 
-  const evaluateRange = (token: Range) => {
+  function evaluateRange(token: Range) {
     const left = evaluate(token.left) as SystemCell;
     const right = evaluate(token.right) as SystemCell;
     return new SystemRange(left, right);
-  };
+  }
 
   return { evaluate };
-};
+}
 
 export default Interpreter;

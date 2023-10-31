@@ -13,7 +13,7 @@ import HTMLProgram from "./ast/html/HTMLProgram";
 import SystemHTMLProgram from "./system/SystemHTMLProgram";
 
 const HTMLInterpreter = () => {
-  const evaluate = <T extends SyntaxToken>(token: T): System => {
+  function evaluate<T extends SyntaxToken>(token: T): System {
     if (token instanceof HTMLProgram) return evaluateHTMLProgram(token);
     if (token instanceof String) return evaluateString(token);
     if (token instanceof HTMLElement) return evaluateHTMLElement(token);
@@ -22,37 +22,37 @@ const HTMLInterpreter = () => {
     if (token instanceof HTMLScript) return evaluateHTMLScript(token);
     if (token instanceof HTMLComment) return evaluateHTMLComment(token);
     throw new SystemException(`token type \`${token.type}\` has not been implemented for interpretation`);
-  };
+  }
 
-  const evaluateHTMLProgram = (token: HTMLProgram) => {
+  function evaluateHTMLProgram(token: HTMLProgram) {
     const arr = new SystemStringArray([]);
     for (const e of token.expressions) arr.value.push(evaluate(e) as SystemString);
     return new SystemHTMLProgram(arr);
-  };
+  }
 
-  const evaluateString = (token: String) => {
+  function evaluateString(token: String) {
     return new SystemString(token.view);
-  };
+  }
 
-  const evaluateHTMLTextContent = (token: HTMLTextContent) => {
+  function evaluateHTMLTextContent(token: HTMLTextContent) {
     return new SystemString(token.view);
-  };
+  }
 
-  const evaluateHTMLScript = (token: HTMLScript) => {
+  function evaluateHTMLScript(token: HTMLScript) {
     return new SystemString(token.view);
-  };
+  }
 
-  const evaluateHTMLComment = (token: HTMLComment) => {
+  function evaluateHTMLComment(token: HTMLComment) {
     return new SystemString(token.view);
-  };
+  }
 
-  const evaluateVoidHTMLElement = (_: HTMLVoidElement) => {
+  function evaluateVoidHTMLElement(_: HTMLVoidElement) {
     return new SystemString("");
-  };
+  }
 
-  const evaluateHTMLElement = (token: HTMLElement) => {
+  function evaluateHTMLElement(token: HTMLElement) {
     return new SystemStringArray(token.children.map((e) => evaluate(e) as SystemString));
-  };
+  }
 
   return { evaluate };
 };
