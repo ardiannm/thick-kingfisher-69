@@ -44,11 +44,13 @@ function Parser(input: string) {
       if (references.has(left.view)) {
         references.get(left.view).referencing.forEach((r) => {
           references.get(r).referencedBy.delete(left.view);
-          console.log(`popped \`${left.view}\` from \`${r}\` stack`);
+          console.log(`popped \`${left.view}\` from \`${r}\``);
         });
       }
       parseToken();
-      expect(parseToken(), GreaterThan, "Parser: referencing operator `->` expected");
+      considerSpace()
+      expect(parseToken(), GreaterThan, "Parser: operator `->` expected");
+      ignoreSpace()
       stack = new Set<string>();
       const right = parseTerm();
       // if this reference is being redefined then keep the existing references that observe it
