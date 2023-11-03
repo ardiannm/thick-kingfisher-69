@@ -23,7 +23,7 @@ function Environment() {
     // store the cell value
     values.set(token.reference, new SystemReference(value, observers(token.reference)));
 
-    // distribute this cell reference all other cells that this cell is referencingS
+    // distribute this cell reference all other cells that this cell is referencing
     token.referencing.forEach((ref) => values.get(ref).referencedBy.add(token.reference));
 
     if (references.has(token.reference)) {
@@ -32,9 +32,7 @@ function Environment() {
     }
 
     // finally store the cell as a token for future re-evaluations
-    // and probably only when it makes any reference to other cells at all
-    if (token.referencing.length > 0) references.set(token.reference, token);
-    else references.delete(token.reference);
+    references.set(token.reference, token);
   }
 
   return { references, assignReference, observers, referenceValue };

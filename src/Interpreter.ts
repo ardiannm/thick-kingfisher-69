@@ -53,13 +53,6 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateAddition(token: Addition) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
     }
@@ -72,12 +65,6 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateSubstraction(token: Substraction) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform substraction operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -87,12 +74,6 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateExponantiation(token: Exponentiation) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform exponantiation operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -102,12 +83,6 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateDivision(token: Division) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform division operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -117,12 +92,6 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateMultiplication(token: Multiplication) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
-    if (left instanceof SystemCell) {
-      left = left.value;
-    }
-    if (right instanceof SystemCell) {
-      right = right.value;
-    }
     if (left instanceof SystemString && right instanceof SystemNumber) {
       return new SystemString(left.value.repeat(right.value));
     }
@@ -140,11 +109,9 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
     if (right instanceof SystemCell) {
       right = right.value;
     }
-
     if (!(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform unary operations over \`${right.type}\` token`);
     }
-
     switch (true) {
       case token instanceof Negation:
         return new SystemNumber(-right.value);
@@ -158,9 +125,9 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   }
 
   function evaluateCell(token: Cell) {
-    const row = parseFloat(token.row) || 0;
-    const column = columnToNumber(token.column);
-    return new SystemCell(row, column, environment.referenceValue(token.view), Array.from(environment.observers(token.view)));
+    // const row = parseFloat(token.row) || 0;
+    // const column = columnToNumber(token.column);
+    return environment.referenceValue(token.view);
   }
 
   function evaluateRange(token: Range) {
