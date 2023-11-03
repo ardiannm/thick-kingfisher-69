@@ -160,7 +160,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateCell(token: Cell) {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
-    return new SystemCell(row, column, environment.values.get(token.view).value);
+    return new SystemCell(row, column, environment.referenceValue(token.view));
   }
 
   function evaluateRange(token: Range) {
@@ -171,8 +171,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
 
   function evaluateReference(token: Reference) {
     const value = evaluate(token.expression) as SystemNumber;
-    const referencedBy = environment.values.has(token.reference) ? environment.values.get(token.reference).referencedBy : new Set<string>();
-    environment.values.set(token.reference, new SystemReference(value, referencedBy));
+    environment.values.set(token.reference, new SystemReference(value, environment.referenceObservers(token.reference)));
     return value;
   }
 

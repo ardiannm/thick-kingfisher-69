@@ -50,7 +50,7 @@ function Parser(input: string, references: Map<string, Reference>) {
       // for each reference being made, register this token.name into reference
       token.referencing.forEach((r) => {
         if (r === token.reference) throwError(`Parser: circular dependancy for \`${r}\` reference`);
-        if (!references.has(r)) throwError(`Environment: reference \`${r}\` is undefined`);
+        if (!references.has(r)) throwError(`Parser: reference \`${r}\` is undefined`);
       });
       //
       stack = new Set<string>();
