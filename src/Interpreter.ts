@@ -20,7 +20,6 @@ import Addition from "./ast/expressions/Addition";
 import InterpreterService from "./InterpreterService";
 import Reference from "./ast/spreadsheet/Reference";
 import Environment from "./Environment";
-import SystemReference from "./system/SystemReference";
 
 function Interpreter(environment: ReturnType<typeof Environment>) {
   const { columnToNumber } = InterpreterService();
@@ -54,6 +53,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateAddition(token: Addition) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+
     if (left instanceof SystemCell) {
       left = left.value;
     }
@@ -160,7 +160,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateCell(token: Cell) {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
-    return new SystemCell(row, column, environment.referenceValue(token.view));
+    return new SystemCell(row, column, environment.referenceValue(token.view), Array.from(environment.observers(token.view)));
   }
 
   function evaluateRange(token: Range) {
@@ -171,7 +171,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
 
   function evaluateReference(token: Reference) {
     const value = evaluate(token.expression) as SystemNumber;
-    environment.values.set(token.reference, new SystemReference(value, environment.referenceObservers(token.reference)));
+    environment.assignReference(token, value);
     return value;
   }
 

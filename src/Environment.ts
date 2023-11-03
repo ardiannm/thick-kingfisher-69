@@ -4,23 +4,30 @@ import SystemNumber from "./system/SystemNumber";
 import SystemReference from "./system/SystemReference";
 
 function Environment() {
+  const { throwError } = ParserService();
+
   const references = new Map<string, Reference>();
   const values = new Map<string, SystemReference>();
-  const { throwError } = ParserService();
 
   function referenceValue(reference: string): SystemNumber {
     if (values.has(reference)) return values.get(reference).value;
     throwError(`Environment: reference \`${reference}\` is not defined`);
   }
 
-  function referenceObservers(reference: string): Set<string> {
+  function observers(reference: string): Set<string> {
     if (values.has(reference)) return values.get(reference).referencedBy;
     return new Set<string>();
   }
 
-  function assignReference() {}
+  function assignReference(token: Reference, value: SystemNumber) {
+    // before re-assigning remove self from current observers
 
-  return { references, values, referenceValue, referenceObservers };
+    // then process with assigning this reference
+    values.set(token.reference, new SystemReference(value, observers(token.reference)));
+    token.referencing.forEach((ref) => values.get(ref).referencedBy.add(token.reference));
+  }
+
+  return { references, values, referenceValue, assignReference, observers };
 }
 
 export default Environment;

@@ -2,11 +2,10 @@ import prompt from "prompt-sync";
 import Interpreter from "./src/Interpreter";
 import Parser from "./src/Parser";
 import SystemNumber from "./src/system/SystemNumber";
-import Reference from "./src/ast/spreadsheet/Reference";
 import Environment from "./src/Environment";
 
 var showTree = false;
-var doEvaluate = false;
+var doEvaluate = true;
 
 var environment = Environment();
 
