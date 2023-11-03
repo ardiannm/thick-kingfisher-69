@@ -26,41 +26,31 @@ import OpenParenthesis from "./ast/tokens/OpenParenthesis";
 import Quote from "./ast/tokens/Quote";
 import Lexer from "./Lexer";
 import ParserService from "./ParserService";
-import Reference from "./ast/expressions/Reference";
+import Reference from "./ast/spreadsheet/Reference";
 import GreaterThan from "./ast/tokens/GreaterThan";
 
-var stack = new Set<string>();
-var references = new Map<string, Reference>();
-
-function Parser(input: string) {
+function Parser(input: string, references: Map<string, Reference>) {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
+
+  var stack = new Set<string>();
 
   function parseReference() {
     const left = parseCell() as Cell;
     if (peekToken() instanceof Minus) {
       expect(left, Cell, "Parser: reference must be a spreadsheet cell");
-      // if reference already exists remove this reference from all other references for no future notifications
-      if (references.has(left.view)) {
-        references.get(left.view).referencing.forEach((r) => {
-          references.get(r).referencedBy.delete(left.view);
-          console.log(`popped \`${left.view}\` from \`${r}\``);
-        });
-      }
       parseToken();
-      considerSpace()
+      considerSpace();
       expect(parseToken(), GreaterThan, "Parser: operator `->` expected");
-      ignoreSpace()
+      ignoreSpace();
       stack = new Set<string>();
       const right = parseTerm();
       // if this reference is being redefined then keep the existing references that observe it
-      let by = references.has(left.view) ? references.get(left.view).referencedBy : new Set<string>();
-      const token = new Reference(left.view, right, stack, by);
+      const token = new Reference(left.view, right, Array.from(stack));
       // for each reference being made, register this token.name into reference
       token.referencing.forEach((r) => {
         if (r === token.reference) throwError(`Parser: circular dependancy for \`${r}\` reference`);
-        if (references.has(r)) references.get(r).referencedBy.add(r);
-        else throwError(`Environment: reference \`${r}\` is undefined`);
+        if (!references.has(r)) throwError(`Environment: reference \`${r}\` is undefined`);
       });
       //
       stack = new Set<string>();

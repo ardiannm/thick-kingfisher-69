@@ -18,8 +18,11 @@ import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
 import Addition from "./ast/expressions/Addition";
 import InterpreterService from "./InterpreterService";
+import Reference from "./ast/spreadsheet/Reference";
+import Environment from "./Environment";
+import SystemReference from "./system/SystemReference";
 
-function Interpreter() {
+function Interpreter(environment: ReturnType<typeof Environment>) {
   const { columnToNumber } = InterpreterService();
 
   function evaluate<T extends SyntaxToken>(token: T): System {
@@ -34,6 +37,7 @@ function Interpreter() {
     if (token instanceof Exponentiation) return evaluateExponantiation(token);
     if (token instanceof Cell) return evaluateCell(token);
     if (token instanceof Range) return evaluateRange(token);
+    if (token instanceof Reference) return evaluateReference(token);
     throw new SystemException(`Interpreter: token type \`${token.type}\` has not been implemented for interpretation`);
   }
 
@@ -50,6 +54,12 @@ function Interpreter() {
   function evaluateAddition(token: Addition) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+    if (left instanceof SystemCell) {
+      left = left.value;
+    }
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
     if (left instanceof SystemString && right instanceof SystemString) {
       return new SystemString(left.value + right.value);
     }
@@ -62,6 +72,12 @@ function Interpreter() {
   function evaluateSubstraction(token: Substraction) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+    if (left instanceof SystemCell) {
+      left = left.value;
+    }
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform substraction operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -71,6 +87,12 @@ function Interpreter() {
   function evaluateExponantiation(token: Exponentiation) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+    if (left instanceof SystemCell) {
+      left = left.value;
+    }
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform exponantiation operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -80,6 +102,12 @@ function Interpreter() {
   function evaluateDivision(token: Division) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+    if (left instanceof SystemCell) {
+      left = left.value;
+    }
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
     if (!(left instanceof SystemNumber) || !(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform division operations between \`${left.type}\` and \`${right.type}\` tokens`);
     }
@@ -89,6 +117,12 @@ function Interpreter() {
   function evaluateMultiplication(token: Multiplication) {
     let left = evaluate(token.left);
     let right = evaluate(token.right);
+    if (left instanceof SystemCell) {
+      left = left.value;
+    }
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
     if (left instanceof SystemString && right instanceof SystemNumber) {
       return new SystemString(left.value.repeat(right.value));
     }
@@ -102,7 +136,10 @@ function Interpreter() {
   }
 
   function evaluateUnary(token: Unary) {
-    const right = evaluate(token.right);
+    let right = evaluate(token.right);
+    if (right instanceof SystemCell) {
+      right = right.value;
+    }
 
     if (!(right instanceof SystemNumber)) {
       return new SystemException(`Interpreter: can't perform unary operations over \`${right.type}\` token`);
@@ -123,13 +160,20 @@ function Interpreter() {
   function evaluateCell(token: Cell) {
     const row = parseFloat(token.row) || 0;
     const column = columnToNumber(token.column);
-    return new SystemCell(row, column);
+    return new SystemCell(row, column, environment.values.get(token.view).value);
   }
 
   function evaluateRange(token: Range) {
     const left = evaluate(token.left) as SystemCell;
     const right = evaluate(token.right) as SystemCell;
     return new SystemRange(left, right);
+  }
+
+  function evaluateReference(token: Reference) {
+    const value = evaluate(token.expression) as SystemNumber;
+    const referencedBy = environment.values.has(token.reference) ? environment.values.get(token.reference).referencedBy : new Set<string>();
+    environment.values.set(token.reference, new SystemReference(value, referencedBy));
+    return value;
   }
 
   return { evaluate };
