@@ -6,36 +6,44 @@ import SystemReference from "./system/SystemReference";
 function Environment() {
   const { throwError } = ParserService();
 
-  const references = new Map<string, Reference>();
-  const values = new Map<string, SystemReference>();
+  const referenceMap = new Map<string, Reference>();
+  const valueMap = new Map<string, SystemReference>();
 
   function referenceValue(ref: string): SystemNumber {
-    if (values.has(ref)) return values.get(ref).value;
+    if (valueMap.has(ref)) return valueMap.get(ref).value;
     throwError(`Environment: reference \`${ref}\` is not defined`);
   }
 
-  function observers(ref: string): Set<string> {
-    if (values.has(ref)) return values.get(ref).referencedBy;
+  function getObservers(ref: string): Set<string> {
+    if (valueMap.has(ref)) return valueMap.get(ref).referencedBy;
     return new Set<string>();
   }
 
   function assignReference(token: Reference, value: SystemNumber) {
-    // store the cell value
-    values.set(token.reference, new SystemReference(value, observers(token.reference)));
-
-    // distribute this cell reference all other cells that this cell is referencing
-    token.referencing.forEach((ref) => values.get(ref).referencedBy.add(token.reference));
-
-    if (references.has(token.reference)) {
-      // remove this cell reference from all other cells that are no longer being referenced by it
-      console.log(references.get(token.reference));
-    }
-
-    // finally store the cell as a token for future re-evaluations
-    references.set(token.reference, token);
+    valueMap.set(token.reference, new SystemReference(value, getObservers(token.reference)));
+    pushReference(token);
+    popReference(token);
+    referenceMap.set(token.reference, token);
+    // notify observers that this reference has changed
   }
 
-  return { references, assignReference, observers, referenceValue };
+  function pushReference(token: Reference) {
+    token.referencing.forEach((ref) => valueMap.get(ref).referencedBy.add(token.reference));
+  }
+
+  function popReference(token: Reference) {
+    if (referenceMap.has(token.reference)) {
+      var prevRefs = referenceMap.get(token.reference).referencing;
+      var currRefs = token.referencing;
+      for (var ref of prevRefs) {
+        if (currRefs.includes(ref)) continue;
+        valueMap.get(ref).referencedBy.delete(token.reference); // unsubscribe this cell from previous references
+        console.log("popped " + token.reference + " from " + ref);
+      }
+    }
+  }
+
+  return { references: referenceMap, assignReference, observers: getObservers, referenceValue };
 }
 
 export default Environment;
