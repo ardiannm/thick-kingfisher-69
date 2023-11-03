@@ -54,7 +54,7 @@ function Parser(input: string, references: Map<string, Reference>) {
       });
       //
       stack = new Set<string>();
-      references.set(token.reference, token); // register in connections
+      // references.set(token.reference, token); // this should not modify runtime environment
       return token;
     }
     return left;

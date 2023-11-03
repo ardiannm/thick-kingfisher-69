@@ -9,25 +9,35 @@ function Environment() {
   const references = new Map<string, Reference>();
   const values = new Map<string, SystemReference>();
 
-  function referenceValue(reference: string): SystemNumber {
-    if (values.has(reference)) return values.get(reference).value;
-    throwError(`Environment: reference \`${reference}\` is not defined`);
+  function referenceValue(ref: string): SystemNumber {
+    if (values.has(ref)) return values.get(ref).value;
+    throwError(`Environment: reference \`${ref}\` is not defined`);
   }
 
-  function observers(reference: string): Set<string> {
-    if (values.has(reference)) return values.get(reference).referencedBy;
+  function observers(ref: string): Set<string> {
+    if (values.has(ref)) return values.get(ref).referencedBy;
     return new Set<string>();
   }
 
   function assignReference(token: Reference, value: SystemNumber) {
-    // before re-assigning remove self from current observers
-
-    // then process with assigning this reference
+    // store the cell value
     values.set(token.reference, new SystemReference(value, observers(token.reference)));
+
+    // distribute this cell reference all other cells that this cell is referencingS
     token.referencing.forEach((ref) => values.get(ref).referencedBy.add(token.reference));
+
+    if (references.has(token.reference)) {
+      // remove this cell reference from all other cells that are no longer being referenced by it
+      console.log(references.get(token.reference));
+    }
+
+    // finally store the cell as a token for future re-evaluations
+    // and probably only when it makes any reference to other cells at all
+    if (token.referencing.length > 0) references.set(token.reference, token);
+    else references.delete(token.reference);
   }
 
-  return { references, values, referenceValue, assignReference, observers };
+  return { references, assignReference, observers, referenceValue };
 }
 
 export default Environment;
