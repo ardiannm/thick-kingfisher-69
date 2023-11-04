@@ -19,31 +19,36 @@ function Environment() {
     return new Set<string>();
   }
 
-  function assignReference(token: Reference, value: SystemNumber) {
-    valueMap.set(token.reference, new SystemReference(value, getObservers(token.reference)));
-    pushReference(token);
-    popReference(token);
+  function assignReference(token: Reference, value: SystemNumber, callback: (observer: Reference) => SystemNumber) {
+    var observers = getObservers(token.reference);
+    valueMap.set(token.reference, new SystemReference(value, observers));
+    subscribe(token);
+    unsubscribe(token);
     referenceMap.set(token.reference, token);
     // notify observers that this reference has changed
+    observers.forEach((obs) => {
+      const refToken = referenceMap.get(obs);
+      callback(refToken);
+    });
   }
 
-  function pushReference(token: Reference) {
+  function subscribe(token: Reference) {
     token.referencing.forEach((ref) => valueMap.get(ref).referencedBy.add(token.reference));
   }
 
-  function popReference(token: Reference) {
+  function unsubscribe(token: Reference) {
     if (referenceMap.has(token.reference)) {
       var prevRefs = referenceMap.get(token.reference).referencing;
       var currRefs = token.referencing;
-      for (var ref of prevRefs) {
-        if (currRefs.includes(ref)) continue;
+      prevRefs.forEach((ref) => {
+        if (currRefs.includes(ref)) return;
         valueMap.get(ref).referencedBy.delete(token.reference); // unsubscribe this cell from previous references
-        console.log("popped " + token.reference + " from " + ref);
-      }
+        // console.log("popped " + token.reference + " from " + ref);
+      });
     }
   }
 
-  return { referenceMap, assignReference, getObservers, getReferenceValue };
+  return { assignReference, getReferenceValue, referenceMap };
 }
 
 export default Environment;

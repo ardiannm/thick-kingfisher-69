@@ -39,7 +39,7 @@ while (true) {
     if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemNumber;
-      report(v);
+      report(v.value);
     }
   } catch (err) {
     console.log(err);

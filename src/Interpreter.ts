@@ -17,12 +17,12 @@ import Range from "./ast/spreadsheet/Range";
 import SystemCell from "./system/SystemCell";
 import SystemRange from "./system/SystemRange";
 import Addition from "./ast/expressions/Addition";
-import InterpreterService from "./InterpreterService";
+// import InterpreterService from "./InterpreterService";
 import Reference from "./ast/spreadsheet/Reference";
 import Environment from "./Environment";
 
 function Interpreter(environment: ReturnType<typeof Environment>) {
-  const { columnToNumber } = InterpreterService();
+  // const { columnToNumber } = InterpreterService();
 
   function evaluate<T extends SyntaxToken>(token: T): System {
     if (token instanceof Program) return evaluateProgram(token);
@@ -138,12 +138,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
 
   function evaluateReference(token: Reference) {
     const value = evaluate(token.expression) as SystemNumber;
-    environment.assignReference(token, value);
-    const obs = environment.getObservers(token.reference);
-    obs.forEach((o) => {
-      const r = environment.referenceMap.get(o);
-      evaluate(r);
-    });
+    environment.assignReference(token, value, (observer: Reference) => evaluate(observer) as SystemNumber);
     return value;
   }
 
