@@ -55,9 +55,9 @@ function Lexer(input: string) {
   function getNextToken(): SyntaxToken {
     const char = peek();
 
-    if (/[a-zA-Z]/.test(char)) return getIdentifier();
-    if (/[0-9]/.test(char)) return getNumber();
-    if (/\s/.test(char)) return getSpace();
+    if (isLetter(char)) return getIdentifier();
+    else if (isDigit(char)) return getNumber();
+    else if (isSpace(char)) return getSpace();
 
     const next = getNext();
 
@@ -108,22 +108,36 @@ function Lexer(input: string) {
     }
   }
 
+  function isLetter(char: string): boolean {
+    const charCode = char.charCodeAt(0);
+    return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
+  }
+
+  function isDigit(char: string): boolean {
+    const charCode = char.charCodeAt(0);
+    return charCode >= 48 && charCode <= 57;
+  }
+
+  function isSpace(char: string): boolean {
+    return char === " " || char === "\t" || char === "\n" || char === "\r";
+  }
+
   function getNumber() {
     let view = "";
-    while (/[0-9]/.test(peek())) view += getNext();
+    while (isDigit(peek())) view += getNext();
     return new Number(view);
   }
 
   function getSpace() {
     let view = "";
-    while (/\s/.test(peek())) view += getNext();
+    while (isSpace(peek())) view += getNext();
     if (space) return new Space(view);
     return getNextToken();
   }
 
   function getIdentifier() {
     let view = "";
-    while (/[a-zA-Z]/.test(peek())) view += getNext();
+    while (isLetter(peek())) view += getNext();
     return new Identifier(view);
   }
 
