@@ -45,16 +45,12 @@ function Parser(input: string, references: Map<string, Reference>) {
       ignoreSpace();
       stack = new Set<string>();
       const right = parseTerm();
-      // if this reference is being redefined then keep the existing references that observe it
       const token = new Reference(left.view, right, Array.from(stack));
-      // for each reference being made, register this token.name into reference
-      token.referencing.forEach((r) => {
-        if (r === token.reference) throwError(`Parser: circular dependancy for \`${r}\` reference`);
+      stack = new Set<string>();
+      token.observing.forEach((r) => {
+        if (r === token.reference) throwError(`Parser: circular dependancy in \`${r}\` reference`);
         if (!references.has(r)) throwError(`Parser: reference \`${r}\` is undefined`);
       });
-      //
-      stack = new Set<string>();
-      // references.set(token.reference, token); // this should not modify runtime environment
       return token;
     }
     return left;

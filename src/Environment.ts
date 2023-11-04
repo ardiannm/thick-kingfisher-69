@@ -15,34 +15,34 @@ function Environment() {
   }
 
   function getObservers(ref: string): Set<string> {
-    if (valueMap.has(ref)) return valueMap.get(ref).referencedBy;
+    if (valueMap.has(ref)) return valueMap.get(ref).observers;
     return new Set<string>();
   }
 
-  function assignReference(token: Reference, value: SystemNumber, callback: (observer: Reference) => SystemNumber) {
+  function assignReference(token: Reference, value: SystemNumber, callbackFn: (token: Reference) => SystemNumber) {
     var observers = getObservers(token.reference);
     valueMap.set(token.reference, new SystemReference(value, observers));
     subscribe(token);
     unsubscribe(token);
     referenceMap.set(token.reference, token);
     // notify observers that this reference has changed
-    observers.forEach((obs) => {
-      const refToken = referenceMap.get(obs);
-      callback(refToken);
+    observers.forEach((ref) => {
+      const token = referenceMap.get(ref) as Reference;
+      callbackFn(token);
     });
   }
 
   function subscribe(token: Reference) {
-    token.referencing.forEach((ref) => valueMap.get(ref).referencedBy.add(token.reference));
+    token.observing.forEach((ref) => valueMap.get(ref).observers.add(token.reference));
   }
 
   function unsubscribe(token: Reference) {
     if (referenceMap.has(token.reference)) {
-      var prevRefs = referenceMap.get(token.reference).referencing;
-      var currRefs = token.referencing;
+      var prevRefs = referenceMap.get(token.reference).observing;
+      var currRefs = token.observing;
       prevRefs.forEach((ref) => {
         if (currRefs.includes(ref)) return;
-        valueMap.get(ref).referencedBy.delete(token.reference); // unsubscribe this cell from previous references
+        valueMap.get(ref).observers.delete(token.reference); // unsubscribe this cell from previous references
         // console.log("popped " + token.reference + " from " + ref);
       });
     }

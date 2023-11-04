@@ -138,7 +138,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
 
   function evaluateReference(token: Reference) {
     const value = evaluate(token.expression) as SystemNumber;
-    environment.assignReference(token, value, (observer: Reference) => evaluate(observer) as SystemNumber);
+    environment.assignReference(token, value, evaluate as (token: Reference) => SystemNumber);
     return value;
   }
 
