@@ -127,7 +127,7 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateCell(token: Cell) {
     // const row = parseFloat(token.row) || 0;
     // const column = columnToNumber(token.column);
-    return environment.referenceValue(token.view);
+    return environment.getReferenceValue(token.view);
   }
 
   function evaluateRange(token: Range) {
@@ -139,6 +139,11 @@ function Interpreter(environment: ReturnType<typeof Environment>) {
   function evaluateReference(token: Reference) {
     const value = evaluate(token.expression) as SystemNumber;
     environment.assignReference(token, value);
+    const obs = environment.getObservers(token.reference);
+    obs.forEach((o) => {
+      const r = environment.referenceMap.get(o);
+      evaluate(r);
+    });
     return value;
   }
 

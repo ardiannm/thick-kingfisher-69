@@ -35,7 +35,7 @@ while (true) {
   }
   console.log();
   try {
-    const tree = Parser(input, environment.references).parseReference();
+    const tree = Parser(input, environment.referenceMap).parseReference();
     if (showTree) report(tree);
     if (doEvaluate) {
       const v = interpreter.evaluate(tree) as SystemNumber;

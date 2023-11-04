@@ -9,7 +9,7 @@ function Environment() {
   const referenceMap = new Map<string, Reference>();
   const valueMap = new Map<string, SystemReference>();
 
-  function referenceValue(ref: string): SystemNumber {
+  function getReferenceValue(ref: string): SystemNumber {
     if (valueMap.has(ref)) return valueMap.get(ref).value;
     throwError(`Environment: reference \`${ref}\` is not defined`);
   }
@@ -43,7 +43,7 @@ function Environment() {
     }
   }
 
-  return { references: referenceMap, assignReference, observers: getObservers, referenceValue };
+  return { referenceMap, assignReference, getObservers, getReferenceValue };
 }
 
 export default Environment;
