@@ -33,7 +33,7 @@ function Parser(input: string, references: Map<string, Reference>) {
   const { throwError, expect, doNotExpect } = ParserService();
   const { getNextToken, considerSpace, ignoreSpace, peekToken, hasMoreTokens } = Lexer(input);
 
-  var stack = new Set<string>();
+  var referecens = new Set<string>();
 
   function parseReference() {
     const left = parseCell() as Cell;
@@ -43,12 +43,13 @@ function Parser(input: string, references: Map<string, Reference>) {
       considerSpace();
       expect(parseToken(), GreaterThan, "Parser: operator `->` expected");
       ignoreSpace();
-      stack = new Set<string>();
-      const right = parseTerm();
-      const token = new Reference(left.view, right, Array.from(stack));
-      stack = new Set<string>();
+      referecens.clear();
+      const token = new Reference(left.view, parseTerm(), Array.from(referecens));
+      referecens.clear();
+      if (token.observing.includes(token.reference)) {
+        throwError(`Parser: circular dependancy in \`${token.reference}\` reference`);
+      }
       token.observing.forEach((r) => {
-        if (r === token.reference) throwError(`Parser: circular dependancy in \`${r}\` reference`);
         if (!references.has(r)) throwError(`Parser: reference \`${r}\` is undefined`);
       });
       return token;
@@ -138,17 +139,17 @@ function Parser(input: string, references: Map<string, Reference>) {
         if (right instanceof Number) right = new Cell(right.view, "", right.view);
         if (right instanceof Identifier) right = new Cell(right.view, right.view, "");
         ignoreSpace();
-        const leftc = left as Cell;
-        const rightc = right as Cell;
-        const view = leftc.column + leftc.row + ":" + rightc.column + rightc.row;
+        const leftCell = left as Cell;
+        const rightCell = right as Cell;
+        const view = leftCell.column + leftCell.row + ":" + rightCell.column + rightCell.row;
         const errorMessage = `Parser: \`${view}\` is not a valid range reference; did you mean \`${view.toUpperCase()}\`?`;
-        if (leftc.column !== leftc.column.toUpperCase()) {
+        if (leftCell.column !== leftCell.column.toUpperCase()) {
           throwError(errorMessage);
         }
-        if (rightc.column !== rightc.column.toUpperCase()) {
+        if (rightCell.column !== rightCell.column.toUpperCase()) {
           throwError(errorMessage);
         }
-        return new Range(view, leftc, rightc);
+        return new Range(view, leftCell, rightCell);
       }
       ignoreSpace();
     }
@@ -166,7 +167,7 @@ function Parser(input: string, references: Map<string, Reference>) {
         if (left.view !== left.view.toUpperCase()) {
           throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
-        stack.add(view); // register reference
+        referecens.add(view);
         return new Cell(view, left.view, right.view);
       }
       ignoreSpace();
