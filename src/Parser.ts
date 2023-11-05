@@ -128,15 +128,15 @@ function Parser(input: string, references: Map<string, Reference>) {
         if (!parsableCell) {
           throwError(`Parser: invalid left hand side for range expression`);
         }
-        if (left instanceof Number) left = new Cell("", left.view);
-        if (left instanceof Identifier) left = new Cell(left.view, "");
+        if (left instanceof Number) left = new Cell(left.view, "", left.view);
+        if (left instanceof Identifier) left = new Cell(left.view, left.view, "");
         let right = parseCell();
         doNotExpect(right, EOF, "Parser: oops! missing the right hand side for range expression");
         if (!(right instanceof Cell || right instanceof Identifier || right instanceof Number)) {
           throwError(`Parser: expecting a valid spreadsheet reference right after \`:\``);
         }
-        if (right instanceof Number) right = new Cell("", right.view);
-        if (right instanceof Identifier) right = new Cell(right.view, "");
+        if (right instanceof Number) right = new Cell(right.view, "", right.view);
+        if (right instanceof Identifier) right = new Cell(right.view, right.view, "");
         ignoreSpace();
         const leftc = left as Cell;
         const rightc = right as Cell;
@@ -148,7 +148,7 @@ function Parser(input: string, references: Map<string, Reference>) {
         if (rightc.column !== rightc.column.toUpperCase()) {
           throwError(errorMessage);
         }
-        return new Range(leftc, rightc);
+        return new Range(view, leftc, rightc);
       }
       ignoreSpace();
     }
@@ -167,7 +167,7 @@ function Parser(input: string, references: Map<string, Reference>) {
           throwError(`Parser: \`${view}\` is not a valid cell reference; did you mean \`${view.toUpperCase()}\`?`);
         }
         stack.add(view); // register reference
-        return new Cell(left.view, right.view);
+        return new Cell(view, left.view, right.view);
       }
       ignoreSpace();
     }
