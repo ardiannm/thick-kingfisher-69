@@ -29,7 +29,7 @@ export class Lexer {
   }
 
   hasMoreTokens(): boolean {
-    return this.pointer <= this.input.length;
+    return this.pointer < this.input.length;
   }
 
   getNextToken(): SyntaxToken {
@@ -41,7 +41,7 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.NUMBER_TOKEN, view);
+      return new SyntaxToken(SyntaxKind.IDENTIFIER_TOKEN, view);
     }
 
     if (this.isDigit(char)) {
@@ -69,10 +69,6 @@ export class Lexer {
     if (char === "/") return new SyntaxToken(SyntaxKind.SLASH_TOKEN, "/");
     if (char === "*") return new SyntaxToken(SyntaxKind.STAR_TOKEN, "*");
 
-    if (char !== "") {
-      return new SyntaxToken(SyntaxKind.BAD_TOKEN, char);
-    }
-
-    return new SyntaxToken(SyntaxKind.EOF_TOKEN, "");
+    return new SyntaxToken(SyntaxKind.BAD_TOKEN, char);
   }
 }

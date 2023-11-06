@@ -1,4 +1,5 @@
 export enum SyntaxKind {
+  IDENTIFIER_TOKEN,
   SPACE_TOKEN,
   NUMBER_TOKEN,
   PLUS_TOKEN,
@@ -6,5 +7,4 @@ export enum SyntaxKind {
   SLASH_TOKEN,
   STAR_TOKEN,
   BAD_TOKEN,
-  EOF_TOKEN,
 }
