@@ -41,7 +41,7 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.IDENTIFIER_TOKEN, view);
+      return new SyntaxToken(SyntaxKind.IDENTIFIER, view);
     }
 
     if (this.isDigit(char)) {
@@ -50,7 +50,7 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.NUMBER_TOKEN, view);
+      return new SyntaxToken(SyntaxKind.NUMBER, view);
     }
 
     if (this.isSpace(char)) {
@@ -59,16 +59,16 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.SPACE_TOKEN, view);
+      return new SyntaxToken(SyntaxKind.SPACE, view);
     }
 
     this.advance();
 
-    if (char === "+") return new SyntaxToken(SyntaxKind.PLUS_TOKEN, "+");
-    if (char === "-") return new SyntaxToken(SyntaxKind.PLUS_TOKEN, "-");
-    if (char === "/") return new SyntaxToken(SyntaxKind.SLASH_TOKEN, "/");
-    if (char === "*") return new SyntaxToken(SyntaxKind.STAR_TOKEN, "*");
+    if (char === "+") return new SyntaxToken(SyntaxKind.PLUS, "+");
+    if (char === "-") return new SyntaxToken(SyntaxKind.PLUS, "-");
+    if (char === "/") return new SyntaxToken(SyntaxKind.SLASH, "/");
+    if (char === "*") return new SyntaxToken(SyntaxKind.STAR, "*");
 
-    return new SyntaxToken(SyntaxKind.BAD_TOKEN, char);
+    return new SyntaxToken(SyntaxKind.BAD, char);
   }
 }
