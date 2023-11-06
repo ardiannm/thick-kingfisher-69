@@ -7,9 +7,11 @@ export enum SyntaxKind {
   MinusToken = "MinusToken",
   SlashToken = "SlashToken",
   StarToken = "StarToken",
+  ColonToken = "ColonToken",
   BadToken = "BadToken",
   //
   CellNode = "CellNode",
   RowNode = "RowNode",
   ColumnNode = "ColumnNode",
+  RangeNode = "RangeNode",
 }

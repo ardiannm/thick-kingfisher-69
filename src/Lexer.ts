@@ -87,6 +87,7 @@ export class Lexer {
     if (char === "-") return new SyntaxToken(SyntaxKind.MinusToken, "-");
     if (char === "/") return new SyntaxToken(SyntaxKind.SlashToken, "/");
     if (char === "*") return new SyntaxToken(SyntaxKind.StarToken, "*");
+    if (char === ":") return new SyntaxToken(SyntaxKind.ColonToken, ":");
 
     return new SyntaxToken(SyntaxKind.BadToken, char);
   }
