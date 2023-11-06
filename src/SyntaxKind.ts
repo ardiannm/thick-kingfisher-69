@@ -1,0 +1,10 @@
+export enum SyntaxKind {
+  SPACE_TOKEN,
+  NUMBER_TOKEN,
+  PLUS_TOKEN,
+  MMINUS_TOKEN,
+  SLASH_TOKEN,
+  STAR_TOKEN,
+  BAD_TOKEN,
+  EOF_TOKEN,
+}
