@@ -36,10 +36,16 @@ export class Parser {
     this.tokenizer.input = input;
   }
 
-  match(kind: SyntaxKind, token?: SyntaxToken | SyntaxNode) {
-    const testToken = token || this.tokenizer.peekToken();
-    if (testToken.kind === kind) return true;
-    return false;
+  match(...kinds: Array<SyntaxKind>) {
+    const start = this.tokenizer.pointer;
+    for (const kind of kinds) {
+      if (kind !== this.tokenizer.getNextToken().kind) {
+        this.tokenizer.pointer = start;
+        return false;
+      }
+    }
+    this.tokenizer.pointer = start;
+    return true;
   }
 
   parse() {
@@ -47,33 +53,29 @@ export class Parser {
   }
 
   parseRange() {
-    let left = this.parseCell();
-    if (this.match(SyntaxKind.ColonToken)) {
+    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
+      const left = this.parseCell();
       this.tokenizer.getNextToken();
-      if (this.match(SyntaxKind.IndentifierToken, left)) {
-        left = new CellNode(SyntaxKind.ColumnNode, new ColumnNode(SyntaxKind.ColumnNode, (left as SyntaxToken).repr), new RowNode(SyntaxKind.RowNode, ""));
-      }
-      if (this.match(SyntaxKind.NumberToken, left)) {
-        left = new CellNode(SyntaxKind.ColumnNode, new ColumnNode(SyntaxKind.ColumnNode, ""), new RowNode(SyntaxKind.RowNode, (left as SyntaxToken).repr));
-      }
-      let right = this.parseCell();
-      if (this.match(SyntaxKind.IndentifierToken, right)) {
-        right = new CellNode(SyntaxKind.CellNode, new ColumnNode(SyntaxKind.ColumnNode, (right as SyntaxToken).repr), new RowNode(SyntaxKind.RowNode, ""));
-      }
-      if (this.match(SyntaxKind.NumberToken, right)) {
-        right = new CellNode(SyntaxKind.ColumnNode, new ColumnNode(SyntaxKind.ColumnNode, ""), new RowNode(SyntaxKind.RowNode, (right as SyntaxToken).repr));
-      }
-      return new RangeNode(SyntaxKind.RangeNode, left as CellNode, right as CellNode);
+      const right = this.parseCell();
+      return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
-    return left;
+    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
+    return this.tokenizer.getNextToken();
   }
 
   parseCell() {
-    const left = this.tokenizer.getNextToken();
-    if (this.match(SyntaxKind.IndentifierToken, left) && this.match(SyntaxKind.NumberToken)) {
-      const right = this.tokenizer.getNextToken();
-      return new CellNode(SyntaxKind.CellNode, new ColumnNode(SyntaxKind.RowNode, left.repr), new RowNode(SyntaxKind.ColumnNode, right.repr));
-    }
-    return left;
+    const left = this.parseColumn();
+    const right = this.parseRow();
+    return new CellNode(SyntaxKind.CellNode, left, right);
+  }
+
+  parseRow() {
+    const repr = this.match(SyntaxKind.NumberToken) ? this.tokenizer.getNextToken().repr : "";
+    return new RowNode(SyntaxKind.RowNode, repr);
+  }
+
+  parseColumn() {
+    const repr = this.match(SyntaxKind.IndentifierToken) ? this.tokenizer.getNextToken().repr : "";
+    return new ColumnNode(SyntaxKind.ColumnNode, repr);
   }
 }

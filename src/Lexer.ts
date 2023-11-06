@@ -4,8 +4,8 @@ import { SyntaxToken } from "./SyntaxToken";
 export class Lexer {
   constructor(public input: string) {}
 
-  private pointer = 0;
-  private space = true;
+  public pointer = 0;
+  private space = false;
 
   isLetter(char: string): boolean {
     const charCode = char.charCodeAt(0);
