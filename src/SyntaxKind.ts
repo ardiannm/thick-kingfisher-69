@@ -3,7 +3,7 @@ export enum SyntaxKind {
   SPACE,
   NUMBER,
   PLUS,
-  MMINUS,
+  MINUS,
   SLASH,
   STAR,
   BAD,

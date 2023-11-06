@@ -65,7 +65,7 @@ export class Lexer {
     this.advance();
 
     if (char === "+") return new SyntaxToken(SyntaxKind.PLUS, "+");
-    if (char === "-") return new SyntaxToken(SyntaxKind.PLUS, "-");
+    if (char === "-") return new SyntaxToken(SyntaxKind.MINUS, "-");
     if (char === "/") return new SyntaxToken(SyntaxKind.SLASH, "/");
     if (char === "*") return new SyntaxToken(SyntaxKind.STAR, "*");
 
