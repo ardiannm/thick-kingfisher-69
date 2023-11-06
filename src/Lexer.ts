@@ -41,13 +41,6 @@ export class Lexer {
     return this.pointer < this.input.length;
   }
 
-  peekToken() {
-    const pointer = this.pointer;
-    const token = this.getNextToken();
-    this.pointer = pointer;
-    return token;
-  }
-
   getNextToken(): SyntaxToken {
     const char = this.getChar();
 
