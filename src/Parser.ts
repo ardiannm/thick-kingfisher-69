@@ -36,15 +36,24 @@ export class Parser {
     this.tokenizer.input = input;
   }
 
+  private tokens = new Array<SyntaxToken>();
+  private pointer = 0;
+
+  peekToken() {
+    if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
+    return this.tokens[this.pointer];
+  }
+
   match(...kinds: Array<SyntaxKind>) {
-    const start = this.tokenizer.pointer;
+    const start = this.pointer;
     for (const kind of kinds) {
-      if (kind !== this.tokenizer.getNextToken().kind) {
-        this.tokenizer.pointer = start;
+      if (kind !== this.peekToken().kind) {
+        this.pointer = start;
         return false;
       }
+      this.pointer = this.pointer + 1;
     }
-    this.tokenizer.pointer = start;
+    this.pointer = start;
     return true;
   }
 
@@ -55,12 +64,12 @@ export class Parser {
   parseRange() {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
-      this.tokenizer.getNextToken();
+      this.parseToken();
       const right = this.parseCell();
       return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
-    return this.tokenizer.getNextToken();
+    return this.parseToken();
   }
 
   parseCell() {
@@ -70,12 +79,16 @@ export class Parser {
   }
 
   parseRow() {
-    const repr = this.match(SyntaxKind.NumberToken) ? this.tokenizer.getNextToken().repr : "";
+    const repr = this.match(SyntaxKind.NumberToken) ? this.parseToken().repr : "";
     return new RowNode(SyntaxKind.RowNode, repr);
   }
 
   parseColumn() {
-    const repr = this.match(SyntaxKind.IndentifierToken) ? this.tokenizer.getNextToken().repr : "";
+    const repr = this.match(SyntaxKind.IndentifierToken) ? this.parseToken().repr : "";
     return new ColumnNode(SyntaxKind.ColumnNode, repr);
+  }
+
+  parseToken() {
+    return this.tokens.length > 0 ? this.tokens.shift() : this.tokenizer.getNextToken();
   }
 }
