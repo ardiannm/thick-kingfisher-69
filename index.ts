@@ -1,28 +1,13 @@
 import prompt from "prompt-sync";
+import { Parser } from "./src/Parser";
 
-import { Lexer } from "./src/Lexer";
-
-var space = false;
-const source = new Lexer("");
+const report = (tree: Object) => console.log(JSON.stringify(tree, undefined, 3));
 
 while (true) {
   const input = prompt({ sigint: true })("> ");
-
-  source.input = input;
-
-  if (input === "space") {
-    space = !space;
-    space ? source.considerSpace() : source.ignoreSpace();
-    console.log("\n\tspaces will be " + (space ? "considered" : "ignored") + "\n");
-    continue;
-  }
-
+  const parser = new Parser(input);
+  const tree = parser.parseCell();
   console.log();
-
-  while (source.hasMoreTokens()) {
-    const token = source.getNextToken();
-    console.log(token);
-  }
-
+  report(tree);
   console.log();
 }
