@@ -39,15 +39,18 @@ export class Parser {
   private tokens = new Array<SyntaxToken>();
   private pointer = 0;
 
-  peekToken() {
-    if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
-    return this.tokens[this.pointer];
-  }
+  //   peekToken() {
+  //     if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
+  //     return this.tokens[this.pointer];
+  //   }
 
   match(...kinds: Array<SyntaxKind>) {
     const start = this.pointer;
     for (const kind of kinds) {
-      if (kind !== this.peekToken().kind) {
+      if (this.pointer >= this.tokens.length) {
+        this.tokens.push(this.tokenizer.getNextToken());
+      }
+      if (kind !== this.tokens[this.pointer].kind) {
         this.pointer = start;
         return false;
       }
