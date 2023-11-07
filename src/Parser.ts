@@ -31,8 +31,18 @@ export class Parser {
     return true;
   }
 
+  expect(kind: SyntaxKind) {
+    const token = this.getNextToken();
+    if (kind === token.kind) return token;
+    throw `ParserError: expecting '${kind}' but received '${token.kind}'`;
+  }
+
   parse() {
-    return this.parseExpression();
+    try {
+      return this.parseExpression();
+    } catch (err) {
+      return err;
+    }
   }
 
   parseExpression() {
@@ -77,7 +87,7 @@ export class Parser {
 
   parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisNode(SyntaxKind.OpenParenthesisToken, this.getNextToken(), this.parseExpression(), this.getNextToken());
+      return new ParenthesisNode(SyntaxKind.OpenParenthesisToken, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken));
     }
     return this.parseRange();
   }
