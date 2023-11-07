@@ -1,34 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
-
-abstract class SyntaxNode {
-  constructor(public kind: SyntaxKind) {}
-}
-
-class ColumnNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public repr: string) {
-    super(kind);
-  }
-}
-
-class RowNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public repr: string) {
-    super(kind);
-  }
-}
-
-class CellNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public column: ColumnNode, public row: RowNode) {
-    super(kind);
-  }
-}
-
-class RangeNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public left: CellNode, public right: CellNode) {
-    super(kind);
-  }
-}
+import { RangeNode, CellNode, RowNode, ColumnNode } from "./SyntaxNode";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -39,7 +12,7 @@ export class Parser {
   private tokens = new Array<SyntaxToken>();
   private pointer = 0;
 
-  match(...kinds: Array<SyntaxKind>) {
+  match(...kinds: Array<SyntaxKind>): boolean {
     const start = this.pointer;
     for (const kind of kinds) {
       if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
