@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, SyntaxNode, UnaryNode, ParenthesisNode } from "./SyntaxNode";
+import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode } from "./SyntaxNode";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -20,7 +20,6 @@ export class Parser {
   private match(...kinds: Array<SyntaxKind>): boolean {
     const start = this.pointer;
     for (const kind of kinds) {
-      if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
       if (kind !== this.peekToken().kind) {
         this.pointer = start;
         return false;
@@ -87,7 +86,7 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisNode(SyntaxKind.OpenParenthesisToken, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken));
+      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken));
     }
     return this.parseRange();
   }
@@ -119,7 +118,7 @@ export class Parser {
     return new ColumnNode(SyntaxKind.ColumnNode, repr);
   }
 
-  private parsePrimary(): SyntaxNode {
+  private parsePrimary() {
     const token = this.getNextToken();
     switch (token.kind) {
       case SyntaxKind.NumberToken:
