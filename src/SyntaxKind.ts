@@ -1,5 +1,4 @@
 export enum SyntaxKind {
-  //
   IndentifierToken = "IndentifierToken",
   SpaceToken = "SpaceToken",
   NumberToken = "NumberToken",
@@ -9,9 +8,14 @@ export enum SyntaxKind {
   StarToken = "StarToken",
   ColonToken = "ColonToken",
   BadToken = "BadToken",
-  //
+
   CellNode = "CellNode",
   RowNode = "RowNode",
   ColumnNode = "ColumnNode",
   RangeNode = "RangeNode",
+
+  BadNode = "BadeNode",
+  NumberNode = "NumberNode",
+  IndentifierNode = "IndentifierNode",
+  BinaryNode = "BinaryNode",
 }
