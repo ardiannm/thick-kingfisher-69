@@ -3,13 +3,6 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, SyntaxNode } from "./SyntaxNode";
 
-const precedence = {
-  "+": 1,
-  "-": 2,
-  "*": 3,
-  "/": 4,
-};
-
 export class Parser {
   private tokenizer = new Lexer("");
   constructor(public input: string) {
@@ -42,24 +35,37 @@ export class Parser {
     return this.parseBinary();
   }
 
-  parseBinary() {
-    const terms = new Array<SyntaxNode>();
-    const operators = new Array<SyntaxToken>();
-    terms.push(this.parseRange());
-    while (this.peekToken().repr in precedence) {
-      const operator = this.parseToken();
-      operators.push(operator);
-      const right = this.parseRange();
-      terms.push(right);
+  operatorPrecedence(kind: SyntaxKind) {
+    switch (kind) {
+      case SyntaxKind.StarToken:
+      case SyntaxKind.SlashToken:
+        return 2;
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
+        return 1;
+      default:
+        return 0;
     }
-    console.log(terms, operators);
-    return new BadNode(SyntaxKind.NumberNode, "");
   }
 
-  parseRange(): SyntaxNode | RangeNode {
+  parseBinary(parentPrecedence = 0) {
+    let left = this.parseRange();
+    while (true) {
+      const precedence = this.operatorPrecedence(this.peekToken().kind);
+      if (precedence === 0 || precedence <= parentPrecedence) {
+        break;
+      }
+      const operator = this.getNextToken();
+      const right = this.parseBinary(precedence);
+      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator.repr, right);
+    }
+    return left;
+  }
+
+  parseRange() {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
-      this.parseToken();
+      this.getNextToken();
       const right = this.parseCell();
       return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
@@ -67,24 +73,24 @@ export class Parser {
     return this.parsePrimary();
   }
 
-  parseCell(): CellNode {
+  parseCell() {
     const left = this.parseColumn();
     const right = this.parseRow();
     return new CellNode(SyntaxKind.CellNode, left, right);
   }
 
-  parseRow(): RowNode {
-    const repr = this.match(SyntaxKind.NumberToken) ? this.parseToken().repr : "";
+  parseRow() {
+    const repr = this.match(SyntaxKind.NumberToken) ? this.getNextToken().repr : "";
     return new RowNode(SyntaxKind.RowNode, repr);
   }
 
-  parseColumn(): ColumnNode {
-    const repr = this.match(SyntaxKind.IndentifierToken) ? this.parseToken().repr : "";
+  parseColumn() {
+    const repr = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().repr : "";
     return new ColumnNode(SyntaxKind.ColumnNode, repr);
   }
 
   parsePrimary(): SyntaxNode {
-    const token = this.parseToken();
+    const token = this.getNextToken();
     switch (token.kind) {
       case SyntaxKind.NumberToken:
         return new NumberNode(SyntaxKind.NumberNode, token.repr);
@@ -95,7 +101,7 @@ export class Parser {
     }
   }
 
-  parseToken() {
+  getNextToken() {
     if (this.tokens.length > 0) return this.tokens.shift();
     return this.tokenizer.getNextToken();
   }
