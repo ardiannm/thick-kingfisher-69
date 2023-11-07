@@ -8,6 +8,8 @@ export enum SyntaxKind {
   StarToken = "StarToken",
   ColonToken = "ColonToken",
   BadToken = "BadToken",
+  OpenParenthesisToken = "OpenParenthesisToken",
+  CloseParenthesisToken = "CloseParenthesisToken",
 
   CellNode = "CellNode",
   RowNode = "RowNode",
@@ -18,4 +20,5 @@ export enum SyntaxKind {
   NumberNode = "NumberNode",
   IndentifierNode = "IndentifierNode",
   BinaryNode = "BinaryNode",
+  UnaryNode = "UnaryNode",
 }

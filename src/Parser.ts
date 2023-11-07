@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, SyntaxNode } from "./SyntaxNode";
+import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, SyntaxNode, UnaryNode, ParenthesisNode } from "./SyntaxNode";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -32,6 +32,10 @@ export class Parser {
   }
 
   parse() {
+    return this.parseExpression();
+  }
+
+  parseExpression() {
     return this.parseBinary();
   }
 
@@ -49,7 +53,7 @@ export class Parser {
   }
 
   parseBinary(parentPrecedence = 0) {
-    let left = this.parseRange();
+    let left = this.parseUnary();
     while (true) {
       const precedence = this.operatorPrecedence(this.peekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
@@ -60,6 +64,22 @@ export class Parser {
       left = new BinaryNode(SyntaxKind.BinaryNode, left, operator.repr, right);
     }
     return left;
+  }
+
+  parseUnary() {
+    if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
+      const operator = this.getNextToken();
+      const right = this.parseUnary();
+      return new UnaryNode(SyntaxKind.UnaryNode, operator.repr, right);
+    }
+    return this.parseParenthesis();
+  }
+
+  parseParenthesis() {
+    if (this.match(SyntaxKind.OpenParenthesisToken)) {
+      return new ParenthesisNode(SyntaxKind.OpenParenthesisToken, this.getNextToken(), this.parseExpression(), this.getNextToken());
+    }
+    return this.parseRange();
   }
 
   parseRange() {
