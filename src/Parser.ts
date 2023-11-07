@@ -12,12 +12,12 @@ export class Parser {
   private tokens = new Array<SyntaxToken>();
   private pointer = 0;
 
-  peekToken() {
+  private peekToken() {
     if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
     return this.tokens[this.pointer];
   }
 
-  match(...kinds: Array<SyntaxKind>): boolean {
+  private match(...kinds: Array<SyntaxKind>): boolean {
     const start = this.pointer;
     for (const kind of kinds) {
       if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
@@ -31,13 +31,13 @@ export class Parser {
     return true;
   }
 
-  expect(kind: SyntaxKind) {
+  private expect(kind: SyntaxKind) {
     const token = this.getNextToken();
     if (kind === token.kind) return token;
     throw `ParserError: expecting '${kind}' but received '${token.kind}'`;
   }
 
-  parse() {
+  public parse() {
     try {
       return this.parseExpression();
     } catch (err) {
@@ -45,11 +45,11 @@ export class Parser {
     }
   }
 
-  parseExpression() {
+  private parseExpression() {
     return this.parseBinary();
   }
 
-  operatorPrecedence(kind: SyntaxKind) {
+  private operatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.StarToken:
       case SyntaxKind.SlashToken:
@@ -62,7 +62,7 @@ export class Parser {
     }
   }
 
-  parseBinary(parentPrecedence = 0) {
+  private parseBinary(parentPrecedence = 0) {
     let left = this.parseUnary();
     while (true) {
       const precedence = this.operatorPrecedence(this.peekToken().kind);
@@ -76,7 +76,7 @@ export class Parser {
     return left;
   }
 
-  parseUnary() {
+  private parseUnary() {
     if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
       const operator = this.getNextToken();
       const right = this.parseUnary();
@@ -85,14 +85,14 @@ export class Parser {
     return this.parseParenthesis();
   }
 
-  parseParenthesis() {
+  private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
       return new ParenthesisNode(SyntaxKind.OpenParenthesisToken, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken));
     }
     return this.parseRange();
   }
 
-  parseRange() {
+  private parseRange() {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
       this.getNextToken();
@@ -103,23 +103,23 @@ export class Parser {
     return this.parsePrimary();
   }
 
-  parseCell() {
+  private parseCell() {
     const left = this.parseColumn();
     const right = this.parseRow();
     return new CellNode(SyntaxKind.CellNode, left, right);
   }
 
-  parseRow() {
+  private parseRow() {
     const repr = this.match(SyntaxKind.NumberToken) ? this.getNextToken().repr : "";
     return new RowNode(SyntaxKind.RowNode, repr);
   }
 
-  parseColumn() {
+  private parseColumn() {
     const repr = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().repr : "";
     return new ColumnNode(SyntaxKind.ColumnNode, repr);
   }
 
-  parsePrimary(): SyntaxNode {
+  private parsePrimary(): SyntaxNode {
     const token = this.getNextToken();
     switch (token.kind) {
       case SyntaxKind.NumberToken:
@@ -131,7 +131,7 @@ export class Parser {
     }
   }
 
-  getNextToken() {
+  private getNextToken() {
     if (this.tokens.length > 0) return this.tokens.shift();
     return this.tokenizer.getNextToken();
   }

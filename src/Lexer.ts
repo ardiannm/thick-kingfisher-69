@@ -7,41 +7,41 @@ export class Lexer {
   public pointer = 0;
   private space = false;
 
-  isLetter(char: string): boolean {
+  private isLetter(char: string): boolean {
     const charCode = char.charCodeAt(0);
     return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
   }
 
-  isDigit(char: string): boolean {
+  private isDigit(char: string): boolean {
     const charCode = char.charCodeAt(0);
     return charCode >= 48 && charCode <= 57;
   }
 
-  isSpace(char: string): boolean {
+  private isSpace(char: string): boolean {
     return char === " " || char === "\t" || char === "\n" || char === "\r";
   }
 
-  getChar(): string {
+  private getChar(): string {
     return this.input.charAt(this.pointer);
   }
 
-  advance(): void {
+  private advance(): void {
     this.pointer = this.pointer + 1;
   }
 
-  considerSpace(): void {
+  private considerSpace(): void {
     this.space = true;
   }
 
-  ignoreSpace(): void {
+  private ignoreSpace(): void {
     this.space = false;
   }
 
-  hasMoreTokens(): boolean {
+  public hasMoreTokens(): boolean {
     return this.pointer < this.input.length;
   }
 
-  getNextToken(): SyntaxToken {
+  public getNextToken(): SyntaxToken {
     const char = this.getChar();
 
     if (this.isLetter(char)) {
