@@ -1,8 +1,7 @@
 import { Lexer } from "./Lexer";
-import { Syntax } from "./Syntax/Syntax";
+import { SyntaxKind } from "./Syntax/Syntax";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
 import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./Syntax/SyntaxNode";
-import { Diagnostics } from "./Syntax/Diagnostics";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -13,14 +12,13 @@ export class Parser {
   private tokens = new Array<SyntaxToken>();
   private token = 0;
   private stack = new Set<string>();
-  private diagnostics = new Array<Diagnostics>();
 
   private peekToken() {
     if (this.token >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
     return this.tokens[this.token];
   }
 
-  private match(...kinds: Array<Syntax>): boolean {
+  private match(...kinds: Array<SyntaxKind>): boolean {
     const start = this.token;
     for (const kind of kinds) {
       if (kind !== this.peekToken().kind) {
@@ -34,10 +32,10 @@ export class Parser {
   }
 
   private throwError(message: string) {
-    this.diagnostics.push(new Diagnostics("ParserError: " + message));
+    throw "ParserError: " + message;
   }
 
-  private expect(kind: Syntax, message?: string) {
+  private expect(kind: SyntaxKind, message?: string) {
     const token = this.getNextToken();
     if (kind === token.kind) return token;
     if (message) this.throwError(message);
@@ -47,15 +45,15 @@ export class Parser {
   public parse() {
     try {
       const tree = this.parseReference();
-      this.expect(Syntax.EOFToken, "Unexpected tokens found while parsing");
+      this.expect(SyntaxKind.EOFToken, "Unexpected tokens found while parsing");
       return tree;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      return error;
     }
   }
 
   private parseReference() {
-    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken, Syntax.MinusToken, Syntax.GreaterToken)) {
+    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
       const reference = this.parseCell();
       this.parsePointer();
       this.stack.clear();
@@ -66,29 +64,29 @@ export class Parser {
         this.throwError(`Circular dependency for '${repr}'`);
       }
       this.stack.clear();
-      return new ReferenceNode(Syntax.ReferenceNode, repr, expression, observing);
+      return new ReferenceNode(SyntaxKind.ReferenceNode, repr, expression, observing);
     }
     return this.parseExpression();
   }
 
   private parsePointer() {
-    if (this.match(Syntax.MinusToken, Syntax.GreaterToken)) {
+    if (this.match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
       this.getNextToken();
       this.tokenizer.considerSpace();
       this.getNextToken();
       this.tokenizer.ignoreSpace();
-      return new SyntaxToken(Syntax.PointerToken, "->");
+      return new SyntaxToken(SyntaxKind.PointerToken, "->");
     }
     this.throwError(`Expecting a reference pointer token`);
   }
 
-  private operatorPrecedence(kind: Syntax) {
+  private operatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
-      case Syntax.StarToken:
-      case Syntax.SlashToken:
+      case SyntaxKind.StarToken:
+      case SyntaxKind.SlashToken:
         return 2;
-      case Syntax.PlusToken:
-      case Syntax.MinusToken:
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
         return 1;
       default:
         return 0;
@@ -104,67 +102,67 @@ export class Parser {
       }
       const operator = this.getNextToken();
       const right = this.parseExpression(precedence);
-      left = new BinaryNode(Syntax.BinaryNode, left, operator.repr, right);
+      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator.repr, right);
     }
     return left;
   }
 
   private parseUnaryExpression() {
-    if (this.match(Syntax.PlusToken) || this.match(Syntax.MinusToken)) {
+    if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
       const operator = this.getNextToken();
       const right = this.parseUnaryExpression();
-      return new UnaryNode(Syntax.UnaryNode, operator.repr, right);
+      return new UnaryNode(SyntaxKind.UnaryNode, operator.repr, right);
     }
     return this.parseParenthesis();
   }
 
   private parseParenthesis() {
-    if (this.match(Syntax.OpenParenthesisToken)) {
-      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
+    if (this.match(SyntaxKind.OpenParenthesisToken)) {
+      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken, "Expecting a closing parenthesis token"));
     }
     return this.parseRange();
   }
 
   private parseRange() {
-    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken, Syntax.ColonToken) || this.match(Syntax.IndentifierToken, Syntax.ColonToken) || this.match(Syntax.IndentifierToken, Syntax.ColonToken)) {
+    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
       this.getNextToken();
       const right = this.parseCell();
-      return new RangeNode(Syntax.RangeNode, left, right);
+      return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
-    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken)) return this.parseCell();
+    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
     return this.parsePrimary();
   }
 
   private parseCell() {
     const left = this.parseColumn();
     const right = this.parseRow();
-    const node = new CellNode(Syntax.CellNode, left, right);
+    const node = new CellNode(SyntaxKind.CellNode, left, right);
     const repr = node.column.repr + node.row.repr;
     this.stack.add(repr);
     return node;
   }
 
   private parseColumn() {
-    const repr = this.match(Syntax.IndentifierToken) ? this.getNextToken().repr : "";
-    return new ColumnNode(Syntax.ColumnNode, repr);
+    const repr = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().repr : "";
+    return new ColumnNode(SyntaxKind.ColumnNode, repr);
   }
 
   private parseRow() {
-    const repr = this.match(Syntax.NumberToken) ? this.getNextToken().repr : "";
-    return new RowNode(Syntax.RowNode, repr);
+    const repr = this.match(SyntaxKind.NumberToken) ? this.getNextToken().repr : "";
+    return new RowNode(SyntaxKind.RowNode, repr);
   }
 
   private parsePrimary() {
     const token = this.getNextToken();
     switch (token.kind) {
-      case Syntax.NumberToken:
-        return new NumberNode(Syntax.NumberNode, token.repr);
-      case Syntax.IndentifierToken:
-        return new IdentifierNode(Syntax.IndentifierNode, token.repr);
+      case SyntaxKind.NumberToken:
+        return new NumberNode(SyntaxKind.NumberNode, token.repr);
+      case SyntaxKind.IndentifierToken:
+        return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
       default:
         this.throwError(`Unexpected '${token.repr}' found while parsing`);
-        return new BadNode(Syntax.BadNode, token.repr);
+        return token;
     }
   }
 

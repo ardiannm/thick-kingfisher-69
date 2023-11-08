@@ -1,5 +1,5 @@
-import { Syntax } from "./Syntax";
+import { SyntaxKind } from "./Syntax";
 
 export class SyntaxToken {
-  constructor(public kind: Syntax, public repr: string) {}
+  constructor(public kind: SyntaxKind, public repr: string) {}
 }

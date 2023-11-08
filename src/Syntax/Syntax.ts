@@ -1,4 +1,4 @@
-export enum Syntax {
+export enum SyntaxKind {
   BadToken = "BadToken",
   SpaceToken = "SpaceToken",
   IndentifierToken = "IndentifierToken",
