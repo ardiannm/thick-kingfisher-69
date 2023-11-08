@@ -1,8 +1,8 @@
 import { Lexer } from "./Lexer";
-import { Syntax } from "./Syntax";
-import { SyntaxToken } from "./SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./SyntaxNode";
-import { Diagnostics } from "./Diagnostics";
+import { Syntax } from "./Syntax/Syntax";
+import { SyntaxToken } from "./Syntax/SyntaxToken";
+import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./Syntax/SyntaxNode";
+import { Diagnostics } from "./Syntax/Diagnostics";
 
 export class Parser {
   private tokenizer = new Lexer("");
