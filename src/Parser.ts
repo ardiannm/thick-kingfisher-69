@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { Syntax } from "./Syntax";
 import { SyntaxToken } from "./SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode, SyntaxNode } from "./SyntaxNode";
+import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./SyntaxNode";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -31,10 +31,15 @@ export class Parser {
     return true;
   }
 
-  private expect(kind: Syntax) {
+  private throwError(message: string) {
+    throw "ParserError: " + message;
+  }
+
+  private expect(kind: Syntax, message?: string) {
     const token = this.getNextToken();
     if (kind === token.kind) return token;
-    throw `ParserError: expecting '${kind}' but received '${token.kind}'`;
+    if (message) this.throwError(message);
+    this.throwError(`expecting '${kind}' but received '${token.kind}'`);
   }
 
   public parse() {
@@ -56,8 +61,11 @@ export class Parser {
       this.stack.clear();
       const expression = this.parseBinary();
       const observing = Array.from(this.stack);
-      this.stack.clear();
       const repr = reference.column.repr + reference.row.repr;
+      if (this.stack.has(repr)) {
+        this.throwError(`Circular dependency for '${repr}'`);
+      }
+      this.stack.clear();
       return new ReferenceNode(Syntax.ReferenceNode, repr, expression, observing);
     }
     return this.parseBinary();
@@ -71,7 +79,7 @@ export class Parser {
       this.tokenizer.ignoreSpace();
       return new SyntaxToken(Syntax.PointerToken, "->");
     }
-    throw `ParserError: Expecting a '->' pointer reference token, received '${this.peekToken().repr}' instead`;
+    this.throwError(`Expecting a reference pointer token`);
   }
 
   private operatorPrecedence(kind: Syntax) {
@@ -112,7 +120,7 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(Syntax.OpenParenthesisToken)) {
-      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken));
+      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
     }
     return this.parseRange();
   }
