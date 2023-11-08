@@ -13,6 +13,8 @@ export enum Syntax {
   GreaterToken = "GreaterToken",
   PointerToken = "PointerToken",
 
+  EOFToken = "EOFToken",
+
   BadNode = "BadeNode",
   NumberNode = "NumberNode",
   IndentifierNode = "IndentifierNode",

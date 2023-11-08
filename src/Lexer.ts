@@ -37,10 +37,6 @@ export class Lexer {
     this.space = false;
   }
 
-  public hasMoreTokens(): boolean {
-    return this.pointer < this.input.length;
-  }
-
   public getNextToken(): SyntaxToken {
     const char = this.getChar();
 
@@ -84,6 +80,7 @@ export class Lexer {
     if (char === "(") return new SyntaxToken(Syntax.OpenParenthesisToken, "(");
     if (char === ")") return new SyntaxToken(Syntax.CloseParenthesisToken, ")");
     if (char === ">") return new SyntaxToken(Syntax.GreaterToken, ">");
+    if (char === "") return new SyntaxToken(Syntax.EOFToken, "EOF");
 
     return new SyntaxToken(Syntax.BadToken, char);
   }

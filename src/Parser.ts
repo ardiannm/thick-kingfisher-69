@@ -45,9 +45,7 @@ export class Parser {
   public parse() {
     try {
       const tree = this.parseReference();
-      if (this.tokenizer.hasMoreTokens() || this.tokens.length > 0) {
-        this.throwError("Unexpected tokens found while parsing");
-      }
+      this.expect(Syntax.EOFToken, "Unexpected tokens found while parsing");
       return tree;
     } catch (err) {
       return err;
@@ -145,14 +143,14 @@ export class Parser {
     return node;
   }
 
-  private parseRow() {
-    const repr = this.match(Syntax.NumberToken) ? this.getNextToken().repr : "";
-    return new RowNode(Syntax.RowNode, repr);
-  }
-
   private parseColumn() {
     const repr = this.match(Syntax.IndentifierToken) ? this.getNextToken().repr : "";
     return new ColumnNode(Syntax.ColumnNode, repr);
+  }
+
+  private parseRow() {
+    const repr = this.match(Syntax.NumberToken) ? this.getNextToken().repr : "";
+    return new RowNode(Syntax.RowNode, repr);
   }
 
   private parsePrimary() {
@@ -163,6 +161,7 @@ export class Parser {
       case Syntax.IndentifierToken:
         return new IdentifierNode(Syntax.IndentifierNode, token.repr);
       default:
+        // this.throwError(`Unexpected '${token.repr}' found while parsing`);
         return new BadNode(Syntax.BadNode, token.repr);
     }
   }
