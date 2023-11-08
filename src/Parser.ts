@@ -1,7 +1,8 @@
 import { Lexer } from "./Lexer";
-import { SyntaxKind } from "./Syntax/Syntax";
+import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
 import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./Syntax/SyntaxNode";
+import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -80,23 +81,10 @@ export class Parser {
     this.throwError(`Expecting a reference pointer token`);
   }
 
-  private operatorPrecedence(kind: SyntaxKind) {
-    switch (kind) {
-      case SyntaxKind.StarToken:
-      case SyntaxKind.SlashToken:
-        return 2;
-      case SyntaxKind.PlusToken:
-      case SyntaxKind.MinusToken:
-        return 1;
-      default:
-        return 0;
-    }
-  }
-
   private parseExpression(parentPrecedence = 0) {
     let left = this.parseUnaryExpression();
     while (true) {
-      const precedence = this.operatorPrecedence(this.peekToken().kind);
+      const precedence = SyntaxFacts.operatorPrecedence(this.peekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }

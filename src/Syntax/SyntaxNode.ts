@@ -1,4 +1,4 @@
-import { SyntaxKind } from "./Syntax";
+import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 
 export abstract class SyntaxNode {

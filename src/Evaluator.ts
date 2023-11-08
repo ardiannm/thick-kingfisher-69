@@ -1,4 +1,4 @@
-import { SyntaxKind } from "./Syntax/Syntax";
+import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { BinaryNode, NumberNode, SyntaxNode, UnaryNode } from "./Syntax/SyntaxNode";
 
 export class Evaluator {

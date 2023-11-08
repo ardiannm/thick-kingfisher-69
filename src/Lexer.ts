@@ -1,4 +1,4 @@
-import { SyntaxKind } from "./Syntax/Syntax";
+import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
 
 export class Lexer {
