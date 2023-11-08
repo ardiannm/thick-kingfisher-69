@@ -10,24 +10,24 @@ export class Parser {
   }
 
   private tokens = new Array<SyntaxToken>();
-  private pointer = 0;
+  private token = 0;
   private stack = new Set<string>();
 
   private peekToken() {
-    if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
-    return this.tokens[this.pointer];
+    if (this.token >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
+    return this.tokens[this.token];
   }
 
   private match(...kinds: Array<Syntax>): boolean {
-    const start = this.pointer;
+    const start = this.token;
     for (const kind of kinds) {
       if (kind !== this.peekToken().kind) {
-        this.pointer = start;
+        this.token = start;
         return false;
       }
-      this.pointer = this.pointer + 1;
+      this.token = this.token + 1;
     }
-    this.pointer = start;
+    this.token = start;
     return true;
   }
 
@@ -44,7 +44,11 @@ export class Parser {
 
   public parse() {
     try {
-      return this.parseReference();
+      const tree = this.parseReference();
+      if (this.tokenizer.hasMoreTokens() || this.tokens.length > 0) {
+        this.throwError("Unexpected tokens found while parsing");
+      }
+      return tree;
     } catch (err) {
       return err;
     }
