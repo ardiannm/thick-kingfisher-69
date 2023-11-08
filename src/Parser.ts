@@ -51,7 +51,7 @@ export class Parser {
   }
 
   private parseReference() {
-    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken)) {
+    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken, Syntax.MinusToken, Syntax.GreaterToken)) {
       const reference = this.parseCell();
       this.parsePointer();
       this.stack.clear();
