@@ -1,4 +1,4 @@
-import { SyntaxKind } from "./SyntaxKind";
+import { Syntax } from "./Syntax";
 import { SyntaxToken } from "./SyntaxToken";
 
 export class Lexer {
@@ -29,11 +29,11 @@ export class Lexer {
     this.pointer = this.pointer + 1;
   }
 
-  private considerSpace(): void {
+  public considerSpace(): void {
     this.space = true;
   }
 
-  private ignoreSpace(): void {
+  public ignoreSpace(): void {
     this.space = false;
   }
 
@@ -50,7 +50,7 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.IndentifierToken, view);
+      return new SyntaxToken(Syntax.IndentifierToken, view);
     }
 
     if (this.isDigit(char)) {
@@ -59,7 +59,7 @@ export class Lexer {
         this.advance();
       }
       const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.NumberToken, view);
+      return new SyntaxToken(Syntax.NumberToken, view);
     }
 
     if (this.isSpace(char)) {
@@ -69,21 +69,22 @@ export class Lexer {
       }
       if (this.space) {
         const view = this.input.substring(start, this.pointer);
-        return new SyntaxToken(SyntaxKind.SpaceToken, view);
+        return new SyntaxToken(Syntax.SpaceToken, view);
       }
       return this.getNextToken();
     }
 
     this.advance();
 
-    if (char === "+") return new SyntaxToken(SyntaxKind.PlusToken, "+");
-    if (char === "-") return new SyntaxToken(SyntaxKind.MinusToken, "-");
-    if (char === "/") return new SyntaxToken(SyntaxKind.SlashToken, "/");
-    if (char === "*") return new SyntaxToken(SyntaxKind.StarToken, "*");
-    if (char === ":") return new SyntaxToken(SyntaxKind.ColonToken, ":");
-    if (char === "(") return new SyntaxToken(SyntaxKind.OpenParenthesisToken, "(");
-    if (char === ")") return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ")");
+    if (char === "+") return new SyntaxToken(Syntax.PlusToken, "+");
+    if (char === "-") return new SyntaxToken(Syntax.MinusToken, "-");
+    if (char === "/") return new SyntaxToken(Syntax.SlashToken, "/");
+    if (char === "*") return new SyntaxToken(Syntax.StarToken, "*");
+    if (char === ":") return new SyntaxToken(Syntax.ColonToken, ":");
+    if (char === "(") return new SyntaxToken(Syntax.OpenParenthesisToken, "(");
+    if (char === ")") return new SyntaxToken(Syntax.CloseParenthesisToken, ")");
+    if (char === ">") return new SyntaxToken(Syntax.GreaterToken, ">");
 
-    return new SyntaxToken(SyntaxKind.BadToken, char);
+    return new SyntaxToken(Syntax.BadToken, char);
   }
 }

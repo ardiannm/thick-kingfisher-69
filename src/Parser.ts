@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
-import { SyntaxKind } from "./SyntaxKind";
+import { Syntax } from "./Syntax";
 import { SyntaxToken } from "./SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode } from "./SyntaxNode";
+import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode, SyntaxNode } from "./SyntaxNode";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -11,13 +11,14 @@ export class Parser {
 
   private tokens = new Array<SyntaxToken>();
   private pointer = 0;
+  private stack = new Set<string>();
 
   private peekToken() {
     if (this.pointer >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
     return this.tokens[this.pointer];
   }
 
-  private match(...kinds: Array<SyntaxKind>): boolean {
+  private match(...kinds: Array<Syntax>): boolean {
     const start = this.pointer;
     for (const kind of kinds) {
       if (kind !== this.peekToken().kind) {
@@ -30,7 +31,7 @@ export class Parser {
     return true;
   }
 
-  private expect(kind: SyntaxKind) {
+  private expect(kind: Syntax) {
     const token = this.getNextToken();
     if (kind === token.kind) return token;
     throw `ParserError: expecting '${kind}' but received '${token.kind}'`;
@@ -45,16 +46,41 @@ export class Parser {
   }
 
   private parseExpression() {
+    return this.parseReference();
+  }
+
+  private parseReference() {
+    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken)) {
+      const reference = this.parseCell();
+      this.parsePointer();
+      this.stack.clear();
+      const expression = this.parseBinary();
+      const observing = Array.from(this.stack);
+      this.stack.clear();
+      const repr = reference.column.repr + reference.row.repr;
+      return new ReferenceNode(Syntax.ReferenceNode, repr, expression, observing);
+    }
     return this.parseBinary();
   }
 
-  private operatorPrecedence(kind: SyntaxKind) {
+  private parsePointer() {
+    if (this.match(Syntax.MinusToken, Syntax.GreaterToken)) {
+      this.getNextToken();
+      this.tokenizer.considerSpace();
+      this.getNextToken();
+      this.tokenizer.ignoreSpace();
+      return new SyntaxToken(Syntax.PointerToken, "->");
+    }
+    throw `ParserError: Expecting a '->' pointer reference token, received '${this.peekToken().repr}' instead`;
+  }
+
+  private operatorPrecedence(kind: Syntax) {
     switch (kind) {
-      case SyntaxKind.StarToken:
-      case SyntaxKind.SlashToken:
+      case Syntax.StarToken:
+      case Syntax.SlashToken:
         return 2;
-      case SyntaxKind.PlusToken:
-      case SyntaxKind.MinusToken:
+      case Syntax.PlusToken:
+      case Syntax.MinusToken:
         return 1;
       default:
         return 0;
@@ -70,63 +96,66 @@ export class Parser {
       }
       const operator = this.getNextToken();
       const right = this.parseBinary(precedence);
-      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator.repr, right);
+      left = new BinaryNode(Syntax.BinaryNode, left, operator.repr, right);
     }
     return left;
   }
 
   private parseUnary() {
-    if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
+    if (this.match(Syntax.PlusToken) || this.match(Syntax.MinusToken)) {
       const operator = this.getNextToken();
       const right = this.parseUnary();
-      return new UnaryNode(SyntaxKind.UnaryNode, operator.repr, right);
+      return new UnaryNode(Syntax.UnaryNode, operator.repr, right);
     }
     return this.parseParenthesis();
   }
 
   private parseParenthesis() {
-    if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken));
+    if (this.match(Syntax.OpenParenthesisToken)) {
+      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken));
     }
     return this.parseRange();
   }
 
   private parseRange() {
-    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
+    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken, Syntax.ColonToken) || this.match(Syntax.IndentifierToken, Syntax.ColonToken) || this.match(Syntax.IndentifierToken, Syntax.ColonToken)) {
       const left = this.parseCell();
       this.getNextToken();
       const right = this.parseCell();
-      return new RangeNode(SyntaxKind.RangeNode, left, right);
+      return new RangeNode(Syntax.RangeNode, left, right);
     }
-    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
+    if (this.match(Syntax.IndentifierToken, Syntax.NumberToken)) return this.parseCell();
     return this.parsePrimary();
   }
 
   private parseCell() {
     const left = this.parseColumn();
     const right = this.parseRow();
-    return new CellNode(SyntaxKind.CellNode, left, right);
+    const node = new CellNode(Syntax.CellNode, left, right);
+    const repr = node.column.repr + node.row.repr;
+    this.stack.add(repr);
+    return node;
   }
 
   private parseRow() {
-    const repr = this.match(SyntaxKind.NumberToken) ? this.getNextToken().repr : "";
-    return new RowNode(SyntaxKind.RowNode, repr);
+    const repr = this.match(Syntax.NumberToken) ? this.getNextToken().repr : "";
+    return new RowNode(Syntax.RowNode, repr);
   }
 
   private parseColumn() {
-    const repr = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().repr : "";
-    return new ColumnNode(SyntaxKind.ColumnNode, repr);
+    const repr = this.match(Syntax.IndentifierToken) ? this.getNextToken().repr : "";
+    return new ColumnNode(Syntax.ColumnNode, repr);
   }
 
   private parsePrimary() {
     const token = this.getNextToken();
     switch (token.kind) {
-      case SyntaxKind.NumberToken:
-        return new NumberNode(SyntaxKind.NumberNode, token.repr);
-      case SyntaxKind.IndentifierToken:
-        return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
+      case Syntax.NumberToken:
+        return new NumberNode(Syntax.NumberNode, token.repr);
+      case Syntax.IndentifierToken:
+        return new IdentifierNode(Syntax.IndentifierNode, token.repr);
       default:
-        return new BadNode(SyntaxKind.BadNode, token.repr);
+        return new BadNode(Syntax.BadNode, token.repr);
     }
   }
 

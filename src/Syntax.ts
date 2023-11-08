@@ -1,4 +1,4 @@
-export enum SyntaxKind {
+export enum Syntax {
   BadToken = "BadToken",
   SpaceToken = "SpaceToken",
   IndentifierToken = "IndentifierToken",
@@ -10,6 +10,8 @@ export enum SyntaxKind {
   ColonToken = "ColonToken",
   OpenParenthesisToken = "OpenParenthesisToken",
   CloseParenthesisToken = "CloseParenthesisToken",
+  GreaterToken = "GreaterToken",
+  PointerToken = "PointerToken",
 
   BadNode = "BadeNode",
   NumberNode = "NumberNode",
@@ -21,4 +23,5 @@ export enum SyntaxKind {
   OpenParenthesisNode = "OpenParenthesisNode",
   UnaryNode = "UnaryNode",
   BinaryNode = "BinaryNode",
+  ReferenceNode = "ReferenceNode",
 }
