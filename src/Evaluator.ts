@@ -1,3 +1,4 @@
+import { SyntaxKind } from "./Syntax/Syntax";
 import { BinaryNode, NumberNode, SyntaxNode, UnaryNode } from "./Syntax/SyntaxNode";
 
 export class Evaluator {
@@ -15,20 +16,20 @@ export class Evaluator {
   }
 
   private evaluateNumberNode(node: NumberNode): number {
-    return parseFloat(node.value);
+    return parseFloat(node.repr);
   }
 
   private evaluateBinaryNode(node: BinaryNode): number {
     const left = this.evaluate(node.left);
     const right = this.evaluate(node.right);
-    switch (node.operator) {
-      case "+":
+    switch (node.operator.kind) {
+      case SyntaxKind.PlusToken:
         return left + right;
-      case "-":
+      case SyntaxKind.MinusToken:
         return left - right;
-      case "*":
+      case SyntaxKind.StarToken:
         return left * right;
-      case "/":
+      case SyntaxKind.SlashToken:
         return left / right;
       default:
         throw `EvaluatorError: Operation '${node.operator}' is not implemented`;
@@ -37,10 +38,10 @@ export class Evaluator {
 
   private evaluateUnaryNode(node: UnaryNode): number {
     const right = this.evaluate(node.right);
-    switch (node.operator) {
-      case "+":
+    switch (node.operator.kind) {
+      case SyntaxKind.PlusToken:
         return +right;
-      case "-":
+      case SyntaxKind.MinusToken:
         return -right;
       default:
         throw `EvaluatorError: Operation '${node.operator}' is not implemented`;

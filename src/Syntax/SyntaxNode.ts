@@ -6,19 +6,19 @@ export abstract class SyntaxNode {
 }
 
 export class NumberNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public value: string) {
+  constructor(public kind: SyntaxKind, public repr: string) {
     super(kind);
   }
 }
 
 export class BadNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public value: string) {
+  constructor(public kind: SyntaxKind, public repr: string) {
     super(kind);
   }
 }
 
 export class IdentifierNode extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public value: string) {
+  constructor(public kind: SyntaxKind, public repr: string) {
     super(kind);
   }
 }
@@ -50,13 +50,13 @@ export class RangeNode extends SyntaxNode {
 abstract class ExpressionNode extends SyntaxNode {}
 
 export class BinaryNode extends ExpressionNode {
-  constructor(public kind: SyntaxKind, public left: SyntaxNode, public operator: string, public right: SyntaxNode) {
+  constructor(public kind: SyntaxKind, public left: SyntaxNode, public operator: SyntaxToken, public right: SyntaxNode) {
     super(kind);
   }
 }
 
 export class UnaryNode extends ExpressionNode {
-  constructor(public kind: SyntaxKind, public operator: string, public right: SyntaxNode) {
+  constructor(public kind: SyntaxKind, public operator: SyntaxToken, public right: SyntaxNode) {
     super(kind);
   }
 }

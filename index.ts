@@ -10,9 +10,11 @@ var showTree = false;
 
 while (true) {
   const input = prompt({ sigint: true })("> ");
-  if (input === "tree") {
+  if (input.trim() === "tree") {
     showTree = !showTree;
+    console.log();
     console.log(showTree ? "\tShowing tree" : "\tNot showing tree");
+    console.log();
     continue;
   }
   const parser = new Parser(input);

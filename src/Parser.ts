@@ -102,7 +102,7 @@ export class Parser {
       }
       const operator = this.getNextToken();
       const right = this.parseExpression(precedence);
-      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator.repr, right);
+      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator, right);
     }
     return left;
   }
@@ -111,7 +111,7 @@ export class Parser {
     if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
       const operator = this.getNextToken();
       const right = this.parseUnaryExpression();
-      return new UnaryNode(SyntaxKind.UnaryNode, operator.repr, right);
+      return new UnaryNode(SyntaxKind.UnaryNode, operator, right);
     }
     return this.parseParenthesis();
   }
@@ -161,8 +161,8 @@ export class Parser {
       case SyntaxKind.IndentifierToken:
         return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
       default:
-        this.throwError(`Unexpected '${token.repr}' found while parsing`);
-        return token;
+        this.throwError(`Unexpected '${token.kind}' found while parsing`);
+        return new BadNode(SyntaxKind.BadNode, token.repr);
     }
   }
 
