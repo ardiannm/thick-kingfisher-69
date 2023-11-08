@@ -39,7 +39,7 @@ export class Parser {
     const token = this.getNextToken();
     if (kind === token.kind) return token;
     if (message) this.throwError(message);
-    this.throwError(`expecting '${kind}' but received '${token.kind}'`);
+    this.throwError(`Expecting '${kind}' but received '${token.kind}'`);
   }
 
   public parse() {
@@ -55,7 +55,7 @@ export class Parser {
       const reference = this.parseCell();
       this.parsePointer();
       this.stack.clear();
-      const expression = this.parseBinary();
+      const expression = this.parseExpression();
       const observing = Array.from(this.stack);
       const repr = reference.column.repr + reference.row.repr;
       if (this.stack.has(repr)) {
@@ -78,10 +78,6 @@ export class Parser {
     this.throwError(`Expecting a reference pointer token`);
   }
 
-  private parseExpression() {
-    return this.parseBinary();
-  }
-
   private operatorPrecedence(kind: Syntax) {
     switch (kind) {
       case Syntax.StarToken:
@@ -95,24 +91,24 @@ export class Parser {
     }
   }
 
-  private parseBinary(parentPrecedence = 0) {
-    let left = this.parseUnary();
+  private parseExpression(parentPrecedence = 0) {
+    let left = this.parseUnaryExpression();
     while (true) {
       const precedence = this.operatorPrecedence(this.peekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }
       const operator = this.getNextToken();
-      const right = this.parseBinary(precedence);
+      const right = this.parseExpression(precedence);
       left = new BinaryNode(Syntax.BinaryNode, left, operator.repr, right);
     }
     return left;
   }
 
-  private parseUnary() {
+  private parseUnaryExpression() {
     if (this.match(Syntax.PlusToken) || this.match(Syntax.MinusToken)) {
       const operator = this.getNextToken();
-      const right = this.parseUnary();
+      const right = this.parseUnaryExpression();
       return new UnaryNode(Syntax.UnaryNode, operator.repr, right);
     }
     return this.parseParenthesis();
@@ -120,7 +116,7 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(Syntax.OpenParenthesisToken)) {
-      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseBinary(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
+      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
     }
     return this.parseRange();
   }
