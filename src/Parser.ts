@@ -32,21 +32,9 @@ export class Parser {
     return true;
   }
 
-  private throwError(message: string) {
-    throw "ParserError: " + message;
-  }
-
-  private expect(kind: SyntaxKind, message?: string) {
-    const token = this.getNextToken();
-    if (kind === token.kind) return token;
-    if (message) this.throwError(message);
-    this.throwError(`Expecting '${kind}' but received '${token.kind}'`);
-  }
-
   public parse() {
     try {
       const tree = this.parseReference();
-      this.expect(SyntaxKind.EOFToken, "Unexpected tokens found while parsing");
       return tree;
     } catch (error) {
       return error;
@@ -61,9 +49,6 @@ export class Parser {
       const expression = this.parseExpression();
       const observing = Array.from(this.stack);
       const repr = reference.column.repr + reference.row.repr;
-      if (this.stack.has(repr)) {
-        this.throwError(`Circular dependency for '${repr}'`);
-      }
       this.stack.clear();
       return new ReferenceNode(SyntaxKind.ReferenceNode, repr, expression, observing);
     }
@@ -78,7 +63,7 @@ export class Parser {
       this.tokenizer.ignoreSpace();
       return new SyntaxToken(SyntaxKind.PointerToken, "->");
     }
-    this.throwError(`Expecting a reference pointer token`);
+    this.getNextToken();
   }
 
   private parseExpression(parentPrecedence = 0) {
@@ -106,7 +91,7 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(SyntaxKind.CloseParenthesisToken, "Expecting a closing parenthesis token"));
+      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.getNextToken());
     }
     return this.parseRange();
   }
@@ -115,9 +100,6 @@ export class Parser {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
       this.getNextToken();
-      if (!(this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken) || this.match(SyntaxKind.IndentifierToken) || this.match(SyntaxKind.NumberToken))) {
-        this.throwError("Expecting a valid right side in range reference");
-      }
       const right = this.parseCell();
       return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
@@ -152,7 +134,6 @@ export class Parser {
       case SyntaxKind.IndentifierToken:
         return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
       default:
-        this.throwError(`Unexpected '${token.kind}' found while parsing`);
         return new BadNode(SyntaxKind.BadNode, token.repr);
     }
   }

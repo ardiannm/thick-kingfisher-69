@@ -2,18 +2,16 @@ import prompt from "prompt-sync";
 import { Parser } from "./src/Parser";
 import { Evaluator } from "./src/Evaluator";
 
-const report = (tree: Object) => console.log("\n" + JSON.stringify(tree, undefined, 3) + "\n");
-
+var showTree = true;
 const evaluator = new Evaluator();
-
-var showTree = false;
+const report = (tree: Object) => console.log("\n" + JSON.stringify(tree, undefined, 3) + "\n");
 
 while (true) {
   const input = prompt({ sigint: true })("> ");
   if (input.trim() === "tree") {
     showTree = !showTree;
     console.log();
-    console.log(showTree ? "\tShowing tree" : "\tNot showing tree");
+    console.log(showTree ? "\tshowing tree" : "\tnot showing tree");
     console.log();
     continue;
   }
