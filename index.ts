@@ -20,5 +20,5 @@ while (true) {
   const parser = new Parser(input);
   const tree = parser.parse();
   if (showTree) report(tree);
-  report(evaluator.evaluate(tree));
+  else report(evaluator.evaluate(tree));
 }

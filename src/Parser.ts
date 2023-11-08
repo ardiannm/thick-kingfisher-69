@@ -127,6 +127,9 @@ export class Parser {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
       this.getNextToken();
+      if (!(this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken) || this.match(SyntaxKind.IndentifierToken) || this.match(SyntaxKind.NumberToken))) {
+        this.throwError("Expecting a valid right side in range reference");
+      }
       const right = this.parseCell();
       return new RangeNode(SyntaxKind.RangeNode, left, right);
     }
