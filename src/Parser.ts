@@ -2,6 +2,7 @@ import { Lexer } from "./Lexer";
 import { Syntax } from "./Syntax";
 import { SyntaxToken } from "./SyntaxToken";
 import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./SyntaxNode";
+import { Diagnostics } from "./Diagnostics";
 
 export class Parser {
   private tokenizer = new Lexer("");
@@ -12,6 +13,7 @@ export class Parser {
   private tokens = new Array<SyntaxToken>();
   private token = 0;
   private stack = new Set<string>();
+  private diagnostics = new Array<Diagnostics>();
 
   private peekToken() {
     if (this.token >= this.tokens.length) this.tokens.push(this.tokenizer.getNextToken());
@@ -32,7 +34,7 @@ export class Parser {
   }
 
   private throwError(message: string) {
-    throw "ParserError: " + message;
+    this.diagnostics.push(new Diagnostics("ParserError: " + message));
   }
 
   private expect(kind: Syntax, message?: string) {
@@ -161,7 +163,7 @@ export class Parser {
       case Syntax.IndentifierToken:
         return new IdentifierNode(Syntax.IndentifierNode, token.repr);
       default:
-        // this.throwError(`Unexpected '${token.repr}' found while parsing`);
+        this.throwError(`Unexpected '${token.repr}' found while parsing`);
         return new BadNode(Syntax.BadNode, token.repr);
     }
   }
