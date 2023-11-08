@@ -44,14 +44,10 @@ export class Parser {
 
   public parse() {
     try {
-      return this.parseExpression();
+      return this.parseReference();
     } catch (err) {
       return err;
     }
-  }
-
-  private parseExpression() {
-    return this.parseReference();
   }
 
   private parseReference() {
@@ -68,7 +64,7 @@ export class Parser {
       this.stack.clear();
       return new ReferenceNode(Syntax.ReferenceNode, repr, expression, observing);
     }
-    return this.parseBinary();
+    return this.parseExpression();
   }
 
   private parsePointer() {
@@ -80,6 +76,10 @@ export class Parser {
       return new SyntaxToken(Syntax.PointerToken, "->");
     }
     this.throwError(`Expecting a reference pointer token`);
+  }
+
+  private parseExpression() {
+    return this.parseBinary();
   }
 
   private operatorPrecedence(kind: Syntax) {
@@ -120,7 +120,7 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(Syntax.OpenParenthesisToken)) {
-      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
+      return new ParenthesisNode(Syntax.OpenParenthesisNode, this.getNextToken(), this.parseBinary(), this.expect(Syntax.CloseParenthesisToken, "Expecting a closing parenthesis token"));
     }
     return this.parseRange();
   }
