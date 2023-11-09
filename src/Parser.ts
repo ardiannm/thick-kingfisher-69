@@ -134,7 +134,7 @@ export class Parser {
       case SyntaxKind.IndentifierToken:
         return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
       default:
-        return new BadNode(SyntaxKind.BadNode, token.repr);
+        return new BadNode(token.kind, token.repr);
     }
   }
 

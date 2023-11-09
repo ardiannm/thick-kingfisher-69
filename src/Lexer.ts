@@ -80,7 +80,7 @@ export class Lexer {
     if (char === "(") return new SyntaxToken(SyntaxKind.OpenParenthesisToken, "(");
     if (char === ")") return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ")");
     if (char === ">") return new SyntaxToken(SyntaxKind.GreaterToken, ">");
-    if (char === "") return new SyntaxToken(SyntaxKind.EOFToken, "EOF");
+    if (char === "") return new SyntaxToken(SyntaxKind.EOFToken, "");
 
     return new SyntaxToken(SyntaxKind.BadToken, char);
   }
