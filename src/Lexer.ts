@@ -5,7 +5,7 @@ export class Lexer {
   constructor(public input: string) {}
 
   public pointer = 0;
-  private space = false;
+  public space = false;
 
   private isLetter(char: string): boolean {
     const charCode = char.charCodeAt(0);

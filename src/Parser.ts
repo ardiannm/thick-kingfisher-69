@@ -63,7 +63,7 @@ export class Parser {
       this.tokenizer.ignoreSpace();
       return new SyntaxToken(SyntaxKind.PointerToken, "->");
     }
-    this.getNextToken();
+    return this.getNextToken();
   }
 
   private parseExpression(parentPrecedence = 0) {
@@ -99,8 +99,10 @@ export class Parser {
   private parseRange() {
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
       const left = this.parseCell();
+      this.tokenizer.considerSpace();
       this.getNextToken();
       const right = this.parseCell();
+      this.tokenizer.ignoreSpace();
       return new RangeReference(SyntaxKind.RangeReference, left, right);
     }
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
