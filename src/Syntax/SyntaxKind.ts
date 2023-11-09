@@ -1,5 +1,4 @@
 export enum SyntaxKind {
-  BadToken = "BadToken",
   SpaceToken = "SpaceToken",
   IndentifierToken = "IndentifierToken",
   NumberToken = "NumberToken",
@@ -13,17 +12,27 @@ export enum SyntaxKind {
   GreaterToken = "GreaterToken",
   PointerToken = "PointerToken",
 
+  // Special tokens
   EOFToken = "EOFToken",
+  ExceptionToken = "ExceptionToken",
 
-  BadNode = "BadeNode",
-  NumberNode = "NumberNode",
-  IndentifierNode = "IndentifierNode",
-  RowNode = "RowNode",
-  ColumnNode = "ColumnNode",
-  CellNode = "CellNode",
-  RangeNode = "RangeNode",
-  OpenParenthesisNode = "OpenParenthesisNode",
-  UnaryNode = "UnaryNode",
-  BinaryNode = "BinaryNode",
-  ReferenceNode = "ReferenceNode",
+  // Nodes
+
+  // Primary
+  NumberExpression = "NumberExpression",
+  IndentifierExpression = "IndentifierExpression",
+
+  // Expression
+  RowReference = "RowReference",
+  ColumnReference = "ColumnReference",
+  CellReference = "CellReference",
+  RangeReference = "RangeReference",
+  ParanthesisExpression = "ParanthesisExpression",
+  UnaryExpression = "UnaryExpression",
+  BinaryExpression = "BinaryExpression",
+
+  // Statements
+  ReferenceStatement = "ReferenceStatement",
+
+  Exception = "Exception",
 }

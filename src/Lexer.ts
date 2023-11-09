@@ -45,8 +45,8 @@ export class Lexer {
       while (this.isLetter(this.getChar())) {
         this.advance();
       }
-      const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.IndentifierToken, view);
+      const text = this.input.substring(start, this.pointer);
+      return new SyntaxToken(SyntaxKind.IndentifierToken, text);
     }
 
     if (this.isDigit(char)) {
@@ -54,8 +54,8 @@ export class Lexer {
       while (this.isDigit(this.getChar())) {
         this.advance();
       }
-      const view = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.NumberToken, view);
+      const text = this.input.substring(start, this.pointer);
+      return new SyntaxToken(SyntaxKind.NumberToken, text);
     }
 
     if (this.isSpace(char)) {
@@ -64,8 +64,8 @@ export class Lexer {
         this.advance();
       }
       if (this.space) {
-        const view = this.input.substring(start, this.pointer);
-        return new SyntaxToken(SyntaxKind.SpaceToken, view);
+        const text = this.input.substring(start, this.pointer);
+        return new SyntaxToken(SyntaxKind.SpaceToken, text);
       }
       return this.getNextToken();
     }
@@ -82,6 +82,6 @@ export class Lexer {
     if (char === ">") return new SyntaxToken(SyntaxKind.GreaterToken, ">");
     if (char === "") return new SyntaxToken(SyntaxKind.EOFToken, "");
 
-    return new SyntaxToken(SyntaxKind.BadToken, char);
+    return new SyntaxToken(SyntaxKind.ExceptionToken, char);
   }
 }

@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeNode, CellNode, RowNode, ColumnNode, NumberNode, IdentifierNode, BadNode, BinaryNode, UnaryNode, ParenthesisNode, ReferenceNode } from "./Syntax/SyntaxNode";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, ExceptionNode, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -48,9 +48,9 @@ export class Parser {
       this.stack.clear();
       const expression = this.parseExpression();
       const observing = Array.from(this.stack);
-      const repr = reference.column.repr + reference.row.repr;
+      const text = reference.column.text + reference.row.text;
       this.stack.clear();
-      return new ReferenceNode(SyntaxKind.ReferenceNode, repr, expression, observing);
+      return new ReferenceStatement(SyntaxKind.ReferenceStatement, text, expression, observing);
     }
     return this.parseExpression();
   }
@@ -75,7 +75,7 @@ export class Parser {
       }
       const operator = this.getNextToken();
       const right = this.parseExpression(precedence);
-      left = new BinaryNode(SyntaxKind.BinaryNode, left, operator, right);
+      left = new BinaryExpression(SyntaxKind.BinaryExpression, left, operator, right);
     }
     return left;
   }
@@ -84,14 +84,14 @@ export class Parser {
     if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
       const operator = this.getNextToken();
       const right = this.parseUnaryExpression();
-      return new UnaryNode(SyntaxKind.UnaryNode, operator, right);
+      return new UnaryExpression(SyntaxKind.UnaryExpression, operator, right);
     }
     return this.parseParenthesis();
   }
 
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisNode(SyntaxKind.OpenParenthesisNode, this.getNextToken(), this.parseExpression(), this.getNextToken());
+      return new ParenthesisExpression(SyntaxKind.ParanthesisExpression, this.getNextToken(), this.parseExpression(), this.getNextToken());
     }
     return this.parseRange();
   }
@@ -101,7 +101,7 @@ export class Parser {
       const left = this.parseCell();
       this.getNextToken();
       const right = this.parseCell();
-      return new RangeNode(SyntaxKind.RangeNode, left, right);
+      return new RangeReference(SyntaxKind.RangeReference, left, right);
     }
     if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
     return this.parsePrimary();
@@ -110,31 +110,31 @@ export class Parser {
   private parseCell() {
     const left = this.parseColumn();
     const right = this.parseRow();
-    const node = new CellNode(SyntaxKind.CellNode, left, right);
-    const repr = node.column.repr + node.row.repr;
-    this.stack.add(repr);
+    const node = new CellReference(SyntaxKind.CellReference, left, right);
+    const text = node.column.text + node.row.text;
+    this.stack.add(text);
     return node;
   }
 
   private parseColumn() {
-    const repr = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().repr : "";
-    return new ColumnNode(SyntaxKind.ColumnNode, repr);
+    const text = this.match(SyntaxKind.IndentifierToken) ? this.getNextToken().text : "";
+    return new ColumnReference(SyntaxKind.ColumnReference, text);
   }
 
   private parseRow() {
-    const repr = this.match(SyntaxKind.NumberToken) ? this.getNextToken().repr : "";
-    return new RowNode(SyntaxKind.RowNode, repr);
+    const text = this.match(SyntaxKind.NumberToken) ? this.getNextToken().text : "";
+    return new RowReference(SyntaxKind.RowReference, text);
   }
 
   private parsePrimary() {
     const token = this.getNextToken();
     switch (token.kind) {
       case SyntaxKind.NumberToken:
-        return new NumberNode(SyntaxKind.NumberNode, token.repr);
+        return new PrimaryExpression(SyntaxKind.NumberExpression, token.text);
       case SyntaxKind.IndentifierToken:
-        return new IdentifierNode(SyntaxKind.IndentifierNode, token.repr);
+        return new PrimaryExpression(SyntaxKind.IndentifierExpression, token.text);
       default:
-        return new BadNode(token.kind, token.repr);
+        return new ExceptionNode(token.kind, token.text);
     }
   }
 
