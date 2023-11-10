@@ -52,9 +52,8 @@ export class Parser {
       this.stack.clear();
       const expression = this.ParseExpression();
       const observing = Array.from(this.stack);
-      const text = reference.column.text + reference.row.text;
       this.stack.clear();
-      return new ReferenceStatement(SyntaxKind.ReferenceStatement, text, expression, observing);
+      return new ReferenceStatement(SyntaxKind.ReferenceStatement, reference.text, expression, observing);
     }
     return this.ParseExpression();
   }
@@ -109,7 +108,8 @@ export class Parser {
       const left = this.ParseCell();
       this.ParseToken();
       const right = this.ParseCell();
-      return new RangeReference(SyntaxKind.RangeReference, left, right);
+      const text = left.text + ":" + right.text;
+      return new RangeReference(SyntaxKind.RangeReference, text, left, right);
     }
     if (this.Match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.ParseCell();
     return this.ParsePrimary();
@@ -119,8 +119,8 @@ export class Parser {
   private ParseCell() {
     const left = this.ParseColumn();
     const right = this.ParseRow();
-    const node = new CellReference(SyntaxKind.CellReference, left, right);
-    const text = node.column.text + node.row.text;
+    const text = left.text + right.text;
+    const node = new CellReference(SyntaxKind.CellReference, text, left, right);
     this.stack.add(text);
     return node;
   }

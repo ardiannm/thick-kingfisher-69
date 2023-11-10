@@ -32,13 +32,13 @@ export class RowReference extends SyntaxNode {
 }
 
 export class CellReference extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public column: ColumnReference, public row: RowReference) {
+  constructor(public kind: SyntaxKind, public text: string, public column: ColumnReference, public row: RowReference) {
     super(kind);
   }
 }
 
 export class RangeReference extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public left: CellReference, public right: CellReference) {
+  constructor(public kind: SyntaxKind, public text: string, public left: CellReference, public right: CellReference) {
     super(kind);
   }
 }
