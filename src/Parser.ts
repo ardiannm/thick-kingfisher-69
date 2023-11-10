@@ -7,9 +7,9 @@ import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 export class Parser {
   private lexer = new Lexer("");
   private arr = new Array<SyntaxToken>();
+  private stack = new Set<string>(); // Using a set to store parsed cell texts
   private defaultInitPeek = 1;
   private peek = this.defaultInitPeek;
-  private stack = new Set<string>(); // Using a set to store parsed cell texts
 
   constructor(public input: string) {
     this.lexer.input = input;
@@ -28,7 +28,7 @@ export class Parser {
 
   private peekToken() {
     if (this.peek > this.arr.length) this.arr.push(this.lexer.getNextToken());
-    return this.arr[this.peek - 1];
+    return this.arr[this.peek - this.defaultInitPeek];
   }
 
   private parseToken() {
