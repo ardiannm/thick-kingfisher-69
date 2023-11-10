@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, ExceptionNode, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, Exception, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -134,7 +134,7 @@ export class Parser {
       case SyntaxKind.IndentifierToken:
         return new PrimaryExpression(SyntaxKind.IndentifierExpression, token.text);
       default:
-        return new ExceptionNode(token.kind, token.text);
+        return new Exception(token.kind, token.text);
     }
   }
 }
