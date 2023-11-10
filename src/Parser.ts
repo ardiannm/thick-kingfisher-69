@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, ExceptionNode, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement } from "./Syntax/SyntaxNode";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, ExceptionNode, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -38,7 +38,8 @@ export class Parser {
 
   // Main parsing method
   public parse() {
-    return this.parseReference();
+    const tree = this.parseReference();
+    return new SyntaxTree(SyntaxKind.SyntaxTree, tree, this.parseToken());
   }
 
   private parseReference() {

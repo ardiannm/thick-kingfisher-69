@@ -35,5 +35,8 @@ export enum SyntaxKind {
   // STATEMENTS
   ReferenceStatement = "ReferenceStatement",
 
+  // MAIN
+  SyntaxTree = "SyntaxTree",
+
   Exception = "Exception",
 }

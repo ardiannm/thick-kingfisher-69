@@ -5,7 +5,6 @@ export class Lexer {
   constructor(public input: string) {}
 
   private pointer = 0;
-  private space = true;
 
   private isLetter(char: string): boolean {
     const charCode = char.charCodeAt(0);
@@ -27,10 +26,6 @@ export class Lexer {
 
   private advance(): void {
     this.pointer = this.pointer + 1;
-  }
-
-  public Space() {
-    this.space = !this.space;
   }
 
   getNextToken(): SyntaxToken {
@@ -59,11 +54,8 @@ export class Lexer {
       while (this.isSpace(this.getChar())) {
         this.advance();
       }
-      if (this.space) {
-        const text = this.input.substring(start, this.pointer);
-        return new SyntaxToken(SyntaxKind.SpaceToken, text);
-      }
-      return this.getNextToken();
+      const text = this.input.substring(start, this.pointer);
+      return new SyntaxToken(SyntaxKind.SpaceToken, text);
     }
 
     this.advance();
