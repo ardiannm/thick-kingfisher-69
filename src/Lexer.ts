@@ -1,5 +1,6 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
+import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Lexer {
   constructor(public input: string) {}
@@ -30,7 +31,6 @@ export class Lexer {
 
   getNextToken(): SyntaxToken {
     const start = this.pointer;
-
     const char = this.getChar();
 
     if (this.isLetter(char)) {
@@ -59,19 +59,7 @@ export class Lexer {
 
     this.advance();
 
-    if (char === "+") return new SyntaxToken(SyntaxKind.PlusToken, "+", start);
-    if (char === "-") return new SyntaxToken(SyntaxKind.MinusToken, "-", start);
-    if (char === "/") return new SyntaxToken(SyntaxKind.SlashToken, "/", start);
-    if (char === "*") return new SyntaxToken(SyntaxKind.StarToken, "*", start);
-    if (char === ":") return new SyntaxToken(SyntaxKind.ColonToken, ":", start);
-    if (char === "(") return new SyntaxToken(SyntaxKind.OpenParenthesisToken, "(", start);
-    if (char === ")") return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ")", start);
-    if (char === ">") return new SyntaxToken(SyntaxKind.GreaterToken, ">", start);
-
-    if (char === "") {
-      return new SyntaxToken(SyntaxKind.EOFToken, "", start);
-    }
-
-    return new SyntaxToken(SyntaxKind.ExceptionToken, char, start);
+    const kind = SyntaxFacts.Kind(char);
+    return new SyntaxToken(kind, char, start);
   }
 }

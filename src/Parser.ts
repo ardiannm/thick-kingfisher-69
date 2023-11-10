@@ -69,7 +69,7 @@ export class Parser {
   private parseExpression(parentPrecedence = 0) {
     let left = this.parseUnaryExpression();
     while (true) {
-      const precedence = SyntaxFacts.operatorPrecedence(this.peekToken().kind);
+      const precedence = SyntaxFacts.OperatorPrecedence(this.peekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }

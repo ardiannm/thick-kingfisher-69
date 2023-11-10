@@ -3,7 +3,7 @@ import { SyntaxKind } from "./SyntaxKind";
 export class SyntaxFacts {
   constructor() {}
 
-  public static operatorPrecedence(kind: SyntaxKind) {
+  public static OperatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.StarToken:
       case SyntaxKind.SlashToken:
@@ -13,6 +13,31 @@ export class SyntaxFacts {
         return 1;
       default:
         return 0;
+    }
+  }
+
+  public static Kind(text: string): SyntaxKind {
+    switch (text) {
+      case "+":
+        return SyntaxKind.PlusToken;
+      case "-":
+        return SyntaxKind.MinusToken;
+      case "*":
+        return SyntaxKind.StarToken;
+      case "/":
+        return SyntaxKind.SlashToken;
+      case ":":
+        return SyntaxKind.ColonToken;
+      case "(":
+        return SyntaxKind.OpenParenthesisToken;
+      case ")":
+        return SyntaxKind.CloseParenthesisToken;
+      case ">":
+        return SyntaxKind.GreaterToken;
+      case "":
+        return SyntaxKind.EOFToken;
+      default:
+        return SyntaxKind.ExceptionToken;
     }
   }
 }
