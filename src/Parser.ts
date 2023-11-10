@@ -7,127 +7,139 @@ import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 export class Parser {
   private lexer = new Lexer("");
   private arr = new Array<SyntaxToken>();
-  private stack = new Set<string>(); // Using a set to store parsed cell text references
-  private defaultInitPeek = 1;
-  private peek = this.defaultInitPeek;
+  private stack = new Set<string>(); // Set to store parsed cell text references
+  private defaultInitPeek = 1; // Initial value for token peeking
+  private peek = this.defaultInitPeek; // Current position for token peeking
 
   constructor(public input: string) {
     this.lexer.input = input;
   }
 
   // Helper method to check if the next token matches the given kinds
-  private match(...kinds: Array<SyntaxKind>) {
+  private Match(...kinds: Array<SyntaxKind>) {
     this.peek = this.defaultInitPeek;
     for (var kind of kinds) {
-      if (kind !== this.peekToken().kind) return false;
+      if (kind !== this.PeekToken().kind) return false;
       this.peek++;
     }
     this.peek = this.defaultInitPeek;
     return true;
   }
 
-  private peekToken() {
-    if (this.peek > this.arr.length) this.arr.push(this.lexer.getNextToken());
+  // Get the next token without consuming it
+  private PeekToken() {
+    if (this.peek > this.arr.length) this.arr.push(this.lexer.NextToken());
     return this.arr[this.peek - this.defaultInitPeek];
   }
 
-  private parseToken() {
+  // Consume and return the next token
+  private ParseToken() {
     if (this.arr.length > 0) return this.arr.shift();
-    return this.lexer.getNextToken();
+    return this.lexer.NextToken();
   }
 
   // Main parsing method
   public Parse() {
-    const tree = this.parseReference();
+    const tree = this.ParseReference();
     return new SyntaxTree(SyntaxKind.SyntaxTree, tree);
   }
 
-  private parseReference() {
-    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      const reference = this.parseCell();
-      this.parsePointer();
+  // Parse a reference, which may include cell references and expressions
+  private ParseReference() {
+    if (this.Match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
+      const reference = this.ParseCell();
+      this.ParsePointer();
       this.stack.clear();
-      const expression = this.parseExpression();
+      const expression = this.ParseExpression();
       const observing = Array.from(this.stack);
       const text = reference.column.text + reference.row.text;
       this.stack.clear();
       return new ReferenceStatement(SyntaxKind.ReferenceStatement, text, expression, observing);
     }
-    return this.parseExpression();
+    return this.ParseExpression();
   }
 
-  private parsePointer() {
-    if (this.match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      const a = this.parseToken();
-      const b = this.parseToken();
+  // Parse pointer tokens (e.g., "->")
+  private ParsePointer() {
+    if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
+      const a = this.ParseToken();
+      const b = this.ParseToken();
       const text = this.input.substring(a.position, b.position + b.text.length);
       return new SyntaxToken(SyntaxKind.PointerToken, text, a.position);
     }
-    return this.parseToken();
+    return this.ParseToken();
   }
 
-  private parseExpression(parentPrecedence = 0) {
-    let left = this.parseUnaryExpression();
+  // Parse expressions with binary operators
+  private ParseExpression(parentPrecedence = 0) {
+    let left = this.ParseUnaryExpression();
     while (true) {
-      const precedence = SyntaxFacts.OperatorPrecedence(this.peekToken().kind);
+      const precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }
-      const operator = this.parseToken();
-      const right = this.parseExpression(precedence);
+      const operator = this.ParseToken();
+      const right = this.ParseExpression(precedence);
       left = new BinaryExpression(SyntaxKind.BinaryExpression, left, operator, right);
     }
     return left;
   }
 
-  private parseUnaryExpression() {
-    if (this.match(SyntaxKind.PlusToken) || this.match(SyntaxKind.MinusToken)) {
-      const operator = this.parseToken();
-      const right = this.parseUnaryExpression();
+  // Parse unary expressions (e.g., +, -)
+  private ParseUnaryExpression() {
+    if (this.Match(SyntaxKind.PlusToken) || this.Match(SyntaxKind.MinusToken)) {
+      const operator = this.ParseToken();
+      const right = this.ParseUnaryExpression();
       return new UnaryExpression(SyntaxKind.UnaryExpression, operator, right);
     }
-    return this.parseParenthesis();
+    return this.ParseParenthesis();
   }
 
-  private parseParenthesis() {
-    if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisExpression(SyntaxKind.ParanthesisExpression, this.parseToken(), this.parseExpression(), this.parseToken());
+  // Parse expressions enclosed in parentheses
+  private ParseParenthesis() {
+    if (this.Match(SyntaxKind.OpenParenthesisToken)) {
+      return new ParenthesisExpression(SyntaxKind.ParanthesisExpression, this.ParseToken(), this.ParseExpression(), this.ParseToken());
     }
-    return this.parseRange();
+    return this.ParseRange();
   }
 
-  private parseRange() {
-    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
-      const left = this.parseCell();
-      this.parseToken();
-      const right = this.parseCell();
+  // Parse range references (e.g., A1:B3)
+  private ParseRange() {
+    if (this.Match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IndentifierToken, SyntaxKind.ColonToken)) {
+      const left = this.ParseCell();
+      this.ParseToken();
+      const right = this.ParseCell();
       return new RangeReference(SyntaxKind.RangeReference, left, right);
     }
-    if (this.match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.parseCell();
-    return this.parsePrimary();
+    if (this.Match(SyntaxKind.IndentifierToken, SyntaxKind.NumberToken)) return this.ParseCell();
+    return this.ParsePrimary();
   }
 
-  private parseCell() {
-    const left = this.parseColumn();
-    const right = this.parseRow();
+  // Parse a cell reference (e.g., A1)
+  private ParseCell() {
+    const left = this.ParseColumn();
+    const right = this.ParseRow();
     const node = new CellReference(SyntaxKind.CellReference, left, right);
     const text = node.column.text + node.row.text;
     this.stack.add(text);
     return node;
   }
 
-  private parseColumn() {
-    const text = this.match(SyntaxKind.IndentifierToken) ? this.parseToken().text : "";
+  // Parse a column reference
+  private ParseColumn() {
+    const text = this.Match(SyntaxKind.IndentifierToken) ? this.ParseToken().text : "";
     return new ColumnReference(SyntaxKind.ColumnReference, text);
   }
 
-  private parseRow() {
-    const text = this.match(SyntaxKind.NumberToken) ? this.parseToken().text : "";
+  // Parse a row reference
+  private ParseRow() {
+    const text = this.Match(SyntaxKind.NumberToken) ? this.ParseToken().text : "";
     return new RowReference(SyntaxKind.RowReference, text);
   }
 
-  private parsePrimary() {
-    const token = this.parseToken();
+  // Parse primary expressions (e.g., numbers, identifiers)
+  private ParsePrimary() {
+    const token = this.ParseToken();
     switch (token.kind) {
       case SyntaxKind.NumberToken:
         return new PrimaryExpression(SyntaxKind.NumberExpression, token.text);

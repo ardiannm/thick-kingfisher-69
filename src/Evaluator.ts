@@ -4,18 +4,18 @@ import { BinaryExpression, PrimaryExpression, SyntaxNode, UnaryExpression } from
 export class Evaluator {
   constructor() {}
 
-  evaluate<T extends SyntaxNode>(node: T): number {
+  Evaluate<T extends SyntaxNode>(node: T): number {
     try {
-      if (node instanceof PrimaryExpression) return this.evaluatePrimaryExpression(node);
-      if (node instanceof BinaryExpression) return this.evaluateBinaryExpression(node);
-      if (node instanceof UnaryExpression) return this.evaluateUnaryNode(node);
+      if (node instanceof PrimaryExpression) return this.PrimaryExpression(node);
+      if (node instanceof BinaryExpression) return this.BinaryExpression(node);
+      if (node instanceof UnaryExpression) return this.UnaryExpression(node);
       throw `EvaluatorError: '${node.kind}' is not implemented`;
     } catch (error) {
       return error;
     }
   }
 
-  private evaluatePrimaryExpression(node: PrimaryExpression): number {
+  private PrimaryExpression(node: PrimaryExpression): number {
     switch (node.kind) {
       case SyntaxKind.NumberExpression:
         return parseFloat(node.text);
@@ -24,9 +24,9 @@ export class Evaluator {
     }
   }
 
-  private evaluateBinaryExpression(node: BinaryExpression): number {
-    const left = this.evaluate(node.left);
-    const right = this.evaluate(node.right);
+  private BinaryExpression(node: BinaryExpression): number {
+    const left = this.Evaluate(node.left);
+    const right = this.Evaluate(node.right);
     switch (node.operator.kind) {
       case SyntaxKind.PlusToken:
         return left + right;
@@ -41,8 +41,8 @@ export class Evaluator {
     }
   }
 
-  private evaluateUnaryNode(node: UnaryExpression): number {
-    const right = this.evaluate(node.right);
+  private UnaryExpression(node: UnaryExpression): number {
+    const right = this.Evaluate(node.right);
     switch (node.operator.kind) {
       case SyntaxKind.PlusToken:
         return +right;

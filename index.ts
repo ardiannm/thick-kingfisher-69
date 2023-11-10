@@ -20,7 +20,7 @@ while (true) {
   const tree = new Parser(input).Parse();
 
   if (showTree) report(tree);
-  else report(evaluator.evaluate(tree));
+  else report(evaluator.Evaluate(tree));
 
   console.log();
 }
