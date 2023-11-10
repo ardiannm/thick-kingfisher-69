@@ -1,18 +1,28 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { BinaryExpression, PrimaryExpression, SyntaxNode, UnaryExpression } from "./Syntax/SyntaxNode";
+import { BinaryExpression, PrimaryExpression, Syntax, SyntaxTree, UnaryExpression } from "./Syntax/Syntax";
 
 export class Evaluator {
   constructor() {}
 
-  Evaluate<T extends SyntaxNode>(node: T): number {
+  Evaluate<T extends Syntax>(node: T): number {
     try {
-      if (node instanceof PrimaryExpression) return this.PrimaryExpression(node);
-      if (node instanceof BinaryExpression) return this.BinaryExpression(node);
-      if (node instanceof UnaryExpression) return this.UnaryExpression(node);
-      throw `EvaluatorError: '${node.kind}' is not implemented`;
+      if (node instanceof SyntaxTree) {
+        return this.SyntaxTree(node);
+      } else if (node instanceof PrimaryExpression) {
+        return this.PrimaryExpression(node);
+      } else if (node instanceof UnaryExpression) {
+        return this.UnaryExpression(node);
+      } else if (node instanceof BinaryExpression) {
+        return this.BinaryExpression(node);
+      }
+      throw `Evaluator: '${node.kind}' is not implemented`;
     } catch (error) {
       return error;
     }
+  }
+
+  private SyntaxTree(node: SyntaxTree): number {
+    return this.Evaluate(node.tree);
   }
 
   private PrimaryExpression(node: PrimaryExpression): number {
@@ -20,7 +30,7 @@ export class Evaluator {
       case SyntaxKind.NumberExpression:
         return parseFloat(node.text);
       default:
-        throw `EvaluatorError: '${node.kind}' is not implemented as a primary expression`;
+        throw `Evaluator: '${node.kind}' is not implemented in primary expressions`;
     }
   }
 
@@ -37,7 +47,7 @@ export class Evaluator {
       case SyntaxKind.SlashToken:
         return left / right;
       default:
-        throw `EvaluatorError: Operation '${node.operator}' is not implemented`;
+        throw `Evaluator: Operation '${node.operator}' is not implemented`;
     }
   }
 
@@ -49,7 +59,7 @@ export class Evaluator {
       case SyntaxKind.MinusToken:
         return -right;
       default:
-        throw `EvaluatorError: Operation '${node.operator}' is not implemented`;
+        throw `Evaluator: Operation '${node.operator}' is not implemented`;
     }
   }
 }

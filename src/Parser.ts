@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, Exception, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, Exception, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/Syntax";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -51,9 +51,9 @@ export class Parser {
       this.ParsePointer();
       this.stack.clear();
       const expression = this.ParseExpression();
-      const observing = Array.from(this.stack);
+      const referencing = Array.from(this.stack);
       this.stack.clear();
-      return new ReferenceStatement(SyntaxKind.ReferenceStatement, reference.text, expression, observing);
+      return new ReferenceStatement(SyntaxKind.ReferenceStatement, reference.text, expression, referencing);
     }
     return this.ParseExpression();
   }
