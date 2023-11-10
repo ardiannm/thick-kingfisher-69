@@ -5,7 +5,7 @@ export class Lexer {
   constructor(public input: string) {}
 
   private pointer = 0;
-  private space = false;
+  private space = true;
 
   private isLetter(char: string): boolean {
     const charCode = char.charCodeAt(0);
@@ -29,15 +29,11 @@ export class Lexer {
     this.pointer = this.pointer + 1;
   }
 
-  public considerSpace(): void {
-    this.space = true;
+  public Space() {
+    this.space = !this.space;
   }
 
-  public ignoreSpace(): void {
-    this.space = false;
-  }
-
-  public getNextToken(): SyntaxToken {
+  getNextToken(): SyntaxToken {
     const char = this.getChar();
 
     if (this.isLetter(char)) {

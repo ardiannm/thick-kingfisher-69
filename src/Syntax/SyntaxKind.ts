@@ -1,4 +1,5 @@
 export enum SyntaxKind {
+  // TOKENS
   SpaceToken = "SpaceToken",
   IndentifierToken = "IndentifierToken",
   NumberToken = "NumberToken",
@@ -12,17 +13,17 @@ export enum SyntaxKind {
   GreaterToken = "GreaterToken",
   PointerToken = "PointerToken",
 
-  // Special tokens
+  // SPECIAL TOKENS
   EOFToken = "EOFToken",
   ExceptionToken = "ExceptionToken",
 
-  // Nodes
+  // NODES
 
-  // Primary
+  // PRIMARY
   NumberExpression = "NumberExpression",
   IndentifierExpression = "IndentifierExpression",
 
-  // Expression
+  // EXPRESSION
   RowReference = "RowReference",
   ColumnReference = "ColumnReference",
   CellReference = "CellReference",
@@ -31,7 +32,7 @@ export enum SyntaxKind {
   UnaryExpression = "UnaryExpression",
   BinaryExpression = "BinaryExpression",
 
-  // Statements
+  // STATEMENTS
   ReferenceStatement = "ReferenceStatement",
 
   Exception = "Exception",
