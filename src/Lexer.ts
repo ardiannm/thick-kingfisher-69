@@ -29,47 +29,49 @@ export class Lexer {
   }
 
   getNextToken(): SyntaxToken {
+    const start = this.pointer;
+
     const char = this.getChar();
 
     if (this.isLetter(char)) {
-      const start = this.pointer;
       while (this.isLetter(this.getChar())) {
         this.advance();
       }
       const text = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.IndentifierToken, text);
+      return new SyntaxToken(SyntaxKind.IndentifierToken, text, start);
     }
 
     if (this.isDigit(char)) {
-      const start = this.pointer;
       while (this.isDigit(this.getChar())) {
         this.advance();
       }
       const text = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.NumberToken, text);
+      return new SyntaxToken(SyntaxKind.NumberToken, text, start);
     }
 
     if (this.isSpace(char)) {
-      const start = this.pointer;
       while (this.isSpace(this.getChar())) {
         this.advance();
       }
       const text = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.SpaceToken, text);
+      return new SyntaxToken(SyntaxKind.SpaceToken, text, start);
     }
 
     this.advance();
 
-    if (char === "+") return new SyntaxToken(SyntaxKind.PlusToken, "+");
-    if (char === "-") return new SyntaxToken(SyntaxKind.MinusToken, "-");
-    if (char === "/") return new SyntaxToken(SyntaxKind.SlashToken, "/");
-    if (char === "*") return new SyntaxToken(SyntaxKind.StarToken, "*");
-    if (char === ":") return new SyntaxToken(SyntaxKind.ColonToken, ":");
-    if (char === "(") return new SyntaxToken(SyntaxKind.OpenParenthesisToken, "(");
-    if (char === ")") return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ")");
-    if (char === ">") return new SyntaxToken(SyntaxKind.GreaterToken, ">");
-    if (char === "") return new SyntaxToken(SyntaxKind.EOFToken, "");
+    if (char === "+") return new SyntaxToken(SyntaxKind.PlusToken, "+", start);
+    if (char === "-") return new SyntaxToken(SyntaxKind.MinusToken, "-", start);
+    if (char === "/") return new SyntaxToken(SyntaxKind.SlashToken, "/", start);
+    if (char === "*") return new SyntaxToken(SyntaxKind.StarToken, "*", start);
+    if (char === ":") return new SyntaxToken(SyntaxKind.ColonToken, ":", start);
+    if (char === "(") return new SyntaxToken(SyntaxKind.OpenParenthesisToken, "(", start);
+    if (char === ")") return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ")", start);
+    if (char === ">") return new SyntaxToken(SyntaxKind.GreaterToken, ">", start);
 
-    return new SyntaxToken(SyntaxKind.ExceptionToken, char);
+    if (char === "") {
+      return new SyntaxToken(SyntaxKind.EOFToken, "", start);
+    }
+
+    return new SyntaxToken(SyntaxKind.ExceptionToken, char, start);
   }
 }

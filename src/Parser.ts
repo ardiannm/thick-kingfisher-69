@@ -7,7 +7,7 @@ import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 export class Parser {
   private lexer = new Lexer("");
   private arr = new Array<SyntaxToken>();
-  private stack = new Set<string>(); // Using a set to store parsed cell texts
+  private stack = new Set<string>(); // Using a set to store parsed cell text references
   private defaultInitPeek = 1;
   private peek = this.defaultInitPeek;
 
@@ -58,9 +58,10 @@ export class Parser {
 
   private parsePointer() {
     if (this.match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      this.parseToken();
-      this.parseToken();
-      return new SyntaxToken(SyntaxKind.PointerToken, "->");
+      const a = this.parseToken();
+      const b = this.parseToken();
+      const text = this.input.substring(a.position, b.position + b.text.length);
+      return new SyntaxToken(SyntaxKind.PointerToken, text, a.position);
     }
     return this.parseToken();
   }
