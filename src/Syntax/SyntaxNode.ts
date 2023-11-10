@@ -68,7 +68,7 @@ export class ReferenceStatement extends ExpressionNode {
 }
 
 export class SyntaxTree extends SyntaxNode {
-  constructor(public kind: SyntaxKind, public tree: ReferenceStatement, public right: SyntaxToken) {
+  constructor(public kind: SyntaxKind, public tree: ReferenceStatement) {
     super(kind);
   }
 }

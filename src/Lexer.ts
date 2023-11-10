@@ -7,9 +7,8 @@ export class Lexer {
 
   private pointer = 0;
 
-  private isLetter(char: string): boolean {
-    const charCode = char.charCodeAt(0);
-    return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
+  private isSpace(char: string): boolean {
+    return char === " " || char === "\t" || char === "\n" || char === "\r";
   }
 
   private isDigit(char: string): boolean {
@@ -17,8 +16,9 @@ export class Lexer {
     return charCode >= 48 && charCode <= 57;
   }
 
-  private isSpace(char: string): boolean {
-    return char === " " || char === "\t" || char === "\n" || char === "\r";
+  private isLetter(char: string): boolean {
+    const charCode = char.charCodeAt(0);
+    return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
   }
 
   private getChar(): string {

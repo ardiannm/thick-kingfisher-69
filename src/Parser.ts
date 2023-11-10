@@ -37,9 +37,9 @@ export class Parser {
   }
 
   // Main parsing method
-  public parse() {
+  public Parse() {
     const tree = this.parseReference();
-    return new SyntaxTree(SyntaxKind.SyntaxTree, tree, this.parseToken());
+    return new SyntaxTree(SyntaxKind.SyntaxTree, tree);
   }
 
   private parseReference() {

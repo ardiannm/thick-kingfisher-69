@@ -17,7 +17,7 @@ while (true) {
     continue;
   }
 
-  const tree = new Parser(input).parse();
+  const tree = new Parser(input).Parse();
 
   if (showTree) report(tree);
   else report(evaluator.evaluate(tree));
