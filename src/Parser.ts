@@ -120,9 +120,8 @@ export class Parser {
     const left = this.ParseColumn();
     const right = this.ParseRow();
     const text = left.text + right.text;
-    const node = new CellReference(SyntaxKind.CellReference, text, left, right);
     this.stack.add(text);
-    return node;
+    return new CellReference(SyntaxKind.CellReference, text, left, right);
   }
 
   // Parse a column reference
