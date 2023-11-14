@@ -38,6 +38,13 @@ export class Parser {
     return this.lexer.NextToken();
   }
 
+  // Raise a warning if a space character is detected in the input
+  private ThrowForSpace(message: string) {
+    if (this.lexer.IsSpace(this.lexer.GetChar())) {
+      console.log(message);
+    }
+  }
+
   // Main parsing method
   public Parse() {
     const tree = this.ParseReference();
@@ -62,6 +69,7 @@ export class Parser {
   private ParsePointer() {
     if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
       const a = this.ParseToken();
+      this.ThrowForSpace("ParserError: Expecting 'PointerToken'.");
       const b = this.ParseToken();
       const text = this.input.substring(a.position, b.position + b.text.length);
       return new SyntaxToken(SyntaxKind.PointerToken, text, a.position);

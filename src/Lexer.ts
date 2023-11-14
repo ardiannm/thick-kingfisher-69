@@ -7,7 +7,7 @@ export class Lexer {
 
   private pointer = 0;
 
-  private IsSpace(char: string): boolean {
+  public IsSpace(char: string): boolean {
     return char === " " || char === "\t" || char === "\n" || char === "\r";
   }
 
@@ -21,7 +21,7 @@ export class Lexer {
     return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
   }
 
-  private GetChar(): string {
+  public GetChar(): string {
     return this.input.charAt(this.pointer);
   }
 
@@ -53,8 +53,7 @@ export class Lexer {
       while (this.IsSpace(this.GetChar())) {
         this.Advance();
       }
-      const text = this.input.substring(start, this.pointer);
-      return new SyntaxToken(SyntaxKind.SpaceToken, text, start);
+      return this.NextToken();
     }
 
     this.Advance();
