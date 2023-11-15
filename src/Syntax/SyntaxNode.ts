@@ -1,56 +1,56 @@
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 
-export abstract class Syntax {
+export abstract class SyntaxNode {
   constructor(public kind: SyntaxKind) {}
 }
 
-abstract class ExpressionNode extends Syntax {}
+abstract class ExpressionNode extends SyntaxNode {}
 
-export class Exception extends Syntax {
+export class Exception extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string) {
     super(kind);
   }
 }
 
-export class PrimaryExpression extends Syntax {
+export class PrimaryExpression extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string) {
     super(kind);
   }
 }
 
-export class ColumnReference extends Syntax {
+export class ColumnReference extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string) {
     super(kind);
   }
 }
 
-export class RowReference extends Syntax {
+export class RowReference extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string) {
     super(kind);
   }
 }
 
-export class CellReference extends Syntax {
+export class CellReference extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string, public column: ColumnReference, public row: RowReference) {
     super(kind);
   }
 }
 
-export class RangeReference extends Syntax {
+export class RangeReference extends SyntaxNode {
   constructor(public kind: SyntaxKind, public text: string, public left: CellReference, public right: CellReference) {
     super(kind);
   }
 }
 
 export class BinaryExpression extends ExpressionNode {
-  constructor(public kind: SyntaxKind, public left: Syntax, public operator: SyntaxToken, public right: Syntax) {
+  constructor(public kind: SyntaxKind, public left: SyntaxNode, public operator: SyntaxToken, public right: SyntaxNode) {
     super(kind);
   }
 }
 
 export class UnaryExpression extends ExpressionNode {
-  constructor(public kind: SyntaxKind, public operator: SyntaxToken, public right: Syntax) {
+  constructor(public kind: SyntaxKind, public operator: SyntaxToken, public right: SyntaxNode) {
     super(kind);
   }
 }
@@ -67,7 +67,7 @@ export class ReferenceStatement extends ExpressionNode {
   }
 }
 
-export class SyntaxTree extends Syntax {
+export class SyntaxTree extends SyntaxNode {
   constructor(public kind: SyntaxKind, public tree: ReferenceStatement) {
     super(kind);
   }

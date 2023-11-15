@@ -1,10 +1,10 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { BinaryExpression, PrimaryExpression, Syntax, SyntaxTree, UnaryExpression } from "./Syntax/Syntax";
+import { BinaryExpression, PrimaryExpression, SyntaxNode, SyntaxTree, UnaryExpression } from "./Syntax/SyntaxNode";
 
 export class Evaluator {
   constructor() {}
 
-  Evaluate<T extends Syntax>(node: T): number {
+  Evaluate<T extends SyntaxNode>(node: T): number {
     try {
       if (node instanceof SyntaxTree) {
         return this.SyntaxTree(node);

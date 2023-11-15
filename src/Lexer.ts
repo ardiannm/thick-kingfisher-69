@@ -53,11 +53,11 @@ export class Lexer {
       while (this.IsSpace(this.GetChar())) {
         this.Advance();
       }
-      return this.NextToken();
+      const text = this.input.substring(start, this.pointer);
+      return new SyntaxToken(SyntaxKind.SpaceToken, text, start);
     }
 
     this.Advance();
-
     const kind = SyntaxFacts.Kind(char);
     return new SyntaxToken(kind, char, start);
   }
