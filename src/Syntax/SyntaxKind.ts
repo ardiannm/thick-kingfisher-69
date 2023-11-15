@@ -1,6 +1,6 @@
 export enum SyntaxKind {
   SpaceToken = "SpaceToken",
-  IndentifierToken = "IndentifierToken",
+  IdentifierToken = "IndentifierToken",
   NumberToken = "NumberToken",
 
   PlusToken = "PlusToken",

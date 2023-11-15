@@ -15,29 +15,29 @@ export class Evaluator {
       } else if (node instanceof BinaryExpression) {
         return this.BinaryExpression(node);
       }
-      throw `Evaluator: '${node.kind}' is not implemented`;
+      throw `Evaluator: '${node.Kind}' is not implemented`;
     } catch (error) {
       return error;
     }
   }
 
   private SyntaxTree(node: SyntaxTree): number {
-    return this.Evaluate(node.tree);
+    return this.Evaluate(node.Tree);
   }
 
   private PrimaryExpression(node: PrimaryExpression): number {
-    switch (node.kind) {
+    switch (node.Kind) {
       case SyntaxKind.NumberExpression:
-        return parseFloat(node.text);
+        return parseFloat(node.Text);
       default:
-        throw `Evaluator: '${node.kind}' is not implemented in primary expressions`;
+        throw `Evaluator: '${node.Kind}' is not implemented in primary expressions`;
     }
   }
 
   private BinaryExpression(node: BinaryExpression): number {
-    const left = this.Evaluate(node.left);
-    const right = this.Evaluate(node.right);
-    switch (node.operator.kind) {
+    const left = this.Evaluate(node.Left);
+    const right = this.Evaluate(node.Right);
+    switch (node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return left + right;
       case SyntaxKind.MinusToken:
@@ -47,19 +47,19 @@ export class Evaluator {
       case SyntaxKind.SlashToken:
         return left / right;
       default:
-        throw `Evaluator: Operation '${node.operator}' is not implemented`;
+        throw `Evaluator: Operation '${node.Operator}' is not implemented`;
     }
   }
 
   private UnaryExpression(node: UnaryExpression): number {
-    const right = this.Evaluate(node.right);
-    switch (node.operator.kind) {
+    const right = this.Evaluate(node.Right);
+    switch (node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return +right;
       case SyntaxKind.MinusToken:
         return -right;
       default:
-        throw `Evaluator: Operation '${node.operator}' is not implemented`;
+        throw `Evaluator: Operation '${node.Operator}' is not implemented`;
     }
   }
 }
