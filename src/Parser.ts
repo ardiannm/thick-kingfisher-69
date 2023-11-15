@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, Exception, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/Syntax";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, Exception, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -28,7 +28,9 @@ export class Parser {
 
   // Get the next token without consuming it
   private PeekToken() {
-    if (this.peek > this.arr.length) this.arr.push(this.lexer.NextToken());
+    if (this.peek > this.arr.length) {
+      this.arr.push(this.lexer.NextToken());
+    }
     return this.arr[this.peek - this.defaultInitPeek];
   }
 
@@ -36,13 +38,6 @@ export class Parser {
   private ParseToken() {
     if (this.arr.length > 0) return this.arr.shift();
     return this.lexer.NextToken();
-  }
-
-  // Raise a warning if a space character is detected in the input
-  private ThrowForSpace(message: string) {
-    if (this.lexer.IsSpace(this.lexer.GetChar())) {
-      console.log(message);
-    }
   }
 
   // Main parsing method
@@ -69,7 +64,6 @@ export class Parser {
   private ParsePointer() {
     if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
       const a = this.ParseToken();
-      this.ThrowForSpace("ParserError: Expecting 'PointerToken'.");
       const b = this.ParseToken();
       const text = this.input.substring(a.position, b.position + b.text.length);
       return new SyntaxToken(SyntaxKind.PointerToken, text, a.position);
@@ -126,6 +120,7 @@ export class Parser {
   // Parse a cell reference (e.g., A1)
   private ParseCell() {
     const left = this.ParseColumn();
+    console.log(`'${this.lexer.GetChar()}'`);
     const right = this.ParseRow();
     const text = left.text + right.text;
     this.stack.add(text);

@@ -31,6 +31,7 @@ export class Lexer {
 
   NextToken(): SyntaxToken {
     const start = this.pointer;
+
     const char = this.GetChar();
 
     if (this.IsLetter(char)) {
@@ -53,7 +54,8 @@ export class Lexer {
       while (this.IsSpace(this.GetChar())) {
         this.Advance();
       }
-      return this.NextToken();
+      const text = this.input.substring(start, this.pointer);
+      return new SyntaxToken(SyntaxKind.SpaceToken, text, start);
     }
 
     this.Advance();
