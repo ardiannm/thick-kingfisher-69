@@ -1,31 +1,30 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, SyntaxException, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
+import { RangeReference, CellReference, RowReference, ColumnReference, PrimaryExpression, BadSyntax, BinaryExpression, UnaryExpression, ParenthesisExpression, ReferenceStatement, SyntaxTree } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
-  private Lexer = new Lexer("");
   private Stack = new Set<string>(); // Set to store parsed cell text references
   private Tokens = Array<SyntaxToken>();
   private Index = 0;
 
-  constructor(public Input: string) {
-    this.Lexer.Input = Input;
+  constructor(public readonly Input: string) {
+    const Tokenizer = new Lexer(Input);
 
     while (true) {
-      const token = this.Lexer.NextToken();
-      this.Tokens.push(token);
-      if (token.Kind === SyntaxKind.EOFToken) break;
+      const Token = Tokenizer.Lex();
+      this.Tokens.push(Token);
+      if (Token.Kind === SyntaxKind.EOFToken) break;
     }
   }
 
   // Helper method to check if the next token matches the given kinds
   private Match(...kinds: Array<SyntaxKind>) {
-    let offset = this.Index;
-    for (var kind of kinds) {
-      if (kind !== this.Peek(offset).Kind) return false;
-      offset++;
+    let Offset = this.Index;
+    for (var Kind of kinds) {
+      if (Kind !== this.Peek(Offset).Kind) return false;
+      Offset++;
     }
     return true;
   }
@@ -75,25 +74,25 @@ export class Parser {
 
   // Parse expressions with binary operators
   private ParseExpression(parentPrecedence = 0) {
-    let left = this.ParseUnaryExpression();
+    let Left = this.ParseUnaryExpression();
     while (true) {
-      const precedence = SyntaxFacts.OperatorPrecedence(this.Peek().Kind);
-      if (precedence === 0 || precedence <= parentPrecedence) {
+      const Precedence = SyntaxFacts.OperatorPrecedence(this.Peek().Kind);
+      if (Precedence === 0 || Precedence <= parentPrecedence) {
         break;
       }
-      const operator = this.NextToken();
-      const right = this.ParseExpression(precedence);
-      left = new BinaryExpression(SyntaxKind.BinaryExpression, left, operator, right);
+      const Operator = this.NextToken();
+      const Right = this.ParseExpression(Precedence);
+      Left = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
     }
-    return left;
+    return Left;
   }
 
   // Parse unary expressions (e.g., +, -)
   private ParseUnaryExpression() {
     if (this.Match(SyntaxKind.PlusToken) || this.Match(SyntaxKind.MinusToken)) {
-      const operator = this.NextToken();
-      const right = this.ParseUnaryExpression();
-      return new UnaryExpression(SyntaxKind.UnaryExpression, operator, right);
+      const Operator = this.NextToken();
+      const Right = this.ParseUnaryExpression();
+      return new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Right);
     }
     return this.ParseParenthesis();
   }
@@ -109,11 +108,11 @@ export class Parser {
   // Parse range references (e.g., A1:B3)
   private ParseRange() {
     if (this.Match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IdentifierToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IdentifierToken, SyntaxKind.ColonToken)) {
-      const left = this.ParseCell();
+      const Left = this.ParseCell();
       this.NextToken();
-      const right = this.ParseCell();
-      const text = left.Text + ":" + right.Text;
-      return new RangeReference(SyntaxKind.RangeReference, text, left, right);
+      const Right = this.ParseCell();
+      const Text = Left.Text + ":" + Right.Text;
+      return new RangeReference(SyntaxKind.RangeReference, Text, Left, Right);
     }
     if (this.Match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) return this.ParseCell();
     return this.ParsePrimary();
@@ -121,35 +120,35 @@ export class Parser {
 
   // Parse a cell reference (e.g., A1)
   private ParseCell() {
-    const left = this.ParseColumn();
-    const right = this.ParseRow();
-    const text = left.Text + right.Text;
-    this.Stack.add(text);
-    return new CellReference(SyntaxKind.CellReference, text, left, right);
+    const Left = this.ParseColumn();
+    const Right = this.ParseRow();
+    const Text = Left.Text + Right.Text;
+    this.Stack.add(Text);
+    return new CellReference(SyntaxKind.CellReference, Text, Left, Right);
   }
 
   // Parse a column reference
   private ParseColumn() {
-    const text = this.Match(SyntaxKind.IdentifierToken) ? this.NextToken().Text : "";
-    return new ColumnReference(SyntaxKind.ColumnReference, text);
+    const Text = this.Match(SyntaxKind.IdentifierToken) ? this.NextToken().Text : "";
+    return new ColumnReference(SyntaxKind.ColumnReference, Text);
   }
 
   // Parse a row reference
   private ParseRow() {
-    const text = this.Match(SyntaxKind.NumberToken) ? this.NextToken().Text : "";
-    return new RowReference(SyntaxKind.RowReference, text);
+    const Text = this.Match(SyntaxKind.NumberToken) ? this.NextToken().Text : "";
+    return new RowReference(SyntaxKind.RowReference, Text);
   }
 
   // Parse primary expressions (e.g., numbers, identifiers)
   private ParsePrimary() {
-    const token = this.NextToken();
-    switch (token.Kind) {
+    const Token = this.NextToken();
+    switch (Token.Kind) {
       case SyntaxKind.NumberToken:
-        return new PrimaryExpression(SyntaxKind.NumberExpression, token.Text);
+        return new PrimaryExpression(SyntaxKind.NumberExpression, Token.Text);
       case SyntaxKind.IdentifierToken:
-        return new PrimaryExpression(SyntaxKind.IndentifierExpression, token.Text);
+        return new PrimaryExpression(SyntaxKind.IdentifierExpression, Token.Text);
       default:
-        return new SyntaxException(token.Kind, token.Text);
+        return new BadSyntax(Token.Kind, Token.Text);
     }
   }
 }

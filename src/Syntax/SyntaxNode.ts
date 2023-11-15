@@ -7,7 +7,7 @@ export abstract class SyntaxNode {
 
 abstract class ExpressionSyntax extends SyntaxNode {}
 
-export class SyntaxException extends SyntaxNode {
+export class BadSyntax extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Text: string) {
     super(Kind);
   }

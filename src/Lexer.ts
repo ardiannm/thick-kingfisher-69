@@ -3,7 +3,7 @@ import { SyntaxToken } from "./Syntax/SyntaxToken";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Lexer {
-  constructor(public Input: string) {}
+  constructor(public readonly Input: string) {}
 
   private Index = 0;
 
@@ -29,7 +29,7 @@ export class Lexer {
     this.Index = this.Index + 1;
   }
 
-  NextToken(): SyntaxToken {
+  public Lex(): SyntaxToken {
     const Start = this.Index;
 
     const Char = this.GetChar();
@@ -54,8 +54,8 @@ export class Lexer {
       while (this.IsSpace(this.GetChar())) {
         this.Advance();
       }
-      const text = this.Input.substring(Start, this.Index);
-      return new SyntaxToken(SyntaxKind.SpaceToken, text, Start);
+      const Text = this.Input.substring(Start, this.Index);
+      return new SyntaxToken(SyntaxKind.SpaceToken, Text, Start);
     }
 
     this.Advance();

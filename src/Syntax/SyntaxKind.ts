@@ -15,10 +15,10 @@ export enum SyntaxKind {
   GreaterToken = "GreaterToken",
   PointerToken = "PointerToken",
   EOFToken = "EOFToken",
-  ExceptionToken = "ExceptionToken",
+  BadToken = "ExceptionToken",
 
   NumberExpression = "NumberExpression",
-  IndentifierExpression = "IndentifierExpression",
+  IdentifierExpression = "IndentifierExpression",
 
   RowReference = "RowReference",
   ColumnReference = "ColumnReference",

@@ -37,7 +37,7 @@ export class SyntaxFacts {
       case "":
         return SyntaxKind.EOFToken;
       default:
-        return SyntaxKind.ExceptionToken;
+        return SyntaxKind.BadToken;
     }
   }
 }
