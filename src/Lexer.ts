@@ -7,17 +7,17 @@ export class Lexer {
 
   private Index = 0;
 
-  public IsSpace(char: string): boolean {
-    return char === " " || char === "\t" || char === "\n" || char === "\r";
+  public IsSpace(Char: string): boolean {
+    return Char === " " || Char === "\t" || Char === "\n" || Char === "\r";
   }
 
-  private IsDigit(char: string): boolean {
-    const CharCode = char.charCodeAt(0);
+  private IsDigit(Char: string): boolean {
+    const CharCode = Char.charCodeAt(0);
     return CharCode >= 48 && CharCode <= 57;
   }
 
-  private IsLetter(char: string): boolean {
-    const CharCode = char.charCodeAt(0);
+  private IsLetter(Char: string): boolean {
+    const CharCode = Char.charCodeAt(0);
     return (CharCode >= 65 && CharCode <= 90) || (CharCode >= 97 && CharCode <= 122);
   }
 
@@ -31,36 +31,31 @@ export class Lexer {
 
   public Lex(): SyntaxToken {
     const Start = this.Index;
-
     const Char = this.GetChar();
 
-    if (this.IsLetter(Char)) {
-      while (this.IsLetter(this.GetChar())) {
+    switch (true) {
+      case this.IsLetter(Char):
+        while (this.IsLetter(this.GetChar())) {
+          this.Advance();
+        }
+        return new SyntaxToken(SyntaxKind.IdentifierToken, this.Input.substring(Start, this.Index), Start);
+
+      case this.IsDigit(Char):
+        while (this.IsDigit(this.GetChar())) {
+          this.Advance();
+        }
+        return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Index), Start);
+
+      case this.IsSpace(Char):
+        while (this.IsSpace(this.GetChar())) {
+          this.Advance();
+        }
+        return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Index), Start);
+
+      default:
         this.Advance();
-      }
-      const Text = this.Input.substring(Start, this.Index);
-      return new SyntaxToken(SyntaxKind.IdentifierToken, Text, Start);
+        const Kind = SyntaxFacts.Kind(Char);
+        return new SyntaxToken(Kind, Char, Start);
     }
-
-    if (this.IsDigit(Char)) {
-      while (this.IsDigit(this.GetChar())) {
-        this.Advance();
-      }
-      const Text = this.Input.substring(Start, this.Index);
-      return new SyntaxToken(SyntaxKind.NumberToken, Text, Start);
-    }
-
-    if (this.IsSpace(Char)) {
-      while (this.IsSpace(this.GetChar())) {
-        this.Advance();
-      }
-      const Text = this.Input.substring(Start, this.Index);
-      return new SyntaxToken(SyntaxKind.SpaceToken, Text, Start);
-    }
-
-    this.Advance();
-
-    const Kind = SyntaxFacts.Kind(Char);
-    return new SyntaxToken(Kind, Char, Start);
   }
 }

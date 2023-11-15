@@ -29,7 +29,7 @@ export enum SyntaxKind {
   UnaryExpression = "UnaryExpression",
   BinaryExpression = "BinaryExpression",
 
-  ReferenceStatement = "ReferenceStatement",
+  ReferenceSyntax = "ReferenceStatement",
 
   SyntaxTree = "SyntaxTree",
 }

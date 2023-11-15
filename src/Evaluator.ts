@@ -1,18 +1,16 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { BinaryExpression, PrimaryExpression, SyntaxNode, SyntaxTree, UnaryExpression } from "./Syntax/SyntaxNode";
+import { BinarySyntaxNode, PrimarySyntaxNode, SyntaxNode, UnarySyntaxNode } from "./Syntax/SyntaxNode";
 
 export class Evaluator {
   constructor() {}
 
   Evaluate<T extends SyntaxNode>(node: T): number {
     try {
-      if (node instanceof SyntaxTree) {
-        return this.SyntaxTree(node);
-      } else if (node instanceof PrimaryExpression) {
+      if (node instanceof PrimarySyntaxNode) {
         return this.PrimaryExpression(node);
-      } else if (node instanceof UnaryExpression) {
+      } else if (node instanceof UnarySyntaxNode) {
         return this.UnaryExpression(node);
-      } else if (node instanceof BinaryExpression) {
+      } else if (node instanceof BinarySyntaxNode) {
         return this.BinaryExpression(node);
       }
       throw `Evaluator: '${node.Kind}' is not implemented`;
@@ -21,11 +19,7 @@ export class Evaluator {
     }
   }
 
-  private SyntaxTree(node: SyntaxTree): number {
-    return this.Evaluate(node.Tree);
-  }
-
-  private PrimaryExpression(node: PrimaryExpression): number {
+  private PrimaryExpression(node: PrimarySyntaxNode): number {
     switch (node.Kind) {
       case SyntaxKind.NumberExpression:
         return parseFloat(node.Text);
@@ -34,7 +28,7 @@ export class Evaluator {
     }
   }
 
-  private BinaryExpression(node: BinaryExpression): number {
+  private BinaryExpression(node: BinarySyntaxNode): number {
     const left = this.Evaluate(node.Left);
     const right = this.Evaluate(node.Right);
     switch (node.Operator.Kind) {
@@ -51,7 +45,7 @@ export class Evaluator {
     }
   }
 
-  private UnaryExpression(node: UnaryExpression): number {
+  private UnaryExpression(node: UnarySyntaxNode): number {
     const right = this.Evaluate(node.Right);
     switch (node.Operator.Kind) {
       case SyntaxKind.PlusToken:

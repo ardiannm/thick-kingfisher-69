@@ -5,70 +5,64 @@ export abstract class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}
 }
 
-abstract class ExpressionSyntax extends SyntaxNode {}
+abstract class ExpressionSyntaxNode extends SyntaxNode {}
 
-export class BadSyntax extends SyntaxNode {
+export class BadSyntaxNode extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Text: string) {
     super(Kind);
   }
 }
 
-export class PrimaryExpression extends SyntaxNode {
+export class PrimarySyntaxNode extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Text: string) {
     super(Kind);
   }
 }
 
-export class ColumnReference extends SyntaxNode {
+export class ColumnSyntaxNode extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Text: string) {
     super(Kind);
   }
 }
 
-export class RowReference extends SyntaxNode {
+export class RowSyntaxNode extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Text: string) {
     super(Kind);
   }
 }
 
-export class CellReference extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string, public Column: ColumnReference, public Row: RowReference) {
+export class CellSyntaxNode extends SyntaxNode {
+  constructor(public Kind: SyntaxKind, public Text: string, public Column: ColumnSyntaxNode, public Row: RowSyntaxNode) {
     super(Kind);
   }
 }
 
-export class RangeReference extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string, public Left: CellReference, public Right: CellReference) {
+export class RangeSyntaxNode extends SyntaxNode {
+  constructor(public Kind: SyntaxKind, public Text: string, public Left: CellSyntaxNode, public Right: CellSyntaxNode) {
     super(Kind);
   }
 }
 
-export class BinaryExpression extends ExpressionSyntax {
+export class BinarySyntaxNode extends ExpressionSyntaxNode {
   constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Operator: SyntaxToken, public Right: SyntaxNode) {
     super(Kind);
   }
 }
 
-export class UnaryExpression extends ExpressionSyntax {
+export class UnarySyntaxNode extends ExpressionSyntaxNode {
   constructor(public Kind: SyntaxKind, public Operator: SyntaxToken, public Right: SyntaxNode) {
     super(Kind);
   }
 }
 
-export class ParenthesisExpression extends ExpressionSyntax {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Expression: ExpressionSyntax, public Right: SyntaxToken) {
+export class ParenthesisSyntaxNode extends ExpressionSyntaxNode {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Expression: ExpressionSyntaxNode, public Right: SyntaxToken) {
     super(Kind);
   }
 }
 
-export class ReferenceStatement extends ExpressionSyntax {
-  constructor(public Kind: SyntaxKind, public Reference: string, public Expression: ExpressionSyntax, public Referencing: Array<string>) {
-    super(Kind);
-  }
-}
-
-export class SyntaxTree extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Tree: ReferenceStatement) {
+export class ReferenceSyntaxNode extends ExpressionSyntaxNode {
+  constructor(public Kind: SyntaxKind, public Reference: string, public Expression: ExpressionSyntaxNode, public Referencing: Array<string>) {
     super(Kind);
   }
 }
