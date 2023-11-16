@@ -6,7 +6,7 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
   private Index = 0;
-  private ReferenceStack = new Set<string>(); // Set to store parsed cell text references
+  private Stack = new Set<string>(); // Set to store parsed cell text references
   private Tokens = Array<SyntaxToken>();
 
   constructor(public readonly Input: string) {
@@ -14,7 +14,6 @@ export class Parser {
 
     while (true) {
       const Token = Tokenizer.Lex();
-
       this.Tokens.push(Token);
       if (Token.Kind === SyntaxKind.EOFToken) break;
     }
@@ -23,9 +22,7 @@ export class Parser {
   // Get the next token without consuming it
   private Peek(Offset: number = 0) {
     const Index = this.Index + Offset;
-    if (Index < this.Tokens.length) {
-      return this.Tokens[Index];
-    }
+    if (Index < this.Tokens.length) return this.Tokens[Index];
     return this.Tokens[this.Tokens.length - 1];
   }
 
@@ -53,10 +50,10 @@ export class Parser {
     if (this.Peek(0).Kind === SyntaxKind.MinusToken && this.Peek(1).Kind === SyntaxKind.GreaterToken) {
       this.NextToken();
       this.NextToken();
-      this.ReferenceStack.clear();
+      this.Stack.clear();
       const Right = this.ParseBinary();
-      const Node = new ReferenceSyntax(SyntaxKind.ReferenceSyntax, Left, Right, Array.from(this.ReferenceStack));
-      this.ReferenceStack.clear();
+      const Node = new ReferenceSyntax(SyntaxKind.ReferenceSyntax, Left, Right, Array.from(this.Stack));
+      this.Stack.clear();
       return Node;
     }
     return Left;
@@ -107,6 +104,7 @@ export class Parser {
 
   // Parse primary expressions (e.g., numbers, identifiers)
   private ParsePrimary() {
+    if (this.Match(SyntaxKind.EOFToken)) return this.Peek();
     const Left = this.NextToken();
     switch (Left.Kind) {
       case SyntaxKind.NumberToken:
@@ -115,13 +113,10 @@ export class Parser {
         if (this.Match(SyntaxKind.NumberToken)) {
           const Right = this.NextToken();
           const NodeReference = Left.Text + Right.Text;
-          this.ReferenceStack.add(NodeReference); // add cell reference to the stack of references
+          this.Stack.add(NodeReference); // add cell reference to the stack of references
           return new CellSyntax(SyntaxKind.CellSyntax, Left.Text, Right.Text);
         }
         return new PrimarySyntax(SyntaxKind.IdentifierSyntax, Left.Text);
-      case SyntaxKind.EOFToken:
-        this.Tokens.push(Left);
-        return Left;
       default:
         return new BadSyntax(Left.Kind, Left.Text);
     }
