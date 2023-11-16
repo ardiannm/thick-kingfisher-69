@@ -1,5 +1,4 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxToken } from "./SyntaxToken";
 
 export abstract class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}
@@ -32,19 +31,19 @@ export class RangeSyntax extends SyntaxNode {
 }
 
 export class BinarySyntax extends ExpressionSyntax {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Operator: SyntaxToken, public Right: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Operator: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
 
 export class UnarySyntax extends ExpressionSyntax {
-  constructor(public Kind: SyntaxKind, public Operator: SyntaxToken, public Right: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Operator: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
 
 export class ParenthesisSyntax extends ExpressionSyntax {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Expression: SyntaxNode, public Right: SyntaxToken) {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Expression: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
