@@ -17,6 +17,8 @@ export class Parser {
       this.Tokens.push(Token);
       if (Token.Kind === SyntaxKind.EOFToken) break;
     }
+
+    console.log(this.Tokens);
   }
 
   // Get the next token without consuming it
@@ -106,7 +108,7 @@ export class Parser {
 
   // Parse range references (e.g., A1:B3)
   private ParseRange() {
-    if (this.Match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IdentifierToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IdentifierToken, SyntaxKind.ColonToken)) {
+    if (this.Match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.IdentifierToken, SyntaxKind.ColonToken) || this.Match(SyntaxKind.NumberToken, SyntaxKind.ColonToken)) {
       const Left = this.ParseCell();
       this.NextToken();
       const Right = this.ParseCell();
