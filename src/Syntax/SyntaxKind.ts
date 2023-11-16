@@ -23,9 +23,9 @@ export enum SyntaxKind {
   RowReference = "RowReference",
   ColumnReference = "ColumnReference",
   CellReference = "CellReference",
-  RangeReference = "RangeReference",
+  RangeSyntaxNode = "RangeReference",
 
-  ParanthesisExpression = "ParanthesisExpression",
+  ParenthesisSyntaxNode = "ParanthesisExpression",
   UnaryExpression = "UnaryExpression",
   BinaryExpression = "BinaryExpression",
 

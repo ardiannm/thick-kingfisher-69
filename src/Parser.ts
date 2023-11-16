@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { RangeSyntaxNode, CellSyntaxNode, RowSyntaxNode, ColumnSyntaxNode, PrimarySyntaxNode, BadSyntaxNode, BinarySyntaxNode, UnarySyntaxNode, ParenthesisSyntaxNode, ReferenceSyntaxNode } from "./Syntax/SyntaxNode";
+import { CellSyntaxNode, PrimarySyntaxNode, BadSyntaxNode, BinarySyntaxNode, UnarySyntaxNode, ParenthesisSyntaxNode, RangeSyntaxNode, ReferenceSyntaxNode } from "./Syntax/SyntaxNode";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 
 export class Parser {
@@ -17,8 +17,6 @@ export class Parser {
       this.Tokens.push(Token);
       if (Token.Kind === SyntaxKind.EOFToken) break;
     }
-
-    console.log(this.Tokens);
   }
 
   // Get the next token without consuming it
@@ -42,6 +40,17 @@ export class Parser {
   // Main parsing method
   public Parse() {
     return this.ParseBinary();
+  }
+
+  
+
+  private ParseReference() {
+    const Left = this.ParseRange();
+    if (this.Peek(0).Kind === SyntaxKind.MinusToken && this.Peek(1).Kind === SyntaxKind.GreaterToken) {
+      this.NextToken();
+      this.NextToken();
+      // return new ReferenceSyntaxNode(SyntaxKind.ReferenceSyntax, Left.)
+    }
   }
 
   // Parse expressions with binary operators
@@ -72,21 +81,36 @@ export class Parser {
   // Parse expressions enclosed in parentheses
   private ParseParenthesis() {
     if (this.Match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisSyntaxNode(SyntaxKind.ParanthesisExpression, this.NextToken(), this.ParseBinary(), this.NextToken());
+      return new ParenthesisSyntaxNode(SyntaxKind.ParenthesisSyntaxNode, this.NextToken(), this.ParseBinary(), this.NextToken());
     }
-    return this.ParsePrimary();
+    return this.ParseRange();
+  }
+
+  private ParseRange() {
+    const Left = this.ParsePrimary();
+    if (this.Match(SyntaxKind.ColonToken)) {
+      this.NextToken();
+      const Right = this.ParsePrimary();
+      return new RangeSyntaxNode(SyntaxKind.RangeSyntaxNode, Left, Right);
+    }
   }
 
   // Parse primary expressions (e.g., numbers, identifiers)
   private ParsePrimary() {
-    const Token = this.NextToken();
-    switch (Token.Kind) {
+    const Left = this.NextToken();
+    switch (Left.Kind) {
       case SyntaxKind.NumberToken:
-        return new PrimarySyntaxNode(SyntaxKind.NumberExpression, Token.Text);
+        return new PrimarySyntaxNode(SyntaxKind.NumberExpression, Left.Text);
       case SyntaxKind.IdentifierToken:
-        return new PrimarySyntaxNode(SyntaxKind.IdentifierExpression, Token.Text);
+        if (this.Match(SyntaxKind.NumberToken)) {
+          const Right = this.NextToken();
+          const Reference = Left.Text + Right.Text;
+          this.ReferenceStack.add(Reference); // add cell reference to the stack of references
+          return new CellSyntaxNode(SyntaxKind.CellReference, Left.Text, Right.Text);
+        }
+        return new PrimarySyntaxNode(SyntaxKind.IdentifierExpression, Left.Text);
       default:
-        return new BadSyntaxNode(Token.Kind, Token.Text);
+        return new BadSyntaxNode(Left.Kind, Left.Text);
     }
   }
 }

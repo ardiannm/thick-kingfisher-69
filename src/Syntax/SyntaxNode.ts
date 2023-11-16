@@ -19,26 +19,14 @@ export class PrimarySyntaxNode extends SyntaxNode {
   }
 }
 
-export class ColumnSyntaxNode extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string) {
-    super(Kind);
-  }
-}
-
-export class RowSyntaxNode extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string) {
-    super(Kind);
-  }
-}
-
 export class CellSyntaxNode extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string, public Column: ColumnSyntaxNode, public Row: RowSyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Column: string, public Row: string) {
     super(Kind);
   }
 }
 
 export class RangeSyntaxNode extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string, public Left: CellSyntaxNode, public Right: CellSyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
@@ -56,13 +44,13 @@ export class UnarySyntaxNode extends ExpressionSyntaxNode {
 }
 
 export class ParenthesisSyntaxNode extends ExpressionSyntaxNode {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Expression: ExpressionSyntaxNode, public Right: SyntaxToken) {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Expression: SyntaxNode, public Right: SyntaxToken) {
     super(Kind);
   }
 }
 
 export class ReferenceSyntaxNode extends ExpressionSyntaxNode {
-  constructor(public Kind: SyntaxKind, public Reference: string, public Expression: ExpressionSyntaxNode, public Referencing: Array<string>) {
+  constructor(public Kind: SyntaxKind, public Reference: string, public Expression: SyntaxNode, public Referencing: Array<string>) {
     super(Kind);
   }
 }
