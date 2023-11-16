@@ -38,24 +38,24 @@ export class Lexer {
         while (this.IsLetter(this.GetChar())) {
           this.Advance();
         }
-        return new SyntaxToken(SyntaxKind.IdentifierToken, this.Input.substring(Start, this.Index), Start);
+        return new SyntaxToken(SyntaxKind.IdentifierToken, this.Input.substring(Start, this.Index));
 
       case this.IsDigit(Char):
         while (this.IsDigit(this.GetChar())) {
           this.Advance();
         }
-        return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Index), Start);
+        return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Index));
 
       case this.IsSpace(Char):
         while (this.IsSpace(this.GetChar())) {
           this.Advance();
         }
-        return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Index), Start);
+        return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Index));
 
       default:
         this.Advance();
         const Kind = SyntaxFacts.Kind(Char);
-        return new SyntaxToken(Kind, Char, Start);
+        return new SyntaxToken(Kind, Char);
     }
   }
 }
