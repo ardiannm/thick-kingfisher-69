@@ -1,6 +1,6 @@
-import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { SyntaxFacts } from "./Syntax/SyntaxFacts";
+import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
+import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
+import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Lexer {
   constructor(public readonly Input: string) {}

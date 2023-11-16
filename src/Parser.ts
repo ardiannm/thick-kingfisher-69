@@ -1,8 +1,8 @@
 import { Lexer } from "./Lexer";
-import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { CellSyntaxNode, PrimarySyntaxNode, BadSyntaxNode, BinarySyntaxNode, UnarySyntaxNode, ParenthesisSyntaxNode, RangeSyntaxNode, ReferenceSyntaxNode } from "./Syntax/SyntaxNode";
-import { SyntaxFacts } from "./Syntax/SyntaxFacts";
+import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
+import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
+import { CellSyntax, PrimarySyntax, BadSyntax, BinarySyntax, UnarySyntax, ParenthesisSyntax, RangeSyntax, ReferenceSyntax } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
   private Index = 0;
@@ -39,18 +39,21 @@ export class Parser {
 
   // Main parsing method
   public Parse() {
-    return this.ParseBinary();
+    return this.ParseReference();
   }
-
-  
 
   private ParseReference() {
     const Left = this.ParseRange();
     if (this.Peek(0).Kind === SyntaxKind.MinusToken && this.Peek(1).Kind === SyntaxKind.GreaterToken) {
       this.NextToken();
       this.NextToken();
-      // return new ReferenceSyntaxNode(SyntaxKind.ReferenceSyntax, Left.)
+      this.ReferenceStack.clear();
+      const Right = this.ParseBinary();
+      const Node = new ReferenceSyntax(SyntaxKind.ReferenceSyntax, Left, Right, Array.from(this.ReferenceStack));
+      this.ReferenceStack.clear();
+      return Node;
     }
+    return Left;
   }
 
   // Parse expressions with binary operators
@@ -63,7 +66,7 @@ export class Parser {
       }
       const Operator = this.NextToken();
       const Right = this.ParseBinary(Precedence);
-      Left = new BinarySyntaxNode(SyntaxKind.BinaryExpression, Left, Operator, Right);
+      Left = new BinarySyntax(SyntaxKind.BinarySyntax, Left, Operator, Right);
     }
     return Left;
   }
@@ -73,15 +76,15 @@ export class Parser {
     if (this.Match(SyntaxKind.PlusToken) || this.Match(SyntaxKind.MinusToken)) {
       const Operator = this.NextToken();
       const Right = this.ParseUnary();
-      return new UnarySyntaxNode(SyntaxKind.UnaryExpression, Operator, Right);
+      return new UnarySyntax(SyntaxKind.UnarySyntax, Operator, Right);
     }
     return this.ParseParenthesis();
   }
 
   // Parse expressions enclosed in parentheses
   private ParseParenthesis() {
-    if (this.Match(SyntaxKind.OpenParenthesisToken)) {
-      return new ParenthesisSyntaxNode(SyntaxKind.ParenthesisSyntaxNode, this.NextToken(), this.ParseBinary(), this.NextToken());
+    if (this.Match(SyntaxKind.OpenParenToken)) {
+      return new ParenthesisSyntax(SyntaxKind.ParenthesisSyntax, this.NextToken(), this.ParseBinary(), this.NextToken());
     }
     return this.ParseRange();
   }
@@ -91,8 +94,9 @@ export class Parser {
     if (this.Match(SyntaxKind.ColonToken)) {
       this.NextToken();
       const Right = this.ParsePrimary();
-      return new RangeSyntaxNode(SyntaxKind.RangeSyntaxNode, Left, Right);
+      return new RangeSyntax(SyntaxKind.RangeSyntax, Left, Right);
     }
+    return Left;
   }
 
   // Parse primary expressions (e.g., numbers, identifiers)
@@ -100,17 +104,17 @@ export class Parser {
     const Left = this.NextToken();
     switch (Left.Kind) {
       case SyntaxKind.NumberToken:
-        return new PrimarySyntaxNode(SyntaxKind.NumberExpression, Left.Text);
+        return new PrimarySyntax(SyntaxKind.NumberSyntax, Left.Text);
       case SyntaxKind.IdentifierToken:
         if (this.Match(SyntaxKind.NumberToken)) {
           const Right = this.NextToken();
-          const Reference = Left.Text + Right.Text;
-          this.ReferenceStack.add(Reference); // add cell reference to the stack of references
-          return new CellSyntaxNode(SyntaxKind.CellReference, Left.Text, Right.Text);
+          const NodeReference = Left.Text + Right.Text;
+          this.ReferenceStack.add(NodeReference); // add cell reference to the stack of references
+          return new CellSyntax(SyntaxKind.CellSyntax, Left.Text, Right.Text);
         }
-        return new PrimarySyntaxNode(SyntaxKind.IdentifierExpression, Left.Text);
+        return new PrimarySyntax(SyntaxKind.IdentifierSyntax, Left.Text);
       default:
-        return new BadSyntaxNode(Left.Kind, Left.Text);
+        return new BadSyntax(Left.Kind, Left.Text);
     }
   }
 }

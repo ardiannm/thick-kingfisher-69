@@ -1,16 +1,16 @@
-import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { BinarySyntaxNode, PrimarySyntaxNode, SyntaxNode, UnarySyntaxNode } from "./Syntax/SyntaxNode";
+import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
+import { BinarySyntax, PrimarySyntax, SyntaxNode, UnarySyntax } from "./CodeAnalysis/SyntaxNode";
 
 export class Evaluator {
   constructor() {}
 
   Evaluate<T extends SyntaxNode>(node: T): number {
     try {
-      if (node instanceof PrimarySyntaxNode) {
+      if (node instanceof PrimarySyntax) {
         return this.PrimaryExpression(node);
-      } else if (node instanceof UnarySyntaxNode) {
+      } else if (node instanceof UnarySyntax) {
         return this.UnaryExpression(node);
-      } else if (node instanceof BinarySyntaxNode) {
+      } else if (node instanceof BinarySyntax) {
         return this.BinaryExpression(node);
       }
       throw `Evaluator: '${node.Kind}' is not implemented`;
@@ -19,16 +19,16 @@ export class Evaluator {
     }
   }
 
-  private PrimaryExpression(node: PrimarySyntaxNode): number {
+  private PrimaryExpression(node: PrimarySyntax): number {
     switch (node.Kind) {
-      case SyntaxKind.NumberExpression:
+      case SyntaxKind.NumberSyntax:
         return parseFloat(node.Text);
       default:
         throw `Evaluator: '${node.Kind}' is not implemented in primary expressions`;
     }
   }
 
-  private BinaryExpression(node: BinarySyntaxNode): number {
+  private BinaryExpression(node: BinarySyntax): number {
     const left = this.Evaluate(node.Left);
     const right = this.Evaluate(node.Right);
     switch (node.Operator.Kind) {
@@ -45,7 +45,7 @@ export class Evaluator {
     }
   }
 
-  private UnaryExpression(node: UnarySyntaxNode): number {
+  private UnaryExpression(node: UnarySyntax): number {
     const right = this.Evaluate(node.Right);
     switch (node.Operator.Kind) {
       case SyntaxKind.PlusToken:

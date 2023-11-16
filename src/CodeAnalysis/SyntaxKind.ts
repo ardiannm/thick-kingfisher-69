@@ -1,0 +1,28 @@
+export enum SyntaxKind {
+  // syntax tokens
+  SpaceToken,
+  IdentifierToken,
+  NumberToken,
+  PlusToken,
+  MinusToken,
+  SlashToken,
+  StarToken,
+  ColonToken,
+  OpenParenToken,
+  CloseParenToken,
+  GreaterToken,
+  PointerToken,
+  EOFToken,
+  BadToken,
+  // syntax nodes
+  NumberSyntax,
+  IdentifierSyntax,
+  RowSyntax,
+  ColumnSyntax,
+  CellSyntax,
+  RangeSyntax,
+  ParenthesisSyntax,
+  UnarySyntax,
+  BinarySyntax,
+  ReferenceSyntax,
+}

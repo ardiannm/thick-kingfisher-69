@@ -29,9 +29,9 @@ export class SyntaxFacts {
       case ":":
         return SyntaxKind.ColonToken;
       case "(":
-        return SyntaxKind.OpenParenthesisToken;
+        return SyntaxKind.OpenParenToken;
       case ")":
-        return SyntaxKind.CloseParenthesisToken;
+        return SyntaxKind.CloseParenToken;
       case ">":
         return SyntaxKind.GreaterToken;
       case "":
