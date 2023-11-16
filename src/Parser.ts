@@ -14,6 +14,7 @@ export class Parser {
 
     while (true) {
       const Token = Tokenizer.Lex();
+
       this.Tokens.push(Token);
       if (Token.Kind === SyntaxKind.EOFToken) break;
     }
@@ -22,7 +23,9 @@ export class Parser {
   // Get the next token without consuming it
   private Peek(Offset: number = 0) {
     const Index = this.Index + Offset;
-    if (Index < this.Tokens.length) return this.Tokens[Index];
+    if (Index < this.Tokens.length) {
+      return this.Tokens[Index];
+    }
     return this.Tokens[this.Tokens.length - 1];
   }
 
@@ -34,11 +37,14 @@ export class Parser {
 
   // Consume and return the next token
   private NextToken() {
-    return this.Tokens.shift();
+    const Token = this.Peek();
+    this.Index++;
+    return Token;
   }
 
   // Main parsing method
   public Parse() {
+    // if (this.Match(SyntaxKind.EOFToken)) return this.NextToken();
     return this.ParseReference();
   }
 
@@ -113,6 +119,9 @@ export class Parser {
           return new CellSyntax(SyntaxKind.CellSyntax, Left.Text, Right.Text);
         }
         return new PrimarySyntax(SyntaxKind.IdentifierSyntax, Left.Text);
+      case SyntaxKind.EOFToken:
+        this.Tokens.push(Left);
+        return Left;
       default:
         return new BadSyntax(Left.Kind, Left.Text);
     }
