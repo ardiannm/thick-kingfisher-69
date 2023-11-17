@@ -6,7 +6,7 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
   private Index = 0;
-  private Stack = new Set<string>(); // Set to store parsed cell text references
+  private Stack = new Set<string>(); // // Set To Store Parsed Cell Text References
   private Tokens = new Array<SyntaxToken>();
 
   constructor(public readonly Input: string) {
@@ -20,7 +20,7 @@ export class Parser {
     } while (Token.Kind !== SyntaxKind.EOFToken);
   }
 
-  // Get the next token without consuming it
+  // Get The Next Token Without Consuming It
   private PeekToken(Offset: number = 0) {
     const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;
@@ -28,14 +28,14 @@ export class Parser {
     return this.Tokens[Index];
   }
 
-  // Consume and return the next token
+  // Consume And Return The Next Token
   private NextToken() {
     const Token = this.PeekToken();
     this.Index++;
     return Token;
   }
 
-  // Helper method to check if the next token matches the given kinds
+  // Helper Method To Check If The Next Token Matches The Given Kinds
   private MatchToken(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
@@ -52,7 +52,7 @@ export class Parser {
     return new SyntaxToken(Kind, Token.Text);
   }
 
-  // Main parsing method
+  // Main Parsing Method
   public Parse() {
     return this.ParseReference();
   }
@@ -71,7 +71,7 @@ export class Parser {
     return Left;
   }
 
-  // Parse expressions with binary operators
+  // Parse Expressions With Binary Operators
   private ParseBinary(ParentPrecedence = 0) {
     let Left = this.ParseUnary();
     while (true) {
@@ -86,7 +86,7 @@ export class Parser {
     return Left;
   }
 
-  // Parse unary expressions (e.g., +, -)
+  // Parse Unary Expressions (e.g., +, -)
   private ParseUnary() {
     if (this.MatchToken(SyntaxKind.PlusToken) || this.MatchToken(SyntaxKind.MinusToken)) {
       const Operator = this.NextToken();
@@ -96,7 +96,7 @@ export class Parser {
     return this.ParseParenthesis();
   }
 
-  // Parse expressions enclosed in parentheses
+  // Parse Expressions Enclosed In Parentheses
   private ParseParenthesis() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
@@ -107,7 +107,7 @@ export class Parser {
     return this.ParseRange();
   }
 
-  // Parse range reference (e.g., B4:C, B:E)
+  // Parse Range Reference (e.g., B4:C, B:E)
   private ParseRange() {
     const Left = this.ParseCell();
     if (this.MatchToken(SyntaxKind.ColonToken)) {
@@ -118,19 +118,19 @@ export class Parser {
     return Left;
   }
 
-  // Parse cell reference (e.g., A1, B7)
+  // Parse Cell Reference (e.g., A1, B7)
   private ParseCell() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.ParsePrimary();
       const Right = this.ParsePrimary();
       const Text = Left.Text + Right.Text;
-      this.Stack.add(Text); // Add cell reference to the stack of references
+      this.Stack.add(Text); // Add Cell Reference To The Stack Of References
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParsePrimary();
   }
 
-  // Parse primary expressions (e.g., numbers, identifiers)
+  // Parse Primary Expressions (e.g., Numbers, Identifiers)
   private ParsePrimary() {
     if (this.MatchToken(SyntaxKind.IdentifierToken)) {
       return new IdentifierExpression(SyntaxKind.IdentifierExpression, this.NextToken().Text);
