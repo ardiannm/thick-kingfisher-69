@@ -97,7 +97,9 @@ export class Parser {
   // Parse expressions enclosed in parentheses
   private ParseParenthesis() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
-      return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, this.NextToken(), this.ParseBinary(), this.NextToken());
+      const Left = this.NextToken();
+      const Right = this.Expect(SyntaxKind.CloseParenToken);
+      return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, this.ParseBinary(), Right);
     }
     return this.ParseRange();
   }
@@ -118,8 +120,8 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.ParsePrimary();
       const Right = this.ParsePrimary();
-      const Reference = Left.Text + Right.Text;
-      this.Stack.add(Reference); // Add cell reference to the stack of references
+      const Text = Left.Text + Right.Text;
+      this.Stack.add(Text); // Add cell reference to the stack of references
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParsePrimary();
