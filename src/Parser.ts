@@ -14,16 +14,25 @@ export class Parser {
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();
-      this.Tokens.push(Token);
+      if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
+        this.Tokens.push(Token);
+      }
     } while (Token.Kind !== SyntaxKind.EOFToken);
   }
 
   // Get the next token without consuming it
   private PeekToken(Offset: number = 0) {
     const Index = this.Index + Offset;
-    const Last = this.Tokens.length - 1;
-    if (Index > Last) return this.Tokens[Last];
+    const LastIndex = this.Tokens.length - 1;
+    if (Index > LastIndex) return this.Tokens[LastIndex];
     return this.Tokens[Index];
+  }
+
+  // Consume and return the next token
+  private NextToken() {
+    const Token = this.PeekToken();
+    this.Index++;
+    return Token;
   }
 
   // Helper method to check if the next token matches the given kinds
@@ -41,13 +50,6 @@ export class Parser {
     const Token = this.PeekToken();
     console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
-  }
-
-  // Consume and return the next token
-  private NextToken() {
-    const Token = this.PeekToken();
-    this.Index++;
-    return Token;
   }
 
   // Main parsing method
