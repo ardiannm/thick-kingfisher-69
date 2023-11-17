@@ -10,7 +10,7 @@ while (true) {
   if (input.trim() === "tree") {
     showTree = !showTree;
     console.log();
-    console.log(showTree ? "\tshowing tree" : "\tnot showing tree");
+    console.log(showTree ? "\tShowing Tree" : "\tNot Showing Tree");
     console.log();
     continue;
   }

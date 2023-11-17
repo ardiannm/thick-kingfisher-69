@@ -39,7 +39,7 @@ export class Parser {
   private Expect(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    console.log(`SyntaxError: Expected <${Kind}>, matched <${Token.Kind}>`);
+    console.log(`SyntaxError: Expected <${Kind}>; Matched <${Token.Kind}>`);
     return Token;
   }
 
