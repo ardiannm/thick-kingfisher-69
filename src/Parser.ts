@@ -30,16 +30,15 @@ export class Parser {
   private MatchToken(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      const Token = this.PeekToken(Offset);
-      if (Kind !== Token.Kind) return false;
+      if (Kind !== this.PeekToken(Offset).Kind) return false;
       Offset++;
     }
     return true;
   }
 
   private Expect(Kind: SyntaxKind) {
+    if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    if (this.MatchToken(Kind)) return Token;
     console.log(`SyntaxError: Expected <${Kind}>, matched <${Token.Kind}>`);
     return Token;
   }
@@ -103,6 +102,7 @@ export class Parser {
     return this.ParseRange();
   }
 
+  // Parse range reference (e.g., B4:C, B:E)
   private ParseRange() {
     const Left = this.ParseCell();
     if (this.MatchToken(SyntaxKind.ColonToken)) {
@@ -113,19 +113,23 @@ export class Parser {
     return Left;
   }
 
+  // Parse cell reference (e.g., A1, B7)
   private ParseCell() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
-      const Left = this.NextToken();
-      const Right = this.NextToken();
-      const NodeReference = Left.Text + Right.Text;
-      this.Stack.add(NodeReference); // add cell reference to the stack of references
-      return new CellReference(SyntaxKind.CellReference, Left.Text, Right.Text);
+      const Left = this.ParsePrimary();
+      const Right = this.ParsePrimary();
+      const Reference = Left.Text + Right.Text;
+      this.Stack.add(Reference); // Add cell reference to the stack of references
+      return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
-    return this.ParseNumber();
+    return this.ParsePrimary();
   }
 
   // Parse primary expressions (e.g., numbers, identifiers)
-  private ParseNumber() {
+  private ParsePrimary() {
+    if (this.MatchToken(SyntaxKind.IdentifierToken)) {
+      return new IdentifierExpression(SyntaxKind.IdentifierExpression, this.NextToken().Text);
+    }
     const Token = this.Expect(SyntaxKind.NumberToken);
     return new NumberExpression(SyntaxKind.NumberExpression, Token.Text);
   }
