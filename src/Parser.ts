@@ -21,8 +21,9 @@ export class Parser {
   // Get the next token without consuming it
   private PeekToken(Offset: number = 0) {
     const Index = this.Index + Offset;
-    if (Index < this.Tokens.length) return this.Tokens[Index];
-    return this.Tokens[this.Tokens.length - 1];
+    const Last = this.Tokens.length - 1;
+    if (Index > Last) return this.Tokens[Last];
+    return this.Tokens[Index];
   }
 
   // Helper method to check if the next token matches the given kinds
@@ -35,11 +36,11 @@ export class Parser {
     return true;
   }
 
-  private Expect(Kind: SyntaxKind) {
+  private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.NextToken();
-    console.log(`SyntaxError: Expected <${Kind}>; Matched <${Token.Kind}>`);
-    return Token;
+    const Token = this.PeekToken();
+    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
+    return new SyntaxToken(Kind, Token.Text);
   }
 
   // Consume and return the next token
@@ -97,8 +98,9 @@ export class Parser {
   private ParseParenthesis() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
-      const Right = this.Expect(SyntaxKind.CloseParenToken);
-      return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, this.ParseBinary(), Right);
+      const Expression = this.ParseBinary();
+      const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
+      return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }
     return this.ParseRange();
   }
@@ -131,7 +133,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken)) {
       return new IdentifierExpression(SyntaxKind.IdentifierExpression, this.NextToken().Text);
     }
-    const Token = this.Expect(SyntaxKind.NumberToken);
+    const Token = this.ExpectToken(SyntaxKind.NumberToken);
     return new NumberExpression(SyntaxKind.NumberExpression, Token.Text);
   }
 }
