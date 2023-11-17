@@ -7,16 +7,15 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 export class Parser {
   private Index = 0;
   private Stack = new Set<string>(); // Set to store parsed cell text references
-  private Tokens = Array<SyntaxToken>();
+  private Tokens = new Array<SyntaxToken>();
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
-
-    while (true) {
-      const Token = Tokenizer.Lex();
+    var Token: SyntaxToken;
+    do {
+      Token = Tokenizer.Lex();
       this.Tokens.push(Token);
-      if (Token.Kind === SyntaxKind.EOFToken) break;
-    }
+    } while (Token.Kind !== SyntaxKind.EOFToken);
   }
 
   // Get the next token without consuming it
