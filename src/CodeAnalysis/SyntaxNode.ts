@@ -19,7 +19,7 @@ export class IdentifierExpression extends SyntaxNode {
 }
 
 export class CellReference extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Column: SyntaxNode, public Row: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
