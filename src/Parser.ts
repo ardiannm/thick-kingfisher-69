@@ -6,7 +6,7 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
   private Index = 0;
-  private Stack = new Set<string>(); // // Set To Store Parsed Cell Text References
+  private Stack = new Set<string>(); // Set To Store Parsed Cell Text References
   private Tokens = new Array<SyntaxToken>();
 
   constructor(public readonly Input: string) {
@@ -14,10 +14,10 @@ export class Parser {
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();
-      if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
+      if (!(Token.Node === SyntaxKind.SpaceToken) && !(Token.Node === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-    } while (Token.Kind !== SyntaxKind.EOFToken);
+    } while (Token.Node !== SyntaxKind.EOFToken);
   }
 
   // Get The Next Token Without Consuming It
@@ -39,7 +39,7 @@ export class Parser {
   private MatchToken(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      if (Kind !== this.PeekToken(Offset).Kind) return false;
+      if (Kind !== this.PeekToken(Offset).Node) return false;
       Offset++;
     }
     return true;
@@ -48,7 +48,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.PeekToken();
-    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
+    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Node}>;`);
     return new SyntaxToken(Kind, Token.Text);
   }
 
@@ -59,12 +59,11 @@ export class Parser {
 
   private ParseReference() {
     const Left = this.ParseRange();
-    if (this.MatchToken(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      this.NextToken();
+    if (this.MatchToken(SyntaxKind.Equals)) {
       this.NextToken();
       this.Stack.clear();
       const Right = this.ParseBinary();
-      const Node = new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Right, Array.from(this.Stack));
+      const Node = new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Array.from(this.Stack), Right);
       this.Stack.clear();
       return Node;
     }
@@ -75,7 +74,7 @@ export class Parser {
   private ParseBinary(ParentPrecedence = 0) {
     let Left = this.ParseUnary();
     while (true) {
-      const Precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().Kind);
+      const Precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().Node);
       if (Precedence === 0 || Precedence <= ParentPrecedence) {
         break;
       }

@@ -2,7 +2,7 @@ import prompt from "prompt-sync";
 import { Parser } from "./src/Parser";
 
 var showTree = true;
-const report = (tree: Object) => console.log("\n" + JSON.stringify(tree, undefined, 3) + "\n");
+const report = (tree: Object) => console.log("\n" + JSON.stringify(tree, undefined, 2) + "\n");
 
 while (true) {
   const input = prompt({ sigint: true })("> ");
