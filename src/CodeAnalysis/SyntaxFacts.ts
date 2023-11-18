@@ -32,8 +32,8 @@ export class SyntaxFacts {
         return SyntaxKind.OpenParenToken;
       case ")":
         return SyntaxKind.CloseParenToken;
-      case "=":
-        return SyntaxKind.Equals;
+      case ">":
+        return SyntaxKind.Greater;
       case "":
         return SyntaxKind.EOFToken;
       default:

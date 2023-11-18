@@ -9,7 +9,7 @@ export enum SyntaxKind {
   ColonToken = "ColonToken",
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
-  Equals = "Equals",
+  Greater = "Greater",
   EOFToken = "EOFToken",
   BadToken = "BadToken",
   CellReference = "CellReference",

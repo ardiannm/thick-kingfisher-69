@@ -58,8 +58,9 @@ export class Parser {
   }
 
   private ParseReference() {
-    const Left = this.ParseRange();
-    if (this.MatchToken(SyntaxKind.Equals)) {
+    const Left = this.ParseCell();
+    if (this.MatchToken(SyntaxKind.MinusToken, SyntaxKind.Greater)) {
+      this.NextToken();
       this.NextToken();
       this.Stack.clear();
       const Right = this.ParseBinary();
