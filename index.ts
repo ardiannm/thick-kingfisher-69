@@ -3,7 +3,7 @@ import prompt from "prompt-sync";
 import { Parser } from "./src/Parser";
 import { Evaluator } from "./src/Evaluator";
 
-const report = (tree: Object) => console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
+const report = (tree: Object = "") => console.log(`${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}`);
 
 var ShowTree = true;
 var ShowValue = true;
@@ -15,19 +15,23 @@ while (true) {
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
-    console.log();
+    report();
     console.log(ShowTree ? "\tShowing Tree" : "\tNot Showing Tree");
-    console.log();
+    report();
     continue;
   }
 
   const Syntax = new Parser(Input);
   const Tree = Syntax.Parse();
 
-  for (const Message of Syntax.Diagnostics) report(Message);
+  if (Syntax.Diagnostics.length > 0) {
+    report();
+    for (const Message of Syntax.Diagnostics) report(Message);
+    report();
+    continue;
+  }
 
-  if (Syntax.Diagnostics.length > 0) continue;
-  if (ShowTree) report(Syntax);
+  if (ShowTree) report(Tree);
   if (ShowValue) report(Interpreter.Evaluate(Tree));
 
   console.log();

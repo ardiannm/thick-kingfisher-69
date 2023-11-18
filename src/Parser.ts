@@ -18,6 +18,9 @@ export class Parser {
       if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
+      if (Token.Kind === SyntaxKind.BadToken) {
+        this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing;`);
+      }
     } while (Token.Kind !== SyntaxKind.EOFToken);
   }
 
@@ -49,8 +52,12 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.PeekToken();
-    this.Diagnostics.push(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
+    this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
+  }
+
+  private Report(message: string) {
+    this.Diagnostics.push(message);
   }
 
   // Main Parsing Method
