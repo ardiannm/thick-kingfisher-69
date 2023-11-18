@@ -6,18 +6,6 @@ export abstract class SyntaxNode {
 
 abstract class Expression extends SyntaxNode {}
 
-export class NumberExpression extends SyntaxNode {
-  constructor(public Node: SyntaxKind, public Text: string) {
-    super(Node);
-  }
-}
-
-export class IdentifierExpression extends SyntaxNode {
-  constructor(public Node: SyntaxKind, public Text: string) {
-    super(Node);
-  }
-}
-
 export class CellReference extends SyntaxNode {
   constructor(public Node: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Node);

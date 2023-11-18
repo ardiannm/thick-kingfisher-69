@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { CellReference, NumberExpression, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration, IdentifierExpression } from "./CodeAnalysis/SyntaxNode";
+import { CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
@@ -120,21 +120,18 @@ export class Parser {
   // Parse Cell Reference (e.g., A1, B7)
   private ParseCell() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
-      const Left = this.ParsePrimary();
-      const Right = this.ParsePrimary();
+      const Left = this.NextToken();
+      const Right = this.NextToken();
       const Text = Left.Text + Right.Text;
       this.Stack.add(Text); // Add Cell Reference To The Stack Of References
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
-    return this.ParsePrimary();
+    return this.ParseLiteral();
   }
 
-  // Parse Primary Expressions (e.g., Numbers, Identifiers)
-  private ParsePrimary() {
-    if (this.MatchToken(SyntaxKind.IdentifierToken)) {
-      return new IdentifierExpression(SyntaxKind.IdentifierExpression, this.NextToken().Text);
-    }
-    const Token = this.ExpectToken(SyntaxKind.NumberToken);
-    return new NumberExpression(SyntaxKind.NumberExpression, Token.Text);
+  // Parse Literals (e.g., Numbers, Identifiers)
+  private ParseLiteral() {
+    if (this.MatchToken(SyntaxKind.IdentifierToken)) return this.NextToken();
+    return this.ExpectToken(SyntaxKind.NumberToken);
   }
 }

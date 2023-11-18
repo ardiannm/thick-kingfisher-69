@@ -12,8 +12,6 @@ export enum SyntaxKind {
   Equals = "Equals",
   EOFToken = "EOFToken",
   BadToken = "BadToken",
-  NumberExpression = "NumberExpression",
-  IdentifierExpression = "IdentifierExpression",
   CellReference = "CellReference",
   RangeReference = "RangeReference",
   ParenthesizedExpression = "ParenthesizedExpression",
