@@ -1,24 +1,29 @@
 import prompt from "prompt-sync";
-import { Parser } from "./src/Parser";
 
-var showTree = true;
+import { Parser } from "./src/Parser";
+import { Evaluator } from "./src/Evaluator";
+
+var ShowTree = true;
+var ShowValue = true;
 const report = (tree: Object) => console.log("\n" + JSON.stringify(tree, undefined, 2) + "\n");
 
-while (true) {
-  const input = prompt({ sigint: true })("> ");
+const Interpreter = new Evaluator();
 
-  if (input.trim() === "tree") {
-    showTree = !showTree;
+while (true) {
+  const Input = prompt({ sigint: true })("> ");
+
+  if (Input.trim() === "tree") {
+    ShowTree = !ShowTree;
     console.log();
-    console.log(showTree ? "\tShowing Tree" : "\tNot Showing Tree");
+    console.log(ShowTree ? "\tShowing Tree" : "\tNot Showing Tree");
     console.log();
     continue;
   }
 
-  const tree = new Parser(input).Parse();
+  const Tree = new Parser(Input).Parse();
 
-  if (showTree) report(tree);
-  else report("No Evaluator Has Been Implemented Yet");
+  if (ShowTree) report(Tree);
+  if (ShowValue) report(Interpreter.Evaluate(Tree));
 
   console.log();
 }

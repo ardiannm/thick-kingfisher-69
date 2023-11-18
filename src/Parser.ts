@@ -14,10 +14,10 @@ export class Parser {
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();
-      if (!(Token.Node === SyntaxKind.SpaceToken) && !(Token.Node === SyntaxKind.BadToken)) {
+      if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-    } while (Token.Node !== SyntaxKind.EOFToken);
+    } while (Token.Kind !== SyntaxKind.EOFToken);
   }
 
   // Get The Next Token Without Consuming It
@@ -39,7 +39,7 @@ export class Parser {
   private MatchToken(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      if (Kind !== this.PeekToken(Offset).Node) return false;
+      if (Kind !== this.PeekToken(Offset).Kind) return false;
       Offset++;
     }
     return true;
@@ -48,7 +48,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.PeekToken();
-    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Node}>;`);
+    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
   }
 
@@ -74,7 +74,7 @@ export class Parser {
   private ParseBinary(ParentPrecedence = 0) {
     let Left = this.ParseUnary();
     while (true) {
-      const Precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().Node);
+      const Precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().Kind);
       if (Precedence === 0 || Precedence <= ParentPrecedence) {
         break;
       }
