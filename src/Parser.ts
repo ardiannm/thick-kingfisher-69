@@ -8,6 +8,7 @@ export class Parser {
   private Index = 0;
   private Stack = new Set<string>(); // Set To Store Parsed Cell Text References
   private Tokens = new Array<SyntaxToken>();
+  public Diagnostics = new Array<string>();
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
@@ -48,7 +49,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.PeekToken();
-    console.log(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
+    this.Diagnostics.push(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
   }
 

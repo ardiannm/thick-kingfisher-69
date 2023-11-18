@@ -16,7 +16,7 @@ export class Evaluator {
       case SyntaxKind.UnaryExpression:
         return this.UnaryExpression(Node as Node & UnaryExpression);
       default:
-        console.log(`EvaluatorError: Node <${Node.Kind}> Has Not Been Implemented Yet.`);
+        console.log(`EvaluatorError: Node <${Node.Kind}> Has Not Been Implemented Yet;`);
     }
   }
 
@@ -42,7 +42,7 @@ export class Evaluator {
       case SyntaxKind.SlashToken:
         return Left / Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
+        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token;`);
     }
   }
 
@@ -55,7 +55,7 @@ export class Evaluator {
       case SyntaxKind.MinusToken:
         return -Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
+        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token;`);
     }
   }
 
