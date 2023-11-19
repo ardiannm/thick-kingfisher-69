@@ -12,10 +12,12 @@ export enum SyntaxKind {
   ColonToken = "ColonToken",
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
-  Greater = "Greater",
+  GreaterToken = "GreaterToken",
   // Keywords
   FalseToken = "FalseToken",
   TrueToken = "TrueToken",
+  // Compound Tokens
+  PointerToken = "PointerToken",
   // Expressions
   CellReference = "CellReference",
   RangeReference = "RangeReference",

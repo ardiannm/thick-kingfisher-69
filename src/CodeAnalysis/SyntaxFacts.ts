@@ -43,7 +43,7 @@ export class SyntaxFacts {
       case ")":
         return SyntaxKind.CloseParenToken;
       case ">":
-        return SyntaxKind.Greater;
+        return SyntaxKind.GreaterToken;
       case "":
         return SyntaxKind.EndOfFileToken;
       default:

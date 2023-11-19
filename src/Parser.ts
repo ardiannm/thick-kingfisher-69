@@ -5,10 +5,11 @@ import { CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpressi
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
-  private Index = 0;
-  private Stack = new Set<string>(); // Set To Store Parsed Cell Text References
-  private Tokens = new Array<SyntaxToken>();
   public Diagnostics = new Array<string>();
+
+  private Tokens = new Array<SyntaxToken>();
+  private Stack = new Set<string>(); // Set To Store Parsed Cell Text References
+  private Pointer = 0;
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
@@ -22,11 +23,12 @@ export class Parser {
         this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing;`);
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
+    console.log(this.Tokens);
   }
 
   // Get The Next Token Without Consuming It
   private PeekToken(Offset: number) {
-    const Index = this.Index + Offset;
+    const Index = this.Pointer + Offset;
     const LastIndex = this.Tokens.length - 1;
     if (Index > LastIndex) return this.Tokens[LastIndex];
     return this.Tokens[Index];
@@ -39,7 +41,7 @@ export class Parser {
   // Consume And Return The Next Token
   private NextToken() {
     const Token = this.Current();
-    this.Index++;
+    this.Pointer++;
     return Token;
   }
 
@@ -71,8 +73,7 @@ export class Parser {
 
   private ParseReference() {
     const Left = this.ParseCell();
-    if (this.MatchToken(SyntaxKind.MinusToken, SyntaxKind.Greater)) {
-      this.NextToken();
+    if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Stack.clear();
       const Right = this.ParseExpression();
