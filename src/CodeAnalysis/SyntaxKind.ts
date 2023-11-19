@@ -16,7 +16,7 @@ export enum SyntaxKind {
   // Keywords
   FalseToken = "FalseToken",
   TrueToken = "TrueToken",
-  // Compound Tokens
+  // Composite Tokens
   PointerToken = "PointerToken",
   // Expressions
   CellReference = "CellReference",
@@ -24,5 +24,6 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   UnaryExpression = "UnaryExpression",
   BinaryExpression = "BinaryExpression",
-  ReferenceDeclaration = "ReferenceDeclaration",
+  ReferenceExpression = "ReferenceExpression",
+  Tree = "Tree",
 }

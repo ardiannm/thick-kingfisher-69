@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration, Expression } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression, Expression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
@@ -20,10 +20,9 @@ export class Parser {
         this.Tokens.push(Token);
       }
       if (Token.Kind === SyntaxKind.BadToken) {
-        this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing;`);
+        this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing.`);
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
-    console.log(this.Tokens);
   }
 
   // Get The Next Token Without Consuming It
@@ -60,7 +59,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.CurrentToken();
-    this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
+    this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>.`);
     return new SyntaxToken(Kind, Token.Text);
   }
 
@@ -71,7 +70,7 @@ export class Parser {
 
   // Main Parsing Method
   public Parse() {
-    return this.ParseReference();
+    return new SyntaxTree(SyntaxKind.Tree, this.ParseReference());
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.
@@ -81,7 +80,7 @@ export class Parser {
       this.NextToken();
       this.Stack.clear();
       const Right = this.ParseExpression();
-      const Node = new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Array.from(this.Stack), Right);
+      const Node = new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Array.from(this.Stack), Right);
       this.Stack.clear();
       return Node;
     }

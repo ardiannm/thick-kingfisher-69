@@ -1,5 +1,5 @@
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, ParenthesizedExpression, ReferenceDeclaration, SyntaxNode, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, ParenthesizedExpression, ReferenceExpression, SyntaxNode, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 
 export class Evaluator {
@@ -7,8 +7,8 @@ export class Evaluator {
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
         return this.NumberToken(Node as Node & SyntaxToken);
-      case SyntaxKind.ReferenceDeclaration:
-        return this.ReferenceDeclaration(Node as Node & ReferenceDeclaration);
+      case SyntaxKind.ReferenceExpression:
+        return this.ReferenceDeclaration(Node as Node & ReferenceExpression);
       case SyntaxKind.BinaryExpression:
         return this.BinaryExpression(Node as Node & BinaryExpression);
       case SyntaxKind.ParenthesizedExpression:
@@ -16,7 +16,7 @@ export class Evaluator {
       case SyntaxKind.UnaryExpression:
         return this.UnaryExpression(Node as Node & UnaryExpression);
       default:
-        console.log(`EvaluatorError: Node <${Node.Kind}> Has Not Been Implemented Yet;`);
+        console.log(`EvaluatorError: Node <${Node.Kind}> Has Not Been Implemented Yet.`);
     }
   }
 
@@ -24,7 +24,7 @@ export class Evaluator {
     return parseFloat(Node.Text);
   }
 
-  private ReferenceDeclaration(Node: ReferenceDeclaration) {
+  private ReferenceDeclaration(Node: ReferenceExpression) {
     return this.Evaluate(Node.Expression);
   }
 
@@ -42,7 +42,7 @@ export class Evaluator {
       case SyntaxKind.SlashToken:
         return Left / Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token;`);
+        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
     }
   }
 
@@ -55,7 +55,7 @@ export class Evaluator {
       case SyntaxKind.MinusToken:
         return -Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token;`);
+        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
     }
   }
 
