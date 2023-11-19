@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration } from "./CodeAnalysis/SyntaxNode";
+import { CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration, Expression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
@@ -25,7 +25,7 @@ export class Parser {
   }
 
   // Get The Next Token Without Consuming It
-  private PeekToken(Offset: number = 0) {
+  private PeekToken(Offset: number) {
     const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;
     if (Index > LastIndex) return this.Tokens[LastIndex];
@@ -34,7 +34,7 @@ export class Parser {
 
   // Consume And Return The Next Token
   private NextToken() {
-    const Token = this.PeekToken();
+    const Token = this.PeekToken(0);
     this.Index++;
     return Token;
   }
@@ -51,7 +51,7 @@ export class Parser {
 
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.PeekToken();
+    const Token = this.PeekToken(0);
     this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
   }
@@ -71,7 +71,7 @@ export class Parser {
       this.NextToken();
       this.NextToken();
       this.Stack.clear();
-      const Right = this.ParseBinary();
+      const Right = this.ParseExpression();
       const Node = new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Array.from(this.Stack), Right);
       this.Stack.clear();
       return Node;
@@ -80,35 +80,33 @@ export class Parser {
   }
 
   // Parse Expressions With Binary Operators
-  private ParseBinary(ParentPrecedence = 0) {
-    let Left = this.ParseUnary();
+  private ParseExpression(ParentPrecedence = 0) {
+    let Left: Expression;
+    const UnaryPrecendence = SyntaxFacts.UnaryOperatorPrecedence(this.PeekToken(0).Kind);
+    if (UnaryPrecendence !== 0 && UnaryPrecendence >= ParentPrecedence) {
+      const Operator = this.NextToken();
+      const Operand = this.ParseExpression();
+      Left = new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Operand);
+    } else {
+      Left = this.ParseParenthesis();
+    }
     while (true) {
-      const Precedence = SyntaxFacts.OperatorPrecedence(this.PeekToken().Kind);
-      if (Precedence === 0 || Precedence <= ParentPrecedence) {
+      const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.PeekToken(0).Kind);
+      if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
       const Operator = this.NextToken();
-      const Right = this.ParseBinary(Precedence);
+      const Right = this.ParseExpression(BinaryPrecedence);
       Left = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
     }
     return Left;
-  }
-
-  // Parse Unary Expressions (e.g., +, -)
-  private ParseUnary() {
-    if (this.MatchToken(SyntaxKind.PlusToken) || this.MatchToken(SyntaxKind.MinusToken)) {
-      const Operator = this.NextToken();
-      const Right = this.ParseUnary();
-      return new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Right);
-    }
-    return this.ParseParenthesis();
   }
 
   // Parse Expressions Enclosed In Parentheses
   private ParseParenthesis() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
-      const Expression = this.ParseBinary();
+      const Expression = this.ParseExpression();
       const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }

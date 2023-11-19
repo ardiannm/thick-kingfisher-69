@@ -4,7 +4,7 @@ export class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}
 }
 
-class Expression extends SyntaxNode {}
+export class Expression extends SyntaxNode {}
 
 export class CellReference extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {

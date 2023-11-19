@@ -3,7 +3,17 @@ import { SyntaxKind } from "./SyntaxKind";
 export class SyntaxFacts {
   constructor() {}
 
-  public static OperatorPrecedence(kind: SyntaxKind) {
+  public static UnaryOperatorPrecedence(kind: SyntaxKind) {
+    switch (kind) {
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
+        return 1;
+      default:
+        return 0;
+    }
+  }
+
+  public static BinaryOperatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.StarToken:
       case SyntaxKind.SlashToken:
