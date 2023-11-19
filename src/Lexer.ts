@@ -38,7 +38,9 @@ export class Lexer {
         while (this.IsLetter(this.GetChar())) {
           this.Advance();
         }
-        return new SyntaxToken(SyntaxKind.IdentifierToken, this.Input.substring(Start, this.Index));
+        const Text = this.Input.substring(Start, this.Index);
+        const NodeKind = SyntaxFacts.KeywordTokenKind(Text);
+        return new SyntaxToken(NodeKind, Text);
 
       case this.IsDigit(Char):
         while (this.IsDigit(this.GetChar())) {

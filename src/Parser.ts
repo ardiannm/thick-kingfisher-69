@@ -21,7 +21,7 @@ export class Parser {
       if (Token.Kind === SyntaxKind.BadToken) {
         this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing;`);
       }
-    } while (Token.Kind !== SyntaxKind.EOFToken);
+    } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
 
   // Get The Next Token Without Consuming It
@@ -136,9 +136,15 @@ export class Parser {
     return this.ParseLiteral();
   }
 
-  // Parse Literals (e.g., Numbers, Identifiers)
+  // Parse Literals (e.g., Numbers, Identifiers, True)
   private ParseLiteral() {
-    if (this.MatchToken(SyntaxKind.IdentifierToken)) return this.NextToken();
-    return this.ExpectToken(SyntaxKind.NumberToken);
+    switch (this.PeekToken(0).Kind) {
+      case SyntaxKind.TrueToken:
+      case SyntaxKind.FalseToken:
+      case SyntaxKind.IdentifierToken:
+        return this.NextToken();
+      default:
+        return this.ExpectToken(SyntaxKind.NumberToken);
+    }
   }
 }

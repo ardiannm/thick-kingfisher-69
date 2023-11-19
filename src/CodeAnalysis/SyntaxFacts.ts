@@ -45,9 +45,20 @@ export class SyntaxFacts {
       case ">":
         return SyntaxKind.Greater;
       case "":
-        return SyntaxKind.EOFToken;
+        return SyntaxKind.EndOfFileToken;
       default:
         return SyntaxKind.BadToken;
+    }
+  }
+
+  public static KeywordTokenKind(text: string): SyntaxKind {
+    switch (text) {
+      case "True":
+        return SyntaxKind.TrueToken;
+      case "False":
+        return SyntaxKind.FalseToken;
+      default:
+        return SyntaxKind.IdentifierToken;
     }
   }
 }
