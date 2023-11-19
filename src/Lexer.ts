@@ -33,38 +33,37 @@ export class Lexer {
     const Start = this.Pointer;
     const Char = this.Peek();
 
-    switch (true) {
-      case this.IsLetter(Char):
-        while (this.IsLetter(this.Peek())) {
-          this.Next();
-        }
-        const Text = this.Input.substring(Start, this.Pointer);
-        return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
-
-      case this.IsDigit(Char):
-        while (this.IsDigit(this.Peek())) {
-          this.Next();
-        }
-        return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Pointer));
-
-      case this.IsSpace(Char):
-        while (this.IsSpace(this.Peek())) {
-          this.Next();
-        }
-        return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Pointer));
-
-      default:
-        const Kind = SyntaxFacts.Kind(Char);
-        if (Kind === SyntaxKind.MinusToken) {
-          const PeekKind = SyntaxFacts.Kind(this.Peek(1));
-          if (PeekKind === SyntaxKind.GreaterToken) {
-            this.Next();
-            this.Next();
-            return new SyntaxToken(SyntaxKind.PointerToken, this.Input.substring(Start, this.Pointer));
-          }
-        }
+    if (this.IsLetter(Char)) {
+      while (this.IsLetter(this.Peek())) {
         this.Next();
-        return new SyntaxToken(Kind, Char);
+      }
+      const Text = this.Input.substring(Start, this.Pointer);
+      return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
     }
+
+    if (this.IsDigit(Char)) {
+      while (this.IsDigit(this.Peek())) {
+        this.Next();
+      }
+      return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Pointer));
+    }
+
+    if (this.IsSpace(Char)) {
+      while (this.IsSpace(this.Peek())) {
+        this.Next();
+      }
+      return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Pointer));
+    }
+
+    const Kind = SyntaxFacts.Kind(Char);
+
+    if (Kind === SyntaxKind.MinusToken && SyntaxFacts.Kind(this.Peek(1)) === SyntaxKind.GreaterToken) {
+      this.Next();
+      this.Next();
+      return new SyntaxToken(SyntaxKind.PointerToken, this.Input.substring(Start, this.Pointer));
+    }
+
+    this.Next();
+    return new SyntaxToken(Kind, Char);
   }
 }
