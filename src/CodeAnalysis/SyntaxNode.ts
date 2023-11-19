@@ -17,7 +17,7 @@ export class SyntaxTree extends SyntaxNode {
   public Print(Node: SyntaxNode = this, Indentation = "") {
     var Text = "";
     for (const Child of Node.GetChildren()) {
-      Text += Indentation + " ├── " + Child.Kind + "\n" + this.Print(Child, " │   " + Indentation);
+      Text += Indentation + "├── " + Child.Kind + "\n" + this.Print(Child, "    " + Indentation);
     }
     return Text;
   }

@@ -1,20 +1,19 @@
-ReferenceExpression
-├── CellReference
-│   ├── IdentifierToken A
-│   └── NumberToken 1
-├── Referencing
-│   ├── A2
-│   └── A3
-└── Expression
-    ├── BinaryExpression
-    │   ├── CellReference
-    │   │   ├── IdentifierToken A
-    │   │   └── NumberToken 2
-    │   ├── PlusToken +
-    │   └── CellReference
-    │       ├── IdentifierToken A
-    │       └── NumberToken 3
-    └──
+└── ReferenceExpression
+    ├── CellReference
+    │   ├── IdentifierToken A
+    │   └── NumberToken 1
+    ├── Referencing
+    │   ├── A2
+    │   └── A3
+    └── Expression
+        └── BinaryExpression
+            ├── CellReference
+            │   ├── IdentifierToken A
+            │   └── NumberToken 2
+            ├── PlusToken +
+            └── CellReference
+                ├── IdentifierToken A
+                └── NumberToken 3
 
 
 {
