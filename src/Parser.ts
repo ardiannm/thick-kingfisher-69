@@ -32,9 +32,13 @@ export class Parser {
     return this.Tokens[Index];
   }
 
+  private Current() {
+    return this.PeekToken(0);
+  }
+
   // Consume And Return The Next Token
   private NextToken() {
-    const Token = this.PeekToken(0);
+    const Token = this.Current();
     this.Index++;
     return Token;
   }
@@ -51,7 +55,7 @@ export class Parser {
 
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.PeekToken(0);
+    const Token = this.Current();
     this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>;`);
     return new SyntaxToken(Kind, Token.Text);
   }
@@ -82,7 +86,7 @@ export class Parser {
   // Parse Expressions With Binary Operators
   private ParseExpression(ParentPrecedence = 0) {
     let Left: Expression;
-    const UnaryPrecendence = SyntaxFacts.UnaryOperatorPrecedence(this.PeekToken(0).Kind);
+    const UnaryPrecendence = SyntaxFacts.UnaryOperatorPrecedence(this.Current().Kind);
     if (UnaryPrecendence !== 0 && UnaryPrecendence >= ParentPrecedence) {
       const Operator = this.NextToken();
       const Operand = this.ParseExpression();
@@ -91,7 +95,7 @@ export class Parser {
       Left = this.ParseParenthesis();
     }
     while (true) {
-      const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.PeekToken(0).Kind);
+      const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.Current().Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
@@ -138,7 +142,8 @@ export class Parser {
 
   // Parse Literals (e.g., Numbers, Identifiers, True)
   private ParseLiteral() {
-    switch (this.PeekToken(0).Kind) {
+    const Kind = this.Current().Kind;
+    switch (Kind) {
       case SyntaxKind.TrueToken:
       case SyntaxKind.FalseToken:
       case SyntaxKind.IdentifierToken:
