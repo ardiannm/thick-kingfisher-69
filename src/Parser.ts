@@ -77,16 +77,20 @@ export class Parser {
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.
   private ParseReference() {
-    const Left = this.ParseUnaryExpression();
+    const Left = this.ParseExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Stack.clear();
-      const Right = this.ParseBinaryExpression();
+      const Right = this.ParseExpression();
       const Node = new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Array.from(this.Stack), Right);
       this.Stack.clear();
       return Node;
     }
     return Left;
+  }
+
+  private ParseExpression() {
+    return this.ParseBinaryExpression();
   }
 
   // Parse Expressions With Binary Operators
@@ -119,7 +123,7 @@ export class Parser {
   private ParseParentheses() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
-      const Expression = this.ParseBinaryExpression();
+      const Expression = this.ParseExpression();
       const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }
