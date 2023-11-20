@@ -1,11 +1,20 @@
 import { SyntaxKind } from "./SyntaxKind";
 
+class ChildNode {
+  constructor(public Node: SyntaxNode, public isLast: boolean) {}
+}
+
 export class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}
 
   public *GetChildren() {
-    for (const Child of Object.keys(this)) {
-      if (this[Child] instanceof SyntaxNode) yield this[Child];
+    const Children = Object.keys(this)
+      .map((key) => this[key])
+      .filter((value) => value instanceof SyntaxNode);
+
+    for (let i = 0; i < Children.length; i++) {
+      const isLastChild = i === Children.length - 1;
+      yield new ChildNode(Children[i], isLastChild);
     }
   }
 }
@@ -17,7 +26,7 @@ export class SyntaxTree extends SyntaxNode {
   public Print(Node: SyntaxNode = this, Indentation = "") {
     var Text = "";
     for (const Child of Node.GetChildren()) {
-      Text += Indentation + "├── " + Child.Kind + "\n" + this.Print(Child, "    " + Indentation);
+      Text += Indentation + (Child.isLast ? "└── " : "├── ") + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + (Child.isLast ? "    " : "│   "));
     }
     return Text;
   }
