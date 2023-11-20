@@ -72,16 +72,16 @@ export class Parser {
   public Parse() {
     const Expression = this.ParseReference();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new SyntaxTree(SyntaxKind.Tree, Expression);
+    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.
   private ParseReference() {
-    const Left = this.ParseCell();
+    const Left = this.ParseUnaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Stack.clear();
-      const Right = this.ParseExpression();
+      const Right = this.ParseBinaryExpression();
       const Node = new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Array.from(this.Stack), Right);
       this.Stack.clear();
       return Node;
@@ -90,33 +90,36 @@ export class Parser {
   }
 
   // Parse Expressions With Binary Operators
-  private ParseExpression(ParentPrecedence = 0) {
-    let Left: Expression;
-    const UnaryPrecendence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken().Kind);
-    if (UnaryPrecendence !== 0 && UnaryPrecendence >= ParentPrecedence) {
-      const Operator = this.NextToken();
-      const Operand = this.ParseExpression();
-      Left = new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Operand);
-    } else {
-      Left = this.ParseParentheses();
-    }
+  private ParseBinaryExpression(ParentPrecedence = 0) {
+    let Left = this.ParseUnaryExpression();
     while (true) {
       const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken().Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
       const Operator = this.NextToken();
-      const Right = this.ParseExpression(BinaryPrecedence);
+      const Right = this.ParseBinaryExpression(BinaryPrecedence);
       Left = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
     }
     return Left;
+  }
+
+  // Parse Expressions With Unary Operators
+  private ParseUnaryExpression() {
+    const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken().Kind);
+    if (BinaryPrecedence !== 0) {
+      const Operator = this.NextToken();
+      const Right = this.ParseUnaryExpression();
+      return new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Right);
+    }
+    return this.ParseParentheses();
   }
 
   // Parse Expressions Enclosed In Parentheses
   private ParseParentheses() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
-      const Expression = this.ParseExpression();
+      const Expression = this.ParseBinaryExpression();
       const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }

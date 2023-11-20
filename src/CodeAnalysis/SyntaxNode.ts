@@ -19,7 +19,7 @@ export class SyntaxNode {
 }
 
 export class SyntaxTree extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Tree: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Root: SyntaxNode) {
     super(Kind);
   }
   public Print(Node: SyntaxNode = this, Indentation = "") {

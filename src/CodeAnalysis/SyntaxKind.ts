@@ -25,5 +25,5 @@ export enum SyntaxKind {
   UnaryExpression = "UnaryExpression",
   BinaryExpression = "BinaryExpression",
   ReferenceExpression = "ReferenceExpression",
-  Tree = "Tree",
+  SyntaxTree = "SyntaxTree",
 }
