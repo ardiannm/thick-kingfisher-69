@@ -1,65 +1,31 @@
+> A1 -> -(1+A5)*A7+1--2
+
 └── ReferenceExpression
     ├── CellReference
-    │   ├── IdentifierToken A
-    │   └── NumberToken 1
-    ├── Referencing
-    │   ├── A2
-    │   └── A3
-    └── Expression
+    │   ├── IdentifierToken
+    │   └── NumberToken
+    └── UnaryExpression
+        ├── MinusToken
         └── BinaryExpression
-            ├── CellReference
-            │   ├── IdentifierToken A
-            │   └── NumberToken 2
-            ├── PlusToken +
-            └── CellReference
-                ├── IdentifierToken A
-                └── NumberToken 3
+            ├── BinaryExpression
+            │   ├── BinaryExpression
+            │   │   ├── ParenthesizedExpression
+            │   │   │   ├── OpenParenToken
+            │   │   │   ├── BinaryExpression
+            │   │   │   │   ├── NumberToken
+            │   │   │   │   ├── PlusToken
+            │   │   │   │   └── CellReference
+            │   │   │   │       ├── IdentifierToken
+            │   │   │   │       └── NumberToken
+            │   │   │   └── CloseParenToken
+            │   │   ├── StarToken
+            │   │   └── CellReference
+            │   │       ├── IdentifierToken
+            │   │       └── NumberToken
+            │   ├── PlusToken
+            │   └── NumberToken
+            ├── MinusToken
+            └── UnaryExpression
+                ├── MinusToken
+                └── NumberToken
 
-
-{
-  Kind: ReferenceExpression,
-  Reference: {
-    Kind: CellReference,
-    Left: {
-      Kind: IdentifierToken,
-      Text: A
-    },
-    Right: {
-      Kind: NumberToken,
-      Text: 1
-    }
-  },
-  Referencing: [
-    A2,
-    A3
-  ],
-  Expression: {
-    Kind: BinaryExpression,
-    Left: {
-      Kind: CellReference,
-      Left: {
-        Kind: IdentifierToken,
-        Text: A
-      },
-      Right: {
-        Kind: NumberToken,
-        Text: 2
-      }
-    },
-    Operator: {
-      Kind: PlusToken,
-      Text: +
-    },
-    Right: {
-      Kind: CellReference,
-      Left: {
-        Kind: IdentifierToken,
-        Text: A
-      },
-      Right: {
-        Kind: NumberToken,
-        Text: 3
-      }
-    }
-  }
-}
