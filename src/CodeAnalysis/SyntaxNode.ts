@@ -68,7 +68,7 @@ export class BinaryExpression extends Expression {
 }
 
 export class ReferenceExpression extends Expression {
-  constructor(public Kind: SyntaxKind, public Reference: SyntaxNode, public Referencing: Array<string>, public Expression: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Reference: SyntaxNode, public Expression: SyntaxNode) {
     super(Kind);
   }
 }

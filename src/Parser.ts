@@ -1,14 +1,13 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression, Expression } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
   public Diagnostics = new Array<string>();
 
   private Tokens = new Array<SyntaxToken>();
-  private Stack = new Set<string>(); // Set To Store Parsed Cell Text References
   private Pointer = 0;
 
   constructor(public readonly Input: string) {
@@ -80,11 +79,8 @@ export class Parser {
     const Left = this.ParseExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
-      this.Stack.clear();
       const Right = this.ParseExpression();
-      const Node = new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Array.from(this.Stack), Right);
-      this.Stack.clear();
-      return Node;
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Right);
     }
     return Left;
   }
@@ -146,8 +142,6 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      const Text = Left.Text + Right.Text;
-      this.Stack.add(Text); // Add Cell Reference To The Stack Of References
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();

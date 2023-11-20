@@ -16,14 +16,14 @@ export enum SyntaxKind {
   // Keywords
   FalseToken = "FalseToken",
   TrueToken = "TrueToken",
-  // Composite Tokens
+  // CompositeTokens
   PointerToken = "PointerToken",
   // Expressions
-  CellReference = "CellReference",
-  RangeReference = "RangeReference",
-  ParenthesizedExpression = "ParenthesizedExpression",
-  UnaryExpression = "UnaryExpression",
-  BinaryExpression = "BinaryExpression",
-  ReferenceExpression = "ReferenceExpression",
   SyntaxTree = "SyntaxTree",
+  ReferenceExpression = "ReferenceExpression",
+  BinaryExpression = "BinaryExpression",
+  UnaryExpression = "UnaryExpression",
+  ParenthesizedExpression = "ParenthesizedExpression",
+  RangeReference = "RangeReference",
+  CellReference = "CellReference",
 }
