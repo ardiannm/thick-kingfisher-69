@@ -1,6 +1,6 @@
 import { SyntaxKind } from "./SyntaxKind";
 
-class ChildNode {
+class SyntaxChildNode {
   constructor(public Node: SyntaxNode, public isLast: boolean) {}
 }
 
@@ -14,7 +14,7 @@ export class SyntaxNode {
 
     for (let i = 0; i < Children.length; i++) {
       const isLastChild = i === Children.length - 1;
-      yield new ChildNode(Children[i], isLastChild);
+      yield new SyntaxChildNode(Children[i], isLastChild);
     }
   }
 }
@@ -26,7 +26,11 @@ export class SyntaxTree extends SyntaxNode {
   public Print(Node: SyntaxNode = this, Indentation = "") {
     var Text = "";
     for (const Child of Node.GetChildren()) {
-      Text += Indentation + (Child.isLast ? "└── " : "├── ") + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + (Child.isLast ? "    " : "│   "));
+      if (Child.isLast) {
+        Text += Indentation + "└── " + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + "    ");
+      } else {
+        Text += Indentation + "├── " + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + "│   ");
+      }
     }
     return Text;
   }
