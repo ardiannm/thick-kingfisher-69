@@ -20,7 +20,7 @@ export class Parser {
         this.Tokens.push(Token);
       }
       if (Token.Kind === SyntaxKind.BadToken) {
-        this.Report(`SyntaxError: <${Token.Kind}> Found While Parsing.`);
+        this.Report(`SyntaxError: <${Token.Kind}> Found.`);
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
@@ -59,8 +59,8 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.CurrentToken();
-    this.Report(`SyntaxError: Expected <${Kind}> Found <${Token.Kind}>.`);
-    return new SyntaxToken(Kind, Token.Text);
+    this.Report(`SyntaxError: Expected <${Kind}>; Found <${Token.Kind}>.`);
+    return Token;
   }
 
   // Report Messages Onto Diagnostics
@@ -70,7 +70,9 @@ export class Parser {
 
   // Main Parsing Method
   public Parse() {
-    return new SyntaxTree(SyntaxKind.Tree, this.ParseReference());
+    const Expression = this.ParseReference();
+    this.ExpectToken(SyntaxKind.EndOfFileToken);
+    return new SyntaxTree(SyntaxKind.Tree, Expression);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.

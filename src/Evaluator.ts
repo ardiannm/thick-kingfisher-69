@@ -8,7 +8,7 @@ export class Evaluator {
       case SyntaxKind.NumberToken:
         return this.NumberToken(Node as Node & SyntaxToken);
       case SyntaxKind.ReferenceExpression:
-        return this.ReferenceDeclaration(Node as Node & ReferenceExpression);
+        return this.ReferenceExpression(Node as Node & ReferenceExpression);
       case SyntaxKind.BinaryExpression:
         return this.BinaryExpression(Node as Node & BinaryExpression);
       case SyntaxKind.ParenthesizedExpression:
@@ -24,7 +24,7 @@ export class Evaluator {
     return parseFloat(Node.Text);
   }
 
-  private ReferenceDeclaration(Node: ReferenceExpression) {
+  private ReferenceExpression(Node: ReferenceExpression) {
     return this.Evaluate(Node.Expression);
   }
 
