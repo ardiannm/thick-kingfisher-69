@@ -9,7 +9,7 @@ export class Lexer {
   private Pointer = 0;
 
   // Check If The Character Is A Whitespace Character
-  public IsSpace(Char: string): boolean {
+  private IsSpace(Char: string): boolean {
     return Char === " " || Char === "\t" || Char === "\n" || Char === "\r";
   }
 
@@ -26,13 +26,19 @@ export class Lexer {
   }
 
   // Peek At The Character At The Specified Offset From The Current Position
-  public Peek(Offset: number = 0): string {
+  private Peek(Offset: number): string {
     return this.Input.charAt(this.Pointer + Offset);
   }
 
+  private Current() {
+    return this.Peek(0);
+  }
+
   // Move The Pointer To The Next Character In The Input String
-  private Next(): void {
+  private Next() {
+    const Char = this.Current();
     this.Pointer++;
+    return Char;
   }
 
   // Helper Method To Check If The Next Token Matches The Given Kinds
@@ -49,25 +55,24 @@ export class Lexer {
   // Lexical Analysis To Generate Tokens
   public Lex(): SyntaxToken {
     const Start = this.Pointer;
-    const Char = this.Peek();
 
-    if (this.IsLetter(Char)) {
-      while (this.IsLetter(this.Peek())) {
+    if (this.IsLetter(this.Current())) {
+      while (this.IsLetter(this.Current())) {
         this.Next();
       }
       const Text = this.Input.substring(Start, this.Pointer);
       return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
     }
 
-    if (this.IsDigit(Char)) {
-      while (this.IsDigit(this.Peek())) {
+    if (this.IsDigit(this.Current())) {
+      while (this.IsDigit(this.Current())) {
         this.Next();
       }
       return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Pointer));
     }
 
-    if (this.IsSpace(Char)) {
-      while (this.IsSpace(this.Peek())) {
+    if (this.IsSpace(this.Current())) {
+      while (this.IsSpace(this.Current())) {
         this.Next();
       }
       return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Pointer));
@@ -78,9 +83,7 @@ export class Lexer {
       return new SyntaxToken(SyntaxKind.PointerToken, this.Input.substring(Start, this.Pointer));
     }
 
-    const Kind = SyntaxFacts.Kind(Char);
-
-    this.Next();
-    return new SyntaxToken(Kind, Char);
+    const Kind = SyntaxFacts.Kind(this.Current());
+    return new SyntaxToken(Kind, this.Next());
   }
 }
