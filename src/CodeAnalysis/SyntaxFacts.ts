@@ -1,13 +1,11 @@
 import { SyntaxKind } from "./SyntaxKind";
 
 export class SyntaxFacts {
-  constructor() {}
-
   public static UnaryOperatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.PlusToken:
       case SyntaxKind.MinusToken:
-        return 1;
+        return 3;
       default:
         return 0;
     }

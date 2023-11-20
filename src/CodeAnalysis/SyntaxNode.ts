@@ -13,8 +13,7 @@ export class SyntaxNode {
       .filter((value) => value instanceof SyntaxNode);
 
     for (let i = 0; i < Children.length; i++) {
-      const isLastChild = i === Children.length - 1;
-      yield new SyntaxChildNode(Children[i], isLastChild);
+      yield new SyntaxChildNode(Children[i], i + 1 === Children.length);
     }
   }
 }

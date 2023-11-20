@@ -98,7 +98,7 @@ export class Parser {
       const Operand = this.ParseExpression();
       Left = new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Operand);
     } else {
-      Left = this.ParseParenthesis();
+      Left = this.ParseParentheses();
     }
     while (true) {
       const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken().Kind);
@@ -113,7 +113,7 @@ export class Parser {
   }
 
   // Parse Expressions Enclosed In Parentheses
-  private ParseParenthesis() {
+  private ParseParentheses() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
       const Expression = this.ParseExpression();
