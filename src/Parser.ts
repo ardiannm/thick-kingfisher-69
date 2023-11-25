@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression, BadSyntax } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
@@ -9,7 +9,6 @@ export class Parser {
 
   private Pointer = 0;
   private Tokens = new Array<SyntaxToken>();
-  private StackOfReferences = new Set<string>();
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
@@ -60,7 +59,7 @@ export class Parser {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.CurrentToken();
     this.Report(`SyntaxError: Expected <${Kind}>; Found <${Token.Kind}>.`);
-    return new BadSyntax(SyntaxKind.BadSyntax, Token);
+    return Token;
   }
 
   // Report Messages Onto Diagnostics
@@ -72,7 +71,7 @@ export class Parser {
   public Parse() {
     const Expression = this.ParseReference();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression, this.Diagnostics);
+    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
@@ -81,8 +80,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       const Right = this.ParseExpression();
-      const Referencing = Array.from(this.StackOfReferences);
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Referencing, Left, Right);
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Right);
     }
     return Left;
   }
@@ -144,8 +142,6 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      const Reference = Left.Text + Right.Text;
-      this.StackOfReferences.add(Reference);
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();
@@ -158,9 +154,10 @@ export class Parser {
       case SyntaxKind.TrueToken:
       case SyntaxKind.FalseToken:
       case SyntaxKind.IdentifierToken:
+      case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.NumberToken);
+        return this.ExpectToken(SyntaxKind.Expression);
     }
   }
 }

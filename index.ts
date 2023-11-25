@@ -7,11 +7,13 @@ while (true) {
   const Input = Prompt("> ");
   const Syntax = new Parser(Input);
   const Tree = Syntax.Parse();
-  report();
+
   report(Tree.Print());
+
   if (Syntax.Diagnostics.length > 0) {
     report();
     for (const Message of Syntax.Diagnostics) report(Message);
-    report();
   }
+
+  report();
 }

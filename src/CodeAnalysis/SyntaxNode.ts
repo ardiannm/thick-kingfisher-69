@@ -20,7 +20,7 @@ export class SyntaxNode {
 }
 
 export class SyntaxTree extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Root: SyntaxNode, public Diagnostics: Array<string>) {
+  constructor(public Kind: SyntaxKind, public Root: SyntaxNode) {
     super(Kind);
   }
   public Print(Node: SyntaxNode = this, Indentation = "") {
@@ -34,12 +34,6 @@ export class SyntaxTree extends SyntaxNode {
       }
     }
     return Text;
-  }
-}
-
-export class BadSyntax extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Token: SyntaxToken) {
-    super(Kind);
   }
 }
 
@@ -76,7 +70,7 @@ export class BinaryExpression extends Expression {
 }
 
 export class ReferenceExpression extends Expression {
-  constructor(public Kind: SyntaxKind, public Referencing: Array<string>, public Reference: SyntaxNode, public Expression: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Reference: SyntaxNode, public Expression: SyntaxNode) {
     super(Kind);
   }
 }
