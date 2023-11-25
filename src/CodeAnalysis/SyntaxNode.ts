@@ -57,7 +57,7 @@ export class RangeReference extends Expression {
 }
 
 export class ParenthesizedExpression extends Expression {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Expression: SyntaxNode, public Right: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public OpenParen: SyntaxNode, public Expression: SyntaxNode, public CloseParen: SyntaxNode) {
     super(Kind);
   }
 }

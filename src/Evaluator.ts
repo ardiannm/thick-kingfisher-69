@@ -3,18 +3,18 @@ import { BinaryExpression, ParenthesizedExpression, ReferenceExpression, SyntaxN
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 
 export class Evaluator {
-  public Evaluate<Node extends SyntaxNode>(Node: Node) {
+  public Evaluate<Structure extends SyntaxNode>(Node: Structure) {
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
-        return this.NumberToken(Node as Node & SyntaxToken);
+        return this.NumberToken(Node as Structure & SyntaxToken);
       case SyntaxKind.ReferenceExpression:
-        return this.ReferenceExpression(Node as Node & ReferenceExpression);
+        return this.ReferenceExpression(Node as Structure & ReferenceExpression);
       case SyntaxKind.BinaryExpression:
-        return this.BinaryExpression(Node as Node & BinaryExpression);
+        return this.BinaryExpression(Node as Structure & BinaryExpression);
       case SyntaxKind.ParenthesizedExpression:
-        return this.ParenthesizedExpression(Node as Node & ParenthesizedExpression);
+        return this.ParenthesizedExpression(Node as Structure & ParenthesizedExpression);
       case SyntaxKind.UnaryExpression:
-        return this.UnaryExpression(Node as Node & UnaryExpression);
+        return this.UnaryExpression(Node as Structure & UnaryExpression);
       default:
         console.log(`EvaluatorError: Node For Evaluating <${Node.Kind}> Is Missing.`);
     }
