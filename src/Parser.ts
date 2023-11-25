@@ -71,7 +71,7 @@ export class Parser {
   public Parse() {
     const Expression = this.ParseReference();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
+    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression, this.Diagnostics);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.

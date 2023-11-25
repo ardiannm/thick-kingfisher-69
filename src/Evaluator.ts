@@ -16,7 +16,7 @@ export class Evaluator {
       case SyntaxKind.UnaryExpression:
         return this.UnaryExpression(Node as Node & UnaryExpression);
       default:
-        console.log(`EvaluatorError: Node <${Node.Kind}> Has Not Been Implemented Yet.`);
+        console.log(`EvaluatorError: Node For Evaluating <${Node.Kind}> Is Missing.`);
     }
   }
 
