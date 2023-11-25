@@ -7,8 +7,9 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 export class Parser {
   public Diagnostics = new Array<string>();
 
-  private Tokens = new Array<SyntaxToken>();
   private Pointer = 0;
+  private Tokens = new Array<SyntaxToken>();
+  private StackOfReferences = new Set<string>();
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
@@ -74,13 +75,14 @@ export class Parser {
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression, this.Diagnostics);
   }
 
-  // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References.
+  // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
   private ParseReference() {
     const Left = this.ParseExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       const Right = this.ParseExpression();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Right);
+      const Referencing = Array.from(this.StackOfReferences);
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Referencing, Left, Right);
     }
     return Left;
   }
@@ -142,6 +144,8 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
+      const Reference = Left.Text + Right.Text;
+      this.StackOfReferences.add(Reference);
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();

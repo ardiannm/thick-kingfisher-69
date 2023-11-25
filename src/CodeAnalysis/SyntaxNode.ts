@@ -26,10 +26,11 @@ export class SyntaxTree extends SyntaxNode {
   public Print(Node: SyntaxNode = this, Indentation = "") {
     var Text = "";
     for (const Child of Node.GetChildren()) {
+      var Kind = Child.Node.Kind + "";
       if (Child.isLast) {
-        Text += Indentation + "└── " + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + "    ");
+        Text += Indentation + "└── " + Kind + "\n" + this.Print(Child.Node, Indentation + "    ");
       } else {
-        Text += Indentation + "├── " + Child.Node.Kind + "\n" + this.Print(Child.Node, Indentation + "│   ");
+        Text += Indentation + "├── " + Kind + "\n" + this.Print(Child.Node, Indentation + "│   ");
       }
     }
     return Text;
@@ -75,7 +76,7 @@ export class BinaryExpression extends Expression {
 }
 
 export class ReferenceExpression extends Expression {
-  constructor(public Kind: SyntaxKind, public Reference: SyntaxNode, public Expression: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Referencing: Array<string>, public Reference: SyntaxNode, public Expression: SyntaxNode) {
     super(Kind);
   }
 }
