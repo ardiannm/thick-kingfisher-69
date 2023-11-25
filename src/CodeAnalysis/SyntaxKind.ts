@@ -1,7 +1,5 @@
 export enum SyntaxKind {
-  // Tokens
-  EndOfFileToken = "EndOfFileToken",
-  BadToken = "BadToken",
+  // BasicTokens
   SpaceToken = "SpaceToken",
   IdentifierToken = "IdentifierToken",
   NumberToken = "NumberToken",
@@ -26,4 +24,8 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   RangeReference = "RangeReference",
   CellReference = "CellReference",
+  // HelperTokens
+  EndOfFileToken = "EndOfFileToken",
+  BadToken = "BadToken",
+  BadSyntax = "BadSyntax",
 }

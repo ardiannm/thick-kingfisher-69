@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression, BadSyntax } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 export class Parser {
@@ -59,7 +59,7 @@ export class Parser {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.CurrentToken();
     this.Report(`SyntaxError: Expected <${Kind}>; Found <${Token.Kind}>.`);
-    return Token;
+    return new BadSyntax(SyntaxKind.BadSyntax, Token);
   }
 
   // Report Messages Onto Diagnostics

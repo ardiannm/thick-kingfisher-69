@@ -1,4 +1,5 @@
 import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxToken } from "./SyntaxToken";
 
 class SyntaxChildNode {
   constructor(public Node: SyntaxNode, public isLast: boolean) {}
@@ -35,15 +36,21 @@ export class SyntaxTree extends SyntaxNode {
   }
 }
 
+export class BadSyntax extends SyntaxNode {
+  constructor(public Kind: SyntaxKind, public Token: SyntaxToken) {
+    super(Kind);
+  }
+}
+
 export class Expression extends SyntaxNode {}
 
-export class CellReference extends SyntaxNode {
+export class CellReference extends Expression {
   constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
 }
 
-export class RangeReference extends SyntaxNode {
+export class RangeReference extends Expression {
   constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }
