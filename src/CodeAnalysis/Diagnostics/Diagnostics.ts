@@ -32,27 +32,27 @@ export class Diagnostics {
     return Err;
   }
 
-  public BadTokenFound(Token: SyntaxToken): Diagnostic {
+  BadTokenFound(Token: SyntaxToken): Diagnostic {
     return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Bad Character '${Token.Text}' Found.`));
   }
 
-  public TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind): Diagnostic {
+  TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind): Diagnostic {
     return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Expected <${Expected}>; Found <${Matched}>.`));
   }
 
-  public UndeclaredVariable(Reference: string): Diagnostic {
+  UndeclaredVariable(Reference: string): Diagnostic {
     throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
-  public MethodNotImplemented(Kind: SyntaxKind): Diagnostic {
+  MethodNotImplemented(Kind: SyntaxKind): Diagnostic {
     throw this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
-  public NotAnOperator(Kind: SyntaxKind): Diagnostic {
+  NotAnOperator(Kind: SyntaxKind): Diagnostic {
     return this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Node <${Kind}> Is Not An Operator Token.`));
   }
 
-  public CircularDependency(Reference: string): Diagnostic {
+  CircularDependency(Reference: string): Diagnostic {
     throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Circular Dependency For '${Reference}' Detected.`));
   }
 }
