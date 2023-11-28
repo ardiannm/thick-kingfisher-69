@@ -24,7 +24,7 @@ export class Evaluator {
       case SyntaxKind.SyntaxTree:
         return this.SyntaxTree(Node as Structure & SyntaxTree);
       default:
-        this.Report.NodeEvaluationMethodIsMissing(Node.Kind);
+        this.Report.MethodNotImplemented(Node.Kind);
     }
   }
 
@@ -33,13 +33,12 @@ export class Evaluator {
   }
 
   private ReferenceExpression(Node: ReferenceExpression) {
-    return this.Env.SetValue(Node, this.Evaluate(Node.Expression) as number);
+    return this.Env.SetValueForReference(Node, this.Evaluate(Node.Expression) as number);
   }
 
   private BinaryExpression(Node: BinaryExpression) {
     const Left = this.Evaluate(Node.Left);
     const Right = this.Evaluate(Node.Right);
-
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return Left + Right;
@@ -55,12 +54,11 @@ export class Evaluator {
   }
 
   private CellReference(Node: CellReference) {
-    return this.Env.GetValue(Node.Reference);
+    return this.Env.GetValueFromCell(Node.Reference);
   }
 
   private UnaryExpression(Node: UnaryExpression) {
     const Right = this.Evaluate(Node.Right);
-
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return Right;

@@ -16,14 +16,14 @@ export class Diagnostics {
   }
 
   Show() {
-    for (const d of this.Bag) this.Report(d.Message);
+    for (const d of this.Bag) this.Log(d.Message);
   }
 
   Clear() {
     this.Bag = new Array<Diagnostic>();
   }
 
-  Report(tree: Object = "") {
+  Log(tree: Object = "") {
     console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
   }
 
@@ -41,11 +41,11 @@ export class Diagnostics {
   }
 
   public VarUndefined(Reference: string): Diagnostic {
-    throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Variable '${Reference}' Is Undefined.`));
+    throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
-  public NodeEvaluationMethodIsMissing(Kind: SyntaxKind): Diagnostic {
-    return this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Node For Evaluating <${Kind}> Is Missing.`));
+  public MethodNotImplemented(Kind: SyntaxKind): Diagnostic {
+    throw this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
   public NotAnOperator(Kind: SyntaxKind): Diagnostic {

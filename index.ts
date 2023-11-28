@@ -17,19 +17,19 @@ while (true) {
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
-    Diagnostics_.Report();
+    Diagnostics_.Log();
     continue;
   }
 
-  if (ShowTree) Diagnostics_.Report(Tree);
+  if (ShowTree) Diagnostics_.Log(Tree);
 
   if (Diagnostics_.Any()) {
     Diagnostics_.Show();
   } else {
     try {
-      Diagnostics_.Report(Evaluator_.Evaluate(Tree));
+      Diagnostics_.Log(Evaluator_.Evaluate(Tree));
     } catch (error) {
-      Diagnostics_.Report((error as Diagnostic).Message);
+      Diagnostics_.Log((error as Diagnostic).Message);
     }
   }
   Diagnostics_.Clear();
