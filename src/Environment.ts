@@ -18,25 +18,37 @@ export class Environment {
     // Check For Circular Dependency
     this.CheckDependency(Reference, Node.Referencing);
 
-    // If This Node Has Been Already Saved Than There Are Existing Observers That Must Be Kept
-    // Copy The Observing Node References Before Updating The Node Structure
-    if (this.References.has(Reference)) Node.ReferencedBy = this.References.get(Reference).ReferencedBy;
+    // If This Node Has Already Been Stored Than There Might Be Existing Observers That Must Be Kept
+    if (this.References.has(Reference)) {
+      const Current = this.References.get(Reference);
 
+      // Copy The Observers Before Updating The Node Structure
+      Node.ReferencedBy = Current.ReferencedBy;
+
+      // Remove The Reference From The Nodes That The Node Is Not Referring To Anymore
+      Current.Referencing.forEach((Ref) => {
+        if (Node.Referencing.includes(Ref)) return;
+        const Subject = this.References.get(Ref);
+        Subject.ReferencedBy = Subject.ReferencedBy.filter((Ref) => Ref !== Reference);
+      });
+    }
+
+    // Update the Node Structure And Value
     this.References.set(Reference, Node);
     this.Values.set(Reference, Value);
 
     // Save The Node Structure To The Nodes That This Node Is Referencing
-    Node.Referencing.forEach((r) => {
-      const Subject = this.References.get(r);
+    Node.Referencing.forEach((Ref) => {
+      const Subject = this.References.get(Ref);
       if (!Subject.ReferencedBy.includes(Reference)) Subject.ReferencedBy.push(Reference);
     });
 
-    // Return The Nodes That This Node Is Referenced By So They Can Be Updated By The Evaluator
-    return Node.ReferencedBy.map((r) => this.References.get(r));
+    // Return The Nodes That This Node Is Referenced By So That They Can Be Updated By The Evaluator
+    return Node.ReferencedBy.map((Ref) => this.References.get(Ref));
   }
 
   private CheckDependency(Reference: string, Referencing: Array<string>) {
     if (Referencing.includes(Reference)) this.Report.CircularDependency(Reference);
-    Referencing.forEach((r) => this.CheckDependency(Reference, this.References.get(r).Referencing));
+    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.References.get(Ref).Referencing));
   }
 }

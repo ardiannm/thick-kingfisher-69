@@ -41,8 +41,9 @@ export class Evaluator {
   }
 
   private ReferenceExpression(Node: ReferenceExpression) {
+    if (Node.Referencing.includes(Node.Reference.Reference)) this.Report.CircularDependency(Node.Reference.Reference);
     const Value = this.Evaluate(Node.Expression);
-    this.Env.SetValue(Node, Value).forEach((r) => this.Evaluate(r));
+    this.Env.SetValue(Node, Value).forEach((Node) => this.Evaluate(Node));
     return Value;
   }
 
