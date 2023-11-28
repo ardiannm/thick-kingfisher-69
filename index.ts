@@ -8,7 +8,7 @@ while (true) {
   const Syntax = new Parser(Input);
   const Tree = Syntax.Parse();
 
-  report(Tree.Print());
+  report(Tree);
 
   if (Syntax.Diagnostics.length > 0) {
     report();
