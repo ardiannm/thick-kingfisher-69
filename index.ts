@@ -2,17 +2,19 @@ import { question as Prompt } from "readline-sync";
 import { Parser } from "./src/Parser";
 import { Evaluator } from "./src/Evaluator";
 import { Environment } from "./src/Environment";
+import { Diagnostic, Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 
-const report = (tree: Object = "") => console.log(`${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}`);
+const report = (tree: Object = "") => console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
+
+const Diagnostics_ = new Diagnostics();
+const Environment_ = new Environment(Diagnostics_);
+const Evaluator_ = new Evaluator(Environment_, Diagnostics_);
 
 var ShowTree = false;
 
-const environment = new Environment();
-const evaluator = new Evaluator(environment);
-
 while (true) {
   const Input = Prompt("> ");
-  const Syntax = new Parser(Input);
+  const Syntax = new Parser(Input, Diagnostics_);
   const Tree = Syntax.Parse();
 
   if (Input.trim() === "tree") {
@@ -21,22 +23,16 @@ while (true) {
     continue;
   }
 
-  if (ShowTree) {
-    report();
-    report(Tree);
-  }
+  if (ShowTree) report(Tree);
 
-  if (Syntax.Diagnostics.length > 0) {
-    report();
-    for (const Message of Syntax.Diagnostics) report(Message);
+  if (Diagnostics_.Any()) {
+    Diagnostics_.Show();
   } else {
-    report();
     try {
-      report(evaluator.Evaluate(Tree));
+      report(Evaluator_.Evaluate(Tree));
     } catch (error) {
-      report(error);
+      report((error as Diagnostic).Message);
     }
   }
-
-  report();
+  Diagnostics_.Clear();
 }

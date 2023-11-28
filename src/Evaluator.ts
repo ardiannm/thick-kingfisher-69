@@ -1,10 +1,11 @@
+import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { BinaryExpression, CellReference, ParenthesizedExpression, ReferenceExpression, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { Environment } from "./Environment";
 
 export class Evaluator {
-  constructor(private env: Environment) {}
+  constructor(private Env: Environment, public Report: Diagnostics) {}
 
   public Evaluate<Structure extends SyntaxNode>(Node: Structure) {
     switch (Node.Kind) {
@@ -23,7 +24,7 @@ export class Evaluator {
       case SyntaxKind.SyntaxTree:
         return this.SyntaxTree(Node as Structure & SyntaxTree);
       default:
-        console.log(`EvaluatorError: Node For Evaluating <${Node.Kind}> Is Missing.`);
+        this.Report.NodeEvaluationMethodIsMissing(Node.Kind);
     }
   }
 
@@ -32,7 +33,7 @@ export class Evaluator {
   }
 
   private ReferenceExpression(Node: ReferenceExpression) {
-    return this.env.SetValue(Node, this.Evaluate(Node.Expression) as number);
+    return this.Env.SetValue(Node, this.Evaluate(Node.Expression) as number);
   }
 
   private BinaryExpression(Node: BinaryExpression) {
@@ -49,12 +50,12 @@ export class Evaluator {
       case SyntaxKind.SlashToken:
         return Left / Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
+        this.Report.NotAnOperator(Node.Operator.Kind);
     }
   }
 
   private CellReference(Node: CellReference) {
-    return this.env.GetValue(Node.Reference);
+    return this.Env.GetValue(Node.Reference);
   }
 
   private UnaryExpression(Node: UnaryExpression) {
@@ -66,7 +67,7 @@ export class Evaluator {
       case SyntaxKind.MinusToken:
         return -Right;
       default:
-        console.log(`EvaluatorError: Node <${Node.Operator.Kind}> Is Not An Operator Token.`);
+        this.Report.NotAnOperator(Node.Operator.Kind);
     }
   }
 

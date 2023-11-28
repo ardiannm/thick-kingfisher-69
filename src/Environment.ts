@@ -1,6 +1,9 @@
+import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
 
 export class Environment {
+  constructor(private Report: Diagnostics) {}
+
   private References = new Map<string, ReferenceExpression>();
   private Values = new Map<string, number>();
 
@@ -14,7 +17,7 @@ export class Environment {
 
   public GetValue(Reference: string) {
     if (this.Values.has(Reference)) return this.Values.get(Reference);
-    throw `EnvironmentError: Variable '${Reference}' Is Undefined.`;
+    this.Report.VarUndefined(Reference);
   }
 
   private RegisterNode(Node: ReferenceExpression) {

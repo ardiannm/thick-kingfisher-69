@@ -3,15 +3,14 @@ import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
+import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
 export class Parser {
-  public Diagnostics = new Array<string>();
-
   private Pointer = 0;
   private Tokens = new Array<SyntaxToken>();
-  private ReferenceStack = new Set<string>();
+  private Bag = new Set<string>();
 
-  constructor(public readonly Input: string) {
+  constructor(public readonly Input: string, private Report: Diagnostics) {
     const Tokenizer = new Lexer(Input);
     var Token: SyntaxToken;
     do {
@@ -20,56 +19,13 @@ export class Parser {
         this.Tokens.push(Token);
       }
       if (Token.Kind === SyntaxKind.BadToken) {
-        this.Report(`SyntaxError: <${Token.Kind}> Found.`);
+        this.Report.BadTokenFound(Token);
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
 
-  // Get The Next Token Without Consuming It
-  private PeekToken(Offset: number) {
-    const Index = this.Pointer + Offset;
-    const LastIndex = this.Tokens.length - 1;
-    if (Index > LastIndex) return this.Tokens[LastIndex];
-    return this.Tokens[Index];
-  }
-
-  // Peek The Current Token Without Consuming
-  private CurrentToken() {
-    return this.PeekToken(0);
-  }
-
-  // Consume And Return The Next Token
-  private NextToken() {
-    const Token = this.CurrentToken();
-    this.Pointer++;
-    return Token;
-  }
-
-  // Helper Method To Check If The Next Token Matches The Given Kinds
-  private MatchToken(...Kinds: Array<SyntaxKind>) {
-    let Offset = 0;
-    for (const Kind of Kinds) {
-      if (Kind !== this.PeekToken(Offset).Kind) return false;
-      Offset++;
-    }
-    return true;
-  }
-
-  // Expect Token Kind Else Report Message
-  private ExpectToken(Kind: SyntaxKind) {
-    if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.CurrentToken();
-    this.Report(`SyntaxError: Expected <${Kind}>; Found <${Token.Kind}>.`);
-    return Token;
-  }
-
-  // Report Messages Onto Diagnostics
-  private Report(message: string) {
-    this.Diagnostics.push(message);
-  }
-
   // Main Parsing Method
-  public Parse() {
+  Parse() {
     const Expression = this.ParseReference();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
@@ -80,10 +36,10 @@ export class Parser {
     const Left = this.ParseExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
-      this.ReferenceStack.clear();
+      this.Bag.clear();
       const Right = this.ParseExpression();
-      const Referencing = [...this.ReferenceStack];
-      this.ReferenceStack.clear();
+      const Referencing = [...this.Bag];
+      this.Bag.clear();
       return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
     }
     return Left;
@@ -147,7 +103,7 @@ export class Parser {
       const Left = this.NextToken();
       const Right = this.NextToken();
       const Reference = Left.Text + Right.Text;
-      this.ReferenceStack.add(Reference);
+      this.Bag.add(Reference);
       return new CellReference(SyntaxKind.CellReference, Reference, Left, Right);
     }
     return this.ParseLiteral();
@@ -163,7 +119,45 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.Expression);
+        return this.ExpectToken(SyntaxKind.NumberToken);
     }
+  }
+
+  // Get The Next Token Without Consuming It
+  private PeekToken(Offset: number) {
+    const Index = this.Pointer + Offset;
+    const LastIndex = this.Tokens.length - 1;
+    if (Index > LastIndex) return this.Tokens[LastIndex];
+    return this.Tokens[Index];
+  }
+
+  // Peek The Current Token Without Consuming
+  private CurrentToken() {
+    return this.PeekToken(0);
+  }
+
+  // Consume And Return The Next Token
+  private NextToken() {
+    const Token = this.CurrentToken();
+    this.Pointer++;
+    return Token;
+  }
+
+  // Helper Method To Check If The Next Token Matches The Given Kinds
+  private MatchToken(...Kinds: Array<SyntaxKind>) {
+    let Offset = 0;
+    for (const Kind of Kinds) {
+      if (Kind !== this.PeekToken(Offset).Kind) return false;
+      Offset++;
+    }
+    return true;
+  }
+
+  // Expect Token Kind Else Report Message
+  private ExpectToken(Kind: SyntaxKind) {
+    if (this.MatchToken(Kind)) return this.NextToken();
+    const Token = this.CurrentToken();
+    this.Report.TokenNotAMatch(Kind, Token.Kind);
+    return Token;
   }
 }

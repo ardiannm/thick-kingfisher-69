@@ -53,7 +53,7 @@ export class Lexer {
   }
 
   // Lexical Analysis To Generate Tokens
-  public Lex(): SyntaxToken {
+  Lex(): SyntaxToken {
     const Start = this.Pointer;
 
     if (this.IsLetter(this.Current())) {

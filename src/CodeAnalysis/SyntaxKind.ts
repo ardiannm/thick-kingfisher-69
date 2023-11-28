@@ -24,7 +24,6 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   RangeReference = "RangeReference",
   CellReference = "CellReference",
-  Expression = "Expression",
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
