@@ -1,12 +1,7 @@
 import { SyntaxKind } from "../SyntaxKind";
 import { SyntaxToken } from "../SyntaxToken";
 import { ErrorKind } from "./ErrorKind";
-
-export class Diagnostic {
-  constructor(public Kind: ErrorKind, public Message: string) {
-    this.Message = `${this.Kind}: ${Message}`;
-  }
-}
+import { Diagnostic } from "./Diagnostic";
 
 export class Diagnostics {
   private Bag = new Array<Diagnostic>();
@@ -32,27 +27,27 @@ export class Diagnostics {
     return Err;
   }
 
-  BadTokenFound(Token: SyntaxToken): Diagnostic {
+  BadTokenFound(Token: SyntaxToken) {
     return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Bad Character '${Token.Text}' Found.`));
   }
 
-  TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind): Diagnostic {
+  TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind) {
     return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Expected <${Expected}>; Found <${Matched}>.`));
   }
 
-  UndeclaredVariable(Reference: string): Diagnostic {
-    throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Reference '${Reference}' Has Not Been Declared.`));
+  UndeclaredVariable(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.EnvironmentError, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
-  MethodNotImplemented(Kind: SyntaxKind): Diagnostic {
+  MethodNotImplemented(Kind: SyntaxKind) {
     throw this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
-  NotAnOperator(Kind: SyntaxKind): Diagnostic {
+  NotAnOperator(Kind: SyntaxKind) {
     return this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Node <${Kind}> Is Not An Operator Token.`));
   }
 
-  CircularDependency(Reference: string): Diagnostic {
-    throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Circular Dependency For '${Reference}' Detected.`));
+  CircularDependency(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.EnvironmentError, `Circular Dependency For '${Reference}' Detected.`));
   }
 }
