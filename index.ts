@@ -4,8 +4,6 @@ import { Evaluator } from "./src/Evaluator";
 import { Environment } from "./src/Environment";
 import { Diagnostic, Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 
-const report = (tree: Object = "") => console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
-
 const Diagnostics_ = new Diagnostics();
 const Environment_ = new Environment(Diagnostics_);
 const Evaluator_ = new Evaluator(Environment_, Diagnostics_);
@@ -19,19 +17,19 @@ while (true) {
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
-    report();
+    Diagnostics_.Report();
     continue;
   }
 
-  if (ShowTree) report(Tree);
+  if (ShowTree) Diagnostics_.Report(Tree);
 
   if (Diagnostics_.Any()) {
     Diagnostics_.Show();
   } else {
     try {
-      report(Evaluator_.Evaluate(Tree));
+      Diagnostics_.Report(Evaluator_.Evaluate(Tree));
     } catch (error) {
-      report((error as Diagnostic).Message);
+      Diagnostics_.Report((error as Diagnostic).Message);
     }
   }
   Diagnostics_.Clear();

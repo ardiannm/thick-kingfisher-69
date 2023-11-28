@@ -16,11 +16,15 @@ export class Diagnostics {
   }
 
   Show() {
-    for (const d of this.Bag) console.log(d.Message);
+    for (const d of this.Bag) this.Report(d.Message);
   }
 
   Clear() {
     this.Bag = new Array<Diagnostic>();
+  }
+
+  Report(tree: Object = "") {
+    console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
   }
 
   private ReportError(Err: Diagnostic) {
