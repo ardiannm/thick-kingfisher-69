@@ -54,7 +54,7 @@ export class Evaluator {
   }
 
   private CellReference(Node: CellReference) {
-    return this.env.GetValue(Node);
+    return this.env.GetValue(Node.Reference);
   }
 
   private UnaryExpression(Node: UnaryExpression) {

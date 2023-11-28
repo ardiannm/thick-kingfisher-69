@@ -84,7 +84,7 @@ export class Parser {
       const Right = this.ParseExpression();
       const Referencing = [...this.ReferenceStack];
       this.ReferenceStack.clear();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, Right);
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
     }
     return Left;
   }
