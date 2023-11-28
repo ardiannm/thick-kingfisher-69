@@ -30,13 +30,13 @@ export class Lexer {
     return this.Input.charAt(this.Pointer + Offset);
   }
 
-  private Current() {
+  private get Current() {
     return this.Peek(0);
   }
 
   // Move The Pointer To The Next Character In The Input String
   private Next() {
-    const Char = this.Current();
+    const Char = this.Current;
     this.Pointer++;
     return Char;
   }
@@ -56,23 +56,23 @@ export class Lexer {
   Lex(): SyntaxToken {
     const Start = this.Pointer;
 
-    if (this.IsLetter(this.Current())) {
-      while (this.IsLetter(this.Current())) {
+    if (this.IsLetter(this.Current)) {
+      while (this.IsLetter(this.Current)) {
         this.Next();
       }
       const Text = this.Input.substring(Start, this.Pointer);
       return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
     }
 
-    if (this.IsDigit(this.Current())) {
-      while (this.IsDigit(this.Current())) {
+    if (this.IsDigit(this.Current)) {
+      while (this.IsDigit(this.Current)) {
         this.Next();
       }
       return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Pointer));
     }
 
-    if (this.IsSpace(this.Current())) {
-      while (this.IsSpace(this.Current())) {
+    if (this.IsSpace(this.Current)) {
+      while (this.IsSpace(this.Current)) {
         this.Next();
       }
       return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Pointer));
@@ -83,7 +83,7 @@ export class Lexer {
       return new SyntaxToken(SyntaxKind.PointerToken, this.Input.substring(Start, this.Pointer));
     }
 
-    const Kind = SyntaxFacts.Kind(this.Current());
+    const Kind = SyntaxFacts.Kind(this.Current);
     return new SyntaxToken(Kind, this.Next());
   }
 }
