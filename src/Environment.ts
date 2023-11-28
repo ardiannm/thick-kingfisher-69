@@ -15,6 +15,9 @@ export class Environment {
   SetValue(Node: ReferenceExpression, Value: number): Array<ReferenceExpression> {
     const Reference = Node.Reference.Reference;
 
+    // Check For Circular Dependency
+    this.CheckDependency(Reference, Node.Referencing);
+
     // If This Node Has Been Already Saved Than There Are Existing Observers That Must Be Kept
     // Copy The Observing Node References Before Updating The Node Structure
     if (this.References.has(Reference)) Node.ReferencedBy = this.References.get(Reference).ReferencedBy;
@@ -30,5 +33,10 @@ export class Environment {
 
     // Return The Nodes That This Node Is Referenced By So They Can Be Updated By The Evaluator
     return Node.ReferencedBy.map((r) => this.References.get(r));
+  }
+
+  private CheckDependency(Reference: string, Referencing: Array<string>) {
+    if (Referencing.includes(Reference)) this.Report.CircularDependency(Reference);
+    Referencing.forEach((r) => this.CheckDependency(Reference, this.References.get(r).Referencing));
   }
 }
