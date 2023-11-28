@@ -1,8 +1,11 @@
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, ParenthesizedExpression, ReferenceExpression, SyntaxNode, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, CellReference, ParenthesizedExpression, ReferenceExpression, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
+import { Environment } from "./Environment";
 
 export class Evaluator {
+  constructor(private env: Environment) {}
+
   public Evaluate<Structure extends SyntaxNode>(Node: Structure) {
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
@@ -11,21 +14,25 @@ export class Evaluator {
         return this.ReferenceExpression(Node as Structure & ReferenceExpression);
       case SyntaxKind.BinaryExpression:
         return this.BinaryExpression(Node as Structure & BinaryExpression);
+      case SyntaxKind.CellReference:
+        return this.CellReference(Node as Structure & CellReference);
       case SyntaxKind.ParenthesizedExpression:
         return this.ParenthesizedExpression(Node as Structure & ParenthesizedExpression);
       case SyntaxKind.UnaryExpression:
         return this.UnaryExpression(Node as Structure & UnaryExpression);
+      case SyntaxKind.SyntaxTree:
+        return this.SyntaxTree(Node as Structure & SyntaxTree);
       default:
         console.log(`EvaluatorError: Node For Evaluating <${Node.Kind}> Is Missing.`);
     }
   }
 
-  private NumberToken(Node: SyntaxToken): number {
-    return parseFloat(Node.Text);
+  private SyntaxTree(Node: SyntaxTree) {
+    return this.Evaluate(Node.Root);
   }
 
   private ReferenceExpression(Node: ReferenceExpression) {
-    return this.Evaluate(Node.Expression);
+    return this.env.SetValue(Node, this.Evaluate(Node.Expression) as number);
   }
 
   private BinaryExpression(Node: BinaryExpression) {
@@ -46,6 +53,10 @@ export class Evaluator {
     }
   }
 
+  private CellReference(Node: CellReference) {
+    return this.env.GetValue(Node);
+  }
+
   private UnaryExpression(Node: UnaryExpression) {
     const Right = this.Evaluate(Node.Right);
 
@@ -61,5 +72,9 @@ export class Evaluator {
 
   private ParenthesizedExpression(Node: ParenthesizedExpression) {
     return this.Evaluate(Node.Expression);
+  }
+
+  private NumberToken(Node: SyntaxToken): number {
+    return parseFloat(Node.Text);
   }
 }

@@ -9,6 +9,7 @@ export class Parser {
 
   private Pointer = 0;
   private Tokens = new Array<SyntaxToken>();
+  private ReferenceStack = new Set<string>();
 
   constructor(public readonly Input: string) {
     const Tokenizer = new Lexer(Input);
@@ -79,8 +80,11 @@ export class Parser {
     const Left = this.ParseExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
+      this.ReferenceStack.clear();
       const Right = this.ParseExpression();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Right);
+      const Referencing = [...this.ReferenceStack];
+      this.ReferenceStack.clear();
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, Right);
     }
     return Left;
   }
@@ -142,7 +146,9 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      return new CellReference(SyntaxKind.CellReference, Left, Right);
+      const Reference = Left.Text + Right.Text;
+      this.ReferenceStack.add(Reference);
+      return new CellReference(SyntaxKind.CellReference, Reference, Left, Right);
     }
     return this.ParseLiteral();
   }

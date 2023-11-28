@@ -40,7 +40,7 @@ export class SyntaxTree extends SyntaxNode {
 export class Expression extends SyntaxNode {}
 
 export class CellReference extends Expression {
-  constructor(public Kind: SyntaxKind, public Left: SyntaxToken, public Right: SyntaxToken) {
+  constructor(public Kind: SyntaxKind, public Reference: string, public Left: SyntaxToken, public Right: SyntaxToken) {
     super(Kind);
   }
 }
@@ -70,7 +70,7 @@ export class BinaryExpression extends Expression {
 }
 
 export class ReferenceExpression extends Expression {
-  constructor(public Kind: SyntaxKind, public Reference: SyntaxNode, public Expression: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Reference: CellReference, public Referencing: Array<string>, public Expression: SyntaxNode) {
     super(Kind);
   }
 }
