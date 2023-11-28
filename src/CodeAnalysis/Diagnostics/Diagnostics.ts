@@ -40,7 +40,7 @@ export class Diagnostics {
     return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Expected <${Expected}>; Found <${Matched}>.`));
   }
 
-  public VarUndefined(Reference: string): Diagnostic {
+  public UndeclaredVariable(Reference: string): Diagnostic {
     throw this.ReportError(new Diagnostic(ErrorKind.EnviromentError, `Reference '${Reference}' Has Not Been Declared.`));
   }
 

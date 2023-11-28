@@ -32,10 +32,6 @@ export class Evaluator {
     return this.Evaluate(Node.Root);
   }
 
-  private ReferenceExpression(Node: ReferenceExpression) {
-    return this.Env.SetValueForReference(Node, this.Evaluate(Node.Expression) as number);
-  }
-
   private BinaryExpression(Node: BinaryExpression) {
     const Left = this.Evaluate(Node.Left);
     const Right = this.Evaluate(Node.Right);
@@ -51,10 +47,6 @@ export class Evaluator {
       default:
         this.Report.NotAnOperator(Node.Operator.Kind);
     }
-  }
-
-  private CellReference(Node: CellReference) {
-    return this.Env.GetValueFromCell(Node.Reference);
   }
 
   private UnaryExpression(Node: UnaryExpression) {
@@ -75,5 +67,15 @@ export class Evaluator {
 
   private NumberToken(Node: SyntaxToken): number {
     return parseFloat(Node.Text);
+  }
+
+  private ReferenceExpression(Node: ReferenceExpression) {
+    const Value = this.Evaluate(Node.Expression);
+    this.Env.SetValue(Node, Value).forEach((r) => this.Evaluate(r));
+    return Value;
+  }
+
+  private CellReference(Node: CellReference) {
+    return this.Env.GetValue(Node.Reference);
   }
 }
