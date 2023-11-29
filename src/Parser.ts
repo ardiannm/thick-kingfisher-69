@@ -26,15 +26,23 @@ export class Parser {
 
   // Main Parsing Method
   Parse() {
-    const Expression = this.ParseExpression();
+    const Expression = this.ParseReference();
     if (!this.MatchToken(SyntaxKind.EndOfFileToken)) this.Report.TrailingGarbageFound();
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
-  // Parse Expressions
-  private ParseExpression() {
-    if (this.MatchToken(SyntaxKind.OpenBraceToken)) return this.ParseObjectLiteral();
-    return this.ParseReference();
+  // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
+  private ParseReference() {
+    const Left = this.ParseObjectLiteral();
+    if (this.MatchToken(SyntaxKind.PointerToken)) {
+      this.NextToken();
+      this.Bag.clear();
+      const Right = this.ParseObjectLiteral();
+      const Referencing = [...this.Bag];
+      this.Bag.clear();
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
+    }
+    return Left;
   }
 
   // Parse Object Literals
@@ -51,12 +59,11 @@ export class Parser {
         }
         if (this.MatchToken(SyntaxKind.CloseBraceToken)) break;
         this.ExpectToken(SyntaxKind.Comma);
-        console.log(this.PeekToken(0));
       }
       this.ExpectToken(SyntaxKind.CloseBraceToken);
       return new ObjectLiteral(SyntaxKind.ObjectLiteral, Properties);
     }
-    return this.ParseRange();
+    return this.ParseBinaryExpression();
   }
 
   // Parse Object Properties
@@ -68,20 +75,6 @@ export class Parser {
       Right = this.ParseObjectLiteral();
     }
     return new Property(SyntaxKind.Property, Left, Right);
-  }
-
-  // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
-  private ParseReference() {
-    const Left = this.ParseBinaryExpression();
-    if (this.MatchToken(SyntaxKind.PointerToken)) {
-      this.NextToken();
-      this.Bag.clear();
-      const Right = this.ParseBinaryExpression();
-      const Referencing = [...this.Bag];
-      this.Bag.clear();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
-    }
-    return Left;
   }
 
   // Parse Expressions With Binary Operators
@@ -114,7 +107,7 @@ export class Parser {
   private ParseParentheses() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
-      const Expression = this.ParseExpression();
+      const Expression = this.ParseBinaryExpression();
       const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }
