@@ -42,12 +42,6 @@ export class SyntaxFacts {
         return SyntaxKind.CloseParenToken;
       case ">":
         return SyntaxKind.GreaterToken;
-      case "{":
-        return SyntaxKind.OpenBraceToken;
-      case "}":
-        return SyntaxKind.CloseBraceToken;
-      case ",":
-        return SyntaxKind.Comma;
       case "":
         return SyntaxKind.EndOfFileToken;
       default:

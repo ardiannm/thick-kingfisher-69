@@ -74,15 +74,3 @@ export class ReferenceExpression extends Expression {
     super(Kind);
   }
 }
-
-export class Property extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Key: Expression, public Value: Expression) {
-    super(Kind);
-  }
-}
-
-export class ObjectLiteral extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Properties: Array<Property>) {
-    super(Kind);
-  }
-}

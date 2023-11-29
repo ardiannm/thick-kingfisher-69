@@ -1,5 +1,5 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
-import { ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
+import { CellReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
 
 export class Environment {
   constructor(private Report: Diagnostics) {}
@@ -13,7 +13,7 @@ export class Environment {
   }
 
   SetValue(Node: ReferenceExpression, Value: number): Array<ReferenceExpression> {
-    const Reference = Node.Reference.Reference;
+    const Reference = (Node.Reference as CellReference).Reference;
 
     // Check For Circular Dependency
     this.CheckDependency(Reference, Node.Referencing);

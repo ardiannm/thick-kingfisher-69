@@ -28,11 +28,4 @@ export enum SyntaxKind {
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
   Expression = "Expression",
-
-  // Testing
-  OpenBraceToken = "OpenBraceToken",
-  Property = "Property",
-  Comma = "Comma",
-  CloseBraceToken = "CloseBraceToken",
-  ObjectLiteral = "ObjectLiteral",
 }
