@@ -27,7 +27,7 @@ export class Parser {
   // Main Parsing Method
   Parse() {
     const Expression = this.ParseExpression();
-    this.ExpectToken(SyntaxKind.EndOfFileToken);
+    if (!this.MatchToken(SyntaxKind.EndOfFileToken)) this.Report.TrailingGarbageFound();
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
@@ -188,7 +188,7 @@ export class Parser {
   // Expect Token Kind Else Report Message
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.CurrentToken();
+    const Token = this.NextToken();
     this.Report.TokenNotAMatch(Kind, Token.Kind);
     return Token;
   }

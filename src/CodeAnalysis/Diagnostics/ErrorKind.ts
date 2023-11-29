@@ -1,5 +1,5 @@
 export enum ErrorKind {
-  ParserError = "ParserError",
-  EnvironmentError = "EnvironmentError",
-  EvaluatorError = "EvaluatorError",
+  Parser = "Parser",
+  Environment = "Environment",
+  Evaluator = "Evaluator",
 }

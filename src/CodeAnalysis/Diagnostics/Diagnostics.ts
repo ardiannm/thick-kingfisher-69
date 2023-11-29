@@ -11,7 +11,9 @@ export class Diagnostics {
   }
 
   Show() {
-    for (const d of this.Bag) this.Log(d.Message);
+    console.log();
+    for (const d of this.Bag) console.log(d.Message);
+    console.log();
   }
 
   Clear() {
@@ -28,26 +30,30 @@ export class Diagnostics {
   }
 
   BadTokenFound(Token: SyntaxToken) {
-    return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Bad Character '${Token.Text}' Found.`));
+    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Bad Character '${Token.Text}' Found.`));
   }
 
   TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind) {
-    return this.ReportError(new Diagnostic(ErrorKind.ParserError, `Expected <${Expected}>; Found <${Matched}>.`));
+    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Expected <${Expected}>; Found <${Matched}>.`));
   }
 
   UndeclaredVariable(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.EnvironmentError, `Reference '${Reference}' Has Not Been Declared.`));
+    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
   MethodNotImplemented(Kind: SyntaxKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Method For Evaluating <${Kind}> Is Missing.`));
+    throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
   NotAnOperator(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnostic(ErrorKind.EvaluatorError, `Node <${Kind}> Is Not An Operator Token.`));
+    return this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Node <${Kind}> Is Not An Operator Token.`));
   }
 
   CircularDependency(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.EnvironmentError, `Circular Dependency For '${Reference}' Detected.`));
+    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Circular Dependency For '${Reference}' Detected.`));
+  }
+
+  TrailingGarbageFound() {
+    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Trailing Garbage Found For The Syntax Tree.`));
   }
 }
