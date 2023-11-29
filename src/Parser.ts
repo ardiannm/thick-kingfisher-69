@@ -33,48 +33,16 @@ export class Parser {
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
   private ParseReference() {
-    const Left = this.ParseObjectLiteral();
+    const Left = this.ParseCell();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Bag.clear();
-      const Right = this.ParseObjectLiteral();
-      const Referencing = [...this.Bag];
+      const Right = this.ParseBinaryExpression();
+      const Referencing = Array.from(this.Bag);
       this.Bag.clear();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left as CellReference, Referencing, [], Right);
     }
     return Left;
-  }
-
-  // Parse Object Literals
-  private ParseObjectLiteral() {
-    if (this.MatchToken(SyntaxKind.OpenBraceToken)) {
-      this.NextToken();
-      const Properties = new Array<Property>();
-      while (this.Any()) {
-        if (this.MatchToken(SyntaxKind.CloseBraceToken)) break;
-        Properties.push(this.ParseProperty());
-        if (this.MatchToken(SyntaxKind.Comma, SyntaxKind.CloseBraceToken)) {
-          this.NextToken();
-          break;
-        }
-        if (this.MatchToken(SyntaxKind.CloseBraceToken)) break;
-        this.ExpectToken(SyntaxKind.Comma);
-      }
-      this.ExpectToken(SyntaxKind.CloseBraceToken);
-      return new ObjectLiteral(SyntaxKind.ObjectLiteral, Properties);
-    }
-    return this.ParseBinaryExpression();
-  }
-
-  // Parse Object Properties
-  private ParseProperty() {
-    const Left = this.ParseCell();
-    var Right: Expression;
-    if (this.MatchToken(SyntaxKind.ColonToken)) {
-      this.NextToken();
-      Right = this.ParseObjectLiteral();
-    }
-    return new Property(SyntaxKind.Property, Left, Right);
   }
 
   // Parse Expressions With Binary Operators
@@ -187,10 +155,5 @@ export class Parser {
     const Token = this.NextToken();
     this.Report.TokenNotAMatch(Kind, Token.Kind);
     return Token;
-  }
-
-  // Check If There Are Any Tokens Remaining
-  private Any() {
-    return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
 }
