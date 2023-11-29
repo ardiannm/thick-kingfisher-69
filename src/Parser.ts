@@ -40,7 +40,7 @@ export class Parser {
       const Right = this.ParseBinaryExpression();
       const Referencing = Array.from(this.Bag);
       this.Bag.clear();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left as CellReference, Referencing, [], Right);
+      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
     }
     return Left;
   }
