@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression, Property, ObjectLiteral, Expression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
@@ -26,27 +26,59 @@ export class Parser {
 
   // Main Parsing Method
   Parse() {
-    const Expression = this.ParseReference();
+    const Expression = this.ParseExpression();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
+  private ParseExpression() {
+    if (this.MatchToken(SyntaxKind.OpenBraceToken)) return this.ParseObjectLiteral();
+    return this.ParseReference();
+  }
+
+  private ParseObjectLiteral() {
+    if (this.MatchToken(SyntaxKind.OpenBraceToken)) {
+      this.NextToken();
+      const Properties = new Array<Property>();
+      while (this.Any()) {
+        if (this.MatchToken(SyntaxKind.CloseBraceToken)) break;
+        Properties.push(this.ParseProperty());
+        if (this.MatchToken(SyntaxKind.Comma, SyntaxKind.CloseBraceToken)) {
+          this.NextToken();
+          break;
+        }
+        if (this.MatchToken(SyntaxKind.CloseBraceToken)) break;
+        this.ExpectToken(SyntaxKind.Comma);
+        console.log(this.PeekToken(0));
+      }
+      this.ExpectToken(SyntaxKind.CloseBraceToken);
+      return new ObjectLiteral(SyntaxKind.ObjectLiteral, Properties);
+    }
+    return this.ParseRange();
+  }
+
+  private ParseProperty() {
+    const Left = this.ParseCell();
+    var Right: Expression;
+    if (this.MatchToken(SyntaxKind.ColonToken)) {
+      this.NextToken();
+      Right = this.ParseObjectLiteral();
+    }
+    return new Property(SyntaxKind.Property, Left, Right);
+  }
+
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
   private ParseReference() {
-    const Left = this.ParseExpression();
+    const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Bag.clear();
-      const Right = this.ParseExpression();
+      const Right = this.ParseBinaryExpression();
       const Referencing = [...this.Bag];
       this.Bag.clear();
       return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
     }
     return Left;
-  }
-
-  private ParseExpression() {
-    return this.ParseBinaryExpression();
   }
 
   // Parse Expressions With Binary Operators
@@ -119,7 +151,7 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.NumberToken);
+        return this.ExpectToken(SyntaxKind.Expression);
     }
   }
 
@@ -159,5 +191,9 @@ export class Parser {
     const Token = this.CurrentToken();
     this.Report.TokenNotAMatch(Kind, Token.Kind);
     return Token;
+  }
+
+  private Any() {
+    return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
 }

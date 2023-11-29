@@ -2,7 +2,8 @@ import { question as Prompt } from "readline-sync";
 import { Parser } from "./src/Parser";
 import { Evaluator } from "./src/Evaluator";
 import { Environment } from "./src/Environment";
-import { Diagnostic, Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
+import { Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
+import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
 
 const Diagnostics_ = new Diagnostics();
 const Environment_ = new Environment(Diagnostics_);
