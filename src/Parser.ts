@@ -49,7 +49,7 @@ export class Parser {
   private ParseBinaryExpression(ParentPrecedence = 0) {
     let Left = this.ParseUnaryExpression();
     while (true) {
-      const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken().Kind);
+      const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken.Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
@@ -62,7 +62,7 @@ export class Parser {
 
   // Parse Expressions With Unary Operators
   private ParseUnaryExpression() {
-    const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken().Kind);
+    const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken();
       const Right = this.ParseUnaryExpression();
@@ -107,7 +107,7 @@ export class Parser {
 
   // Parse Literals (e.g., Numbers, Identifiers, True)
   private ParseLiteral() {
-    const Kind = this.CurrentToken().Kind;
+    const Kind = this.CurrentToken.Kind;
     switch (Kind) {
       case SyntaxKind.TrueToken:
       case SyntaxKind.FalseToken:
@@ -128,13 +128,13 @@ export class Parser {
   }
 
   // Peek The Current Token Without Consuming
-  private CurrentToken() {
+  private get CurrentToken() {
     return this.PeekToken(0);
   }
 
   // Consume And Return The Next Token
   private NextToken() {
-    const Token = this.CurrentToken();
+    const Token = this.CurrentToken;
     this.Pointer++;
     return Token;
   }
