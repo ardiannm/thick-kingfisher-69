@@ -31,11 +31,13 @@ export class Parser {
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
+  // Parse Expressions
   private ParseExpression() {
     if (this.MatchToken(SyntaxKind.OpenBraceToken)) return this.ParseObjectLiteral();
     return this.ParseReference();
   }
 
+  // Parse Object Literals
   private ParseObjectLiteral() {
     if (this.MatchToken(SyntaxKind.OpenBraceToken)) {
       this.NextToken();
@@ -57,6 +59,7 @@ export class Parser {
     return this.ParseRange();
   }
 
+  // Parse Object Properties
   private ParseProperty() {
     const Left = this.ParseCell();
     var Right: Expression;
@@ -193,6 +196,7 @@ export class Parser {
     return Token;
   }
 
+  // Check If There Are Any Tokens Remaining
   private Any() {
     return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
