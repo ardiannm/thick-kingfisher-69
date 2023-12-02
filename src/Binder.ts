@@ -1,12 +1,12 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, CellReference, RangeReference, ReferenceDeclaration, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, CellReference, RangeReference, BindReferenceAssignment, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 
 export class Binder {
   constructor(public Report: Diagnostics) {}
 
-  private Nodes = new Map<string, BoundReferenceDeclaration>();
+  private Nodes = new Map<string, BoundReferenceAssignment>();
   private References = new Set<string>();
 
   Bind<Structure extends SyntaxNode>(Node: Structure): BoundNode {
@@ -24,45 +24,32 @@ export class Binder {
       case SyntaxKind.BinaryExpression:
         return this.BinaryExpression(Node as Structure & BinaryExpression);
       case SyntaxKind.ReferenceDeclaration:
-        return this.BindReferenceDeclaration(Node as Structure & ReferenceDeclaration);
+        return this.BindReferenceAssignment(Node as Structure & BindReferenceAssignment);
       default:
         this.Report.MissingBindingMethod(Node.Kind);
     }
   }
 
-  private BindReferenceDeclaration(Node: ReferenceDeclaration) {
+  private BindReferenceAssignment(Node: BindReferenceAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
         const Ref = LeftBound.Reference; // Capture The Reference
 
-        if (this.Nodes.has(Ref)) this.Report.CannotRedeclareReference(Ref);
-
         // Capture All Cell References
         this.References.clear();
-
         const Expression = this.Bind(Node.Expression);
 
-        // Check For Self-Referencing Error
-        if (this.References.has(Ref)) this.Report.CircularDependency(Ref);
-
         const Referencing = Array.from(this.References);
-
         this.References.clear();
 
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
           if (!this.Nodes.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
-          const ReferencedBy = this.Nodes.get(Reference).ReferencedBy;
-          if (!ReferencedBy.includes(Ref)) ReferencedBy.push(Ref);
         }
-        // Create Node
 
-        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, Ref, Referencing, [], Expression);
-        // If The Node Is Already Exsiting Then Copy The ReferencedBy Value
-        if (this.Nodes.has(Ref)) {
-          BoundNode.ReferencedBy = this.Nodes.get(Ref).ReferencedBy;
-        }
+        // Create Node
+        const BoundNode = new BoundReferenceAssignment(Binding.BoundReferenceAssignment, Ref, Referencing, [], Expression);
 
         // Finally Set Or OverWrite The Node
         this.Nodes.set(Ref, BoundNode);
@@ -123,12 +110,12 @@ export class Binder {
 
 enum Binding {
   BoundSyntaxTree = "BoundSyntaxTree",
+  BoundReferenceAssignment = "BoundReferenceAssignment",
+  BoundBinaryExpression = "BoundBinaryExpression",
   BoundRangeReference = "BoundRangeReference",
   BoundCellReference = "BoundCellReference",
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
-  BoundReferenceDeclaration = "BoundReferenceDeclaration",
-  BoundBinaryExpression = "BoundBinaryExpression",
 }
 
 enum BoundOperatorKind {
@@ -186,7 +173,7 @@ class BoundBinaryExpression extends BoundExpression {
   }
 }
 
-class BoundReferenceDeclaration extends BoundWithReference {
+class BoundReferenceAssignment extends BoundWithReference {
   constructor(public Kind: Binding, public Reference: string, public Referencing: Array<string>, public ReferencedBy: Array<string>, public Expression: BoundExpression) {
     super(Kind, Reference);
   }
