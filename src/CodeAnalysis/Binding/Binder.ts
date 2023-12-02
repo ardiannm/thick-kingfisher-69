@@ -18,6 +18,10 @@ import { BoundRangeReference } from "./BoundRangeReference";
 import { BoundReferenceAssignment } from "./BoundReferenceAssignment";
 import { BoundSyntaxTree } from "./BoundSyntaxTree";
 import { BoundWithReference } from "./BoundWithReference";
+import { UnaryExpression } from "../UnaryExpression";
+import { BoundUnaryExpression } from "./BoundUnaryExpression";
+import { BoundUnaryOperatorKind } from "./BoundUnaryOperatorKind";
+import { ParenthesizedExpression } from "../ParenthesizedExpression";
 
 export class Binder {
   constructor(public Logger: Diagnostics) {}
@@ -37,8 +41,12 @@ export class Binder {
         return this.BindCellReference(Node as Structure & CellReference);
       case SyntaxKind.RangeReference:
         return this.BindRangeReference(Node as Structure & RangeReference);
+      case SyntaxKind.ParenthesizedExpression:
+        return this.BindParenthesizedExpression(Node as Structure & ParenthesizedExpression);
+      case SyntaxKind.UnaryExpression:
+        return this.BindUnaryExpression(Node as Structure & UnaryExpression);
       case SyntaxKind.BinaryExpression:
-        return this.BinaryExpression(Node as Structure & BinaryExpression);
+        return this.BindBinaryExpression(Node as Structure & BinaryExpression);
       case SyntaxKind.ReferenceDeclaration:
         return this.BindReferenceAssignment(Node as Structure & BindReferenceAssignment);
       default:
@@ -52,7 +60,7 @@ export class Binder {
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
         const Ref = LeftBound.Reference; // Capture The Reference
 
-        // Capture All Cell References
+        // Capture Cell References
         this.References.clear();
         const Expression = this.Bind(Node.Expression);
         const Referencing = Array.from(this.References);
@@ -78,7 +86,7 @@ export class Binder {
     Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Nodes.get(Ref).Referencing));
   }
 
-  private BinaryExpression(Node: BinaryExpression) {
+  private BindBinaryExpression(Node: BinaryExpression) {
     return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
   }
 
@@ -95,6 +103,25 @@ export class Binder {
       default:
         this.Logger.NotAnOperator(Kind);
     }
+  }
+
+  private BindUnaryExpression(Node: UnaryExpression) {
+    return new BoundUnaryExpression(BoundKind.BoundUnaryExpression, this.BindUnaryOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+  }
+
+  private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {
+    switch (Kind) {
+      case SyntaxKind.PlusToken:
+        return BoundUnaryOperatorKind.Identity;
+      case SyntaxKind.MinusToken:
+        return BoundUnaryOperatorKind.Negation;
+      default:
+        this.Logger.NotAnOperator(Kind);
+    }
+  }
+
+  private BindParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Bind(Node.Expression);
   }
 
   private BindRangeReference(Node: RangeReference) {

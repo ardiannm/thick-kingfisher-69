@@ -47,7 +47,7 @@ export class Diagnostics {
   }
 
   NotAnOperator(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnostic(ErrorKind.Binder, `Node <${Kind}> Is Not An Operator Token.`));
+    return this.ReportError(new Diagnostic(ErrorKind.Binder, `Node <${Kind}> Is Not An Operator.`));
   }
 
   CircularDependency(Reference: string) {
