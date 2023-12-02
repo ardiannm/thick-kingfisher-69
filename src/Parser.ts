@@ -1,7 +1,7 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, ReferenceDeclaration } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
@@ -26,13 +26,13 @@ export class Parser {
 
   // Main Parsing Method
   Parse() {
-    const Expression = this.ParseReference();
+    const Expression = this.ParseReferenceDeclaration();
     if (!this.MatchToken(SyntaxKind.EndOfFileToken)) this.Report.TrailingGarbageFound();
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
-  private ParseReference() {
+  private ParseReferenceDeclaration() {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
@@ -40,7 +40,7 @@ export class Parser {
       const Right = this.ParseBinaryExpression();
       const Referencing = Array.from(this.Bag);
       this.Bag.clear();
-      return new ReferenceExpression(SyntaxKind.ReferenceExpression, Left, Referencing, [], Right);
+      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Referencing, [], Right);
     }
     return Left;
   }

@@ -18,7 +18,7 @@ export enum SyntaxKind {
   PointerToken = "PointerToken",
   // Expressions
   SyntaxTree = "SyntaxTree",
-  ReferenceExpression = "ReferenceExpression",
+  ReferenceDeclaration = "ReferenceDeclaration",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   ParenthesizedExpression = "ParenthesizedExpression",

@@ -1,6 +1,6 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, CellReference, ParenthesizedExpression, ReferenceExpression, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, CellReference, ParenthesizedExpression, ReferenceDeclaration, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { Environment } from "./Environment";
 
@@ -15,8 +15,8 @@ export class Evaluator {
         return this.NumberToken(Node as Structure & SyntaxToken);
       case SyntaxKind.CellReference:
         return this.CellReference(Node as Structure & CellReference);
-      case SyntaxKind.ReferenceExpression:
-        return this.ReferenceExpression(Node as Structure & ReferenceExpression);
+      case SyntaxKind.ReferenceDeclaration:
+        return this.ReferenceExpression(Node as Structure & ReferenceDeclaration);
       case SyntaxKind.ParenthesizedExpression:
         return this.ParenthesizedExpression(Node as Structure & ParenthesizedExpression);
       case SyntaxKind.UnaryExpression:
@@ -40,7 +40,7 @@ export class Evaluator {
     return this.Env.GetValue(Node.Reference);
   }
 
-  private ReferenceExpression(Node: ReferenceExpression) {
+  private ReferenceExpression(Node: ReferenceDeclaration) {
     const Reference = (Node.Reference as CellReference).Reference;
     if (Node.Referencing.includes(Reference)) this.Report.CircularDependency(Reference);
     const Value = this.Evaluate(Node.Expression);

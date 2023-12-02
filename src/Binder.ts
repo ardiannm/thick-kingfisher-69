@@ -20,6 +20,8 @@ export class Binder {
         return this.BindCellReference(Node as Structure & CellReference);
       case SyntaxKind.RangeReference:
         return this.BindRangeReference(Node as Structure & RangeReference);
+      case SyntaxKind.ReferenceDeclaration:
+        return this.BindRangeReference(Node as Structure & RangeReference);
       default:
         this.Report.MissingBindingMethod(Node.Kind);
     }

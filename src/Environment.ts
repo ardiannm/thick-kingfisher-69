@@ -1,10 +1,10 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
-import { CellReference, ReferenceExpression } from "./CodeAnalysis/SyntaxNode";
+import { CellReference, ReferenceDeclaration } from "./CodeAnalysis/SyntaxNode";
 
 export class Environment {
   constructor(private Report: Diagnostics) {}
 
-  private References = new Map<string, ReferenceExpression>();
+  private References = new Map<string, ReferenceDeclaration>();
   private Values = new Map<string, number>();
 
   GetValue(Reference: string) {
@@ -12,7 +12,7 @@ export class Environment {
     this.Report.UndeclaredVariable(Reference);
   }
 
-  SetValue(Node: ReferenceExpression, Value: number): Array<ReferenceExpression> {
+  SetValue(Node: ReferenceDeclaration, Value: number): Array<ReferenceDeclaration> {
     const Reference = (Node.Reference as CellReference).Reference;
 
     // Check For Circular Dependency
