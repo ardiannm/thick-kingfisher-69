@@ -140,8 +140,7 @@ export class Binder {
   }
 
   private BindIdentifier(Node: SyntaxToken) {
-    const Value = parseFloat(Node.Text);
-    return new BoundIdentifier(BoundKind.BoundNumber, Node.Text, Value);
+    return new BoundIdentifier(BoundKind.BoundIdentifier, Node.Text, Node.Text);
   }
 
   private BindNumber(Node: SyntaxToken) {
