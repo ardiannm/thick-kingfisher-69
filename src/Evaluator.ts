@@ -18,7 +18,7 @@ export class Evaluator {
   private Nodes = new Map<string, BoundReferenceAssignment>();
   private Values = new Map<string, number>();
   private Stats = new Map<string, number>();
-  private ReEvaluated = new Set<string>();
+  private Changes = new Set<string>();
 
   ReportStats() {
     console.log(this.Stats);
@@ -59,38 +59,55 @@ export class Evaluator {
       this.Stats.set(Reference, 1);
     }
 
-    console.log(`'${Reference}'`);
     // Prepare BoundNode
     this.PrepareBoundReferenceForEvaluation(Bound);
-    // Evaluate
+
+    // And Then Evaluate
     const Value = this.Evaluate(Bound.Expression);
     this.Values.set(Reference, Value);
-    // Re Evaluate Nodes Referring To This Value
-    Bound.ReferencedBy.forEach((Ref) => this.EvaluateReferenceAssignment(this.Nodes.get(Ref)));
+
+    // Track Recursively All The References That Will Be Affected So To Execute Re Evaluating Expressions Only Once
+    this.TrackChanges(Bound);
+    this.Changes.forEach((Ref) => {
+      this.Values.set(Ref, this.Evaluate(this.Nodes.get(Ref).Expression));
+    });
+    this.Changes.clear();
+
     // Store Reference Node
     this.Nodes.set(Reference, Bound);
     return Value;
   }
 
+  // Track And Store All The Effected References Due To Node Change
+  private TrackChanges(Node: BoundReferenceAssignment) {
+    Node.ReferencedBy.forEach((Ref) => {
+      this.Changes.add(Ref);
+      this.TrackChanges(this.Nodes.get(Ref));
+    });
+  }
+
   private PrepareBoundReferenceForEvaluation(Bound: BoundReferenceAssignment) {
     const Reference = Bound.Reference;
-    // Clear Dependencies If Already Existing
-    if (this.Nodes.has(Reference)) {
-      const PrevNode = this.Nodes.get(Reference);
-      // If Other Nodes Are Referencing This Node Then Keep The References
-      Bound.ReferencedBy = PrevNode.ReferencedBy;
-      // Remove Node From Previous Dependecies
-      PrevNode.Referencing.forEach((Ref) => {
-        if (Bound.Referencing.includes(Ref)) return;
-        const DependencyNode = this.Nodes.get(Ref);
-        DependencyNode.ReferencedBy = DependencyNode.ReferencedBy.filter((Each) => Each !== Reference);
-      });
-    }
-    // Register Node To Its Dependency Nodes
+
+    // Register Node To Its Dependencies
     Bound.Referencing.forEach((Ref) => {
       const Node = this.Nodes.get(Ref);
       if (Node.ReferencedBy.includes(Reference)) return; // Prevent Storing Multiple References
       Node.ReferencedBy.push(Reference);
+    });
+
+    // If There Is No Existing Reference Stop
+    if (!this.Nodes.has(Reference)) return;
+
+    // Else ...
+    const PrevNode = this.Nodes.get(Reference);
+    // If Other Nodes Are Referencing This Node Then Copy Reference Values
+    Bound.ReferencedBy = PrevNode.ReferencedBy;
+    // Clear This Reference From Previous Dependencies
+    PrevNode.Referencing.forEach((Ref) => {
+      if (Bound.Referencing.includes(Ref)) return;
+      const DependencyNode = this.Nodes.get(Ref);
+      DependencyNode.ReferencedBy = DependencyNode.ReferencedBy.filter((Each) => Each !== Reference);
     });
   }
 
