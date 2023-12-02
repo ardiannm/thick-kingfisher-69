@@ -70,7 +70,7 @@ export class Diagnostics {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
   }
 
-  NoSyntaxForEvaluator() {
+  EmptySyntaxForEvaluator() {
     throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Syntax Program Cannot Be Empty.`));
   }
 }

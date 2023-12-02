@@ -2,7 +2,7 @@ import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
-import { BindReferenceAssignment } from "./CodeAnalysis/BindReferenceAssignment";
+import { ReferenceAssignment } from "./CodeAnalysis/ReferenceAssignment";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
 import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
@@ -29,32 +29,34 @@ export class Binder {
   private Nodes = new Map<string, BoundReferenceAssignment>();
   private References = new Set<string>();
 
-  Bind<Structure extends SyntaxNode>(Node: Structure): BoundNode {
+  Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
+    type NodeType<T> = Kind & T;
+
     switch (Node.Kind) {
       case SyntaxKind.SyntaxTree:
-        return this.BindSyntaxTree(Node as Structure & SyntaxTree);
+        return this.BindSyntaxTree(Node as NodeType<SyntaxTree>);
       case SyntaxKind.IdentifierToken:
-        return this.BindIdentifier(Node as Structure & SyntaxToken);
+        return this.BindIdentifier(Node as NodeType<SyntaxToken>);
       case SyntaxKind.NumberToken:
-        return this.BindNumber(Node as Structure & SyntaxToken);
+        return this.BindNumber(Node as NodeType<SyntaxToken>);
       case SyntaxKind.CellReference:
-        return this.BindCellReference(Node as Structure & CellReference);
+        return this.BindCellReference(Node as NodeType<CellReference>);
       case SyntaxKind.RangeReference:
-        return this.BindRangeReference(Node as Structure & RangeReference);
+        return this.BindRangeReference(Node as NodeType<RangeReference>);
       case SyntaxKind.ParenthesizedExpression:
-        return this.BindParenthesizedExpression(Node as Structure & ParenthesizedExpression);
+        return this.BindParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.UnaryExpression:
-        return this.BindUnaryExpression(Node as Structure & UnaryExpression);
+        return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
-        return this.BindBinaryExpression(Node as Structure & BinaryExpression);
+        return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ReferenceDeclaration:
-        return this.BindReferenceAssignment(Node as Structure & BindReferenceAssignment);
+        return this.BindReferenceAssignment(Node as NodeType<ReferenceAssignment>);
       default:
         this.Logger.MissingBindingMethod(Node.Kind);
     }
   }
 
-  private BindReferenceAssignment(Node: BindReferenceAssignment) {
+  private BindReferenceAssignment(Node: ReferenceAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;

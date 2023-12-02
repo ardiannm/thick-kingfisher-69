@@ -6,10 +6,12 @@ import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 export class Evaluator {
   constructor(public Logger: Diagnostics) {}
 
-  Evaluate<Structure extends BoundNode>(Bound: Structure) {
+  Evaluate<Kind extends BoundNode>(Bound: Kind): number {
+    type BoundType<T> = Kind & T;
+
     switch (Bound.Kind) {
       case BoundKind.BoundSyntaxTree:
-        return this.EvaluateSyntaxTree(Bound as Structure & BoundSyntaxTree);
+        return this.EvaluateSyntaxTree(Bound as BoundType<BoundSyntaxTree>);
       default:
         this.Logger.MissingEvaluationMethod(Bound.Kind);
     }
@@ -21,6 +23,6 @@ export class Evaluator {
       Bound.Root.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
       return Value;
     }
-    this.Logger.NoSyntaxForEvaluator();
+    this.Logger.EmptySyntaxForEvaluator();
   }
 }
