@@ -20,7 +20,7 @@ import { BoundSyntaxTree } from "./BoundSyntaxTree";
 import { BoundWithReference } from "./BoundWithReference";
 
 export class Binder {
-  constructor(public Report: Diagnostics) {}
+  constructor(public Logger: Diagnostics) {}
 
   private Nodes = new Map<string, BoundReferenceAssignment>();
   private References = new Set<string>();
@@ -42,7 +42,7 @@ export class Binder {
       case SyntaxKind.ReferenceDeclaration:
         return this.BindReferenceAssignment(Node as Structure & BindReferenceAssignment);
       default:
-        this.Report.MissingBindingMethod(Node.Kind);
+        this.Logger.MissingBindingMethod(Node.Kind);
     }
   }
 
@@ -60,7 +60,7 @@ export class Binder {
 
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
-          if (!this.Nodes.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
+          if (!this.Nodes.has(Reference)) this.Logger.ReferenceCannotBeFound(Reference);
         }
 
         this.CheckDependency(Ref, Referencing);
@@ -69,12 +69,12 @@ export class Binder {
         this.Nodes.set(Ref, BoundNode);
         return BoundNode;
       default:
-        this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
+        this.Logger.CannotReferenceNode(Node.Left.Kind, Node.Kind);
     }
   }
 
   private CheckDependency(Reference: string, Referencing: Array<string>) {
-    if (Referencing.includes(Reference)) this.Report.CircularDependency(Reference);
+    if (Referencing.includes(Reference)) this.Logger.CircularDependency(Reference);
     Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Nodes.get(Ref).Referencing));
   }
 
@@ -93,7 +93,7 @@ export class Binder {
       case SyntaxKind.SlashToken:
         return BoundOperatorKind.Division;
       default:
-        this.Report.NotAnOperator(Kind);
+        this.Logger.NotAnOperator(Kind);
     }
   }
 

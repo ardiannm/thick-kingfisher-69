@@ -15,7 +15,7 @@ export class Parser {
   private Pointer = 0;
   private Tokens = new Array<SyntaxToken>();
 
-  constructor(public readonly Input: string, private Report: Diagnostics) {
+  constructor(public readonly Input: string, private Logger: Diagnostics) {
     const Tokenizer = new Lexer(Input);
     var Token: SyntaxToken;
     do {
@@ -24,7 +24,7 @@ export class Parser {
         this.Tokens.push(Token);
       }
       if (Token.Kind === SyntaxKind.BadToken) {
-        this.Report.BadTokenFound(Token);
+        this.Logger.BadTokenFound(Token);
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
@@ -155,7 +155,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    this.Report.TokenNotAMatch(Kind, Token.Kind);
+    this.Logger.TokenNotAMatch(Kind, Token.Kind);
     return Token;
   }
 

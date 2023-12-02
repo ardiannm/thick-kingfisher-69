@@ -27,7 +27,6 @@ while (true) {
   } else {
     try {
       Logger.Log(BoundTree.Bind(Tree));
-      // Logger.Log(Evaluator_.Evaluate(Tree));
     } catch (error) {
       Logger.Log((error as Diagnostic).Message);
     }
