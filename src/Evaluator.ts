@@ -17,6 +17,12 @@ export class Evaluator {
 
   private Nodes = new Map<string, BoundReferenceAssignment>();
   private Values = new Map<string, number>();
+  private Stats = new Map<string, number>();
+  private ReEvaluated = new Set<string>();
+
+  ReportStats() {
+    console.log(this.Stats);
+  }
 
   Evaluate<Kind extends BoundNode>(Bound: Kind) {
     type BoundType<T> = Kind & T;
@@ -43,11 +49,20 @@ export class Evaluator {
     }
   }
 
+  // A1->3; A2->A1+7; A3->A1+A2+5;
   private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
     const Reference = Bound.Reference;
+
+    if (this.Stats.has(Reference)) {
+      this.Stats.set(Reference, this.Stats.get(Reference) + 1);
+    } else {
+      this.Stats.set(Reference, 1);
+    }
+
+    console.log(`'${Reference}'`);
     // Prepare BoundNode
     this.PrepareBoundReferenceForEvaluation(Bound);
-    //  Evaluate
+    // Evaluate
     const Value = this.Evaluate(Bound.Expression);
     this.Values.set(Reference, Value);
     // Re Evaluate Nodes Referring To This Value

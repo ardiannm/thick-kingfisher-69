@@ -31,6 +31,7 @@ while (true) {
       if (ShowTree) Logger.Log(BoundTree);
       const Value = EvaluatorFactory.Evaluate(BoundTree);
       Logger.Log(Value);
+      EvaluatorFactory.ReportStats();
     } catch (error) {
       Logger.Log((error as Diagnostic).Message);
     }
