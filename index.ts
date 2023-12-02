@@ -6,35 +6,35 @@ import { Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
 import { Binder } from "./src/Binder";
 
-const Diagnostics_ = new Diagnostics();
-const Environment_ = new Environment(Diagnostics_);
-const Evaluator_ = new Evaluator(Environment_, Diagnostics_);
+const Logger = new Diagnostics();
+const Environment_ = new Environment(Logger);
+const Evaluator_ = new Evaluator(Environment_, Logger);
 
 var ShowTree = false;
 
 while (true) {
   const Input = Prompt("> ");
-  const Syntax = new Parser(Input, Diagnostics_);
+  const Syntax = new Parser(Input, Logger);
   const Tree = Syntax.Parse();
-  const BoundTree = new Binder(Diagnostics_);
+  const BoundTree = new Binder(Logger);
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
-    Diagnostics_.Log();
+    Logger.Log();
     continue;
   }
 
-  if (ShowTree) Diagnostics_.Log(Tree);
+  if (ShowTree) Logger.Log(Tree);
 
-  if (Diagnostics_.Any()) {
-    Diagnostics_.Show();
+  if (Logger.Any()) {
+    Logger.Show();
   } else {
     try {
-      BoundTree.Bind(Tree);
-      Diagnostics_.Log(Evaluator_.Evaluate(Tree));
+      Logger.Log(BoundTree.Bind(Tree));
+      Logger.Log(Evaluator_.Evaluate(Tree));
     } catch (error) {
-      Diagnostics_.Log((error as Diagnostic).Message);
+      Logger.Log((error as Diagnostic).Message);
     }
   }
-  Diagnostics_.Clear();
+  Logger.Clear();
 }

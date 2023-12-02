@@ -33,7 +33,7 @@ export class Parser {
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
   private ParseReference() {
-    const Left = this.ParseCell();
+    const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
       this.Bag.clear();
