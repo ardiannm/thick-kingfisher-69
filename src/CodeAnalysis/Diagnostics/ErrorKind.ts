@@ -3,4 +3,5 @@ export enum ErrorKind {
   Environment = "Environment",
   Evaluator = "Evaluator",
   Binder = "Binder",
+  Lexer = "Lexer",
 }

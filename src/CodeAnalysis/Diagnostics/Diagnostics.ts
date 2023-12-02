@@ -30,7 +30,7 @@ export class Diagnostics {
   }
 
   BadTokenFound(Token: SyntaxToken) {
-    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Bad Character '${Token.Text}' Found.`));
+    return this.ReportError(new Diagnostic(ErrorKind.Lexer, `Bad Character '${Token.Text}' Found.`));
   }
 
   TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind) {
@@ -51,10 +51,6 @@ export class Diagnostics {
 
   CircularDependency(Reference: string) {
     throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Circular Dependency For '${Reference}' Detected.`));
-  }
-
-  TrailingGarbageFound() {
-    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Trailing Garbage Found For The Syntax Tree.`));
   }
 
   MissingBindingMethod(Kind: SyntaxKind) {

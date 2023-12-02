@@ -26,9 +26,12 @@ export class Parser {
 
   // Main Parsing Method
   Parse() {
-    const Expression = this.ParseReferenceDeclaration();
-    if (!this.MatchToken(SyntaxKind.EndOfFileToken)) this.Report.TrailingGarbageFound();
-    return new SyntaxTree(SyntaxKind.SyntaxTree, Expression);
+    const Expressions = new Array();
+    while (this.Any()) {
+      Expressions.push(this.ParseReferenceDeclaration());
+      this.ExpectToken(SyntaxKind.SemiColonToken);
+    }
+    return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
   }
 
   // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
@@ -155,5 +158,10 @@ export class Parser {
     const Token = this.NextToken();
     this.Report.TokenNotAMatch(Kind, Token.Kind);
     return Token;
+  }
+
+  // Check To See If There Are More Tokens
+  private Any() {
+    return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
 }

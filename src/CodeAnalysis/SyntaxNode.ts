@@ -19,8 +19,10 @@ export class SyntaxNode {
   }
 }
 
+export class Expression extends SyntaxNode {}
+
 export class SyntaxTree extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Root: SyntaxNode) {
+  constructor(public Kind: SyntaxKind, public Root: Array<Expression>) {
     super(Kind);
   }
   public Print(Node: SyntaxNode = this, Indentation = "") {
@@ -36,8 +38,6 @@ export class SyntaxTree extends SyntaxNode {
     return Text;
   }
 }
-
-export class Expression extends SyntaxNode {}
 
 export class CellReference extends Expression {
   constructor(public Kind: SyntaxKind, public Reference: string, public Left: SyntaxToken, public Right: SyntaxToken) {

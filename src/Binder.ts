@@ -68,7 +68,10 @@ export class Binder {
   }
 
   private BindSyntaxTree(Node: SyntaxTree) {
-    return new BoundSyntaxTree(Binding.BoundSyntaxTree, this.Bind(Node.Root));
+    return new BoundSyntaxTree(
+      Binding.BoundSyntaxTree,
+      Node.Root.map((Expression) => this.Bind(Expression))
+    );
   }
 }
 
@@ -86,7 +89,7 @@ class BoundNode {
 }
 
 class BoundSyntaxTree extends BoundNode {
-  constructor(public Kind: Binding, public Root: BoundExpression) {
+  constructor(public Kind: Binding, public Root: Array<BoundExpression>) {
     super(Kind);
   }
 }

@@ -1,6 +1,6 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, CellReference, ParenthesizedExpression, ReferenceDeclaration, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, CellReference, Expression, ParenthesizedExpression, ReferenceDeclaration, SyntaxNode, SyntaxTree, UnaryExpression } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { Environment } from "./Environment";
 
@@ -29,7 +29,9 @@ export class Evaluator {
   }
 
   private SyntaxTree(Node: SyntaxTree) {
-    return this.Evaluate(Node.Root);
+    let Value: number;
+    Node.Root.forEach((Expression) => (Value = this.Evaluate(Expression)));
+    return Value;
   }
 
   private NumberToken(Node: SyntaxToken): number {
