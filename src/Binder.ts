@@ -42,6 +42,10 @@ export class Binder {
         this.References.clear();
 
         const Expression = this.Bind(Node.Expression);
+
+        // Check For Self-Referencing Error
+        if (this.References.has(Ref)) this.Report.CircularDependency(Ref);
+
         const Referencing = Array.from(this.References);
 
         this.References.clear();
