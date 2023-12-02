@@ -4,10 +4,12 @@ import { Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
 import { Binder } from "./src/Binder";
 import { Evaluator } from "./src/Evaluator";
+import { Environment } from "./src/Environment";
 
 const Logger = new Diagnostics();
 const BinderFactory = new Binder(Logger);
-const EvaluatorFactory = new Evaluator(Logger);
+const EnvironmentFactory = new Environment(Logger);
+const EvaluatorFactory = new Evaluator(EnvironmentFactory, Logger);
 
 var ShowTree = false;
 
@@ -31,7 +33,6 @@ while (true) {
       if (ShowTree) Logger.Log(BoundTree);
       const Value = EvaluatorFactory.Evaluate(BoundTree);
       Logger.Log(Value);
-      EvaluatorFactory.ReportStats();
     } catch (error) {
       Logger.Log((error as Diagnostic).Message);
     }
