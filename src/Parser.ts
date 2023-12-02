@@ -111,7 +111,7 @@ export class Parser {
     switch (Kind) {
       // case SyntaxKind.TrueToken:
       // case SyntaxKind.FalseToken:
-      // case SyntaxKind.IdentifierToken:
+      case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
