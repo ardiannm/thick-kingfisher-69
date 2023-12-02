@@ -68,12 +68,14 @@ export class Binder {
         const Referencing = Array.from(this.References);
         this.References.clear();
 
+        // Check For Circular Dependency Issues
+        this.CheckDependency(Ref, Referencing);
+
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
           if (!this.Dependencies.has(Reference)) this.Logger.ReferenceCannotBeFound(Reference);
         }
 
-        this.CheckDependency(Ref, Referencing);
         this.Dependencies.set(Ref, Referencing);
 
         return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, Ref, Referencing, [], Expression);
