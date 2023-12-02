@@ -50,7 +50,7 @@ export class Diagnostics {
   }
 
   CircularDependency(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Circular Dependency For '${Reference}' Detected.`));
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Circular Dependency For '${Reference}' Detected.`));
   }
 
   MissingBindingMethod(Kind: SyntaxKind) {

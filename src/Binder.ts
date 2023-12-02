@@ -39,7 +39,6 @@ export class Binder {
         // Capture All Cell References
         this.References.clear();
         const Expression = this.Bind(Node.Expression);
-
         const Referencing = Array.from(this.References);
         this.References.clear();
 
@@ -48,15 +47,19 @@ export class Binder {
           if (!this.Nodes.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
         }
 
-        // Create Node
-        const BoundNode = new BoundReferenceAssignment(Binding.BoundReferenceAssignment, Ref, Referencing, [], Expression);
+        this.CheckDependency(Ref, Referencing);
 
-        // Finally Set Or OverWrite The Node
+        const BoundNode = new BoundReferenceAssignment(Binding.BoundReferenceAssignment, Ref, Referencing, [], Expression);
         this.Nodes.set(Ref, BoundNode);
         return BoundNode;
       default:
         this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
     }
+  }
+
+  private CheckDependency(Reference: string, Referencing: Array<string>) {
+    if (Referencing.includes(Reference)) this.Report.CircularDependency(Reference);
+    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Nodes.get(Ref).Referencing));
   }
 
   private BinaryExpression(Node: BinaryExpression) {
