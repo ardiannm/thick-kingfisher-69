@@ -64,4 +64,8 @@ export class Diagnostics {
   ReferenceCannotBeFound(Reference: string) {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Cannot Find Reference '${Reference}'.`));
   }
+
+  CannotRedeclareReference(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
+  }
 }

@@ -36,10 +36,14 @@ export class Binder {
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
         const Ref = LeftBound.Reference; // Capture The Reference
 
+        if (this.Nodes.has(Ref)) this.Report.CannotRedeclareReference(Ref);
+
         // Capture All Cell References
         this.References.clear();
+
         const Expression = this.Bind(Node.Expression);
         const Referencing = Array.from(this.References);
+
         this.References.clear();
 
         // Check If References Being Referenced Actually Exist
@@ -49,11 +53,13 @@ export class Binder {
           if (!ReferencedBy.includes(Ref)) ReferencedBy.push(Ref);
         }
         // Create Node
+
         const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, Ref, Referencing, [], Expression);
         // If The Node Is Already Exsiting Then Copy The ReferencedBy Value
         if (this.Nodes.has(Ref)) {
           BoundNode.ReferencedBy = this.Nodes.get(Ref).ReferencedBy;
         }
+
         // Finally Set Or OverWrite The Node
         this.Nodes.set(Ref, BoundNode);
         return BoundNode;
