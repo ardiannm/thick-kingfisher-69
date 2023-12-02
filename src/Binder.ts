@@ -32,13 +32,18 @@ export class Binder {
       case SyntaxKind.CellReference:
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
 
+        this.Declarations.clear();
+        const Expression = this.Bind(Node.Expression);
+        const Referencing = Array.from(this.Declarations);
+        this.Declarations.clear();
+
         // Check If References Being Referenced Actually Exist
-        for (const Reference of Node.Referencing) {
+        for (const Reference of Referencing) {
           if (!this.Declarations.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
         }
 
         // Save Reference Declaration
-        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Node.Referencing, Node.ReferencedBy, this.Bind(Node.Expression));
+        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Referencing, [], Expression);
         this.Declarations.add(BoundNode.Reference);
         return BoundNode;
       default:
@@ -54,6 +59,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
+    this.Declarations.add(Reference);
     return new BoundCellReference(Binding.BoundCellReference, Reference);
   }
 

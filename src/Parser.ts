@@ -8,7 +8,6 @@ import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 export class Parser {
   private Pointer = 0;
   private Tokens = new Array<SyntaxToken>();
-  private Bag = new Set<string>();
 
   constructor(public readonly Input: string, private Report: Diagnostics) {
     const Tokenizer = new Lexer(Input);
@@ -39,11 +38,7 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
-      this.Bag.clear();
-      const Right = this.ParseBinaryExpression();
-      const Referencing = Array.from(this.Bag);
-      this.Bag.clear();
-      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, Referencing, [], Right);
+      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, this.ParseBinaryExpression());
     }
     return Left;
   }
@@ -101,9 +96,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      const Reference = Left.Text + Right.Text;
-      this.Bag.add(Reference);
-      return new CellReference(SyntaxKind.CellReference, Reference, Left, Right);
+      return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();
   }
