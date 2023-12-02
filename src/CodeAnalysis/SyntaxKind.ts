@@ -18,12 +18,12 @@ export enum SyntaxKind {
   PointerToken = "PointerToken",
   // Expressions
   SyntaxTree = "SyntaxTree",
-  ReferenceDeclaration = "ReferenceDeclaration",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   ParenthesizedExpression = "ParenthesizedExpression",
   RangeReference = "RangeReference",
   CellReference = "CellReference",
+  ReferenceAssignment = "ReferenceAssignment",
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",

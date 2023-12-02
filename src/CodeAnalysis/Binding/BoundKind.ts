@@ -6,5 +6,5 @@ export enum BoundKind {
   BoundCellReference = "BoundCellReference",
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
-  BoundUnaryExpression = "BoundUnaryExpression"
+  BoundUnaryExpression = "BoundUnaryExpression",
 }

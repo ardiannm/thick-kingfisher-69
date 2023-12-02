@@ -30,7 +30,8 @@ while (true) {
     try {
       const BoundTree = BinderFactory.Bind(Tree);
       Logger.Log(BoundTree);
-      EvaluatorFactory.Evaluate(BoundTree);
+      const Value = EvaluatorFactory.Evaluate(BoundTree);
+      Logger.Log(Value);
     } catch (error) {
       Logger.Log((error as Diagnostic).Message);
     }

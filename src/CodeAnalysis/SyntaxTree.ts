@@ -3,7 +3,7 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 
 export class SyntaxTree extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Root: Array<Expression>) {
+  constructor(public Kind: SyntaxKind, public Expressions: Array<Expression>) {
     super(Kind);
   }
   public Print(Node: SyntaxNode = this, Indentation = "") {

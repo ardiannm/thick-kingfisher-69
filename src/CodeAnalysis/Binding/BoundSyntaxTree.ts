@@ -3,7 +3,7 @@ import { BoundNode } from "./BoundNode";
 import { BoundExpression } from "./BoundExpression";
 
 export class BoundSyntaxTree extends BoundNode {
-  constructor(public Kind: BoundKind, public Root: Array<BoundExpression>) {
+  constructor(public Kind: BoundKind, public Expressions: Array<BoundExpression>) {
     super(Kind);
   }
 }

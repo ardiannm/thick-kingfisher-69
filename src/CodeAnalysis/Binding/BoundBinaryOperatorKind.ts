@@ -1,4 +1,4 @@
-export enum BoundOperatorKind {
+export enum BoundBinaryOperatorKind {
   Addition = "Addition",
   Subtraction = "Subtraction",
   Multiplication = "Multiplication",

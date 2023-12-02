@@ -13,7 +13,7 @@ import { BoundIdentifier } from "./CodeAnalysis/Binding/BoundIdentifier";
 import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
-import { BoundOperatorKind } from "./CodeAnalysis/Binding/BoundOperatorKind";
+import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./CodeAnalysis/Binding/BoundRangeReference";
 import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
@@ -49,7 +49,7 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.ReferenceDeclaration:
+      case SyntaxKind.ReferenceAssignment:
         return this.BindReferenceAssignment(Node as NodeType<ReferenceAssignment>);
       default:
         this.Logger.MissingBindingMethod(Node.Kind);
@@ -92,16 +92,16 @@ export class Binder {
     return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
   }
 
-  private BindOperatorKind(Kind: SyntaxKind): BoundOperatorKind {
+  private BindOperatorKind(Kind: SyntaxKind): BoundBinaryOperatorKind {
     switch (Kind) {
       case SyntaxKind.PlusToken:
-        return BoundOperatorKind.Addition;
+        return BoundBinaryOperatorKind.Addition;
       case SyntaxKind.MinusToken:
-        return BoundOperatorKind.Subtraction;
+        return BoundBinaryOperatorKind.Subtraction;
       case SyntaxKind.StarToken:
-        return BoundOperatorKind.Multiplication;
+        return BoundBinaryOperatorKind.Multiplication;
       case SyntaxKind.SlashToken:
-        return BoundOperatorKind.Division;
+        return BoundBinaryOperatorKind.Division;
       default:
         this.Logger.NotAnOperator(Kind);
     }
@@ -149,9 +149,7 @@ export class Binder {
   }
 
   private BindSyntaxTree(Node: SyntaxTree) {
-    return new BoundSyntaxTree(
-      BoundKind.BoundSyntaxTree,
-      Node.Root.map((Expression) => this.Bind(Expression))
-    );
+    const Expressions = Node.Expressions.map((Expression) => this.Bind(Expression));
+    return new BoundSyntaxTree(BoundKind.BoundSyntaxTree, Expressions);
   }
 }
