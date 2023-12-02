@@ -6,7 +6,7 @@ import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 export class Binder {
   constructor(public Report: Diagnostics) {}
 
-  private Declarations = new Map<string, BoundReferenceDeclaration>();
+  private Declarations = new Set<string>();
 
   Bind<Structure extends SyntaxNode>(Node: Structure): BoundNode {
     switch (Node.Kind) {
@@ -37,9 +37,9 @@ export class Binder {
           if (!this.Declarations.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
         }
 
-        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Node.Referencing, Node.ReferencedBy, this.Bind(Node.Expression));
         // Save Reference Declaration
-        this.Declarations.set(BoundNode.Reference, BoundNode);
+        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Node.Referencing, Node.ReferencedBy, this.Bind(Node.Expression));
+        this.Declarations.add(BoundNode.Reference);
         return BoundNode;
       default:
         this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
