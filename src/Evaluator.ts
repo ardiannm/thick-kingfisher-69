@@ -15,6 +15,9 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperato
 export class Evaluator {
   constructor(public Logger: Diagnostics) {}
 
+  private Nodes = new Map<string, BoundReferenceAssignment>();
+  private Values = new Map<string, number>();
+
   Evaluate<Kind extends BoundNode>(Bound: Kind) {
     type BoundType<T> = Kind & T;
 
@@ -41,7 +44,40 @@ export class Evaluator {
   }
 
   private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
-    return this.Evaluate(Bound.Expression);
+    const Reference = Bound.Reference;
+
+    if (this.Nodes.has(Reference)) {
+      const PrevNode = this.Nodes.get(Reference);
+
+      // If Other Nodes Are Referencing This Node Then Keep The References
+
+      Bound.ReferencedBy = PrevNode.ReferencedBy;
+
+      // Remove Previous Dependencies That Now Do Not Exist
+
+      PrevNode.Referencing.forEach((Ref) => {
+        if (!Bound.Referencing.includes(Ref)) {
+          const DependencyNode = this.Nodes.get(Ref);
+          DependencyNode.ReferencedBy = DependencyNode.ReferencedBy.filter((Each) => Each !== Reference);
+        }
+      });
+    }
+
+    // Register Node To Its Dependency Nodes
+    Bound.Referencing.forEach((Ref) => this.Nodes.get(Ref).ReferencedBy.push(Reference));
+
+    // Evaluate And Store Value
+
+    const Value = this.Evaluate(Bound.Expression);
+    this.Values.set(Reference, Value);
+
+    // Re Evaluate Nodes That Are Referencing This Reference Value
+    Bound.ReferencedBy.forEach((Ref) => this.EvaluateReferenceAssignment(this.Nodes.get(Ref)));
+
+    // Finally Store This Node For Future ReEvaluations
+
+    this.Nodes.set(Reference, Bound);
+    return Value;
   }
 
   private EvaluateBinaryExpression(Bound: BoundBinaryExpression) {
@@ -78,7 +114,9 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Bound: BoundCellReference) {
-    this.Logger.MissingEvaluationMethod(Bound.Kind);
+    this.Logger.Log(this.Nodes.get(Bound.Reference));
+    if (this.Values.has(Bound.Reference)) return this.Values.get(Bound.Reference);
+    this.Logger.ValueDoesNotExist(Bound.Reference);
   }
 
   private EvaluateNumber(Bound: BoundNumber) {

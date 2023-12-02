@@ -23,14 +23,12 @@ while (true) {
   const ParserFactory = new Parser(Input, Logger);
   const Tree = ParserFactory.Parse();
 
-  if (ShowTree) Logger.Log(Tree);
-
   if (Logger.Any()) {
     Logger.Show();
   } else {
     try {
       const BoundTree = BinderFactory.Bind(Tree);
-      Logger.Log(BoundTree);
+      if (ShowTree) Logger.Log(BoundTree);
       const Value = EvaluatorFactory.Evaluate(BoundTree);
       Logger.Log(Value);
     } catch (error) {

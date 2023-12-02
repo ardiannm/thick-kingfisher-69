@@ -73,4 +73,8 @@ export class Diagnostics {
   EmptySyntaxForEvaluator() {
     throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Syntax Program Cannot Be Empty.`));
   }
+
+  ValueDoesNotExist(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Value For '${Reference}' Does Not Exist.`));
+  }
 }
