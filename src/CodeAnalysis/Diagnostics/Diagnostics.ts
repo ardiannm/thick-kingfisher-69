@@ -69,4 +69,8 @@ export class Diagnostics {
   CannotRedeclareReference(Reference: string) {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
   }
+
+  NoSyntaxForEvaluator() {
+    throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Syntax Program Cannot Be Empty.`));
+  }
 }

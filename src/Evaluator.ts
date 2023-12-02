@@ -1,13 +1,26 @@
+import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
 export class Evaluator {
   constructor(public Logger: Diagnostics) {}
 
-  Evaluate<Structure extends BoundNode>(Node: Structure) {
-    switch (Node.Kind) {
+  Evaluate<Structure extends BoundNode>(Bound: Structure) {
+    switch (Bound.Kind) {
+      case BoundKind.BoundSyntaxTree:
+        return this.EvaluateSyntaxTree(Bound as Structure & BoundSyntaxTree);
       default:
-        this.Logger.MissingEvaluationMethod(Node.Kind);
+        this.Logger.MissingEvaluationMethod(Bound.Kind);
     }
+  }
+
+  private EvaluateSyntaxTree(Bound: BoundSyntaxTree) {
+    let Value: number = 0;
+    if (Bound.Root.length) {
+      Bound.Root.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
+      return Value;
+    }
+    this.Logger.NoSyntaxForEvaluator();
   }
 }
