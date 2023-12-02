@@ -109,13 +109,13 @@ export class Parser {
   private ParseLiteral() {
     const Kind = this.CurrentToken.Kind;
     switch (Kind) {
-      case SyntaxKind.TrueToken:
-      case SyntaxKind.FalseToken:
-      case SyntaxKind.IdentifierToken:
+      // case SyntaxKind.TrueToken:
+      // case SyntaxKind.FalseToken:
+      // case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.Expression);
+        return this.ExpectToken(SyntaxKind.NumberToken);
     }
   }
 
