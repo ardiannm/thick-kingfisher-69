@@ -6,7 +6,8 @@ import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 export class Binder {
   constructor(public Report: Diagnostics) {}
 
-  private Declarations = new Set<string>();
+  private Nodes = new Map<string, BoundReferenceDeclaration>();
+  private References = new Set<string>();
 
   Bind<Structure extends SyntaxNode>(Node: Structure): BoundNode {
     switch (Node.Kind) {
@@ -31,20 +32,26 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
+        const Ref = LeftBound.Reference; // Capture The Reference
 
-        this.Declarations.clear();
+        // Capture All Cell References
+        this.References.clear();
         const Expression = this.Bind(Node.Expression);
-        const Referencing = Array.from(this.Declarations);
-        this.Declarations.clear();
+        const Referencing = Array.from(this.References);
+        this.References.clear();
 
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
-          if (!this.Declarations.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
+          if (!this.Nodes.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
         }
-
-        // Save Reference Declaration
-        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Referencing, [], Expression);
-        this.Declarations.add(BoundNode.Reference);
+        // Create Node
+        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, Ref, Referencing, [], Expression);
+        // If The Node Is Already Exsiting Then Copy The ReferencedBy Value
+        if (this.Nodes.has(BoundNode.Reference)) {
+          BoundNode.ReferencedBy = this.Nodes.get(Ref).ReferencedBy;
+        }
+        // Finally Set Or OverWrite The Node
+        this.Nodes.set(Ref, BoundNode);
         return BoundNode;
       default:
         this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
@@ -59,7 +66,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    this.Declarations.add(Reference);
+    this.References.add(Reference);
     return new BoundCellReference(Binding.BoundCellReference, Reference);
   }
 
