@@ -11,4 +11,9 @@ export class BoundReferenceAssignment extends BoundWithReference {
     if (this.ReferencedBy.includes(Reference)) return;
     this.ReferencedBy.push(Reference);
   }
+
+  UnSubscribe(Reference: string) {
+    console.log(`Unsubscribing ${Reference} From ${this.Reference}`);
+    this.ReferencedBy = this.ReferencedBy.filter((Ref) => Ref !== Reference);
+  }
 }
