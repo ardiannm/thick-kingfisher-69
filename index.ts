@@ -13,14 +13,15 @@ var ShowTree = false;
 
 while (true) {
   const Input = Prompt("> ");
-  const ParserFactory = new Parser(Input, Logger);
-  const Tree = ParserFactory.Parse();
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
     Logger.Log();
     continue;
   }
+
+  const ParserFactory = new Parser(Input, Logger);
+  const Tree = ParserFactory.Parse();
 
   if (ShowTree) Logger.Log(Tree);
 
