@@ -2,6 +2,7 @@ import { SyntaxKind } from "../SyntaxKind";
 import { SyntaxToken } from "../SyntaxToken";
 import { ErrorKind } from "./ErrorKind";
 import { Diagnostic } from "./Diagnostic";
+import { BoundKind } from "../Binding/BoundKind";
 
 export class Diagnostics {
   private Bag = new Array<Diagnostic>();
@@ -20,8 +21,8 @@ export class Diagnostics {
     this.Bag = new Array<Diagnostic>();
   }
 
-  Log(tree: Object = "") {
-    console.log("\n" + `${typeof tree === "string" ? tree : JSON.stringify(tree, undefined, 2)}` + "\n");
+  Log(Tree: Object = "") {
+    console.log("\n" + `${typeof Tree === "string" ? Tree : JSON.stringify(Tree, undefined, 2)}` + "\n");
   }
 
   private ReportError(Err: Diagnostic) {
@@ -41,7 +42,7 @@ export class Diagnostics {
     throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
-  MissingEvaluationMethod(Kind: SyntaxKind) {
+  MissingEvaluationMethod(Kind: BoundKind) {
     throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
