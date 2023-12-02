@@ -1,7 +1,23 @@
-import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
-import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { BinaryExpression, CellReference, RangeReference, BindReferenceAssignment, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
-import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
+import { Diagnostics } from "../Diagnostics/Diagnostics";
+import { SyntaxKind } from "../SyntaxKind";
+import { SyntaxNode } from "../SyntaxNode";
+import { SyntaxTree } from "../SyntaxTree";
+import { BindReferenceAssignment } from "../BindReferenceAssignment";
+import { BinaryExpression } from "../BinaryExpression";
+import { RangeReference } from "../RangeReference";
+import { CellReference } from "../CellReference";
+import { SyntaxToken } from "../SyntaxToken";
+import { BoundBinaryExpression } from "./BoundBinaryExpression";
+import { BoundCellReference } from "./BoundCellReference";
+import { BoundIdentifier } from "./BoundIdentifier";
+import { BoundKind } from "./BoundKind";
+import { BoundNode } from "./BoundNode";
+import { BoundNumber } from "./BoundNumber";
+import { BoundOperatorKind } from "./BoundOperatorKind";
+import { BoundRangeReference } from "./BoundRangeReference";
+import { BoundReferenceAssignment } from "./BoundReferenceAssignment";
+import { BoundSyntaxTree } from "./BoundSyntaxTree";
+import { BoundWithReference } from "./BoundWithReference";
 
 export class Binder {
   constructor(public Report: Diagnostics) {}
@@ -49,7 +65,7 @@ export class Binder {
 
         this.CheckDependency(Ref, Referencing);
 
-        const BoundNode = new BoundReferenceAssignment(Binding.BoundReferenceAssignment, Ref, Referencing, [], Expression);
+        const BoundNode = new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, Ref, Referencing, [], Expression);
         this.Nodes.set(Ref, BoundNode);
         return BoundNode;
       default:
@@ -63,7 +79,7 @@ export class Binder {
   }
 
   private BinaryExpression(Node: BinaryExpression) {
-    return new BoundBinaryExpression(Binding.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+    return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
   }
 
   private BindOperatorKind(Kind: SyntaxKind): BoundOperatorKind {
@@ -84,100 +100,29 @@ export class Binder {
   private BindRangeReference(Node: RangeReference) {
     const BoundLeft = this.Bind(Node.Left) as BoundWithReference;
     const BoundRight = this.Bind(Node.Right) as BoundWithReference;
-    return new BoundRangeReference(Binding.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
+    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
   }
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
     this.References.add(Reference);
-    return new BoundCellReference(Binding.BoundCellReference, Reference);
+    return new BoundCellReference(BoundKind.BoundCellReference, Reference);
   }
 
   private BindIdentifier(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundIdentifier(Binding.BoundNumber, Node.Text, Value);
+    return new BoundIdentifier(BoundKind.BoundNumber, Node.Text, Value);
   }
 
   private BindNumber(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(Binding.BoundNumber, Node.Text, Value);
+    return new BoundNumber(BoundKind.BoundNumber, Node.Text, Value);
   }
 
   private BindSyntaxTree(Node: SyntaxTree) {
     return new BoundSyntaxTree(
-      Binding.BoundSyntaxTree,
+      BoundKind.BoundSyntaxTree,
       Node.Root.map((Expression) => this.Bind(Expression))
     );
-  }
-}
-
-enum Binding {
-  BoundSyntaxTree = "BoundSyntaxTree",
-  BoundReferenceAssignment = "BoundReferenceAssignment",
-  BoundBinaryExpression = "BoundBinaryExpression",
-  BoundRangeReference = "BoundRangeReference",
-  BoundCellReference = "BoundCellReference",
-  BoundIdentifier = "BoundIdentifier",
-  BoundNumber = "BoundNumber",
-}
-
-enum BoundOperatorKind {
-  Addition = "Addition",
-  Subtraction = "Subtraction",
-  Multiplication = "Multiplication",
-  Division = "Division",
-}
-
-class BoundNode {
-  constructor(public Kind: Binding) {}
-}
-
-class BoundSyntaxTree extends BoundNode {
-  constructor(public Kind: Binding, public Root: Array<BoundExpression>) {
-    super(Kind);
-  }
-}
-
-class BoundExpression extends BoundNode {}
-
-class BoundWithReference extends BoundExpression {
-  constructor(public Kind: Binding, public Reference: string) {
-    super(Kind);
-  }
-}
-
-class BoundNumber extends BoundWithReference {
-  constructor(public Kind: Binding, public Reference: string, public Value: number) {
-    super(Kind, Reference);
-  }
-}
-
-class BoundIdentifier extends BoundWithReference {
-  constructor(public Kind: Binding, public Reference: string, public Value: number) {
-    super(Kind, Reference);
-  }
-}
-
-class BoundCellReference extends BoundWithReference {
-  constructor(public Kind: Binding, public Reference: string) {
-    super(Kind, Reference);
-  }
-}
-
-class BoundRangeReference extends BoundExpression {
-  constructor(public Kind: Binding, public Reference: string) {
-    super(Kind);
-  }
-}
-
-class BoundBinaryExpression extends BoundExpression {
-  constructor(public Kind: Binding, public Left: BoundExpression, public Operator: BoundOperatorKind, public Right: BoundExpression) {
-    super(Kind);
-  }
-}
-
-class BoundReferenceAssignment extends BoundWithReference {
-  constructor(public Kind: Binding, public Reference: string, public Referencing: Array<string>, public ReferencedBy: Array<string>, public Expression: BoundExpression) {
-    super(Kind, Reference);
   }
 }

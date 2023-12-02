@@ -1,7 +1,13 @@
 import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree, CellReference, BinaryExpression, UnaryExpression, ParenthesizedExpression, RangeReference, BindReferenceAssignment } from "./CodeAnalysis/SyntaxNode";
+import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
+import { BindReferenceAssignment } from "./CodeAnalysis/BindReferenceAssignment";
+import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
+import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
+import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
+import { RangeReference } from "./CodeAnalysis/RangeReference";
+import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
