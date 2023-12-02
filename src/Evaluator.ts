@@ -45,39 +45,38 @@ export class Evaluator {
 
   private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
     const Reference = Bound.Reference;
-
-    if (this.Nodes.has(Reference)) {
-      const PrevNode = this.Nodes.get(Reference);
-
-      // If Other Nodes Are Referencing This Node Then Keep The References
-
-      Bound.ReferencedBy = PrevNode.ReferencedBy;
-
-      // Remove Previous Dependencies That Now Do Not Exist
-
-      PrevNode.Referencing.forEach((Ref) => {
-        if (!Bound.Referencing.includes(Ref)) {
-          const DependencyNode = this.Nodes.get(Ref);
-          DependencyNode.ReferencedBy = DependencyNode.ReferencedBy.filter((Each) => Each !== Reference);
-        }
-      });
-    }
-
-    // Register Node To Its Dependency Nodes
-    Bound.Referencing.forEach((Ref) => this.Nodes.get(Ref).ReferencedBy.push(Reference));
-
-    // Evaluate And Store Value
-
+    // Prepare BoundNode
+    this.PrepareBoundReferenceForEvaluation(Bound);
+    //  Evaluate
     const Value = this.Evaluate(Bound.Expression);
     this.Values.set(Reference, Value);
-
-    // Re Evaluate Nodes That Are Referencing This Reference Value
+    // Re Evaluate Nodes Referring To This Value
     Bound.ReferencedBy.forEach((Ref) => this.EvaluateReferenceAssignment(this.Nodes.get(Ref)));
-
-    // Finally Store This Node For Future ReEvaluations
-
+    // Store Reference Node
     this.Nodes.set(Reference, Bound);
     return Value;
+  }
+
+  private PrepareBoundReferenceForEvaluation(Bound: BoundReferenceAssignment) {
+    const Reference = Bound.Reference;
+    // Clear Dependencies If Already Existing
+    if (this.Nodes.has(Reference)) {
+      const PrevNode = this.Nodes.get(Reference);
+      // If Other Nodes Are Referencing This Node Then Keep The References
+      Bound.ReferencedBy = PrevNode.ReferencedBy;
+      // Remove Node From Previous Dependecies
+      PrevNode.Referencing.forEach((Ref) => {
+        if (Bound.Referencing.includes(Ref)) return;
+        const DependencyNode = this.Nodes.get(Ref);
+        DependencyNode.ReferencedBy = DependencyNode.ReferencedBy.filter((Each) => Each !== Reference);
+      });
+    }
+    // Register Node To Its Dependency Nodes
+    Bound.Referencing.forEach((Ref) => {
+      const Node = this.Nodes.get(Ref);
+      if (Node.ReferencedBy.includes(Reference)) return; // Prevent Storing Multiple References
+      Node.ReferencedBy.push(Reference);
+    });
   }
 
   private EvaluateBinaryExpression(Bound: BoundBinaryExpression) {
@@ -114,7 +113,6 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Bound: BoundCellReference) {
-    this.Logger.Log(this.Nodes.get(Bound.Reference));
     if (this.Values.has(Bound.Reference)) return this.Values.get(Bound.Reference);
     this.Logger.ValueDoesNotExist(Bound.Reference);
   }
