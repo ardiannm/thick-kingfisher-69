@@ -41,10 +41,11 @@ export class Evaluator {
     }
   }
 
-  // A1->3; A2->A1+7; A3->A1+A2+5;
   private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
     const Value = this.Evaluate(Bound.Expression);
-    this.Env.Set(Bound, Value);
+    this.Env.Assign(Bound, Value).forEach((OutDatedBound) => {
+      this.Env.Set(OutDatedBound.Reference, this.Evaluate(OutDatedBound.Expression));
+    });
     return Value;
   }
 
