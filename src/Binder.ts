@@ -6,7 +6,7 @@ import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 export class Binder {
   constructor(public Report: Diagnostics) {}
 
-  private DeclarationsStack = new Set<string>();
+  private Declarations = new Map<string, BoundReferenceDeclaration>();
 
   Bind<Structure extends SyntaxNode>(Node: Structure): BoundNode {
     switch (Node.Kind) {
@@ -31,7 +31,16 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
-        return new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference);
+
+        // Check If References Being Referenced Actually Exist
+        for (const Reference of Node.Referencing) {
+          if (!this.Declarations.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
+        }
+
+        const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference, Node.Referencing, Node.ReferencedBy, this.Bind(Node.Expression));
+        // Save Reference Declaration
+        this.Declarations.set(BoundNode.Reference, BoundNode);
+        return BoundNode;
       default:
         this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
     }
@@ -45,7 +54,6 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    this.DeclarationsStack.add(Reference);
     return new BoundCellReference(Binding.BoundCellReference, Reference);
   }
 
@@ -116,7 +124,7 @@ class BoundRangeReference extends BoundExpression {
 }
 
 class BoundReferenceDeclaration extends BoundWithReference {
-  constructor(public Kind: Binding, public Reference: string) {
+  constructor(public Kind: Binding, public Reference: string, public Referencing: Array<string>, public ReferencedBy: Array<string>, public Expression: BoundExpression) {
     super(Kind, Reference);
   }
 }

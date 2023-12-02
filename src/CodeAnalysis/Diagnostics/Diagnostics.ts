@@ -64,4 +64,8 @@ export class Diagnostics {
   CannotReferenceNode(Unexpected: SyntaxKind, Kind: SyntaxKind) {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Unexpected Syntax Kind <${Unexpected}> In <${Kind}>.`));
   }
+
+  ReferenceCannotBeFound(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Cannot Find Reference '${Reference}'.`));
+  }
 }
