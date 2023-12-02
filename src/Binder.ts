@@ -45,11 +45,13 @@ export class Binder {
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
           if (!this.Nodes.has(Reference)) this.Report.ReferenceCannotBeFound(Reference);
+          const ReferencedBy = this.Nodes.get(Reference).ReferencedBy;
+          if (!ReferencedBy.includes(Ref)) ReferencedBy.push(Ref);
         }
         // Create Node
         const BoundNode = new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, Ref, Referencing, [], Expression);
         // If The Node Is Already Exsiting Then Copy The ReferencedBy Value
-        if (this.Nodes.has(BoundNode.Reference)) {
+        if (this.Nodes.has(Ref)) {
           BoundNode.ReferencedBy = this.Nodes.get(Ref).ReferencedBy;
         }
         // Finally Set Or OverWrite The Node
