@@ -41,8 +41,12 @@ export class Diagnostics {
     throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
-  MethodNotImplemented(Kind: SyntaxKind) {
+  MissingEvaluationMethod(Kind: SyntaxKind) {
     throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
+  }
+
+  MissingBindingMethod(Kind: SyntaxKind) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
   }
 
   NotAnOperator(Kind: SyntaxKind) {

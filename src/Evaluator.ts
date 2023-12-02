@@ -24,7 +24,7 @@ export class Evaluator {
       case SyntaxKind.BinaryExpression:
         return this.BinaryExpression(Node as Structure & BinaryExpression);
       default:
-        this.Report.MethodNotImplemented(Node.Kind);
+        this.Report.MissingEvaluationMethod(Node.Kind);
     }
   }
 

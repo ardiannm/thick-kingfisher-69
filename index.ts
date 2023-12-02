@@ -4,6 +4,7 @@ import { Evaluator } from "./src/Evaluator";
 import { Environment } from "./src/Environment";
 import { Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
+import { Binder } from "./src/Binder";
 
 const Diagnostics_ = new Diagnostics();
 const Environment_ = new Environment(Diagnostics_);
@@ -15,6 +16,7 @@ while (true) {
   const Input = Prompt("> ");
   const Syntax = new Parser(Input, Diagnostics_);
   const Tree = Syntax.Parse();
+  const BoundTree = new Binder(Diagnostics_);
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
@@ -28,6 +30,7 @@ while (true) {
     Diagnostics_.Show();
   } else {
     try {
+      BoundTree.Bind(Tree);
       Diagnostics_.Log(Evaluator_.Evaluate(Tree));
     } catch (error) {
       Diagnostics_.Log((error as Diagnostic).Message);
