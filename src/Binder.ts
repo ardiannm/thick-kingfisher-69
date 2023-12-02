@@ -1,6 +1,6 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { CellReference, RangeReference, ReferenceDeclaration, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
+import { BinaryExpression, CellReference, RangeReference, ReferenceDeclaration, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 
 export class Binder {
@@ -21,6 +21,8 @@ export class Binder {
         return this.BindCellReference(Node as Structure & CellReference);
       case SyntaxKind.RangeReference:
         return this.BindRangeReference(Node as Structure & RangeReference);
+      case SyntaxKind.BinaryExpression:
+        return this.BinaryExpression(Node as Structure & BinaryExpression);
       case SyntaxKind.ReferenceDeclaration:
         return this.BindReferenceDeclaration(Node as Structure & ReferenceDeclaration);
       default:
@@ -55,6 +57,25 @@ export class Binder {
         return BoundNode;
       default:
         this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
+    }
+  }
+
+  private BinaryExpression(Node: BinaryExpression) {
+    return new BoundBinaryExpression(Binding.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+  }
+
+  private BindOperatorKind(Kind: SyntaxKind): BoundOperatorKind {
+    switch (Kind) {
+      case SyntaxKind.PlusToken:
+        return BoundOperatorKind.Addition;
+      case SyntaxKind.MinusToken:
+        return BoundOperatorKind.Subtraction;
+      case SyntaxKind.StarToken:
+        return BoundOperatorKind.Multiplication;
+      case SyntaxKind.SlashToken:
+        return BoundOperatorKind.Division;
+      default:
+        this.Report.NotAnOperator(Kind);
     }
   }
 
@@ -95,6 +116,14 @@ enum Binding {
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
   BoundReferenceDeclaration = "BoundReferenceDeclaration",
+  BoundBinaryExpression = "BoundBinaryExpression",
+}
+
+enum BoundOperatorKind {
+  Addition = "Addition",
+  Subtraction = "Subtraction",
+  Multiplication = "Multiplication",
+  Division = "Division",
 }
 
 class BoundNode {
@@ -135,6 +164,12 @@ class BoundCellReference extends BoundWithReference {
 
 class BoundRangeReference extends BoundExpression {
   constructor(public Kind: Binding, public Reference: string) {
+    super(Kind);
+  }
+}
+
+class BoundBinaryExpression extends BoundExpression {
+  constructor(public Kind: Binding, public Left: BoundExpression, public Operator: BoundOperatorKind, public Right: BoundExpression) {
     super(Kind);
   }
 }
