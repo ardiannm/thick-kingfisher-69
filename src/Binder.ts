@@ -26,7 +26,7 @@ import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression"
 export class Binder {
   constructor(public Logger: Diagnostics) {}
 
-  private Nodes = new Map<string, BoundReferenceAssignment>();
+  private Dependencies = new Map<string, Array<string>>();
   private References = new Set<string>();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -70,14 +70,13 @@ export class Binder {
 
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
-          if (!this.Nodes.has(Reference)) this.Logger.ReferenceCannotBeFound(Reference);
+          if (!this.Dependencies.has(Reference)) this.Logger.ReferenceCannotBeFound(Reference);
         }
 
         this.CheckDependency(Ref, Referencing);
+        this.Dependencies.set(Ref, Referencing);
 
-        const BoundNode = new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, Ref, Referencing, [], Expression);
-        this.Nodes.set(Ref, BoundNode);
-        return BoundNode;
+        return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, Ref, Referencing, [], Expression);
       default:
         this.Logger.CannotReferenceNode(Node.Left.Kind, Node.Kind);
     }
@@ -85,7 +84,7 @@ export class Binder {
 
   private CheckDependency(Reference: string, Referencing: Array<string>) {
     if (Referencing.includes(Reference)) this.Logger.CircularDependency(Reference);
-    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Nodes.get(Ref).Referencing));
+    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Dependencies.get(Ref)));
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
