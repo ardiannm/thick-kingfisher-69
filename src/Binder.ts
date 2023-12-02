@@ -1,6 +1,6 @@
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { CellReference, RangeReference, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
+import { CellReference, RangeReference, ReferenceDeclaration, SyntaxNode, SyntaxTree } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 
 export class Binder {
@@ -21,85 +21,102 @@ export class Binder {
       case SyntaxKind.RangeReference:
         return this.BindRangeReference(Node as Structure & RangeReference);
       case SyntaxKind.ReferenceDeclaration:
-        return this.BindRangeReference(Node as Structure & RangeReference);
+        return this.BindReferenceDeclaration(Node as Structure & ReferenceDeclaration);
       default:
         this.Report.MissingBindingMethod(Node.Kind);
     }
   }
 
+  private BindReferenceDeclaration(Node: ReferenceDeclaration) {
+    switch (Node.Left.Kind) {
+      case SyntaxKind.CellReference:
+        const LeftBound = this.Bind(Node.Left) as BoundWithReference;
+        return new BoundReferenceDeclaration(Binding.BoundReferenceDeclaration, LeftBound.Reference);
+      default:
+        this.Report.CannotReferenceNode(Node.Left.Kind, Node.Kind);
+    }
+  }
+
   private BindRangeReference(Node: RangeReference) {
-    const BoundLeft = this.Bind(Node.Left) as BoundLiteral;
-    const BoundRight = this.Bind(Node.Right) as BoundLiteral;
-    return new BoundRangeReference(BindKind.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
+    const BoundLeft = this.Bind(Node.Left) as BoundWithReference;
+    const BoundRight = this.Bind(Node.Right) as BoundWithReference;
+    return new BoundRangeReference(Binding.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
   }
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
     this.DeclarationsStack.add(Reference);
-    return new BoundCellReference(BindKind.BoundCellReference, Reference);
+    return new BoundCellReference(Binding.BoundCellReference, Reference);
   }
 
   private BindIdentifier(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundIdentifier(BindKind.BoundNumber, Node.Text, Value);
+    return new BoundIdentifier(Binding.BoundNumber, Node.Text, Value);
   }
 
   private BindNumber(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(BindKind.BoundNumber, Node.Text, Value);
+    return new BoundNumber(Binding.BoundNumber, Node.Text, Value);
   }
 
   private BindSyntaxTree(Node: SyntaxTree) {
-    return new BoundSyntaxTree(BindKind.BoundSyntaxTree, this.Bind(Node.Root));
+    return new BoundSyntaxTree(Binding.BoundSyntaxTree, this.Bind(Node.Root));
   }
 }
 
-enum BindKind {
+enum Binding {
   BoundSyntaxTree = "BoundSyntaxTree",
   BoundRangeReference = "BoundRangeReference",
   BoundCellReference = "BoundCellReference",
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
+  BoundReferenceDeclaration = "BoundReferenceDeclaration",
 }
 
 class BoundNode {
-  constructor(public Kind: BindKind) {}
+  constructor(public Kind: Binding) {}
 }
 
 class BoundSyntaxTree extends BoundNode {
-  constructor(public Kind: BindKind, public Root: BoundExpression) {
+  constructor(public Kind: Binding, public Root: BoundExpression) {
     super(Kind);
   }
 }
 
 class BoundExpression extends BoundNode {}
 
-class BoundLiteral extends BoundExpression {
-  constructor(public Kind: BindKind, public Reference: string) {
+class BoundWithReference extends BoundExpression {
+  constructor(public Kind: Binding, public Reference: string) {
     super(Kind);
   }
 }
 
-class BoundNumber extends BoundLiteral {
-  constructor(public Kind: BindKind, public Reference: string, public Value: number) {
+class BoundNumber extends BoundWithReference {
+  constructor(public Kind: Binding, public Reference: string, public Value: number) {
     super(Kind, Reference);
   }
 }
 
-class BoundIdentifier extends BoundLiteral {
-  constructor(public Kind: BindKind, public Reference: string, public Value: number) {
+class BoundIdentifier extends BoundWithReference {
+  constructor(public Kind: Binding, public Reference: string, public Value: number) {
     super(Kind, Reference);
   }
 }
 
-class BoundCellReference extends BoundLiteral {
-  constructor(public Kind: BindKind, public Reference: string) {
+class BoundCellReference extends BoundWithReference {
+  constructor(public Kind: Binding, public Reference: string) {
     super(Kind, Reference);
   }
 }
 
 class BoundRangeReference extends BoundExpression {
-  constructor(public Kind: BindKind, public Reference: string) {
+  constructor(public Kind: Binding, public Reference: string) {
     super(Kind);
+  }
+}
+
+class BoundReferenceDeclaration extends BoundWithReference {
+  constructor(public Kind: Binding, public Reference: string) {
+    super(Kind, Reference);
   }
 }

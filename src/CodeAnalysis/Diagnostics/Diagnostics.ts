@@ -45,10 +45,6 @@ export class Diagnostics {
     throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
-  MissingBindingMethod(Kind: SyntaxKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
-  }
-
   NotAnOperator(Kind: SyntaxKind) {
     return this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Node <${Kind}> Is Not An Operator Token.`));
   }
@@ -59,5 +55,13 @@ export class Diagnostics {
 
   TrailingGarbageFound() {
     return this.ReportError(new Diagnostic(ErrorKind.Parser, `Trailing Garbage Found For The Syntax Tree.`));
+  }
+
+  MissingBindingMethod(Kind: SyntaxKind) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
+  }
+
+  CannotReferenceNode(Unexpected: SyntaxKind, Kind: SyntaxKind) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Unexpected Syntax Kind <${Unexpected}> In <${Kind}>.`));
   }
 }

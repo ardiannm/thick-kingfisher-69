@@ -13,7 +13,7 @@ export class Environment {
   }
 
   SetValue(Node: ReferenceDeclaration, Value: number): Array<ReferenceDeclaration> {
-    const Reference = (Node.Reference as CellReference).Reference;
+    const Reference = (Node.Left as CellReference).Reference;
 
     // Check For Circular Dependency
     this.CheckDependency(Reference, Node.Referencing);
