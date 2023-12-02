@@ -2,7 +2,7 @@ import { question as Prompt } from "readline-sync";
 import { Parser } from "./src/Parser";
 import { Diagnostics } from "./src/CodeAnalysis/Diagnostics/Diagnostics";
 import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
-import { Binder } from "./src/CodeAnalysis/Binding/Binder";
+import { Binder } from "./src/Binder";
 import { Evaluator } from "./src/Evaluator";
 
 const Logger = new Diagnostics();
