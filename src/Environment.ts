@@ -4,6 +4,7 @@ import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
 export class Environment {
   constructor(public Logger: Diagnostics) {}
+
   private ReferenceNodes = new Map<string, BoundReferenceAssignment>();
   private ReferenceValues = new Map<string, number>();
   private ForChange = new Set<string>();
@@ -11,27 +12,33 @@ export class Environment {
   // A1->3; A2->A1+7; A3->A1+A2+5;
 
   Assign(Bound: BoundReferenceAssignment, Value: number): Array<BoundReferenceAssignment> {
+    // If Node Reference Is Already Stored Copy Existing Subscribers
+
     if (this.ReferenceNodes.has(Bound.Reference)) {
-      const PrevNode = this.ReferenceNodes.get(Bound.Reference);
-      Bound.ReferencedBy = PrevNode.ReferencedBy;
-      const RemovedRefs = PrevNode.Referencing.filter((Ref) => !Bound.Referencing.includes(Ref));
-      RemovedRefs.forEach((Ref) => this.ReferenceNodes.get(Ref).UnSubscribe(Bound.Reference));
+      const Node = this.ReferenceNodes.get(Bound.Reference);
+      Bound.ReferencedBy = Node.ReferencedBy;
+
+      // And Unsubcribe From The Nodes That Are No Longer Being Referenced
+      Node.Referencing.forEach((Reference) => {
+        if (!Bound.Referencing.includes(Reference)) this.ReferenceNodes.get(Reference).UnSubscribe(Bound);
+      });
     }
 
-    Bound.Referencing.forEach((Ref) => this.ReferenceNodes.get(Ref).Subscribe(Bound.Reference));
+    // Subscribe To Referencing Nodes For Observing Changes
+    Bound.Referencing.forEach((Ref) => this.ReferenceNodes.get(Ref).Subscribe(Bound));
+
+    // Store Node Structure For Re Evaluation
     this.ReferenceNodes.set(Bound.Reference, Bound);
+
+    // Set Node Value From Evaluation
     this.Set(Bound.Reference, Value);
 
-    this.ForChange.clear();
-    this.DetectAfterChange(Bound.Reference);
-    const OutDatedBounds = Array.from(this.ForChange).map((Ref) => this.ReferenceNodes.get(Ref));
-    this.ForChange.clear();
-    return OutDatedBounds;
+    // Return The List Of OutDated References
+    return this.OnChange(Bound);
   }
 
   Set(Reference: string, Value: number) {
     this.ReferenceValues.set(Reference, Value);
-    return Value;
   }
 
   Get(Bound: BoundCellReference) {
@@ -39,11 +46,20 @@ export class Environment {
     this.Logger.ValueDoesNotExist(Bound.Reference);
   }
 
+  // Handle OutDated Bound References On Change
+  private OnChange(Bound: BoundReferenceAssignment): Array<BoundReferenceAssignment> {
+    this.ForChange.clear();
+    this.RegisterOutDated(Bound);
+    const OutDatedBounds = Array.from(this.ForChange).map((OutDated) => this.ReferenceNodes.get(OutDated));
+    this.ForChange.clear();
+    return OutDatedBounds;
+  }
+
   // Detect OutDated Dependecies After Change
-  private DetectAfterChange(Reference: string) {
-    this.ReferenceNodes.get(Reference).ReferencedBy.forEach((Ref) => {
-      this.ForChange.add(Ref);
-      this.DetectAfterChange(Ref);
+  private RegisterOutDated(Bound: BoundReferenceAssignment) {
+    this.ReferenceNodes.get(Bound.Reference).ReferencedBy.forEach((Subscriber) => {
+      this.ForChange.add(Subscriber.Reference);
+      this.RegisterOutDated(Subscriber);
     });
   }
 }
