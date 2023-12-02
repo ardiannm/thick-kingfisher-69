@@ -69,7 +69,7 @@ export class Binder {
         this.References.clear();
 
         // Check For Circular Dependency Issues
-        this.CheckDependency(Ref, Referencing);
+        this.DetectCircularDependencies(Ref, Referencing);
 
         // Check If References Being Referenced Actually Exist
         for (const Reference of Referencing) {
@@ -84,9 +84,9 @@ export class Binder {
     }
   }
 
-  private CheckDependency(Reference: string, Referencing: Array<string>) {
+  private DetectCircularDependencies(Reference: string, Referencing: Array<string>) {
     if (Referencing.includes(Reference)) this.Logger.CircularDependency(Reference);
-    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Dependencies.get(Ref)));
+    Referencing.forEach((Ref) => this.DetectCircularDependencies(Reference, this.Dependencies.get(Ref)));
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
