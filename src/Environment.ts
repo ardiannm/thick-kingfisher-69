@@ -9,32 +9,38 @@ export class Environment {
   private ReferenceValues = new Map<string, number>();
   private ForChange = new Set<string>();
 
-  // A1->3; A2->A1+7; A3->A1+A2+5;
+  Assign(Node: BoundReferenceAssignment, Value: number): Array<BoundReferenceAssignment> {
+    // If Node Is Stored
 
-  Assign(Bound: BoundReferenceAssignment, Value: number): Array<BoundReferenceAssignment> {
-    // If Node Reference Is Already Stored Copy Existing Subscribers
+    if (this.HasNode(Node)) {
+      const PrevNode = this.GetNode(Node.Reference);
 
-    if (this.ReferenceNodes.has(Bound.Reference)) {
-      const Node = this.ReferenceNodes.get(Bound.Reference);
-      Bound.ReferencedBy = Node.ReferencedBy;
+      // Copy Existing Subscribers
+      Node.ReferencedBy = PrevNode.ReferencedBy;
 
-      // And Unsubcribe From The Nodes That Are No Longer Being Referenced
-      Node.Referencing.forEach((Reference) => {
-        if (!Bound.Referencing.includes(Reference)) this.ReferenceNodes.get(Reference).UnSubscribe(Bound);
-      });
+      // Unsubscribe From Previous Nodes
+      PrevNode.Referencing.forEach((Reference) => this.GetNode(Reference).Unsubscribe(Node));
     }
 
-    // Subscribe To Referencing Nodes For Observing Changes
-    Bound.Referencing.forEach((Ref) => this.ReferenceNodes.get(Ref).Subscribe(Bound));
+    // Subscribe To Current Nodes For Change Observations
+    Node.Referencing.forEach((Reference) => this.GetNode(Reference).Subscribe(Node));
 
     // Store Node Structure For Re Evaluation
-    this.ReferenceNodes.set(Bound.Reference, Bound);
+    this.ReferenceNodes.set(Node.Reference, Node);
 
     // Set Node Value From Evaluation
-    this.Set(Bound.Reference, Value);
+    this.Set(Node.Reference, Value);
 
     // Return The List Of OutDated References
-    return this.OnChange(Bound);
+    return this.OnChange(Node);
+  }
+
+  private HasNode(Node: BoundReferenceAssignment): boolean {
+    return this.ReferenceNodes.has(Node.Reference);
+  }
+
+  private GetNode(Reference: string) {
+    return this.ReferenceNodes.get(Reference);
   }
 
   Set(Reference: string, Value: number) {
@@ -57,9 +63,9 @@ export class Environment {
 
   // Detect OutDated Dependecies After Change
   private RegisterOutDated(Bound: BoundReferenceAssignment) {
-    this.ReferenceNodes.get(Bound.Reference).ReferencedBy.forEach((Subscriber) => {
-      this.ForChange.add(Subscriber.Reference);
-      this.RegisterOutDated(Subscriber);
+    this.ReferenceNodes.get(Bound.Reference).ReferencedBy.forEach((Reference) => {
+      this.ForChange.add(Reference);
+      this.RegisterOutDated(this.GetNode(Reference));
     });
   }
 }
