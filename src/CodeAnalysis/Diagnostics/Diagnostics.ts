@@ -58,8 +58,8 @@ export class Diagnostics {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
   }
 
-  CannotReferenceNode(Unexpected: SyntaxKind, Kind: SyntaxKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Unexpected Syntax Kind <${Unexpected}> In <${Kind}>.`));
+  CantUseAsAReference(Unexpected: SyntaxKind) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `<${Unexpected}> Can't Be Used As A Reference.`));
   }
 
   ReferenceCannotBeFound(Reference: string) {

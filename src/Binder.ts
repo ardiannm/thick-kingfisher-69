@@ -81,7 +81,7 @@ export class Binder {
         this.Stack.clear();
         return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
       default:
-        this.Logger.CannotReferenceNode(Node.Left.Kind, Node.Kind);
+        this.Logger.CantUseAsAReference(Node.Left.Kind);
     }
   }
 
