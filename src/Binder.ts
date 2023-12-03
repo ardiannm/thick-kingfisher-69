@@ -59,10 +59,10 @@ export class Binder {
   private BindReferenceAssignment(Node: ReferenceAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
-        // Clear Stack
-        this.Stack.clear();
         // Bind Reference
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
+        // Clear Stack
+        this.Stack.clear();
         // Run Binder For Expresion
         const Expression = this.Bind(Node.Expression);
         // Prevent Using Before Its Declaration
