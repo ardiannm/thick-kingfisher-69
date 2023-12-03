@@ -9,7 +9,7 @@ export class Environment {
   private ReferenceValues = new Map<string, number>();
   private ForChange = new Set<string>();
 
-  Assign(Node: BoundReferenceAssignment, Value: number): Array<BoundReferenceAssignment> {
+  Assign(Node: BoundReferenceAssignment, Value: number): Generator<BoundReferenceAssignment> {
     // If Node Is Stored
 
     if (this.HasNode(Node)) {
@@ -53,12 +53,13 @@ export class Environment {
   }
 
   // Handle OutDated Bound References On Change
-  private OnChange(Bound: BoundReferenceAssignment): Array<BoundReferenceAssignment> {
+  private *OnChange(Bound: BoundReferenceAssignment): Generator<BoundReferenceAssignment> {
     this.ForChange.clear();
     this.RegisterOutDated(Bound);
-    const OutDatedBounds = Array.from(this.ForChange).map((OutDated) => this.ReferenceNodes.get(OutDated));
+    for (const Changed of this.ForChange) {
+      yield this.GetNode(Changed);
+    }
     this.ForChange.clear();
-    return OutDatedBounds;
   }
 
   // Detect OutDated Dependecies After Change

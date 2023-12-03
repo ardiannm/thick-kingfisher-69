@@ -43,9 +43,9 @@ export class Evaluator {
 
   private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
     const Value = this.Evaluate(Bound.Expression);
-    this.Env.Assign(Bound, Value).forEach((OutDatedBound) => {
+    for (const OutDatedBound of this.Env.Assign(Bound, Value)) {
       this.Env.Set(OutDatedBound.Reference, this.Evaluate(OutDatedBound.Expression));
-    });
+    }
     return Value;
   }
 
