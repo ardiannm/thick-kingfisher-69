@@ -11,24 +11,18 @@ export class Environment {
 
   Assign(Node: BoundReferenceAssignment, Value: number): Generator<BoundReferenceAssignment> {
     // If Node Is Stored
-
     if (this.HasNode(Node)) {
       const PrevNode = this.GetNode(Node.Reference);
-
-      // Copy Existing Subscribers
+      // Keep Existing Observers
       Node.ReferencedBy = PrevNode.ReferencedBy;
-
-      // Remove Previous Subscriptions
+      // Clear Previous Subscriptions
       PrevNode.Referencing.forEach((Reference) => this.GetNode(Reference).Unsubscribe(Node));
     }
-
-    // Subscribe To What The Node Is Referencing For Change Observations
+    // Subscribe To The Nodes That Is Referencing For Change Observations
     Node.Referencing.forEach((Reference) => this.GetNode(Reference).Subscribe(Node));
-
-    // Store Node Structure For Re Evaluation
-    this.ReferenceNodes.set(Node.Reference, Node);
-
-    this.Set(Node.Reference, Value);
+    // Keep The Node Structure For Future Re Evaluations
+    this.SetNode(Node);
+    this.SetValue(Node, Value);
     return this.OnChange(Node);
   }
 
@@ -40,19 +34,23 @@ export class Environment {
     return this.ReferenceNodes.get(Reference);
   }
 
-  Set(Reference: string, Value: number) {
-    this.ReferenceValues.set(Reference, Value);
+  private SetNode(Node: BoundReferenceAssignment) {
+    return this.ReferenceNodes.set(Node.Reference, Node);
   }
 
-  Get(Bound: BoundCellReference) {
-    if (this.ReferenceValues.has(Bound.Reference)) return this.ReferenceValues.get(Bound.Reference);
-    this.Logger.ValueDoesNotExist(Bound.Reference);
+  SetValue(Node: BoundReferenceAssignment, Value: number) {
+    this.ReferenceValues.set(Node.Reference, Value);
   }
 
-  // Handle OutDated Bound References On Change
-  private *OnChange(Bound: BoundReferenceAssignment): Generator<BoundReferenceAssignment> {
+  GetValue(Node: BoundCellReference): number {
+    if (this.ReferenceValues.has(Node.Reference)) return this.ReferenceValues.get(Node.Reference);
+    this.Logger.ValueDoesNotExist(Node.Reference);
+  }
+
+  // Handle Effected Node References On Change
+  private *OnChange(Node: BoundReferenceAssignment): Generator<BoundReferenceAssignment> {
     this.ForChange.clear();
-    this.RegisterOutDated(Bound);
+    this.RegisterEffected(Node);
     for (const Changed of this.ForChange) {
       yield this.GetNode(Changed);
     }
@@ -60,10 +58,10 @@ export class Environment {
   }
 
   // Detect OutDated Dependecies After Change
-  private RegisterOutDated(Bound: BoundReferenceAssignment) {
-    this.ReferenceNodes.get(Bound.Reference).ReferencedBy.forEach((Reference) => {
+  private RegisterEffected(Node: BoundReferenceAssignment) {
+    this.ReferenceNodes.get(Node.Reference).ReferencedBy.forEach((Reference) => {
       this.ForChange.add(Reference);
-      this.RegisterOutDated(this.GetNode(Reference));
+      this.RegisterEffected(this.GetNode(Reference));
     });
   }
 }

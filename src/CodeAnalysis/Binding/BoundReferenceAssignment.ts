@@ -8,12 +8,12 @@ export class BoundReferenceAssignment extends BoundWithReference {
   }
 
   Subscribe(Bound: BoundReferenceAssignment) {
-    console.log(`${Bound.Reference} subscibe to ${this.Reference}`);
+    console.log(`'${Bound.Reference}' Subscribe To '${this.Reference}'`);
     this.ReferencedBy.push(Bound.Reference);
   }
 
   Unsubscribe(Bound: BoundReferenceAssignment) {
-    console.log(`${Bound.Reference} unsubscibe to ${this.Reference}`);
+    console.log(`'${Bound.Reference}' Unsubscribe From '${this.Reference}'`);
     this.ReferencedBy = this.ReferencedBy.filter((Subscriber) => Subscriber !== Bound.Reference);
   }
 }

@@ -77,4 +77,8 @@ export class Diagnostics {
   ValueDoesNotExist(Reference: string) {
     throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Value For '${Reference}' Does Not Exist.`));
   }
+
+  UsedBeforeDeclaration(Reference: string) {
+    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Reference Used Before Its Declaration.`));
+  }
 }

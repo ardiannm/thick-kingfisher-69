@@ -26,8 +26,8 @@ import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression"
 export class Binder {
   constructor(public Logger: Diagnostics) {}
 
-  private Referencing = new Map<string, Array<string>>();
-  private References = new Set<string>();
+  private Links = new Map<string, Array<string>>();
+  private Stack = new Set<string>();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -59,34 +59,37 @@ export class Binder {
   private BindReferenceAssignment(Node: ReferenceAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
+        // Clear Stack
+        this.Stack.clear();
+        // Bind Reference
         const LeftBound = this.Bind(Node.Left) as BoundWithReference;
-        const Ref = LeftBound.Reference; // Capture The Reference
-
-        // Capture Cell References
-        this.References.clear();
+        // Run Binder For Expresion
         const Expression = this.Bind(Node.Expression);
-        const Referencing = Array.from(this.References);
-        this.References.clear();
-
-        // Check For Circular Dependency Issues
-        this.CheckDependency(Ref, Referencing);
-
+        // Prevent Using Before Its Declaration
+        if (this.Stack.has(LeftBound.Reference)) this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
+        // Referencing In Array Form
+        const Referencing = Array.from(this.Stack);
         // Check If References Being Referenced Actually Exist
-        for (const Reference of Referencing) {
-          if (!this.Referencing.has(Reference)) this.Logger.ReferenceCannotBeFound(Reference);
-        }
-
-        this.Referencing.set(Ref, Referencing);
-
-        return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, Ref, Referencing, [], Expression);
+        Referencing.forEach((Ref) => {
+          if (!this.Links.has(Ref)) this.Logger.ReferenceCannotBeFound(Ref);
+        });
+        // Save Links
+        this.Links.set(LeftBound.Reference, Referencing);
+        // Check For Circular Dependency Issues
+        this.CircularReferencing(LeftBound.Reference, Referencing);
+        // Clear Stack
+        this.Stack.clear();
+        return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
       default:
         this.Logger.CannotReferenceNode(Node.Left.Kind, Node.Kind);
     }
   }
 
-  private CheckDependency(Reference: string, Referencing: Array<string>) {
-    if (Referencing.includes(Reference)) this.Logger.CircularDependency(Reference);
-    Referencing.forEach((Ref) => this.CheckDependency(Reference, this.Referencing.get(Ref)));
+  private CircularReferencing(Reference: string, Links: Array<string>) {
+    if (Links.includes(Reference)) {
+      this.Logger.CircularDependency(Reference);
+    }
+    Links.forEach((Link) => this.CircularReferencing(Reference, this.Links.get(Link)));
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -135,7 +138,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    this.References.add(Reference);
+    this.Stack.add(Reference);
     return new BoundCellReference(BoundKind.BoundCellReference, Reference);
   }
 

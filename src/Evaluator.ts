@@ -16,43 +16,43 @@ import { Environment } from "./Environment";
 export class Evaluator {
   constructor(public Env: Environment, public Logger: Diagnostics) {}
 
-  Evaluate<Kind extends BoundNode>(Bound: Kind) {
-    type BoundType<T> = Kind & T;
+  Evaluate<Kind extends BoundNode>(Node: Kind) {
+    type NodeType<T> = Kind & T;
 
-    switch (Bound.Kind) {
+    switch (Node.Kind) {
       case BoundKind.BoundSyntaxTree:
-        return this.EvaluateSyntaxTree(Bound as BoundType<BoundSyntaxTree>);
+        return this.EvaluateSyntaxTree(Node as NodeType<BoundSyntaxTree>);
       case BoundKind.BoundIdentifier:
-        return this.EvaluateIdentifier(Bound as BoundType<BoundIdentifier>);
+        return this.EvaluateIdentifier(Node as NodeType<BoundIdentifier>);
       case BoundKind.BoundNumber:
-        return this.EvaluateNumber(Bound as BoundType<BoundNumber>);
+        return this.EvaluateNumber(Node as NodeType<BoundNumber>);
       case BoundKind.BoundCellReference:
-        return this.EvaluateCellReference(Bound as BoundType<BoundCellReference>);
+        return this.EvaluateCellReference(Node as NodeType<BoundCellReference>);
       case BoundKind.BoundRangeReference:
-        return this.EvaluateRangeReference(Bound as BoundType<BoundRangeReference>);
+        return this.EvaluateRangeReference(Node as NodeType<BoundRangeReference>);
       case BoundKind.BoundUnaryExpression:
-        return this.EvaluateUnaryExpression(Bound as BoundType<BoundUnaryExpression>);
+        return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
-        return this.EvaluateBinaryExpression(Bound as BoundType<BoundBinaryExpression>);
+        return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundReferenceAssignment:
-        return this.EvaluateReferenceAssignment(Bound as BoundType<BoundReferenceAssignment>);
+        return this.EvaluateReferenceAssignment(Node as NodeType<BoundReferenceAssignment>);
       default:
-        this.Logger.MissingEvaluationMethod(Bound.Kind);
+        this.Logger.MissingEvaluationMethod(Node.Kind);
     }
   }
 
-  private EvaluateReferenceAssignment(Bound: BoundReferenceAssignment) {
-    const Value = this.Evaluate(Bound.Expression);
-    for (const OutDatedBound of this.Env.Assign(Bound, Value)) {
-      this.Env.Set(OutDatedBound.Reference, this.Evaluate(OutDatedBound.Expression));
+  private EvaluateReferenceAssignment(Node: BoundReferenceAssignment) {
+    const Value = this.Evaluate(Node.Expression);
+    for (const OutDatedNode of this.Env.Assign(Node, Value)) {
+      this.Env.SetValue(OutDatedNode, this.Evaluate(OutDatedNode.Expression));
     }
     return Value;
   }
 
-  private EvaluateBinaryExpression(Bound: BoundBinaryExpression) {
-    const LeftValue = this.Evaluate(Bound.Left);
-    const RightValue = this.Evaluate(Bound.Right);
-    switch (Bound.OperatorKind) {
+  private EvaluateBinaryExpression(Node: BoundBinaryExpression) {
+    const LeftValue = this.Evaluate(Node.Left);
+    const RightValue = this.Evaluate(Node.Right);
+    switch (Node.OperatorKind) {
       case BoundBinaryOperatorKind.Addition:
         return LeftValue + RightValue;
       case BoundBinaryOperatorKind.Subtraction:
@@ -62,42 +62,42 @@ export class Evaluator {
       case BoundBinaryOperatorKind.Division:
         return LeftValue / RightValue;
       default:
-        this.Logger.NotAnOperator(Bound.OperatorKind);
+        this.Logger.NotAnOperator(Node.OperatorKind);
     }
   }
 
-  private EvaluateUnaryExpression(Bound: BoundUnaryExpression) {
-    const Value = this.Evaluate(Bound.Expression);
-    switch (Bound.OperatorKind) {
+  private EvaluateUnaryExpression(Node: BoundUnaryExpression) {
+    const Value = this.Evaluate(Node.Expression);
+    switch (Node.OperatorKind) {
       case BoundUnaryOperatorKind.Identity:
         return Value;
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        this.Logger.NotAnOperator(Bound.OperatorKind);
+        this.Logger.NotAnOperator(Node.OperatorKind);
     }
   }
 
-  private EvaluateRangeReference(Bound: BoundRangeReference) {
-    this.Logger.MissingEvaluationMethod(Bound.Kind);
+  private EvaluateRangeReference(Node: BoundRangeReference) {
+    this.Logger.MissingEvaluationMethod(Node.Kind);
   }
 
-  private EvaluateCellReference(Bound: BoundCellReference) {
-    return this.Env.Get(Bound);
+  private EvaluateCellReference(Node: BoundCellReference) {
+    return this.Env.GetValue(Node);
   }
 
-  private EvaluateNumber(Bound: BoundNumber) {
-    return Bound.Value;
+  private EvaluateNumber(Node: BoundNumber) {
+    return Node.Value;
   }
 
-  private EvaluateIdentifier(Bound: BoundIdentifier) {
-    this.Logger.MissingEvaluationMethod(Bound.Kind);
+  private EvaluateIdentifier(Node: BoundIdentifier) {
+    this.Logger.MissingEvaluationMethod(Node.Kind);
   }
 
-  private EvaluateSyntaxTree(Bound: BoundSyntaxTree) {
+  private EvaluateSyntaxTree(Node: BoundSyntaxTree) {
     let Value: number = 0;
-    if (Bound.Expressions.length) {
-      Bound.Expressions.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
+    if (Node.Expressions.length) {
+      Node.Expressions.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
       return Value;
     }
     this.Logger.EmptySyntaxForEvaluator();
