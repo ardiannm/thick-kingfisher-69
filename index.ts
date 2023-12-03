@@ -5,6 +5,7 @@ import { Diagnostic } from "./src/CodeAnalysis/Diagnostics/Diagnostic";
 import { Binder } from "./src/Binder";
 import { Evaluator } from "./src/Evaluator";
 import { Environment } from "./src/Environment";
+import { SourceText } from "./src/CodeAnalysis/Text/SourceText";
 
 const Logger = new Diagnostics();
 const BinderFactory = new Binder(Logger);
@@ -15,6 +16,9 @@ var ShowTree = false;
 
 while (true) {
   const Input = Prompt("> ");
+
+  const Lines = new SourceText(Input).GetLineSpans();
+  for (const Line of Lines) console.log(Line);
 
   if (Input.trim() === "tree") {
     ShowTree = !ShowTree;
