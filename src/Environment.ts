@@ -16,7 +16,9 @@ export class Environment {
       // Keep Existing Observers
       Node.ReferencedBy = PrevNode.ReferencedBy;
       // Clear Previous Subscriptions
-      PrevNode.Referencing.forEach((Reference) => this.GetNode(Reference).Unsubscribe(Node));
+      PrevNode.Referencing.forEach((Reference) => {
+        if (!Node.Referencing.includes(Reference)) this.GetNode(Reference).Unsubscribe(Node);
+      });
     }
     // Subscribe To The Nodes That Is Referencing For Change Observations
     Node.Referencing.forEach((Reference) => this.GetNode(Reference).Subscribe(Node));
