@@ -18,20 +18,17 @@ export class Environment {
       // Copy Existing Subscribers
       Node.ReferencedBy = PrevNode.ReferencedBy;
 
-      // Unsubscribe From Previous Nodes
+      // Remove Previous Subscriptions
       PrevNode.Referencing.forEach((Reference) => this.GetNode(Reference).Unsubscribe(Node));
     }
 
-    // Subscribe To Current Nodes For Change Observations
+    // Subscribe To What The Node Is Referencing For Change Observations
     Node.Referencing.forEach((Reference) => this.GetNode(Reference).Subscribe(Node));
 
     // Store Node Structure For Re Evaluation
     this.ReferenceNodes.set(Node.Reference, Node);
 
-    // Set Node Value From Evaluation
     this.Set(Node.Reference, Value);
-
-    // Return The List Of OutDated References
     return this.OnChange(Node);
   }
 
