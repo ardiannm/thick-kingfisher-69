@@ -15,7 +15,7 @@ const EvaluatorFactory = new Evaluator(EnvironmentFactory, Logger);
 var ShowTree = false;
 
 while (true) {
-  const Input = Prompt("> ") || "/* this;Spans;push(new LineSpan(this.Number; StartPointer; this.Pointer));  */".replace(/;/g, "\n");
+  const Input = Prompt("> ") || "/* this\nSpans\npush(new LineSpan(this.Number\n StartPointer\n this.Pointer));  */".replace(/\n/g, "\n");
 
   const SourceTextFactory = new SourceText(Input);
   const Span = SourceTextFactory.GetTextLine(43);
