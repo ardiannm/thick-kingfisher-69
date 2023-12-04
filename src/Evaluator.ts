@@ -65,7 +65,7 @@ export class Evaluator {
       case BoundBinaryOperatorKind.Division:
         return LeftValue / RightValue;
       default:
-        throw this.Logger.NotAnOperator(Node.OperatorKind);
+        throw this.Logger.MissingOperatorKind(Node.OperatorKind);
     }
   }
 
@@ -79,7 +79,7 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        throw this.Logger.NotAnOperator(Node.OperatorKind);
+        throw this.Logger.MissingOperatorKind(Node.OperatorKind);
     }
   }
 

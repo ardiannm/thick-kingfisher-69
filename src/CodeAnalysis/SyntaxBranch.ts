@@ -1,5 +1,5 @@
 import { SyntaxNode } from "./SyntaxNode";
 
-export class SyntaxChildNode {
+export class SyntaxBranch {
   constructor(public Node: SyntaxNode, public isLast: boolean) {}
 }

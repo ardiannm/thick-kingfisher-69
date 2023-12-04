@@ -16,18 +16,18 @@ export class SyntaxTree extends SyntaxNode {
     super(Kind);
   }
 
-  // Helper method to print the tree structure for debugging and visualization.
+  // Helper method to print the tree structure for visualization.
   Print(Node: SyntaxNode = this, Indentation = "") {
-    var Text = "";
-    for (const Child of Node.GetChildren()) {
-      var Kind = Child.Node.Kind + "";
-      if (Child.isLast) {
-        Text += Indentation + "└── " + Kind + "\n" + this.Print(Child.Node, Indentation + "    ");
+    var View = "";
+    for (const Branch of Node.GetBranches()) {
+      var Kind = Branch.Node.Kind + "";
+      if (Branch.isLast) {
+        View += Indentation + "└── " + Kind + "\n" + this.Print(Branch.Node, Indentation + "    ");
       } else {
-        Text += Indentation + "├── " + Kind + "\n" + this.Print(Child.Node, Indentation + "│   ");
+        View += Indentation + "├── " + Kind + "\n" + this.Print(Branch.Node, Indentation + "│   ");
       }
     }
-    return Text;
+    return View;
   }
 
   // Lexical analysis: Generates a sequence of tokens from the input text using the Lexer.
@@ -42,7 +42,8 @@ export class SyntaxTree extends SyntaxNode {
 
   // Syntax analysis: Generates an abstract syntax tree (AST) from the input text using the Parser.
   static Parse(Text: string) {
-    return new Parser(SourceText.From(Text)).ParseSyntaxTree();
+    const Source = SourceText.From(Text);
+    return new Parser(Source).ParseSyntaxTree();
   }
 
   // Binding: Binds the syntax tree to symbols and performs semantic analysis.

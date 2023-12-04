@@ -36,8 +36,8 @@ export class Diagnostics {
     return this.ReportError(new Diagnose(DiagnoseKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
-  NotAnOperator(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Node <${Kind}> Is Not An Operator.`));
+  MissingOperatorKind(Kind: SyntaxKind) {
+    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Unexpected Operator Kind <${Kind}>.`));
   }
 
   CircularDependency(Reference: string) {

@@ -72,7 +72,9 @@ export class Binder {
         // Run binder for expression.
         const Expression = this.Bind(Node.Expression);
         // Prevent using before its declaration.
-        if (this.Stack.has(LeftBound.Reference)) throw this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
+        if (this.Stack.has(LeftBound.Reference)) {
+          throw this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
+        }
         // Referencing in array form.
         const Referencing = Array.from(this.Stack);
         // Check if references being referenced actually exist.
@@ -116,7 +118,7 @@ export class Binder {
       case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
       default:
-        throw this.Logger.NotAnOperator(Kind);
+        throw this.Logger.MissingOperatorKind(Kind);
     }
   }
 
@@ -133,7 +135,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
       default:
-        throw this.Logger.NotAnOperator(Kind);
+        throw this.Logger.MissingOperatorKind(Kind);
     }
   }
 
