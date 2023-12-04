@@ -1,4 +1,3 @@
-import { Diagnostics } from "../Diagnostics/Diagnostics";
 import { TextLine } from "./TextLine";
 
 export class SourceText {
@@ -6,7 +5,7 @@ export class SourceText {
   private Spans = new Array<TextLine>();
   private Number = 1;
 
-  constructor(private Text: string, public Logger: Diagnostics) {
+  constructor(public Text: string) {
     this.ParseLines();
   }
 
@@ -28,7 +27,6 @@ export class SourceText {
   GetTextLine(Position: number): TextLine {
     let Left = 0;
     let Right = this.Spans.length - 1;
-    if (Position > Right) this.Logger.IndexOutOfBounds();
     while (true) {
       const Index = Left + Math.floor((Right - Left) / 2);
       const Span = this.Spans[Index];
@@ -38,5 +36,9 @@ export class SourceText {
       if (Position < Span.Start) Right = Index - 1;
       else Left = Index + 1;
     }
+  }
+
+  static From(Text: string) {
+    return new SourceText(Text);
   }
 }

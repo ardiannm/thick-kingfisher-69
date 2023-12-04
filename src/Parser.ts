@@ -10,13 +10,14 @@ import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
+import { SourceText } from "./CodeAnalysis/Text/SourceText";
 
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
 
-  constructor(public readonly Text: string, private Logger: Diagnostics) {
-    const Tokenizer = new Lexer(Text);
+  constructor(public readonly Source: SourceText, private Logger: Diagnostics) {
+    const Tokenizer = new Lexer(Source);
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();

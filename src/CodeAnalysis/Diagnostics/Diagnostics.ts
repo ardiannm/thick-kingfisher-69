@@ -81,8 +81,4 @@ export class Diagnostics {
   UsedBeforeDeclaration(Reference: string) {
     throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Reference Used Before Its Declaration.`));
   }
-
-  IndexOutOfBounds() {
-    throw this.ReportError(new Diagnostic(ErrorKind.SourceText, `Index Position Is Out Of Bounds.`));
-  }
 }
