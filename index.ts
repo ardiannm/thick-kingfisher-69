@@ -17,9 +17,13 @@ var ShowTree = false;
 while (true) {
   const Input = Prompt("> ") || "/* this\nSpans\npush(new LineSpan(this.Number\n StartPointer\n this.Pointer));  */".replace(/\n/g, "\n");
 
-  const SourceTextFactory = new SourceText(Input);
-  const Span = SourceTextFactory.GetTextLine(43);
-  console.log(Span);
+  try {
+    const SourceTextFactory = new SourceText(Input, Logger);
+    const Span = SourceTextFactory.GetTextLine(100);
+    Logger.Log(Span);
+  } catch (error) {
+    Logger.Log((error as Diagnostic).Message);
+  }
 
   // if (Input.trim() === "tree") {
   //   ShowTree = !ShowTree;

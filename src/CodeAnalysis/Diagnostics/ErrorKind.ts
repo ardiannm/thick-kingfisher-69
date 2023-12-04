@@ -4,4 +4,5 @@ export enum ErrorKind {
   Evaluator = "Evaluator",
   Binder = "Binder",
   Lexer = "Lexer",
+  SourceText = "SourceText"
 }

@@ -1,3 +1,4 @@
+import { Diagnostics } from "../Diagnostics/Diagnostics";
 import { TextLine } from "./TextLine";
 
 export class SourceText {
@@ -5,15 +6,11 @@ export class SourceText {
   private Spans = new Array<TextLine>();
   private Number = 1;
 
-  constructor(private Text: string) {
+  constructor(private Text: string, public Logger: Diagnostics) {
     this.ParseLines();
   }
 
-  public static From(Text: string) {
-    return new SourceText(Text);
-  }
-
-  private ParseLines() {
+  ParseLines() {
     let Start = this.Index;
     while (this.Index < this.Text.length) {
       const Char = this.Text.charAt(this.Index);
@@ -25,11 +22,13 @@ export class SourceText {
       this.Index++;
     }
     this.Spans.push(new TextLine(this.Number, Start, this.Index));
+    return this.Spans;
   }
 
   GetTextLine(Position: number): TextLine {
     let Left = 0;
     let Right = this.Spans.length - 1;
+    if (Position > Right) this.Logger.IndexOutOfBounds();
     while (true) {
       const Index = Left + Math.floor((Right - Left) / 2);
       const Span = this.Spans[Index];
