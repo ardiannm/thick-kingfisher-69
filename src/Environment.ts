@@ -3,11 +3,11 @@ import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceA
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
 export class Environment {
-  constructor(public Logger: Diagnostics) {}
-
   private Nodes = new Map<string, BoundReferenceAssignment>();
   private Values = new Map<string, number>();
   private ForChange = new Set<string>();
+
+  private Logger = new Diagnostics();
 
   private HasNode(Node: BoundReferenceAssignment): boolean {
     return this.Nodes.has(Node.Reference);
@@ -27,7 +27,7 @@ export class Environment {
 
   GetValue(Node: BoundCellReference): number {
     if (this.Values.has(Node.Reference)) return this.Values.get(Node.Reference);
-    this.Logger.ValueDoesNotExist(Node.Reference);
+    throw this.Logger.ValueDoesNotExist(Node.Reference);
   }
 
   Assign(Node: BoundReferenceAssignment, Value: number): Generator<BoundReferenceAssignment> {

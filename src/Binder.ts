@@ -11,7 +11,6 @@ import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpress
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundIdentifier } from "./CodeAnalysis/Binding/BoundIdentifier";
 import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
-import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./CodeAnalysis/Binding/BoundRangeReference";
@@ -22,12 +21,13 @@ import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
+import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 
 export class Binder {
-  constructor(public Logger: Diagnostics) {}
-
   private Links = new Map<string, Array<string>>();
   private Stack = new Set<string>();
+
+  public Logger = new Diagnostics();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -52,7 +52,7 @@ export class Binder {
       case SyntaxKind.ReferenceAssignment:
         return this.BindReferenceAssignment(Node as NodeType<ReferenceAssignment>);
       default:
-        this.Logger.MissingBindingMethod(Node.Kind);
+        throw this.Logger.MissingBindingMethod(Node.Kind);
     }
   }
 
@@ -66,12 +66,12 @@ export class Binder {
         // Run Binder For Expresion
         const Expression = this.Bind(Node.Expression);
         // Prevent Using Before Its Declaration
-        if (this.Stack.has(LeftBound.Reference)) this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
+        if (this.Stack.has(LeftBound.Reference)) throw this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
         // Referencing In Array Form
         const Referencing = Array.from(this.Stack);
         // Check If References Being Referenced Actually Exist
         Referencing.forEach((Ref) => {
-          if (!this.Links.has(Ref)) this.Logger.ReferenceCannotBeFound(Ref);
+          if (!this.Links.has(Ref)) throw this.Logger.ReferenceCannotBeFound(Ref);
         });
         // Save Links
         this.Links.set(LeftBound.Reference, Referencing);
@@ -81,15 +81,15 @@ export class Binder {
         this.Stack.clear();
         return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
       default:
-        this.Logger.CantUseAsAReference(Node.Left.Kind);
+        throw this.Logger.CantUseAsAReference(Node.Left.Kind);
     }
   }
 
   private CircularReferencing(Reference: string, Links: Array<string>) {
     if (Links.includes(Reference)) {
-      this.Logger.CircularDependency(Reference);
+      throw this.Logger.CircularDependency(Reference);
     }
-    Links.forEach((Link) => this.CircularReferencing(Reference, this.Links.get(Link)));
+    Links.forEach((Link) => this.CircularReferencing(Reference, this.Links.get(Link) as Array<string>));
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -107,7 +107,7 @@ export class Binder {
       case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
       default:
-        this.Logger.NotAnOperator(Kind);
+        throw this.Logger.NotAnOperator(Kind);
     }
   }
 
@@ -122,7 +122,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
       default:
-        this.Logger.NotAnOperator(Kind);
+        throw this.Logger.NotAnOperator(Kind);
     }
   }
 

@@ -3,6 +3,10 @@ import { SyntaxTree } from "./src/CodeAnalysis/SyntaxTree";
 
 while (true) {
   const Input = Prompt("> ");
+
   const Tree = SyntaxTree.Parse(Input);
   console.log(Tree);
+
+  const Value = SyntaxTree.Evaluate(Input);
+  console.log(Value);
 }

@@ -1,4 +1,3 @@
-import { Lexer } from "./Lexer";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
@@ -15,7 +14,8 @@ import { SourceText } from "./CodeAnalysis/Text/SourceText";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
-  private Diagnostics = new Diagnostics();
+
+  private Logger = new Diagnostics();
 
   constructor(public readonly Source: SourceText) {
     for (const Token of SyntaxTree.Lex(Source.Text)) {
@@ -24,7 +24,7 @@ export class Parser {
         this.Tokens.push(Token);
       }
       // Report If BadTokens
-      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token);
+      if (Token.Kind === SyntaxKind.BadToken) this.Logger.BadTokenFound(Token);
     }
   }
 
@@ -153,8 +153,8 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    this.Diagnostics.TokenNotAMatch(Kind, Token.Kind);
-    return Token;
+    throw this.Logger.TokenNotAMatch(Kind, Token.Kind);
+    // return Token;
   }
 
   // Check To See If There Are More Tokens

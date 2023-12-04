@@ -5,6 +5,8 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "./Text/SourceText";
+import { Evaluator } from "../Evaluator";
+import { Binder } from "../Binder";
 
 export class SyntaxTree extends SyntaxNode {
   constructor(public Kind: SyntaxKind, public Expressions: Array<Expression>) {
@@ -35,5 +37,13 @@ export class SyntaxTree extends SyntaxNode {
 
   static Parse(Text: string) {
     return new Parser(SourceText.From(Text)).ParseSyntaxTree();
+  }
+
+  static Bind(Text: string) {
+    return new Binder().Bind(this.Parse(Text));
+  }
+
+  static Evaluate(Text: string) {
+    return new Evaluator().Evaluate(this.Bind(Text));
   }
 }
