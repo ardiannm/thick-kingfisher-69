@@ -1,9 +1,9 @@
 import { Lexer } from "../Lexer";
 import { Parser } from "../Parser";
-import { Diagnostics } from "./Diagnostics/Diagnostics";
 import { Expression } from "./Expression";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
+import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "./Text/SourceText";
 
 export class SyntaxTree extends SyntaxNode {
@@ -24,16 +24,16 @@ export class SyntaxTree extends SyntaxNode {
     return Text;
   }
 
-  static *ParseTokens(Text: string) {
+  static *Lex(Text: string) {
     const Tokenizer = new Lexer(SourceText.From(Text));
-    while (true) {
-      const Token = Tokenizer.Lex();
-      if (Token.Kind === SyntaxKind.EndOfFileToken) break;
+    var Token: SyntaxToken;
+    do {
+      Token = Tokenizer.Lex();
       yield Token;
-    }
+    } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
 
   static Parse(Text: string) {
-    return new Parser(SourceText.From(Text)).Parse();
+    return new Parser(SourceText.From(Text)).ParseSyntaxTree();
   }
 }

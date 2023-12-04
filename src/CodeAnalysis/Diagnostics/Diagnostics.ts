@@ -1,84 +1,74 @@
 import { SyntaxKind } from "../SyntaxKind";
 import { SyntaxToken } from "../SyntaxToken";
-import { ErrorKind } from "./ErrorKind";
-import { Diagnostic } from "./Diagnostic";
+import { DiagnoseKind } from "./DiagnoseKind";
+import { Diagnose } from "./Diagnose";
 import { BoundKind } from "../Binding/BoundKind";
 
 export class Diagnostics {
-  private Bag = new Array<Diagnostic>();
+  private Stack = new Array<Diagnose>();
 
   Any() {
-    return this.Bag.length > 0;
-  }
-
-  Show() {
-    console.log();
-    for (const d of this.Bag) console.log(d.Message);
-    console.log();
+    return this.Stack.length > 0;
   }
 
   Clear() {
-    this.Bag = new Array<Diagnostic>();
+    this.Stack = new Array<Diagnose>();
   }
 
-  Log(Tree: Object = "") {
-    console.log("\n" + `${typeof Tree === "string" ? Tree : JSON.stringify(Tree, undefined, 2)}` + "\n");
-  }
-
-  private ReportError(Err: Diagnostic) {
-    this.Bag.push(Err);
-    return Err;
+  private ReportError(Diagnose: Diagnose) {
+    this.Stack.push(Diagnose);
+    return Diagnose;
   }
 
   BadTokenFound(Token: SyntaxToken) {
-    return this.ReportError(new Diagnostic(ErrorKind.Lexer, `Bad Character '${Token.Text}' Found.`));
+    return this.ReportError(new Diagnose(DiagnoseKind.Lexer, `Bad Character '${Token.Text}' Found.`));
   }
 
   TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind) {
-    return this.ReportError(new Diagnostic(ErrorKind.Parser, `Expected <${Expected}>; Found <${Matched}>.`));
+    return this.ReportError(new Diagnose(DiagnoseKind.Parser, `Expected <${Expected}>; Found <${Matched}>.`));
   }
 
   UndeclaredVariable(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
   }
 
   MissingEvaluationMethod(Kind: BoundKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
   }
 
   NotAnOperator(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnostic(ErrorKind.Binder, `Node <${Kind}> Is Not An Operator.`));
+    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Node <${Kind}> Is Not An Operator.`));
   }
 
   CircularDependency(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Circular Dependency For '${Reference}' Detected.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `Circular Dependency For '${Reference}' Detected.`));
   }
 
   MissingBindingMethod(Kind: SyntaxKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
   }
 
   CantUseAsAReference(Unexpected: SyntaxKind) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `<${Unexpected}> Can't Be Used As A Reference.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `<${Unexpected}> Can't Be Used As A Reference.`));
   }
 
   ReferenceCannotBeFound(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `Cannot Find Reference '${Reference}'.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `Cannot Find Reference '${Reference}'.`));
   }
 
   CannotRedeclareReference(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
   }
 
   EmptySyntaxForEvaluator() {
-    throw this.ReportError(new Diagnostic(ErrorKind.Evaluator, `Syntax Program Cannot Be Empty.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Evaluator, `Syntax Program Cannot Be Empty.`));
   }
 
   ValueDoesNotExist(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Environment, `Value For '${Reference}' Does Not Exist.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Environment, `Value For '${Reference}' Does Not Exist.`));
   }
 
   UsedBeforeDeclaration(Reference: string) {
-    throw this.ReportError(new Diagnostic(ErrorKind.Binder, `'${Reference}' Reference Used Before Its Declaration.`));
+    throw this.ReportError(new Diagnose(DiagnoseKind.Binder, `'${Reference}' Reference Used Before Its Declaration.`));
   }
 }

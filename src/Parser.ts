@@ -15,24 +15,20 @@ import { SourceText } from "./CodeAnalysis/Text/SourceText";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
-  private Logger = new Diagnostics();
+  private Diagnostics = new Diagnostics();
 
   constructor(public readonly Source: SourceText) {
-    const Tokenizer = new Lexer(Source);
-    var Token: SyntaxToken;
-    do {
-      Token = Tokenizer.Lex();
+    for (const Token of SyntaxTree.Lex(Source.Text)) {
+      // Push Tokens If Not SpaceToken And Not BadToken
       if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-      if (Token.Kind === SyntaxKind.BadToken) {
-        this.Logger.BadTokenFound(Token);
-      }
-    } while (Token.Kind !== SyntaxKind.EndOfFileToken);
+      // Report If BadTokens
+      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token);
+    }
   }
 
-  // Main Parsing Method
-  Parse() {
+  ParseSyntaxTree() {
     const Expressions = new Array();
     while (this.Any()) {
       Expressions.push(this.ParseReferenceDeclaration());
@@ -157,7 +153,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    this.Logger.TokenNotAMatch(Kind, Token.Kind);
+    this.Diagnostics.TokenNotAMatch(Kind, Token.Kind);
     return Token;
   }
 
