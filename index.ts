@@ -18,7 +18,7 @@ while (true) {
   const Input = Prompt("> ") || "/* this;Spans;push(new LineSpan(this.Number; StartPointer; this.Pointer));  */".replace(/;/g, "\n");
 
   const SourceTextFactory = new SourceText(Input);
-  const Span = SourceTextFactory.GetLineSpan(43);
+  const Span = SourceTextFactory.GetTextLine(43);
   console.log(Span);
 
   // if (Input.trim() === "tree") {

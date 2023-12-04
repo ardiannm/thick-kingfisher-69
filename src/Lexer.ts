@@ -4,7 +4,7 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 
 // Lexer Class For Tokenizing Input Strings
 export class Lexer {
-  constructor(public readonly Input: string) {}
+  constructor(public readonly Text: string) {}
 
   private Index = 0;
 
@@ -27,7 +27,7 @@ export class Lexer {
 
   // Peek At The Character At The Specified Offset From The Current Position
   private Peek(Offset: number): string {
-    return this.Input.charAt(this.Index + Offset);
+    return this.Text.charAt(this.Index + Offset);
   }
 
   private get Current() {
@@ -60,7 +60,7 @@ export class Lexer {
       while (this.IsLetter(this.Current)) {
         this.Next();
       }
-      const Text = this.Input.substring(Start, this.Index);
+      const Text = this.Text.substring(Start, this.Index);
       return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
     }
 
@@ -68,19 +68,19 @@ export class Lexer {
       while (this.IsDigit(this.Current)) {
         this.Next();
       }
-      return new SyntaxToken(SyntaxKind.NumberToken, this.Input.substring(Start, this.Index));
+      return new SyntaxToken(SyntaxKind.NumberToken, this.Text.substring(Start, this.Index));
     }
 
     if (this.IsSpace(this.Current)) {
       while (this.IsSpace(this.Current)) {
         this.Next();
       }
-      return new SyntaxToken(SyntaxKind.SpaceToken, this.Input.substring(Start, this.Index));
+      return new SyntaxToken(SyntaxKind.SpaceToken, this.Text.substring(Start, this.Index));
     }
 
     // Check If Token Is A Composite Token
     if (this.MatchKind(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      return new SyntaxToken(SyntaxKind.PointerToken, this.Input.substring(Start, this.Index));
+      return new SyntaxToken(SyntaxKind.PointerToken, this.Text.substring(Start, this.Index));
     }
 
     const Kind = SyntaxFacts.Kind(this.Current);

@@ -15,8 +15,8 @@ export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
 
-  constructor(public readonly Input: string, private Logger: Diagnostics) {
-    const Tokenizer = new Lexer(Input);
+  constructor(public readonly Text: string, private Logger: Diagnostics) {
+    const Tokenizer = new Lexer(Text);
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();
