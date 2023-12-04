@@ -12,7 +12,7 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 
 export class Parser {
-  private Pointer = 0;
+  private Index = 0;
   private Tokens = new Array<SyntaxToken>();
 
   constructor(public readonly Input: string, private Logger: Diagnostics) {
@@ -123,7 +123,7 @@ export class Parser {
 
   // Get The Next Token Without Consuming It
   private PeekToken(Offset: number) {
-    const Index = this.Pointer + Offset;
+    const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;
     if (Index > LastIndex) return this.Tokens[LastIndex];
     return this.Tokens[Index];
@@ -137,7 +137,7 @@ export class Parser {
   // Consume And Return The Next Token
   private NextToken() {
     const Token = this.CurrentToken;
-    this.Pointer++;
+    this.Index++;
     return Token;
   }
 

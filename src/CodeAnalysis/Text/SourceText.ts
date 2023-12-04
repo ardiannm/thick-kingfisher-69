@@ -1,7 +1,7 @@
 import { LineSpan } from "./LineSpan";
 
 export class SourceText {
-  private Pointer = 0;
+  private Index = 0;
   private Spans = new Array<LineSpan>();
   private Number = 1;
 
@@ -10,17 +10,17 @@ export class SourceText {
   }
 
   private Generate() {
-    var StartPointer = this.Pointer;
-    while (this.Pointer < this.Input.length) {
-      const Char = this.Input.charAt(this.Pointer);
+    var Start = this.Index;
+    while (this.Index < this.Input.length) {
+      const Char = this.Input.charAt(this.Index);
       if (Char === ";") {
-        this.Spans.push(new LineSpan(this.Number, StartPointer, this.Pointer));
+        this.Spans.push(new LineSpan(this.Number, Start, this.Index));
         this.Number++;
-        StartPointer = this.Pointer;
+        Start = this.Index;
       }
-      this.Pointer++;
+      this.Index++;
     }
-    this.Spans.push(new LineSpan(this.Number, StartPointer, this.Pointer));
+    this.Spans.push(new LineSpan(this.Number, Start, this.Index));
   }
 
   GetLineSpan(Position: number): LineSpan {
