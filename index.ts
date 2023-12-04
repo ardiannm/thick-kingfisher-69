@@ -15,31 +15,32 @@ const EvaluatorFactory = new Evaluator(EnvironmentFactory, Logger);
 var ShowTree = false;
 
 while (true) {
-  const Input = Prompt("> ");
+  const Input = Prompt("> ") || "/* this;Spans;push(new LineSpan(this.Number; StartPointer; this.Pointer));  */";
 
-  const Lines = new SourceText(Input).GetLineSpans();
-  for (const Line of Lines) console.log(Line);
+  const SourceTextFactory = new SourceText(Input);
+  const Span = SourceTextFactory.GetLineSpan(44);
+  console.log(Span);
 
-  if (Input.trim() === "tree") {
-    ShowTree = !ShowTree;
-    Logger.Log();
-    continue;
-  }
+  // if (Input.trim() === "tree") {
+  //   ShowTree = !ShowTree;
+  //   Logger.Log();
+  //   continue;
+  // }
 
-  const ParserFactory = new Parser(Input, Logger);
-  const Tree = ParserFactory.Parse();
+  // const ParserFactory = new Parser(Input, Logger);
+  // const Tree = ParserFactory.Parse();
 
-  if (Logger.Any()) {
-    Logger.Show();
-  } else {
-    try {
-      const BoundTree = BinderFactory.Bind(Tree);
-      if (ShowTree) Logger.Log(BoundTree);
-      const Value = EvaluatorFactory.Evaluate(BoundTree);
-      Logger.Log(Value);
-    } catch (error) {
-      Logger.Log((error as Diagnostic).Message);
-    }
-  }
-  Logger.Clear();
+  // if (Logger.Any()) {
+  //   Logger.Show();
+  // } else {
+  //   try {
+  //     const BoundTree = BinderFactory.Bind(Tree);
+  //     if (ShowTree) Logger.Log(BoundTree);
+  //     const Value = EvaluatorFactory.Evaluate(BoundTree);
+  //     Logger.Log(Value);
+  //   } catch (error) {
+  //     Logger.Log((error as Diagnostic).Message);
+  //   }
+  // }
+  // Logger.Clear();
 }
