@@ -11,23 +11,28 @@ import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
 import { SourceText } from "./CodeAnalysis/Text/SourceText";
 
+// Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
+
 export class Parser {
+  // Index to keep track of the current position while parsing tokens.
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
 
+  // Logger for reporting diagnostics and errors during parsing.
   private Logger = new Diagnostics();
 
+  // Constructor initializes the parser with the provided source text.
   constructor(public readonly Source: SourceText) {
+    // Tokenize the source text and filter out space and bad tokens.
     for (const Token of SyntaxTree.Lex(Source.Text)) {
-      // Push Tokens If Not SpaceToken And Not BadToken
       if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-      // Report If BadTokens
       if (Token.Kind === SyntaxKind.BadToken) this.Logger.BadTokenFound(Token);
     }
   }
 
+  // ParseSyntaxTree method parses the source text and generates the abstract syntax tree (AST).
   ParseSyntaxTree() {
     const Expressions = new Array();
     while (this.Any()) {
@@ -37,7 +42,7 @@ export class Parser {
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
   }
 
-  // Parses A Cell Reference Which When On Change It Auto Updates Other Cells That It References
+  // Parses a cell reference which, when changed, auto-updates other cells that it references.
   private ParseReferenceDeclaration() {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
@@ -47,7 +52,7 @@ export class Parser {
     return Left;
   }
 
-  // Parse Expressions With Binary Operators
+  // Parse expressions with binary operators.
   private ParseBinaryExpression(ParentPrecedence = 0) {
     let Left = this.ParseUnaryExpression();
     while (true) {
@@ -62,7 +67,7 @@ export class Parser {
     return Left;
   }
 
-  // Parse Expressions With Unary Operators
+  // Parse expressions with unary operators.
   private ParseUnaryExpression() {
     const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken.Kind);
     if (BinaryPrecedence !== 0) {
@@ -73,7 +78,7 @@ export class Parser {
     return this.ParseParentheses();
   }
 
-  // Parse Expressions Enclosed In Parentheses
+  // Parse expressions enclosed in parentheses.
   private ParseParentheses() {
     if (this.MatchToken(SyntaxKind.OpenParenToken)) {
       const Left = this.NextToken();
@@ -84,7 +89,7 @@ export class Parser {
     return this.ParseRange();
   }
 
-  // Parse Range Reference (e.g., B4:C, B:E)
+  // Parse range reference (e.g., B4:C, B:E).
   private ParseRange() {
     const Left = this.ParseCell();
     if (this.MatchToken(SyntaxKind.ColonToken)) {
@@ -95,7 +100,7 @@ export class Parser {
     return Left;
   }
 
-  // Parse Cell Reference (e.g., A1, B7)
+  // Parse cell reference (e.g., A1, B7).
   private ParseCell() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
@@ -105,7 +110,7 @@ export class Parser {
     return this.ParseLiteral();
   }
 
-  // Parse Literals (e.g., Numbers, Identifiers, True)
+  // Parse literals (e.g., Numbers, Identifiers, True).
   private ParseLiteral() {
     const Kind = this.CurrentToken.Kind;
     switch (Kind) {
@@ -119,7 +124,7 @@ export class Parser {
     }
   }
 
-  // Get The Next Token Without Consuming It
+  // Get the next token without consuming it.
   private PeekToken(Offset: number) {
     const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;
@@ -127,19 +132,19 @@ export class Parser {
     return this.Tokens[Index];
   }
 
-  // Peek The Current Token Without Consuming
+  // Peek the current token without consuming.
   private get CurrentToken() {
     return this.PeekToken(0);
   }
 
-  // Consume And Return The Next Token
+  // Consume and return the next token.
   private NextToken() {
     const Token = this.CurrentToken;
     this.Index++;
     return Token;
   }
 
-  // Helper Method To Check If The Next Token Matches The Given Kinds
+  // Helper method to check if the next token matches the given kinds.
   private MatchToken(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
@@ -149,15 +154,14 @@ export class Parser {
     return true;
   }
 
-  // Expect Token Kind Else Report Message
+  // Expect token kind else report message.
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
     throw this.Logger.TokenNotAMatch(Kind, Token.Kind);
-    // return Token;
   }
 
-  // Check To See If There Are More Tokens
+  // Check to see if there are more tokens.
   private Any() {
     return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
