@@ -6,11 +6,7 @@ export class SourceText {
   private Number = 1;
 
   constructor(private Input: string) {
-    this.Generate();
-  }
-
-  private Generate() {
-    var Start = this.Index;
+    let Start = this.Index;
     while (this.Index < this.Input.length) {
       const Char = this.Input.charAt(this.Index);
       if (Char === ";") {
