@@ -15,10 +15,10 @@ const EvaluatorFactory = new Evaluator(EnvironmentFactory, Logger);
 var ShowTree = false;
 
 while (true) {
-  const Input = Prompt("> ") || "/* this;Spans;push(new LineSpan(this.Number; StartPointer; this.Pointer));  */";
+  const Input = Prompt("> ") || "/* this;Spans;push(new LineSpan(this.Number; StartPointer; this.Pointer));  */".replace(/;/g, "\n");
 
   const SourceTextFactory = new SourceText(Input);
-  const Span = SourceTextFactory.GetLineSpan(44);
+  const Span = SourceTextFactory.GetLineSpan(43);
   console.log(Span);
 
   // if (Input.trim() === "tree") {

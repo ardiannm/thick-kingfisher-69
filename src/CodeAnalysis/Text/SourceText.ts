@@ -9,7 +9,7 @@ export class SourceText {
     let Start = this.Index;
     while (this.Index < this.Input.length) {
       const Char = this.Input.charAt(this.Index);
-      if (Char === ";") {
+      if (Char === "\n") {
         this.Spans.push(new LineSpan(this.Number, Start, this.Index));
         this.Number++;
         Start = this.Index;
@@ -23,7 +23,7 @@ export class SourceText {
     let Left = 0;
     let Right = this.Spans.length - 1;
     while (true) {
-      const Index = Math.floor((Right + Left) / 2);
+      const Index = Left + Math.floor((Right - Left) / 2);
       const Span = this.Spans[Index];
       if (Position >= Span.Start && Position < Span.End) {
         return Span;
