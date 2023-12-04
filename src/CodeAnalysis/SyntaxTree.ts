@@ -34,6 +34,6 @@ export class SyntaxTree extends SyntaxNode {
   }
 
   static Parse(Text: string) {
-    return new Parser(SourceText.From(Text), new Diagnostics());
+    return new Parser(SourceText.From(Text)).Parse();
   }
 }

@@ -15,8 +15,9 @@ import { SourceText } from "./CodeAnalysis/Text/SourceText";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
+  private Logger = new Diagnostics();
 
-  constructor(public readonly Source: SourceText, private Logger: Diagnostics) {
+  constructor(public readonly Source: SourceText) {
     const Tokenizer = new Lexer(Source);
     var Token: SyntaxToken;
     do {

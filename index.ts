@@ -12,4 +12,6 @@ while (true) {
   }
 
   for (const Token of SyntaxTree.ParseTokens(Input)) console.log(Token);
+  console.log();
+  console.log(SyntaxTree.Parse(Input));
 }
