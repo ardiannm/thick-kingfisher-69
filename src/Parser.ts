@@ -8,8 +8,8 @@ import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression"
 import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
-import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
-import { SourceText } from "./CodeAnalysis/Text/SourceText";
+import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
+import { SourceText } from "./CodeAnalysis/SourceText";
 
 // Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
 
@@ -19,7 +19,7 @@ export class Parser {
   private Tokens = new Array<SyntaxToken>();
 
   // Logger for reporting diagnostics and errors during parsing.
-  private Logger = new Diagnostics();
+  private Logger = new DiagnosticBag();
 
   // Constructor initializes the parser with the provided source text.
   constructor(public readonly Source: SourceText) {

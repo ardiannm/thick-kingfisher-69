@@ -7,7 +7,7 @@ import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOpera
 import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
-import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
+import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { Environment } from "./Environment";
 
@@ -15,7 +15,7 @@ import { Environment } from "./Environment";
 
 export class Evaluator {
   // Logger for reporting diagnostics and errors during evaluation.
-  private Logger = new Diagnostics();
+  private Logger = new DiagnosticBag();
   // Environment to manage state and change observations.
   private Env = new Environment();
 

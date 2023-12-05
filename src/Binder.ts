@@ -1,4 +1,4 @@
-import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
+import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
@@ -31,8 +31,8 @@ export class Binder {
   // Set to keep track of referenced identifiers to detect circular dependencies.
   private Stack = new Set<string>();
 
-  // Logger for reporting diagnostics and errors during binding.
-  public Logger = new Diagnostics();
+  // Logger for reporting DiagnosticBag and errors during binding.
+  public Logger = new DiagnosticBag();
 
   // Bind method takes a SyntaxNode and returns the corresponding BoundNode.
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {

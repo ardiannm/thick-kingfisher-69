@@ -1,6 +1,6 @@
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
-import { Diagnostics } from "./CodeAnalysis/Diagnostics/Diagnostics";
+import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
 
 // Environment class manages the state of the program's variables and handles change observations.
 
@@ -13,7 +13,7 @@ export class Environment {
   private ForChange = new Set<string>();
 
   // Logger for reporting diagnostics and errors during environment operations.
-  private Logger = new Diagnostics();
+  private Logger = new DiagnosticBag();
 
   // Checks if the environment has a specific node.
   private HasNode(Node: BoundReferenceAssignment): boolean {

@@ -1,10 +1,10 @@
-import { SyntaxKind } from "../SyntaxKind";
-import { SyntaxToken } from "../SyntaxToken";
-import { DiagnoseKind } from "./DiagnoseKind";
-import { Diagnose } from "./Diagnose";
-import { BoundKind } from "../Binding/BoundKind";
+import { DiagnoseKind } from "./DiagnosticKind";
+import { Diagnose } from "./Diagnostic";
+import { SyntaxToken } from "./SyntaxToken";
+import { SyntaxKind } from "./SyntaxKind";
+import { BoundKind } from "./Binding/BoundKind";
 
-export class Diagnostics {
+export class DiagnosticBag {
   private Stack = new Array<Diagnose>();
 
   Any() {

@@ -4,7 +4,7 @@ import { Expression } from "./Expression";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 import { SyntaxToken } from "./SyntaxToken";
-import { SourceText } from "./Text/SourceText";
+import { SourceText } from "./SourceText";
 import { Evaluator } from "../Evaluator";
 import { Binder } from "../Binder";
 

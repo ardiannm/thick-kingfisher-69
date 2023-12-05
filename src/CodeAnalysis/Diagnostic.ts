@@ -1,4 +1,4 @@
-import { DiagnoseKind } from "./DiagnoseKind";
+import { DiagnoseKind } from "./DiagnosticKind";
 
 export class Diagnose {
   constructor(public Kind: DiagnoseKind, public Message: string) {
