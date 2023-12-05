@@ -11,7 +11,8 @@ export enum SyntaxKind {
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
   GreaterToken = "GreaterToken",
-  // Keywords
+  SemiColonToken = "SemiColonToken",
+  // KeywordTokens
   FalseToken = "FalseToken",
   TrueToken = "TrueToken",
   // CompositeTokens
@@ -23,9 +24,8 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   RangeReference = "RangeReference",
   CellReference = "CellReference",
-  ReferenceAssignment = "ReferenceAssignment",
+  ReferenceDeclaration = "ReferenceDeclaration",
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
-  SemiColonToken = "SemiColonToken",
 }

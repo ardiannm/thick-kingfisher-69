@@ -54,7 +54,7 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.ReferenceAssignment:
+      case SyntaxKind.ReferenceDeclaration:
         return this.BindReferenceDeclaration(Node as NodeType<ReferenceDeclaration>);
       default:
         throw this.Logger.MissingBindingMethod(Node.Kind);
@@ -87,7 +87,7 @@ export class Binder {
         this.CircularReferencing(LeftBound.Reference, Referencing);
         // Clear stack.
         this.Stack.clear();
-        return new BoundReferenceDeclaration(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
+        return new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, LeftBound.Reference, Referencing, [], Expression);
       default:
         throw this.Logger.CantUseAsAReference(Node.Left.Kind);
     }

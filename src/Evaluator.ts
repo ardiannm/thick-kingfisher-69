@@ -33,7 +33,7 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.BoundReferenceAssignment:
+      case BoundKind.BoundReferenceDeclaration:
         return this.EvaluateReferenceDeclaration(Node as NodeType<BoundReferenceDeclaration>);
       default:
         throw this.Logger.MissingEvaluationMethod(Node.Kind);

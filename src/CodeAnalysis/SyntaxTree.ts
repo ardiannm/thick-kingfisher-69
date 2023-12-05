@@ -20,7 +20,7 @@ export class SyntaxTree extends SyntaxNode {
   Print(Node: SyntaxNode = this, Indentation = "") {
     var View = "";
     for (const Branch of Node.GetBranches()) {
-      var Kind = Branch.Node.Kind + "";
+      var Kind = Branch.Node.Kind;
       if (Branch.isLast) {
         View += Indentation + "└── " + Kind + "\n" + this.Print(Branch.Node, Indentation + "    ");
       } else {
