@@ -4,7 +4,7 @@ import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
-import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
+import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
@@ -34,14 +34,14 @@ export class Evaluator {
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundReferenceAssignment:
-        return this.EvaluateReferenceAssignment(Node as NodeType<BoundReferenceAssignment>);
+        return this.EvaluateReferenceDeclaration(Node as NodeType<BoundReferenceDeclaration>);
       default:
         throw this.Logger.MissingEvaluationMethod(Node.Kind);
     }
   }
 
   // Evaluation method for BoundReferenceAssignment syntax node.
-  private EvaluateReferenceAssignment(Node: BoundReferenceAssignment) {
+  private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration) {
     const Value = this.Evaluate(Node.Expression);
     // Update the environment with the new value and trigger change observations.
     for (const OutDatedNode of this.Env.Assign(Node, Value)) {

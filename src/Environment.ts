@@ -1,12 +1,12 @@
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
-import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
+import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
 
 // Environment class manages the state of the program's variables and handles change observations.
 
 export class Environment {
   // Map to store bound reference assignments.
-  private Nodes = new Map<string, BoundReferenceAssignment>();
+  private Nodes = new Map<string, BoundReferenceDeclaration>();
   // Map to store values of cell references.
   private Values = new Map<string, number>();
   // Set to keep track of nodes that need to be re-evaluated due to changes.
@@ -16,7 +16,7 @@ export class Environment {
   private Logger = new DiagnosticBag();
 
   // Checks if the environment has a specific node.
-  private HasNode(Node: BoundReferenceAssignment): boolean {
+  private HasNode(Node: BoundReferenceDeclaration): boolean {
     return this.Nodes.has(Node.Reference);
   }
 
@@ -26,12 +26,12 @@ export class Environment {
   }
 
   // Sets a node in the environment.
-  private SetNode(Node: BoundReferenceAssignment) {
+  private SetNode(Node: BoundReferenceDeclaration) {
     return this.Nodes.set(Node.Reference, Node);
   }
 
   // Sets the value of a node in the environment.
-  SetValue(Node: BoundReferenceAssignment, Value: number) {
+  SetValue(Node: BoundReferenceDeclaration, Value: number) {
     this.Values.set(Node.Reference, Value);
   }
 
@@ -42,7 +42,7 @@ export class Environment {
   }
 
   // Assigns a value to a bound reference assignment and triggers change observations.
-  Assign(Node: BoundReferenceAssignment, Value: number): Generator<BoundReferenceAssignment> {
+  Assign(Node: BoundReferenceDeclaration, Value: number): Generator<BoundReferenceDeclaration> {
     // If the node is stored.
     if (this.HasNode(Node)) {
       const PrevNode = this.GetNode(Node.Reference);
@@ -62,7 +62,7 @@ export class Environment {
   }
 
   // Handle affected node references on change.
-  private *OnEdit(Node: BoundReferenceAssignment): Generator<BoundReferenceAssignment> {
+  private *OnEdit(Node: BoundReferenceDeclaration): Generator<BoundReferenceDeclaration> {
     this.ForChange.clear();
     this.DetectForChanges(Node);
     for (const Changed of this.ForChange) {
@@ -72,7 +72,7 @@ export class Environment {
   }
 
   // Detect outdated dependencies after change.
-  private DetectForChanges(Node: BoundReferenceAssignment) {
+  private DetectForChanges(Node: BoundReferenceDeclaration) {
     this.Nodes.get(Node.Reference).ReferencedBy.forEach((Reference) => {
       this.ForChange.add(Reference);
       this.DetectForChanges(this.GetNode(Reference));

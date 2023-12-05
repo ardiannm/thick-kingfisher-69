@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
-import { ReferenceAssignment } from "./CodeAnalysis/ReferenceAssignment";
+import { ReferenceDeclaration } from "./CodeAnalysis/ReferenceDeclaration";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
@@ -47,7 +47,7 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
-      return new ReferenceAssignment(SyntaxKind.ReferenceAssignment, Left, this.ParseBinaryExpression());
+      return new ReferenceDeclaration(SyntaxKind.ReferenceAssignment, Left, this.ParseBinaryExpression());
     }
     return Left;
   }

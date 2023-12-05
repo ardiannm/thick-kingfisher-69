@@ -2,7 +2,7 @@ import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
-import { ReferenceAssignment } from "./CodeAnalysis/ReferenceAssignment";
+import { ReferenceDeclaration } from "./CodeAnalysis/ReferenceDeclaration";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
 import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
@@ -14,7 +14,7 @@ import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./CodeAnalysis/Binding/BoundRangeReference";
-import { BoundReferenceAssignment } from "./CodeAnalysis/Binding/BoundReferenceAssignment";
+import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundWithReference } from "./CodeAnalysis/Binding/BoundWithReference";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
@@ -55,14 +55,14 @@ export class Binder {
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ReferenceAssignment:
-        return this.BindReferenceAssignment(Node as NodeType<ReferenceAssignment>);
+        return this.BindReferenceDeclaration(Node as NodeType<ReferenceDeclaration>);
       default:
         throw this.Logger.MissingBindingMethod(Node.Kind);
     }
   }
 
   // Binding method for ReferenceAssignment syntax node.
-  private BindReferenceAssignment(Node: ReferenceAssignment) {
+  private BindReferenceDeclaration(Node: ReferenceDeclaration) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         // Bind reference.
@@ -87,7 +87,7 @@ export class Binder {
         this.CircularReferencing(LeftBound.Reference, Referencing);
         // Clear stack.
         this.Stack.clear();
-        return new BoundReferenceAssignment(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
+        return new BoundReferenceDeclaration(BoundKind.BoundReferenceAssignment, LeftBound.Reference, Referencing, [], Expression);
       default:
         throw this.Logger.CantUseAsAReference(Node.Left.Kind);
     }

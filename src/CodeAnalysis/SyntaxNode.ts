@@ -1,5 +1,5 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxBranch } from "./SyntaxBranch";
+import { BranchNode } from "./BranchNode";
 
 // SyntaxNode class representing a node in the syntax tree.
 
@@ -10,13 +10,13 @@ export class SyntaxNode {
   // Generator function to get children of the syntax node.
   public *GetBranches() {
     // Get all properties of the object and filter for instances of SyntaxNode.
-    const Children = Object.keys(this)
+    const Branches = Object.keys(this)
       .map((key) => this[key])
       .filter((value) => value instanceof SyntaxNode);
 
     // Yield SyntaxBranch objects for each child, indicating if it's the last child.
-    for (let i = 0; i < Children.length; i++) {
-      yield new SyntaxBranch(Children[i], i + 1 === Children.length);
+    for (let i = 0; i < Branches.length; i++) {
+      yield new BranchNode(Branches[i], i + 1 === Branches.length);
     }
   }
 }
