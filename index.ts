@@ -14,4 +14,8 @@ while (true) {
   console.log(JSON.stringify(Tree, undefined, 2));
 
   report();
+
+  console.log(JSON.stringify(Tree.ObjectId, undefined, 2));
+
+  report();
 }

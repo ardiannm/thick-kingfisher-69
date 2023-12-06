@@ -1,5 +1,5 @@
 import { BoundKind } from "./BoundKind";
 
-export class BoundNode {
+export abstract class BoundNode {
   constructor(public Kind: BoundKind) {}
 }

@@ -1,4 +1,7 @@
 import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxToken } from "./SyntaxToken";
+
+import crc32 from "crc32";
 
 // SyntaxNode class representing a node in the syntax tree.
 export abstract class SyntaxNode {
@@ -14,5 +17,12 @@ export abstract class SyntaxNode {
         yield Branch;
       }
     }
+  }
+
+  get ObjectId() {
+    if (this instanceof SyntaxToken) return crc32(this.Text);
+    var ObjectId = "";
+    for (const Branch of this.GetBranches()) ObjectId = crc32(ObjectId + Branch.ObjectId);
+    return ObjectId;
   }
 }
