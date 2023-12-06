@@ -7,7 +7,7 @@ import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOpera
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
-import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { Environment } from "./Environment";
 

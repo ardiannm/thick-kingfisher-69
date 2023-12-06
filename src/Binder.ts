@@ -1,4 +1,4 @@
-import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";

@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
-import { SourceText } from "./CodeAnalysis/SourceText";
+import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
 
 // Lexer class responsible for converting source text into tokens.
 

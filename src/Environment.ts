@@ -1,6 +1,6 @@
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
-import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
 
 // Environment class manages the state of the program's variables and handles change observations.
 

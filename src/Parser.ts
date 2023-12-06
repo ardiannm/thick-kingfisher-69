@@ -8,8 +8,8 @@ import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression"
 import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
-import { DiagnosticBag } from "./CodeAnalysis/DiagnosticBag";
-import { SourceText } from "./CodeAnalysis/SourceText";
+import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
+import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
 
 // Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
 
@@ -46,8 +46,8 @@ export class Parser {
   private ParseReferenceDeclaration() {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
-      const PointerToken = this.NextToken();
-      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, PointerToken, this.ParseBinaryExpression());
+      this.NextToken();
+      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, this.ParseBinaryExpression());
     }
     return Left;
   }

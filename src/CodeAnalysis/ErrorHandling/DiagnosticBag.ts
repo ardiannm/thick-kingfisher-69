@@ -1,8 +1,8 @@
 import { DiagnoseKind } from "./DiagnosticKind";
 import { Diagnose } from "./Diagnostic";
-import { SyntaxToken } from "./SyntaxToken";
-import { SyntaxKind } from "./SyntaxKind";
-import { BoundKind } from "./Binding/BoundKind";
+import { SyntaxToken } from "../SyntaxToken";
+import { SyntaxKind } from "../SyntaxKind";
+import { BoundKind } from "../Binding/BoundKind";
 
 export class DiagnosticBag {
   private Stack = new Array<Diagnose>();
