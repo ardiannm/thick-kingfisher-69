@@ -40,18 +40,18 @@ export class SyntaxNode {
 
   // Get ObjectId based on hashing the node's properties and child node properties.
   get ObjectId(): string {
-    // If it's a SyntaxToken, use the Text property; otherwise, use the constructor name.
-    const TextOrSyntaxKind = this instanceof SyntaxToken ? (this as SyntaxToken).Text : this.Kind;
+    let ObjectId = "";
 
-    // Initialize ObjectId with the hash of the Text or type name.
-    let ObjectId = v3(TextOrSyntaxKind);
+    if (this instanceof SyntaxToken) {
+      ObjectId = v3(this.Text).toString();
+    }
 
     // Iterate over child nodes and update ObjectId based on their hashed values.
     for (const Branch of this.GetBranches()) {
-      ObjectId = v3(ObjectId + Branch.Node.ObjectId);
+      ObjectId = v3(ObjectId + Branch.Node.ObjectId).toString();
     }
 
     // Return the final ObjectId as a formatted string.
-    return ObjectId.toString();
+    return `Object('${ObjectId}')`;
   }
 }
