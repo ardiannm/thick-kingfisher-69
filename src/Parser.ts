@@ -46,8 +46,8 @@ export class Parser {
   private ParseReferenceDeclaration() {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
-      this.NextToken();
-      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, this.ParseBinaryExpression());
+      const PointerToken = this.NextToken();
+      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, PointerToken, this.ParseBinaryExpression());
     }
     return Left;
   }
