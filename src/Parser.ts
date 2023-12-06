@@ -10,6 +10,7 @@ import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
+import { Expression } from "./CodeAnalysis/Expression";
 
 // Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
 
@@ -34,7 +35,7 @@ export class Parser {
 
   // ParseSyntaxTree method parses the source text and generates the abstract syntax tree (AST).
   ParseSyntaxTree() {
-    const Expressions = new Array();
+    const Expressions = new Array<Expression>();
     while (this.Any()) {
       Expressions.push(this.ParseReferenceDeclaration());
       this.ExpectToken(SyntaxKind.SemiColonToken);
