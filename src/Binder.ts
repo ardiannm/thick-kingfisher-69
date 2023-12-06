@@ -16,7 +16,7 @@ import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOpera
 import { BoundRangeReference } from "./CodeAnalysis/Binding/BoundRangeReference";
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
-import { BoundWithReference } from "./CodeAnalysis/Binding/BoundWithReference";
+import { BoundHasReference } from "./CodeAnalysis/Binding/BoundHasReference";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
@@ -66,7 +66,7 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         // Bind reference.
-        const LeftBound = this.Bind(Node.Left) as BoundWithReference;
+        const LeftBound = this.Bind(Node.Left) as BoundHasReference;
         // Clear stack.
         this.Stack.clear();
         // Run binder for expression.
@@ -146,8 +146,8 @@ export class Binder {
 
   // Binding method for RangeReference syntax node.
   private BindRangeReference(Node: RangeReference) {
-    const BoundLeft = this.Bind(Node.Left) as BoundWithReference;
-    const BoundRight = this.Bind(Node.Right) as BoundWithReference;
+    const BoundLeft = this.Bind(Node.Left) as BoundHasReference;
+    const BoundRight = this.Bind(Node.Right) as BoundHasReference;
     return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
   }
 

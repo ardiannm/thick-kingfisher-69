@@ -1,8 +1,8 @@
 import { BoundExpression } from "./BoundExpression";
 import { BoundKind } from "./BoundKind";
-import { BoundWithReference } from "./BoundWithReference";
+import { BoundHasReference } from "./BoundHasReference";
 
-export class BoundReferenceDeclaration extends BoundWithReference {
+export class BoundReferenceDeclaration extends BoundHasReference {
   constructor(public Kind: BoundKind, public Reference: string, public Referencing: Array<string>, public ReferencedBy: Array<string>, public Expression: BoundExpression) {
     super(Kind, Reference);
   }
