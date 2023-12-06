@@ -12,6 +12,8 @@ while (true) {
   const Tree = SyntaxTree.Parse(Input);
   const Value = SyntaxTree.Evaluate(Input);
 
+  for (const Branch of Tree.GetBranch()) console.log(Branch);
+
   // Report The Tree Structure
   report(JSON.stringify(Tree, undefined, 2));
 
