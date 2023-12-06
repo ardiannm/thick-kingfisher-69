@@ -2,7 +2,7 @@ import { SyntaxKind } from "./SyntaxKind";
 import { BranchNode } from "./BranchNode";
 import { SyntaxToken } from "./SyntaxToken";
 
-import { v3 } from "murmurhash";
+import crc32 from "crc32";
 
 // SyntaxNode class representing a node in the syntax tree.
 export class SyntaxNode {
@@ -28,13 +28,12 @@ export class SyntaxNode {
           // If it's an instance of SyntaxNode, add it to the Branches array.
           if (Item instanceof SyntaxNode) Branches.push(Item as SyntaxNode);
         }
-        continue;
       }
     }
 
     // Yield SyntaxBranch objects for each child, indicating if it's the last child.
-    for (let i = 0; i < Branches.length; i++) {
-      yield new BranchNode(Branches[i], i + 1 === Branches.length);
+    for (let Index = 0; Index < Branches.length; Index++) {
+      yield new BranchNode(Branches[Index], Index + 1 === Branches.length);
     }
   }
 
@@ -43,12 +42,10 @@ export class SyntaxNode {
     let ObjectId = "";
 
     if (this instanceof SyntaxToken) {
-      ObjectId = v3(this.Text).toString();
-    }
-
-    // Iterate over child nodes and update ObjectId based on their hashed values.
-    for (const Branch of this.GetBranches()) {
-      ObjectId = v3(ObjectId + Branch.Node.ObjectId).toString();
+      ObjectId = crc32(this.Text);
+    } else {
+      // Iterate over child nodes and update ObjectId based on their hashed values.
+      for (const Branch of this.GetBranches()) ObjectId = crc32(ObjectId + Branch.Node.ObjectId);
     }
 
     // Return the final ObjectId as a formatted string.
