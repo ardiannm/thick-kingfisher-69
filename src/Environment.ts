@@ -6,7 +6,8 @@ import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReference
 
 export class Environment {
   private Stack = new Set<string>();
-  private Nodes = new Map<string, BoundReferenceDeclaration>();
+  private ReferenceNodes = new Map<string, BoundReferenceDeclaration>();
+  private NodeValue = new Map<string, number>();
 
   constructor(private Diagnostics: DiagnosticBag) {}
 
@@ -42,15 +43,20 @@ export class Environment {
   }
 
   private GetNode(Node: string) {
-    if (this.HasNode(Node)) return this.Nodes.get(Node);
+    if (this.HasNode(Node)) return this.ReferenceNodes.get(Node);
     throw this.Diagnostics.CantFindReference(Node);
   }
 
   private HasNode(Node: string) {
-    return this.Nodes.has(Node);
+    return this.ReferenceNodes.has(Node);
   }
 
   private SetNode(Node: string, Bound: BoundReferenceDeclaration) {
-    this.Nodes.set(Node, Bound);
+    this.ReferenceNodes.set(Node, Bound);
+  }
+
+  GetValue(Node: BoundCellReference): number {
+    if (this.NodeValue.has(Node.Reference)) return this.NodeValue.get(Node.Reference);
+    throw this.Diagnostics.UndeclaredVariable(Node.Reference);
   }
 }

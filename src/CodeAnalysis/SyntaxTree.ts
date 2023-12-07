@@ -43,6 +43,9 @@ export class SyntaxTree extends SyntaxNode {
 
   // Evaluation: Executes the program represented by the syntax tree using the Evaluator.
   static Evaluate(Text: string) {
-    return new Evaluator().Evaluate(this.Bind(Text));
+    const Diagnostics = new DiagnosticBag();
+    const Env = new Environment(Diagnostics);
+    const Bound = new Binder(Env).Bind(this.Parse(Text));
+    return new Evaluator(Env).Evaluate(Bound);
   }
 }

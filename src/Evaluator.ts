@@ -7,12 +7,17 @@ import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
+import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
+import { CellReference } from "./CodeAnalysis/CellReference";
+import { Environment } from "./Environment";
 
 // Evaluator class responsible for evaluating bound syntax nodes.
 
 export class Evaluator {
   // Logger for reporting diagnostics and errors during evaluation.
   private Diagnostics = new DiagnosticBag();
+
+  constructor(private Env: Environment) {}
 
   // Evaluate method takes a BoundNode and returns the computed result.
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -22,6 +27,8 @@ export class Evaluator {
         return this.EvaluateSyntaxTree(Node as NodeType<BoundSyntaxTree>);
       case BoundKind.BoundNumber:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
+      case BoundKind.BoundCellReference:
+        return this.EvaluateCellReference(Node as NodeType<CellReference>);
       case BoundKind.BoundUnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
@@ -62,6 +69,10 @@ export class Evaluator {
       default:
         throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
     }
+  }
+
+  private EvaluateCellReference(Node: BoundCellReference): number {
+    return this.Env.GetValue(Node);
   }
 
   // Evaluation method for BoundNumber syntax node.
