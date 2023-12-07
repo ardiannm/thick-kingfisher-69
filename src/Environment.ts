@@ -59,4 +59,11 @@ export class Environment {
     if (this.NodeValue.has(Node.Reference)) return this.NodeValue.get(Node.Reference);
     throw this.Diagnostics.UndeclaredVariable(Node.Reference);
   }
+
+  Assign(Node: BoundReferenceDeclaration, Value: number) {
+    const State = this.GetNode(Node.Reference);
+    Node.ReferencedBy = State.ReferencedBy;
+    for (const r of State.Referencing) if (!Node.Referencing.includes(r)) this.GetNode(r).Unsubscribe(Node);
+    this.NodeValue.set(Node.Reference, Value);
+  }
 }

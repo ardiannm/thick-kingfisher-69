@@ -10,6 +10,7 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperato
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
 import { Environment } from "./Environment";
+import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 
 // Evaluator class responsible for evaluating bound syntax nodes.
 
@@ -33,9 +34,17 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
+      case BoundKind.BoundReferenceDeclaration:
+        return this.EvaluateReferenceDeclaration(Node as NodeType<BoundReferenceDeclaration>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
+  }
+
+  private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration): number {
+    const Value = this.Evaluate(Node.Expression);
+    this.Env.Assign(Node, Value);
+    return Value;
   }
 
   // Evaluation method for BoundBinaryExpression syntax node.
