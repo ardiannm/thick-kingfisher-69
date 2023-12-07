@@ -7,7 +7,7 @@ import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOpera
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
-import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { Environment } from "./Environment";
 
@@ -15,7 +15,7 @@ import { Environment } from "./Environment";
 
 export class Evaluator {
   // Logger for reporting diagnostics and errors during evaluation.
-  private Logger = new DiagnosticBag();
+  private Diagnostics = new DiagnosticBag();
   // Environment to manage state and change observations.
   private Env = new Environment();
 
@@ -36,7 +36,7 @@ export class Evaluator {
       case BoundKind.BoundReferenceDeclaration:
         return this.EvaluateReferenceDeclaration(Node as NodeType<BoundReferenceDeclaration>);
       default:
-        throw this.Logger.MissingEvaluationMethod(Node.Kind);
+        throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
   }
 
@@ -65,7 +65,7 @@ export class Evaluator {
       case BoundBinaryOperatorKind.Division:
         return LeftValue / RightValue;
       default:
-        throw this.Logger.MissingOperatorKind(Node.OperatorKind);
+        throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
     }
   }
 
@@ -79,7 +79,7 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        throw this.Logger.MissingOperatorKind(Node.OperatorKind);
+        throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
     }
   }
 
@@ -101,6 +101,6 @@ export class Evaluator {
       Node.Expressions.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
       return Value;
     }
-    throw this.Logger.EmptySyntaxForEvaluator();
+    throw this.Diagnostics.EmptySyntaxForEvaluator();
   }
 }

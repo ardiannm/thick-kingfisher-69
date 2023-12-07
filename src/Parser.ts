@@ -8,7 +8,7 @@ import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression"
 import { RangeReference } from "./CodeAnalysis/RangeReference";
 import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
-import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
 import { Expression } from "./CodeAnalysis/Expression";
 
@@ -20,7 +20,7 @@ export class Parser {
   private Tokens = new Array<SyntaxToken>();
 
   // Logger for reporting diagnostics and errors during parsing.
-  private Logger = new DiagnosticBag();
+  private Diagnostics = new DiagnosticBag();
 
   // Constructor initializes the parser with the provided source text.
   constructor(public readonly Source: SourceText) {
@@ -29,7 +29,7 @@ export class Parser {
       if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-      if (Token.Kind === SyntaxKind.BadToken) this.Logger.BadTokenFound(Token);
+      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token);
     }
   }
 
@@ -159,7 +159,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    throw this.Logger.TokenNotAMatch(Kind, Token.Kind);
+    throw this.Diagnostics.TokenNotAMatch(Kind, Token.Kind);
   }
 
   // Check to see if there are more tokens.

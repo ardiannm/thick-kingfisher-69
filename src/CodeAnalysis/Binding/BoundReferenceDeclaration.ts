@@ -7,13 +7,16 @@ export class BoundReferenceDeclaration extends BoundHasReference {
     super(Kind, Reference);
   }
 
-  Subscribe(Bound: BoundReferenceDeclaration) {
+  Subscribe(Bound: BoundReferenceDeclaration): void {
     console.log(`'${Bound.Reference}' Subscribe To '${this.Reference}'`);
     this.ReferencedBy.push(Bound.Reference);
   }
 
-  Unsubscribe(Bound: BoundReferenceDeclaration) {
-    console.log(`'${Bound.Reference}' Unsubscribe From '${this.Reference}'`);
-    this.ReferencedBy = this.ReferencedBy.filter((Subscriber) => Subscriber !== Bound.Reference);
+  Unsubscribe(Bound: BoundReferenceDeclaration): void {
+    const index = this.ReferencedBy.indexOf(Bound.Reference);
+    if (index !== -1) {
+      console.log(`'${Bound.Reference}' Unsubscribe From '${this.Reference}'`);
+      this.ReferencedBy.splice(index, 1);
+    }
   }
 }

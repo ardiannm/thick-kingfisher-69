@@ -1,6 +1,6 @@
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
-import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 
 // Environment class manages the state of the program's variables and handles change observations.
 
@@ -48,7 +48,7 @@ export class Environment {
       const PrevNode = this.GetNode(Node.Reference);
       // Keep existing observers.
       Node.ReferencedBy = PrevNode.ReferencedBy;
-      // Clear previous subscriptions.
+      // Clear garbage subscriptions.
       PrevNode.Referencing.forEach((Reference) => {
         if (!Node.Referencing.includes(Reference)) this.GetNode(Reference).Unsubscribe(Node);
       });

@@ -1,4 +1,4 @@
-import { DiagnosticBag } from "./CodeAnalysis/ErrorHandling/DiagnosticBag";
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
@@ -32,7 +32,7 @@ export class Binder {
   private Stack = new Set<string>();
 
   // Logger for reporting DiagnosticBag and errors during binding.
-  public Logger = new DiagnosticBag();
+  public Diagnostics = new DiagnosticBag();
 
   // Bind method takes a SyntaxNode and returns the corresponding BoundNode.
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -57,7 +57,7 @@ export class Binder {
       case SyntaxKind.ReferenceDeclaration:
         return this.BindReferenceDeclaration(Node as NodeType<ReferenceDeclaration>);
       default:
-        throw this.Logger.MissingBindingMethod(Node.Kind);
+        throw this.Diagnostics.MissingBindingMethod(Node.Kind);
     }
   }
 
@@ -73,13 +73,13 @@ export class Binder {
         const Expression = this.Bind(Node.Expression);
         // Prevent using before its declaration.
         if (this.Stack.has(LeftBound.Reference)) {
-          throw this.Logger.UsedBeforeDeclaration(LeftBound.Reference);
+          throw this.Diagnostics.UsedBeforeDeclaration(LeftBound.Reference);
         }
         // Referencing in array form.
         const Referencing = Array.from(this.Stack);
         // Check if references being referenced actually exist.
         Referencing.forEach((Ref) => {
-          if (!this.Links.has(Ref)) throw this.Logger.ReferenceCannotBeFound(Ref);
+          if (!this.Links.has(Ref)) throw this.Diagnostics.ReferenceCannotBeFound(Ref);
         });
         // Save links.
         this.Links.set(LeftBound.Reference, Referencing);
@@ -89,14 +89,14 @@ export class Binder {
         this.Stack.clear();
         return new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, LeftBound.Reference, Referencing, [], Expression);
       default:
-        throw this.Logger.CantUseAsAReference(Node.Left.Kind);
+        throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
   }
 
   // Method to detect circular dependencies in the reference assignment links.
   private CircularReferencing(Reference: string, Links: Array<string>) {
     if (Links.includes(Reference)) {
-      throw this.Logger.CircularDependency(Reference);
+      throw this.Diagnostics.CircularDependency(Reference);
     }
     Links.forEach((Link) => this.CircularReferencing(Reference, this.Links.get(Link) as Array<string>));
   }
@@ -118,7 +118,7 @@ export class Binder {
       case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
       default:
-        throw this.Logger.MissingOperatorKind(Kind);
+        throw this.Diagnostics.MissingOperatorKind(Kind);
     }
   }
 
@@ -135,7 +135,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
       default:
-        throw this.Logger.MissingOperatorKind(Kind);
+        throw this.Diagnostics.MissingOperatorKind(Kind);
     }
   }
 
