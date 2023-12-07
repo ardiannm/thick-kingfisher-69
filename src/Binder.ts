@@ -22,17 +22,15 @@ import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpressio
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { Environment } from "./Environment";
 
 // Binder class responsible for binding syntax nodes to their corresponding bound nodes.
 
 export class Binder {
-  // Map to store links between reference assignments.
-  private Links = new Map<string, Array<string>>();
-  // Set to keep track of referenced identifiers to detect circular dependencies.
-  private Stack = new Set<string>();
-
   // Logger for reporting DiagnosticBag and errors during binding.
   public Diagnostics = new DiagnosticBag();
+
+  constructor(public Env: Environment) {}
 
   // Bind method takes a SyntaxNode and returns the corresponding BoundNode.
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -61,49 +59,27 @@ export class Binder {
     }
   }
 
-  // Binding method for ReferenceAssignment syntax node.
   private BindReferenceDeclaration(Node: ReferenceDeclaration) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
-        // Bind reference.
-        const LeftBound = this.Bind(Node.Left) as BoundHasReference;
-        // Clear stack.
-        this.Stack.clear();
-        // Run binder for expression.
-        const Expression = this.Bind(Node.Expression);
-        // Prevent using before its declaration.
-        if (this.Stack.has(LeftBound.Reference)) {
-          throw this.Diagnostics.UsedBeforeDeclaration(LeftBound.Reference);
-        }
-        // Referencing in array form.
-        const Referencing = Array.from(this.Stack);
-        // Check if references being referenced actually exist.
-        Referencing.forEach((Ref) => {
-          if (!this.Links.has(Ref)) throw this.Diagnostics.ReferenceCannotBeFound(Ref);
-        });
-        // Save links.
-        this.Links.set(LeftBound.Reference, Referencing);
-        // Check for circular dependency issues.
-        this.CircularReferencing(LeftBound.Reference, Referencing);
-        // Clear stack.
-        this.Stack.clear();
-        return new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, LeftBound.Reference, Referencing, [], Expression);
+        const Left = this.Bind(Node.Left) as BoundCellReference;
+        const Env = new Environment(this.Diagnostics);
+        const BinderFactory = new Binder(Env);
+        const Expression = BinderFactory.Bind(Node.Expression);
+        const Referecing = BinderFactory.Env.EatStack();
+        const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, [], Expression);
+        return this.Env.DeclareNode(Bound);
       default:
-        throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+        throw this.Diagnostics.CantUseAsAReference(Node.Kind);
     }
-  }
-
-  // Method to detect circular dependencies in the reference assignment links.
-  private CircularReferencing(Reference: string, Links: Array<string>) {
-    if (Links.includes(Reference)) {
-      throw this.Diagnostics.CircularDependency(Reference);
-    }
-    Links.forEach((Link) => this.CircularReferencing(Reference, this.Links.get(Link) as Array<string>));
   }
 
   // Binding method for BinaryExpression syntax node.
   private BindBinaryExpression(Node: BinaryExpression) {
-    return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, this.Bind(Node.Left), this.BindOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+    const Left = this.Bind(Node.Left);
+    const Operator = this.BindOperatorKind(Node.Operator.Kind);
+    const Right = this.Bind(Node.Right);
+    return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, Left, Operator, Right);
   }
 
   // Method to map syntax binary operator kind to bound binary operator kind.
@@ -124,7 +100,9 @@ export class Binder {
 
   // Binding method for UnaryExpression syntax node.
   private BindUnaryExpression(Node: UnaryExpression) {
-    return new BoundUnaryExpression(BoundKind.BoundUnaryExpression, this.BindUnaryOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+    const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
+    const Right = this.Bind(Node.Right);
+    return new BoundUnaryExpression(BoundKind.BoundUnaryExpression, Operator, Right);
   }
 
   // Method to map syntax unary operator kind to bound unary operator kind.
@@ -154,8 +132,9 @@ export class Binder {
   // Binding method for CellReference syntax node.
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    this.Stack.add(Reference);
-    return new BoundCellReference(BoundKind.BoundCellReference, Reference);
+    const Bound = new BoundCellReference(BoundKind.BoundCellReference, Reference);
+    this.Env.ReferToCell(Bound);
+    return Bound;
   }
 
   // Binding method for IdentifierToken syntax node.

@@ -8,15 +8,15 @@ export class BoundReferenceDeclaration extends BoundHasReference {
   }
 
   Subscribe(Bound: BoundReferenceDeclaration): void {
-    console.log(`'${Bound.Reference}' Subscribe To '${this.Reference}'`);
+    if (this.ReferencedBy.includes(Bound.Reference)) {
+      return;
+    }
     this.ReferencedBy.push(Bound.Reference);
   }
 
   Unsubscribe(Bound: BoundReferenceDeclaration): void {
-    const index = this.ReferencedBy.indexOf(Bound.Reference);
-    if (index !== -1) {
-      console.log(`'${Bound.Reference}' Unsubscribe From '${this.Reference}'`);
-      this.ReferencedBy.splice(index, 1);
-    }
+    const Index = this.ReferencedBy.indexOf(Bound.Reference);
+    if (Index === -1) return;
+    this.ReferencedBy.splice(Index, 1);
   }
 }

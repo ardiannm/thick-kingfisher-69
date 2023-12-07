@@ -1,81 +1,56 @@
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
-import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 
 // Environment class manages the state of the program's variables and handles change observations.
 
 export class Environment {
-  // Map to store bound reference assignments.
+  private Stack = new Set<string>();
   private Nodes = new Map<string, BoundReferenceDeclaration>();
-  // Map to store values of cell references.
-  private Values = new Map<string, number>();
-  // Set to keep track of nodes that need to be re-evaluated due to changes.
-  private ForChange = new Set<string>();
 
-  // Logger for reporting diagnostics and errors during environment operations.
-  private Logger = new DiagnosticBag();
+  constructor(private Diagnostics: DiagnosticBag) {}
 
-  // Checks if the environment has a specific node.
-  private HasNode(Node: BoundReferenceDeclaration): boolean {
-    return this.Nodes.has(Node.Reference);
+  ReferToCell(Bound: BoundCellReference) {
+    this.Stack.add(Bound.Reference);
   }
 
-  // Retrieves a node from the environment based on its reference.
-  private GetNode(Reference: string) {
-    return this.Nodes.get(Reference);
+  EatStack(): Array<string> {
+    const Stack = Array.from(this.Stack);
+    this.Stack.clear();
+    return Stack;
   }
 
-  // Sets a node in the environment.
-  private SetNode(Node: BoundReferenceDeclaration) {
-    return this.Nodes.set(Node.Reference, Node);
-  }
-
-  // Sets the value of a node in the environment.
-  SetValue(Node: BoundReferenceDeclaration, Value: number) {
-    this.Values.set(Node.Reference, Value);
-  }
-
-  // Retrieves the value of a cell reference from the environment.
-  GetValue(Node: BoundCellReference): number {
-    if (this.Values.has(Node.Reference)) return this.Values.get(Node.Reference);
-    throw this.Logger.ValueDoesNotExist(Node.Reference);
-  }
-
-  // Assigns a value to a bound reference assignment and triggers change observations.
-  Assign(Node: BoundReferenceDeclaration, Value: number): Generator<BoundReferenceDeclaration> {
-    // If the node is stored.
-    if (this.HasNode(Node)) {
-      const PrevNode = this.GetNode(Node.Reference);
-      // Keep existing observers.
-      Node.ReferencedBy = PrevNode.ReferencedBy;
-      // Clear garbage subscriptions.
-      PrevNode.Referencing.forEach((Reference) => {
-        if (!Node.Referencing.includes(Reference)) this.GetNode(Reference).Unsubscribe(Node);
-      });
+  DeclareNode(Bound: BoundReferenceDeclaration) {
+    if (Bound.Referencing.includes(Bound.Reference)) {
+      throw this.Diagnostics.UsedBeforeDeclaration(Bound.Reference);
     }
-    // Subscribe to the nodes that are referencing for change observations.
-    Node.Referencing.forEach((Reference) => this.GetNode(Reference).Subscribe(Node));
-    // Keep the node structure for future re-evaluations.
-    this.SetNode(Node);
-    this.SetValue(Node, Value);
-    return this.OnEdit(Node);
-  }
-
-  // Handle affected node references on change.
-  private *OnEdit(Node: BoundReferenceDeclaration): Generator<BoundReferenceDeclaration> {
-    this.ForChange.clear();
-    this.DetectForChanges(Node);
-    for (const Changed of this.ForChange) {
-      yield this.GetNode(Changed);
+    this.CheckCircularRefs(Bound.Reference, Bound.Referencing);
+    for (const Node of Bound.Referencing) {
+      this.GetNode(Node).Subscribe(Bound);
     }
-    this.ForChange.clear();
+    if (!this.HasNode(Bound.Reference)) {
+      this.SetNode(Bound.Reference, Bound);
+    }
+    return Bound;
   }
 
-  // Detect outdated dependencies after change.
-  private DetectForChanges(Node: BoundReferenceDeclaration) {
-    this.Nodes.get(Node.Reference).ReferencedBy.forEach((Reference) => {
-      this.ForChange.add(Reference);
-      this.DetectForChanges(this.GetNode(Reference));
-    });
+  private CheckCircularRefs(Reference: string, Referencing: Array<string>) {
+    if (Referencing.includes(Reference)) {
+      throw this.Diagnostics.CircularDependency(Reference);
+    }
+    Referencing.forEach((Node) => this.CheckCircularRefs(Reference, this.GetNode(Node).Referencing));
+  }
+
+  private GetNode(Node: string) {
+    if (this.HasNode(Node)) return this.Nodes.get(Node);
+    throw this.Diagnostics.CantFindReference(Node);
+  }
+
+  private HasNode(Node: string) {
+    return this.Nodes.has(Node);
+  }
+
+  private SetNode(Node: string, Bound: BoundReferenceDeclaration) {
+    this.Nodes.set(Node, Bound);
   }
 }

@@ -52,7 +52,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnose(DiagnoseKind.Binder, `<${Unexpected}> Can't Be Used As A Reference.`));
   }
 
-  ReferenceCannotBeFound(Reference: string) {
+  CantFindReference(Reference: string) {
     return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Cannot Find Reference '${Reference}'.`));
   }
 
@@ -69,6 +69,6 @@ export class DiagnosticBag {
   }
 
   UsedBeforeDeclaration(Reference: string) {
-    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `'${Reference}' Reference Used Before Its Declaration.`));
+    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Using '${Reference}' Before Its Declaration.`));
   }
 }

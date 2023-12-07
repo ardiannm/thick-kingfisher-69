@@ -1,23 +1,18 @@
 import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
-import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
-import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
-import { Environment } from "./Environment";
 
 // Evaluator class responsible for evaluating bound syntax nodes.
 
 export class Evaluator {
   // Logger for reporting diagnostics and errors during evaluation.
   private Diagnostics = new DiagnosticBag();
-  // Environment to manage state and change observations.
-  private Env = new Environment();
 
   // Evaluate method takes a BoundNode and returns the computed result.
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -27,27 +22,13 @@ export class Evaluator {
         return this.EvaluateSyntaxTree(Node as NodeType<BoundSyntaxTree>);
       case BoundKind.BoundNumber:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
-      case BoundKind.BoundCellReference:
-        return this.EvaluateCellReference(Node as NodeType<BoundCellReference>);
       case BoundKind.BoundUnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.BoundReferenceDeclaration:
-        return this.EvaluateReferenceDeclaration(Node as NodeType<BoundReferenceDeclaration>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
-  }
-
-  // Evaluation method for BoundReferenceAssignment syntax node.
-  private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration) {
-    const Value = this.Evaluate(Node.Expression);
-    // Update the environment with the new value and trigger change observations.
-    for (const OutDatedNode of this.Env.Assign(Node, Value)) {
-      this.Env.SetValue(OutDatedNode, this.Evaluate(OutDatedNode.Expression));
-    }
-    return Value;
   }
 
   // Evaluation method for BoundBinaryExpression syntax node.
@@ -81,11 +62,6 @@ export class Evaluator {
       default:
         throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
     }
-  }
-
-  // Evaluation method for BoundCellReference syntax node.
-  private EvaluateCellReference(Node: BoundCellReference) {
-    return this.Env.GetValue(Node);
   }
 
   // Evaluation method for BoundNumber syntax node.
