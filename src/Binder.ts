@@ -23,6 +23,7 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperato
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { Environment } from "./Environment";
+import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
 
 // Binder class responsible for binding syntax nodes to their corresponding bound nodes.
 
@@ -66,8 +67,9 @@ export class Binder {
         const Env = new Environment(this.Diagnostics);
         const BinderFactory = new Binder(Env);
         const Expression = BinderFactory.Bind(Node.Expression);
-        const Referecing = BinderFactory.Env.GetStack();
-        const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, [], Expression);
+        const Referecing = BinderFactory.Env.Stack;
+        const ReferencedBy = new Set<string>();
+        const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, ReferencedBy, Expression);
         return this.Env.RegisterNode(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Kind);
@@ -150,7 +152,10 @@ export class Binder {
 
   // Binding method for SyntaxTree syntax node.
   private BindSyntaxTree(Node: SyntaxTree) {
-    const Expressions = Node.Expressions.map((Expression) => this.Bind(Expression));
-    return new BoundSyntaxTree(BoundKind.BoundSyntaxTree, Expressions);
+    const BoundExpressions = new Array<BoundExpression>();
+    for (const Expression of Node.Expressions) {
+      BoundExpressions.push(this.Bind(Expression));
+    }
+    return new BoundSyntaxTree(BoundKind.BoundSyntaxTree, BoundExpressions);
   }
 }

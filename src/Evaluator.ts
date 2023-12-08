@@ -43,7 +43,7 @@ export class Evaluator {
 
   private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration): number {
     const Value = this.Evaluate(Node.Expression);
-    for (const r of this.Env.Assign(Node, Value)) this.Env.SetValue(r.Reference, this.Evaluate(r.Expression));
+    for (const Bound of this.Env.Assign(Node, Value)) this.Env.SetValue(Bound.Reference, this.Evaluate(Bound.Expression));
     return Value;
   }
 
@@ -94,7 +94,7 @@ export class Evaluator {
     let Value: number = 0;
     // Evaluate each expression in the syntax tree.
     if (Node.Expressions.length) {
-      Node.Expressions.forEach((BoundExpression) => (Value = this.Evaluate(BoundExpression) as number));
+      for (const BoundExpression of Node.Expressions) Value = this.Evaluate(BoundExpression) as number;
       return Value;
     }
     throw this.Diagnostics.EmptySyntaxForEvaluator();
