@@ -43,7 +43,7 @@ export class Evaluator {
 
   private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration): number {
     const Value = this.Evaluate(Node.Expression);
-    this.Env.Assign(Node, Value);
+    for (const r of this.Env.Assign(Node, Value)) this.Env.SetValue(r.Reference, this.Evaluate(r.Expression));
     return Value;
   }
 

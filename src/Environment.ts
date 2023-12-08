@@ -35,17 +35,17 @@ export class Environment {
     for (const Node of Bound.Referencing) this.CheckCircularRefs(Reference, this.GetNode(Node));
   }
 
-  private GetNode(Node: string) {
-    if (this.HasNode(Node)) return this.ReferenceNodes.get(Node);
-    throw this.Diagnostics.CantFindReference(Node);
+  private GetNode(r: string) {
+    if (this.HasNode(r)) return this.ReferenceNodes.get(r);
+    throw this.Diagnostics.CantFindReference(r);
   }
 
-  private HasNode(Node: string) {
-    return this.ReferenceNodes.has(Node);
+  private HasNode(r: string) {
+    return this.ReferenceNodes.has(r);
   }
 
-  private SetNode(Node: string, Bound: BoundReferenceDeclaration) {
-    this.ReferenceNodes.set(Node, Bound);
+  private SetNode(r: string, Bound: BoundReferenceDeclaration) {
+    this.ReferenceNodes.set(r, Bound);
   }
 
   GetValue(Node: BoundCellReference): number {
@@ -53,8 +53,8 @@ export class Environment {
     throw this.Diagnostics.UndeclaredVariable(Node.Reference);
   }
 
-  SetValue(Node: BoundReferenceDeclaration, Value: number): number {
-    this.NodeValue.set(Node.Reference, Value);
+  SetValue(r: string, Value: number): number {
+    this.NodeValue.set(r, Value);
     return Value;
   }
 
@@ -64,14 +64,14 @@ export class Environment {
     for (const r of State.Referencing)
       if (Node.Referencing.includes(r)) this.GetNode(r).Subscribe(Node);
       else this.GetNode(r).Unsubscribe(Node);
-    this.SetValue(Node, Value);
+    this.SetValue(Node.Reference, Value);
     return this.OnChange(Node);
   }
   //   A1->1; A2->A1; A3->A1+A2; A1->3; A2->4;
-  private OnChange(Node: BoundReferenceDeclaration) {
+  private OnChange(Node: BoundReferenceDeclaration): Array<BoundReferenceDeclaration> {
     const ForChange = this.DetectForChange(Node, new Set<string>());
     console.log([Node.Reference], [...ForChange]);
-    return ForChange;
+    return [...ForChange].map((r) => this.GetNode(r));
   }
 
   private DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>) {
