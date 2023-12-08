@@ -15,13 +15,13 @@ export class Environment {
     this.Stack.add(Bound.Reference);
   }
 
-  EatStack(): Array<string> {
+  GetStack(): Array<string> {
     const Stack = Array.from(this.Stack);
     this.Stack.clear();
     return Stack;
   }
 
-  DeclareNode(Bound: BoundReferenceDeclaration) {
+  RegisterNode(Bound: BoundReferenceDeclaration) {
     if (Bound.Referencing.includes(Bound.Reference)) {
       throw this.Diagnostics.UsedBeforeDeclaration(Bound.Reference);
     }
@@ -58,27 +58,24 @@ export class Environment {
     return Value;
   }
 
-  Assign(Node: BoundReferenceDeclaration, Value: number) {
+  Assign(Node: BoundReferenceDeclaration, Value: number): Generator<BoundReferenceDeclaration> {
     const State = this.GetNode(Node.Reference);
     Node.ReferencedBy = State.ReferencedBy;
     for (const r of State.Referencing)
       if (Node.Referencing.includes(r)) this.GetNode(r).Subscribe(Node);
       else this.GetNode(r).Unsubscribe(Node);
     this.SetValue(Node.Reference, Value);
-    return this.OnChange(Node);
-  }
-  //   A1->1; A2->A1; A3->A1+A2; A1->3; A2->4;
-  private OnChange(Node: BoundReferenceDeclaration): Array<BoundReferenceDeclaration> {
     const ForChange = this.DetectForChange(Node, new Set<string>());
-    console.log([Node.Reference], [...ForChange]);
-    return [...ForChange].map((r) => this.GetNode(r));
+    return ForChange;
   }
 
-  private DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>) {
+  private *DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>): Generator<BoundReferenceDeclaration> {
     for (const r of Node.ReferencedBy) {
       if (ForChange.has(r)) continue;
       ForChange.add(r);
-      this.DetectForChange(this.GetNode(r), ForChange);
+      const Keep = this.GetNode(r);
+      yield Keep;
+      this.DetectForChange(Keep, ForChange);
     }
     return ForChange;
   }

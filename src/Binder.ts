@@ -66,9 +66,9 @@ export class Binder {
         const Env = new Environment(this.Diagnostics);
         const BinderFactory = new Binder(Env);
         const Expression = BinderFactory.Bind(Node.Expression);
-        const Referecing = BinderFactory.Env.EatStack();
+        const Referecing = BinderFactory.Env.GetStack();
         const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, [], Expression);
-        return this.Env.DeclareNode(Bound);
+        return this.Env.RegisterNode(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Kind);
     }
