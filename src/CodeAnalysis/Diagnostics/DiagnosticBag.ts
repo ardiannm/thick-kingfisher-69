@@ -40,8 +40,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Unexpected Operator Kind <${Kind}>.`));
   }
 
-  CircularDependency(Reference: string) {
-    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Circular Dependency For '${Reference}' Detected.`));
+  CircularDependency(ForRef: string, InRef: string) {
+    return this.ReportError(new Diagnose(DiagnoseKind.Binder, `Circular Dependency Detected For '${ForRef}' In '${InRef}'.`));
   }
 
   MissingBindingMethod(Kind: SyntaxKind) {

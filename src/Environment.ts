@@ -25,21 +25,14 @@ export class Environment {
     if (Bound.Referencing.includes(Bound.Reference)) {
       throw this.Diagnostics.UsedBeforeDeclaration(Bound.Reference);
     }
-    this.CheckCircularRefs(Bound.Reference, Bound.Referencing);
-    for (const Node of Bound.Referencing) {
-      this.GetNode(Node).Subscribe(Bound);
-    }
-    if (!this.HasNode(Bound.Reference)) {
-      this.SetNode(Bound.Reference, Bound);
-    }
+    this.CheckCircularRefs(Bound.Reference, Bound);
+    if (!this.HasNode(Bound.Reference)) this.SetNode(Bound.Reference, Bound);
     return Bound;
   }
 
-  private CheckCircularRefs(Reference: string, Referencing: Array<string>) {
-    if (Referencing.includes(Reference)) {
-      throw this.Diagnostics.CircularDependency(Reference);
-    }
-    Referencing.forEach((Node) => this.CheckCircularRefs(Reference, this.GetNode(Node).Referencing));
+  private CheckCircularRefs(Reference: string, Bound: BoundReferenceDeclaration) {
+    if (Bound.Referencing.includes(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
+    for (const Node of Bound.Referencing) this.CheckCircularRefs(Reference, this.GetNode(Node));
   }
 
   private GetNode(Node: string) {
@@ -60,10 +53,33 @@ export class Environment {
     throw this.Diagnostics.UndeclaredVariable(Node.Reference);
   }
 
+  SetValue(Node: BoundReferenceDeclaration, Value: number): number {
+    this.NodeValue.set(Node.Reference, Value);
+    return Value;
+  }
+
   Assign(Node: BoundReferenceDeclaration, Value: number) {
     const State = this.GetNode(Node.Reference);
     Node.ReferencedBy = State.ReferencedBy;
-    for (const r of State.Referencing) if (!Node.Referencing.includes(r)) this.GetNode(r).Unsubscribe(Node);
-    this.NodeValue.set(Node.Reference, Value);
+    for (const r of State.Referencing)
+      if (Node.Referencing.includes(r)) this.GetNode(r).Subscribe(Node);
+      else this.GetNode(r).Unsubscribe(Node);
+    this.SetValue(Node, Value);
+    return this.OnChange(Node);
+  }
+  //   A1->1; A2->A1; A3->A1+A2; A1->3; A2->4;
+  private OnChange(Node: BoundReferenceDeclaration) {
+    const ForChange = this.DetectForChange(Node, new Set<string>());
+    console.log([Node.Reference], [...ForChange]);
+    return ForChange;
+  }
+
+  private DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>) {
+    for (const r of Node.ReferencedBy) {
+      if (ForChange.has(r)) continue;
+      ForChange.add(r);
+      this.DetectForChange(this.GetNode(r), ForChange);
+    }
+    return ForChange;
   }
 }
