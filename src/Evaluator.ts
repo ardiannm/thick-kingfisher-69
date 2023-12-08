@@ -41,6 +41,7 @@ export class Evaluator {
     }
   }
 
+  // Evaluation method for EvaluateReferenceDeclaration syntax node.
   private EvaluateReferenceDeclaration(Node: BoundReferenceDeclaration): number {
     const Value = this.Evaluate(Node.Expression);
     for (const Bound of this.Env.Assign(Node, Value)) this.Env.SetValue(Bound.Reference, this.Evaluate(Bound.Expression));

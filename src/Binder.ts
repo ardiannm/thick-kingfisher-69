@@ -70,7 +70,7 @@ export class Binder {
         const Referecing = BinderFactory.Env.Stack;
         const ReferencedBy = new Set<string>();
         const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, ReferencedBy, Expression);
-        return this.Env.RegisterNode(Bound);
+        return this.Env.Declare(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Kind);
     }

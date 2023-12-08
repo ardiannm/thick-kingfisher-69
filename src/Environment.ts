@@ -15,31 +15,12 @@ export class Environment {
     this.Stack.add(Bound.Reference);
   }
 
-  RegisterNode(Bound: BoundReferenceDeclaration): BoundReferenceDeclaration {
+  Declare(Bound: BoundReferenceDeclaration): BoundReferenceDeclaration {
     if (Bound.Referencing.has(Bound.Reference)) {
       throw this.Diagnostics.UsedBeforeDeclaration(Bound.Reference);
     }
-    this.CheckCircularRefs(Bound.Reference, Bound);
+    this.DetectCircularDependency(Bound.Reference, Bound);
     return this.SetNode(Bound);
-  }
-
-  private CheckCircularRefs(Reference: string, Bound: BoundReferenceDeclaration): void {
-    if (Bound.Referencing.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
-    for (const Node of Bound.Referencing) this.CheckCircularRefs(Reference, this.GetNode(Node));
-  }
-
-  private GetNode(Reference: string) {
-    if (this.HasNode(Reference)) return this.Nodes.get(Reference);
-    throw this.Diagnostics.CantFindReference(Reference);
-  }
-
-  private HasNode(Reference: string) {
-    return this.Nodes.has(Reference);
-  }
-
-  private SetNode(Bound: BoundReferenceDeclaration) {
-    if (!this.HasNode(Bound.Reference)) this.Nodes.set(Bound.Reference, Bound);
-    return Bound;
   }
 
   GetValue(Node: BoundCellReference): number {
@@ -63,13 +44,33 @@ export class Environment {
     return this.DetectForChange(Node, new Set<string>());
   }
 
+  private DetectCircularDependency(Reference: string, Bound: BoundReferenceDeclaration): void {
+    if (Bound.Referencing.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
+    for (const Node of Bound.Referencing) this.DetectCircularDependency(Reference, this.GetNode(Node));
+  }
+
+  private GetNode(Reference: string) {
+    if (this.HasNode(Reference)) return this.Nodes.get(Reference);
+    throw this.Diagnostics.CantFindReference(Reference);
+  }
+
+  private HasNode(Reference: string) {
+    return this.Nodes.has(Reference);
+  }
+
+  private SetNode(Bound: BoundReferenceDeclaration) {
+    if (!this.HasNode(Bound.Reference)) this.Nodes.set(Bound.Reference, Bound);
+    return Bound;
+  }
+
   private *DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>): Generator<BoundReferenceDeclaration> {
     for (const Reference of Node.ReferencedBy) {
       if (ForChange.has(Reference)) continue;
       ForChange.add(Reference);
-      const Keep = this.GetNode(Reference);
-      yield Keep;
-      this.DetectForChange(Keep, ForChange);
+      const NextNode = this.GetNode(Reference);
+      yield NextNode;
+      yield* this.DetectForChange(NextNode, ForChange);
     }
+    ForChange.clear();
   }
 }
