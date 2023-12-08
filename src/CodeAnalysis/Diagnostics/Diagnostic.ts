@@ -1,7 +1,7 @@
-import { DiagnoseKind } from "./DiagnosticKind";
+import { DiagnosticKind } from "./DiagnosticKind";
 
-export class Diagnose {
-  constructor(public Kind: DiagnoseKind, public Message: string) {
+export class Diagnostic {
+  constructor(public Kind: DiagnosticKind, public Message: string) {
     this.Message = `${this.Kind}: ${Message}`;
   }
 }

@@ -16,8 +16,8 @@ export class Environment {
   }
 
   Declare(Bound: BoundReferenceDeclaration): BoundReferenceDeclaration {
-    if (Bound.Referencing.has(Bound.Reference)) {
-      throw this.Diagnostics.UsedBeforeDeclaration(Bound.Reference);
+    if (Bound.Dependencies.has(Bound.Reference)) {
+      throw this.Diagnostics.UsedBeforeItsDeclaration(Bound.Reference);
     }
     this.DetectCircularDependency(Bound.Reference, Bound);
     return this.SetNode(Bound);
@@ -35,18 +35,18 @@ export class Environment {
 
   Assign(Node: BoundReferenceDeclaration, Value: number): Generator<BoundReferenceDeclaration> {
     const State = this.GetNode(Node.Reference);
-    Node.ReferencedBy = State.ReferencedBy;
-    for (const Reference of State.Referencing) {
-      const Subject = this.GetNode(Reference);
-      Node.Referencing.has(Reference) ? Subject.Observe(Node) : Subject.DoNotObserve(Node);
+    Node.Dependents = State.Dependents;
+    for (const Reference of State.Dependencies) {
+      const Dependency = this.GetNode(Reference);
+      Node.Dependencies.has(Reference) ? Dependency.Notify(Node) : Dependency.DoNoNotify(Node);
     }
     this.SetValue(Node.Reference, Value);
     return this.DetectForChange(Node, new Set<string>());
   }
 
   private DetectCircularDependency(Reference: string, Bound: BoundReferenceDeclaration): void {
-    if (Bound.Referencing.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
-    for (const Node of Bound.Referencing) this.DetectCircularDependency(Reference, this.GetNode(Node));
+    if (Bound.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
+    for (const Node of Bound.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Node));
   }
 
   private GetNode(Reference: string) {
@@ -64,7 +64,7 @@ export class Environment {
   }
 
   private *DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>): Generator<BoundReferenceDeclaration> {
-    for (const Reference of Node.ReferencedBy) {
+    for (const Reference of Node.Dependents) {
       if (ForChange.has(Reference)) continue;
       ForChange.add(Reference);
       const NextNode = this.GetNode(Reference);

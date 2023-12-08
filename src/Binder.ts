@@ -28,10 +28,7 @@ import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
 // Binder class responsible for binding syntax nodes to their corresponding bound nodes.
 
 export class Binder {
-  // Logger for reporting DiagnosticBag and errors during binding.
-  public Diagnostics = new DiagnosticBag();
-
-  constructor(public Env: Environment) {}
+  constructor(public Environment: Environment, private Diagnostics: DiagnosticBag) {}
 
   // Bind method takes a SyntaxNode and returns the corresponding BoundNode.
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -64,13 +61,11 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
-        const Env = new Environment(this.Diagnostics);
-        const BinderFactory = new Binder(Env);
+        const EnvironmentFactory = new Environment(this.Diagnostics);
+        const BinderFactory = new Binder(EnvironmentFactory, this.Diagnostics);
         const Expression = BinderFactory.Bind(Node.Expression);
-        const Referecing = BinderFactory.Env.Stack;
-        const ReferencedBy = new Set<string>();
-        const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, Referecing, ReferencedBy, Expression);
-        return this.Env.Declare(Bound);
+        const Bound = new BoundReferenceDeclaration(BoundKind.BoundReferenceDeclaration, Left.Reference, BinderFactory.Environment.Stack, new Set<string>(), Expression);
+        return this.Environment.Declare(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Kind);
     }
@@ -135,7 +130,7 @@ export class Binder {
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
     const Bound = new BoundCellReference(BoundKind.BoundCellReference, Reference);
-    this.Env.ReferToCell(Bound);
+    this.Environment.ReferToCell(Bound);
     return Bound;
   }
 

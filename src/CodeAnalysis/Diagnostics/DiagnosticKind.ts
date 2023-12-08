@@ -1,4 +1,4 @@
-export enum DiagnoseKind {
+export enum DiagnosticKind {
   Parser = "Parser",
   Environment = "Environment",
   Evaluator = "Evaluator",

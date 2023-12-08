@@ -5,10 +5,6 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "./SourceText/SourceText";
-import { Evaluator } from "../Evaluator";
-import { Binder } from "../Binder";
-import { Environment } from "../Environment";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 // SyntaxTree class represents the abstract syntax tree (AST) of the programming language.
 
@@ -32,20 +28,5 @@ export class SyntaxTree extends SyntaxNode {
   static Parse(Text: string) {
     const Source = SourceText.From(Text);
     return new Parser(Source).ParseSyntaxTree();
-  }
-
-  // Binding: Binds the syntax tree to symbols and performs semantic analysis.
-  static Bind(Text: string) {
-    const Diagnostics = new DiagnosticBag();
-    const Env = new Environment(Diagnostics);
-    return new Binder(Env).Bind(this.Parse(Text));
-  }
-
-  // Evaluation: Executes the program represented by the syntax tree using the Evaluator.
-  static Evaluate(Text: string) {
-    const Diagnostics = new DiagnosticBag();
-    const Env = new Environment(Diagnostics);
-    const Bound = new Binder(Env).Bind(this.Parse(Text));
-    return new Evaluator(Env).Evaluate(Bound);
   }
 }
