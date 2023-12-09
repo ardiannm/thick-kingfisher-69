@@ -1,9 +1,9 @@
 export enum BoundKind {
   BoundSyntaxTree = "BoundSyntaxTree",
-  BoundReferenceDeclaration = "BoundReferenceDeclaration",
+  BoundDeclaration = "BoundDeclaration",
   BoundBinaryExpression = "BoundBinaryExpression",
-  BoundRangeReference = "BoundRangeReference",
-  BoundCellReference = "BoundCellReference",
+  BoundRangeExpression = "BoundRangeExpression",
+  BoundCellExpression = "BoundCellExpression",
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
   BoundUnaryExpression = "BoundUnaryExpression",

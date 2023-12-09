@@ -22,9 +22,9 @@ export enum SyntaxKind {
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   ParenthesizedExpression = "ParenthesizedExpression",
-  RangeReference = "RangeReference",
-  CellReference = "CellReference",
-  ReferenceDeclaration = "ReferenceDeclaration",
+  RangeExpression = "RangeExpression",
+  CellExpression = "CellExpression",
+  Declaration = "Declaration",
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",

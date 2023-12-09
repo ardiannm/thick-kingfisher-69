@@ -1,21 +1,21 @@
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
-import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
-import { BoundReferenceDeclaration } from "./CodeAnalysis/Binding/BoundReferenceDeclaration";
+import { BoundCellExpression } from "./CodeAnalysis/Binding/BoundCellExpression";
+import { BoundDeclaration } from "./CodeAnalysis/Binding/BoundDeclaration";
 
 // Environment class manages the state of the program's variables and handles change observations.
 
 export class Environment {
-  private Nodes = new Map<string, BoundReferenceDeclaration>();
+  private Nodes = new Map<string, BoundDeclaration>();
   private NodeValue = new Map<string, number>();
 
   Stack = new Set<string>();
-  constructor(private Diagnostics: DiagnosticBag) {}
+  private Diagnostics: DiagnosticBag = new DiagnosticBag();
 
-  ReferToCell(Bound: BoundCellReference): void {
+  ReferToCell(Bound: BoundCellExpression): void {
     this.Stack.add(Bound.Reference);
   }
 
-  Declare(Bound: BoundReferenceDeclaration): BoundReferenceDeclaration {
+  Declare(Bound: BoundDeclaration): BoundDeclaration {
     if (Bound.Dependencies.has(Bound.Reference)) {
       throw this.Diagnostics.UsedBeforeItsDeclaration(Bound.Reference);
     }
@@ -23,7 +23,7 @@ export class Environment {
     return this.SetNode(Bound);
   }
 
-  GetValue(Node: BoundCellReference): number {
+  GetValue(Node: BoundCellExpression): number {
     if (this.NodeValue.has(Node.Reference)) return this.NodeValue.get(Node.Reference);
     throw this.Diagnostics.UndeclaredVariable(Node.Reference);
   }
@@ -33,7 +33,7 @@ export class Environment {
     return Value;
   }
 
-  Assign(Node: BoundReferenceDeclaration, Value: number): Generator<BoundReferenceDeclaration> {
+  Assign(Node: BoundDeclaration, Value: number): Generator<BoundDeclaration> {
     const State = this.GetNode(Node.Reference);
     Node.Dependents = State.Dependents;
     for (const Reference of State.Dependencies) {
@@ -44,7 +44,7 @@ export class Environment {
     return this.DetectForChange(Node, new Set<string>());
   }
 
-  private DetectCircularDependency(Reference: string, Bound: BoundReferenceDeclaration): void {
+  private DetectCircularDependency(Reference: string, Bound: BoundDeclaration): void {
     if (Bound.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Bound.Reference);
     for (const Node of Bound.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Node));
   }
@@ -58,12 +58,12 @@ export class Environment {
     return this.Nodes.has(Reference);
   }
 
-  private SetNode(Bound: BoundReferenceDeclaration) {
+  private SetNode(Bound: BoundDeclaration) {
     if (!this.HasNode(Bound.Reference)) this.Nodes.set(Bound.Reference, Bound);
     return Bound;
   }
 
-  private *DetectForChange(Node: BoundReferenceDeclaration, ForChange: Set<string>): Generator<BoundReferenceDeclaration> {
+  private *DetectForChange(Node: BoundDeclaration, ForChange: Set<string>): Generator<BoundDeclaration> {
     for (const Reference of Node.Dependents) {
       if (ForChange.has(Reference)) continue;
       ForChange.add(Reference);

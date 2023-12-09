@@ -1,12 +1,12 @@
 import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
-import { ReferenceDeclaration } from "./CodeAnalysis/ReferenceDeclaration";
+import { Declaration } from "./CodeAnalysis/Declaration";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
-import { RangeReference } from "./CodeAnalysis/RangeReference";
-import { CellReference } from "./CodeAnalysis/CellReference";
+import { RangeExpression } from "./CodeAnalysis/RangeExpression";
+import { CellExpression } from "./CodeAnalysis/CellExpression";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
@@ -48,7 +48,7 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.PointerToken)) {
       this.NextToken();
-      return new ReferenceDeclaration(SyntaxKind.ReferenceDeclaration, Left, this.ParseBinaryExpression());
+      return new Declaration(SyntaxKind.Declaration, Left, this.ParseBinaryExpression());
     }
     return Left;
   }
@@ -96,7 +96,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.ColonToken)) {
       this.NextToken();
       const Right = this.ParseCell();
-      return new RangeReference(SyntaxKind.RangeReference, Left, Right);
+      return new RangeExpression(SyntaxKind.RangeExpression, Left, Right);
     }
     return Left;
   }
@@ -106,7 +106,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      return new CellReference(SyntaxKind.CellReference, Left, Right);
+      return new CellExpression(SyntaxKind.CellExpression, Left, Right);
     }
     return this.ParseLiteral();
   }
