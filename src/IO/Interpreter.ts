@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
-import { SyntaxTree } from "../CodeAnalysis/SyntaxTree";
+import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
 import { Binder } from "../Binder";
 import { Environment } from "../Environment";
 import { Evaluator } from "../Evaluator";

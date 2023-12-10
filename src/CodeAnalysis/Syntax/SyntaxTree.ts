@@ -1,10 +1,10 @@
-import { Lexer } from "../Lexer";
-import { Parser } from "../Parser";
+import { Lexer } from "../../Lexer";
+import { Parser } from "../../Parser";
 import { Expression } from "./Expression";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 import { SyntaxToken } from "./SyntaxToken";
-import { SourceText } from "./SourceText/SourceText";
+import { SourceText } from "../SourceText/SourceText";
 
 // SyntaxTree class represents the abstract syntax tree (AST) of the programming language.
 

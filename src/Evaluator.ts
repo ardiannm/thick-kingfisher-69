@@ -8,7 +8,7 @@ import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpressio
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
-import { CellReference } from "./CodeAnalysis/CellReference";
+import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
 import { Environment } from "./Environment";
 import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 

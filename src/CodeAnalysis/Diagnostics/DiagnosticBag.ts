@@ -1,7 +1,7 @@
 import { DiagnosticKind } from "./DiagnosticKind";
 import { Diagnostic } from "./Diagnostic";
-import { SyntaxToken } from "../SyntaxToken";
-import { SyntaxKind } from "../SyntaxKind";
+import { SyntaxToken } from "../Syntax/SyntaxToken";
+import { SyntaxKind } from "../Syntax/SyntaxKind";
 import { BoundKind } from "../Binding/BoundKind";
 
 export class DiagnosticBag {

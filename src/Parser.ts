@@ -1,16 +1,16 @@
-import { SyntaxKind } from "./CodeAnalysis/SyntaxKind";
-import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
-import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
-import { Declaration } from "./CodeAnalysis/Declaration";
-import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
-import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
-import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
-import { RangeReference } from "./CodeAnalysis/RangeReference";
-import { CellReference } from "./CodeAnalysis/CellReference";
-import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
+import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
+import { SyntaxToken } from "./CodeAnalysis/Syntax/SyntaxToken";
+import { SyntaxTree } from "./CodeAnalysis/Syntax/SyntaxTree";
+import { Declaration } from "./CodeAnalysis/Syntax/Declaration";
+import { BinaryExpression } from "./CodeAnalysis/Syntax/BinaryExpression";
+import { UnaryExpression } from "./CodeAnalysis/Syntax/UnaryExpression";
+import { ParenthesizedExpression } from "./CodeAnalysis/Syntax/ParenthesizedExpression";
+import { RangeReference } from "./CodeAnalysis/Syntax/RangeReference";
+import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
+import { SyntaxFacts } from "./CodeAnalysis/Syntax/SyntaxFacts";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
-import { Expression } from "./CodeAnalysis/Expression";
+import { Expression } from "./CodeAnalysis/Syntax/Expression";
 
 // Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
 
@@ -54,6 +54,7 @@ export class Parser {
       }
       return new Declaration(SyntaxKind.Declaration, Left, Right);
     }
+    this.ExpectToken(SyntaxKind.EndOfFileToken);
     return Left;
   }
 

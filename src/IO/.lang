@@ -1,4 +1,4 @@
 A1 is 1
 A2 is 3+7
 A3 is 5+A1+A2
-A4 is A1+A2+A3+A4
+A4 is A1+A2+A3
