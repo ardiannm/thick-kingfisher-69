@@ -40,6 +40,11 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, Message));
   }
 
+  CantDivideByZero() {
+    const Message = `Can't divide by zero.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, Message));
+  }
+
   MissingOperatorKind(Kind: SyntaxKind) {
     const Message = `Unexpected operator kind <${Kind}>.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));

@@ -61,6 +61,9 @@ export class Evaluator {
       case BoundBinaryOperatorKind.Multiplication:
         return LeftValue * RightValue;
       case BoundBinaryOperatorKind.Division:
+        if (RightValue === 0) {
+          throw this.Diagnostics.CantDivideByZero();
+        }
         return LeftValue / RightValue;
       default:
         throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
