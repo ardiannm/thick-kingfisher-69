@@ -67,7 +67,7 @@ export class Binder {
         const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, Scope.Environment.Stack, new Set<string>(), Expression);
         return this.Environment.Declare(Bound);
       default:
-        throw this.Diagnostics.CantUseAsAReference(Node.Kind);
+        throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
   }
 

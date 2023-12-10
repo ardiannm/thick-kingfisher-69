@@ -56,9 +56,11 @@ export class SyntaxFacts {
   public static KeywordTokenKind(text: string): SyntaxKind {
     switch (text) {
       case "True":
-        return SyntaxKind.TrueToken;
+        return SyntaxKind.TrueKeyword;
       case "False":
-        return SyntaxKind.FalseToken;
+        return SyntaxKind.FalseKeyword;
+      case "is":
+        return SyntaxKind.IsKeyword;
       default:
         return SyntaxKind.IdentifierToken;
     }

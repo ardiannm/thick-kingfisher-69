@@ -13,8 +13,9 @@ export enum SyntaxKind {
   GreaterToken = "GreaterToken",
   SemiColonToken = "SemiColonToken",
   // KeywordTokens
-  FalseToken = "FalseToken",
-  TrueToken = "TrueToken",
+  FalseKeyword = "FalseKeyword",
+  TrueKeyword = "TrueKeyword",
+  IsKeyword = "IsKeyword",
   // CompositeTokens
   PointerToken = "PointerToken",
   // Expressions
@@ -28,5 +29,5 @@ export enum SyntaxKind {
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
-  NewLineToken = "NewLineToken"
+  NewLineToken = "NewLineToken",
 }

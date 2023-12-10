@@ -46,14 +46,15 @@ export class Parser {
   // Parses a cell reference which, when changed, auto-updates other cells that it references.
   private ParseDeclaration() {
     const Left = this.ParseBinaryExpression();
-    if (this.MatchToken(SyntaxKind.EndOfFileToken)) {
-      return Left;
+    if (this.MatchToken(SyntaxKind.IsKeyword)) {
+      this.NextToken();
+      const Right = this.ParseBinaryExpression();
+      if (this.Any()) {
+        this.ExpectToken(SyntaxKind.NewLineToken);
+      }
+      return new Declaration(SyntaxKind.Declaration, Left, Right);
     }
-    const Right = this.ParseBinaryExpression();
-    if (this.Any()) {
-      this.ExpectToken(SyntaxKind.NewLineToken);
-    }
-    return new Declaration(SyntaxKind.Declaration, Left, Right);
+    return Left;
   }
 
   // Parse expressions with binary operators.

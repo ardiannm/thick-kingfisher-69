@@ -24,8 +24,9 @@ export class Interpreter {
   }
 
   Run(): void {
+    const SourceContent = report(this.LoadSource());
     while (true) {
-      const Input = Promp.question("> ") || report(this.LoadSource());
+      const Input = Promp.question("> ") || SourceContent;
       try {
         const Output = new Binder(this.Env).Bind(SyntaxTree.Parse(Input));
         const Value = new Evaluator(this.Env).Evaluate(Output);
