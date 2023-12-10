@@ -124,23 +124,14 @@ export class Parser {
       // case SyntaxKind.FalseToken:
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
-        return this.ParseNumber();
+        return this.NextToken();
       default:
         return this.ExpectToken(SyntaxKind.NumberToken);
     }
   }
 
-  ParseNumber() {
-    let Left = this.NextToken().Text;
-    if (this.MatchToken(SyntaxKind.DotToken)) {
-      Left += this.NextToken().Text;
-      const Right = this.ExpectToken(SyntaxKind.NumberToken);
-      Left += Right.Text;
-    }
-    return new SyntaxToken(SyntaxKind.NumberToken, Left);
-  }
-
   // Get the next token without consuming it.
+
   private PeekToken(Offset: number) {
     const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;

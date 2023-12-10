@@ -75,6 +75,10 @@ export class Lexer {
       while (this.IsDigit(this.Current)) {
         this.Next();
       }
+      if (this.MatchKind(SyntaxKind.DotToken)) this.Next();
+      while (this.IsDigit(this.Current)) {
+        this.Next();
+      }
       return new SyntaxToken(SyntaxKind.NumberToken, this.Source.Text.substring(Start, this.Index));
     }
 

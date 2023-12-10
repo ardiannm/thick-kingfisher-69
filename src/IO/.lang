@@ -2,5 +2,5 @@ A1 is 10
 A2 is A1-(A1/-2)
 A3 is A1+10*(A1+A2)
 A4 is -(A2/(A1+A2)-(A3*2)-0.6)
-A1 is 1
+A1 is 3
 A4
