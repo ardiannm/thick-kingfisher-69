@@ -40,6 +40,7 @@ export class Parser {
       const Expression = this.ParseDeclaration();
       Expressions.push(Expression);
     }
+    this.ExpectToken(SyntaxKind.EndOfFileToken);
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
   }
 
@@ -49,12 +50,8 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IsKeyword)) {
       this.NextToken();
       const Right = this.ParseBinaryExpression();
-      if (this.Any()) {
-        this.ExpectToken(SyntaxKind.NewLineToken);
-      }
       return new Declaration(SyntaxKind.Declaration, Left, Right);
     }
-    this.ExpectToken(SyntaxKind.EndOfFileToken);
     return Left;
   }
 

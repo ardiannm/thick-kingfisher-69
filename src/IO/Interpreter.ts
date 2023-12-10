@@ -24,20 +24,29 @@ export class Interpreter {
   }
 
   Run(): void {
-    const SourceContent = report(this.LoadSource());
+    let InputBuffer = report(this.LoadSource()).trim().split("\n");
+
     while (true) {
-      const Input = Promp.question("> ") || SourceContent;
+      const InputLine = Promp.question("> ");
 
       // Provide a way to exit the loop
-      if (Input.toLowerCase() === "exit") {
+      if (InputLine.toLowerCase() === "exit") {
         break;
       }
+
+      if (InputLine.trim()) {
+        // Concatenate the input to the buffer
+        InputBuffer.push(InputLine);
+      }
+
+      const Input = InputBuffer.join("\n");
 
       try {
         const Tree = SyntaxTree.Bind(Input, this.Environment);
         const Evaluation = new Evaluator(this.Environment).Evaluate(Tree);
         report(JSON.stringify(Evaluation) + "\n");
       } catch (error) {
+        report(Input);
         report((error as Diagnostic).Message + "\n");
       }
     }
