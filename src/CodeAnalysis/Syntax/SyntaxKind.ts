@@ -11,7 +11,7 @@ export enum SyntaxKind {
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
   GreaterToken = "GreaterToken",
-  SemiColonToken = "SemiColonToken",
+  DotToken = "DotToken",
   // KeywordTokens
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",

@@ -42,8 +42,8 @@ export class SyntaxFacts {
         return SyntaxKind.CloseParenToken;
       case ">":
         return SyntaxKind.GreaterToken;
-      case ";":
-        return SyntaxKind.SemiColonToken;
+      case ".":
+        return SyntaxKind.DotToken;
       case "\n":
         return SyntaxKind.NewLineToken;
       case "":
