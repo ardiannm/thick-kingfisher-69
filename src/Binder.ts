@@ -4,19 +4,19 @@ import { SyntaxNode } from "./CodeAnalysis/SyntaxNode";
 import { SyntaxTree } from "./CodeAnalysis/SyntaxTree";
 import { Declaration } from "./CodeAnalysis/Declaration";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
-import { RangeExpression } from "./CodeAnalysis/RangeExpression";
-import { CellExpression } from "./CodeAnalysis/CellExpression";
+import { RangeReference } from "./CodeAnalysis/RangeReference";
+import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxToken } from "./CodeAnalysis/SyntaxToken";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
-import { BoundCellExpression } from "./CodeAnalysis/Binding/BoundCellExpression";
+import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundIdentifier } from "./CodeAnalysis/Binding/BoundIdentifier";
 import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
-import { BoundRangeExpression } from "./CodeAnalysis/Binding/BoundRangeExpression";
-import { BoundDeclaration } from "./CodeAnalysis/Binding/BoundDeclaration";
+import { BoundRangeReference } from "./CodeAnalysis/Binding/BoundRangeReference";
+import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
-import { BoundHasReference } from "./CodeAnalysis/Binding/BoundHasReference";
+import { HasReference } from "./CodeAnalysis/Binding/HasReference";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
@@ -41,10 +41,10 @@ export class Binder {
         return this.BindIdentifier(Node as NodeType<SyntaxToken>);
       case SyntaxKind.NumberToken:
         return this.BindNumber(Node as NodeType<SyntaxToken>);
-      case SyntaxKind.CellExpression:
-        return this.BindCellExpression(Node as NodeType<CellExpression>);
-      case SyntaxKind.RangeExpression:
-        return this.BindRangeExpression(Node as NodeType<RangeExpression>);
+      case SyntaxKind.CellReference:
+        return this.BindCellReference(Node as NodeType<CellReference>);
+      case SyntaxKind.RangeReference:
+        return this.BindRangeReference(Node as NodeType<RangeReference>);
       case SyntaxKind.ParenthesizedExpression:
         return this.BindParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.UnaryExpression:
@@ -60,11 +60,11 @@ export class Binder {
 
   private BindDeclaration(Node: Declaration) {
     switch (Node.Left.Kind) {
-      case SyntaxKind.CellExpression:
-        const Left = this.Bind(Node.Left) as BoundCellExpression;
-        const BinderFactory = new Binder(new Environment());
-        const Expression = BinderFactory.Bind(Node.Expression);
-        const Bound = new BoundDeclaration(BoundKind.BoundDeclaration, Left.Reference, BinderFactory.Environment.Stack, new Set<string>(), Expression);
+      case SyntaxKind.CellReference:
+        const Left = this.Bind(Node.Left) as BoundCellReference;
+        const Scope = new Binder(new Environment());
+        const Expression = Scope.Bind(Node.Expression);
+        const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, Scope.Environment.Stack, new Set<string>(), Expression);
         return this.Environment.Declare(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Kind);
@@ -120,16 +120,16 @@ export class Binder {
   }
 
   // Binding method for RangeReference syntax node.
-  private BindRangeExpression(Node: RangeExpression) {
-    const BoundLeft = this.Bind(Node.Left) as BoundHasReference;
-    const BoundRight = this.Bind(Node.Right) as BoundHasReference;
-    return new BoundRangeExpression(BoundKind.BoundRangeExpression, BoundLeft.Reference + ":" + BoundRight.Reference);
+  private BindRangeReference(Node: RangeReference) {
+    const BoundLeft = this.Bind(Node.Left) as HasReference;
+    const BoundRight = this.Bind(Node.Right) as HasReference;
+    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
   }
 
   // Binding method for CellReference syntax node.
-  private BindCellExpression(Node: CellExpression) {
+  private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    const Bound = new BoundCellExpression(BoundKind.BoundCellExpression, Reference);
+    const Bound = new BoundCellReference(BoundKind.BoundCellReference, Reference);
     this.Environment.ReferToCell(Bound);
     return Bound;
   }
@@ -147,10 +147,15 @@ export class Binder {
 
   // Binding method for SyntaxTree syntax node.
   private BindSyntaxTree(Node: SyntaxTree) {
-    const BoundExpressions = new Array<BoundExpression>();
+    const Expressions = new Array<BoundExpression>();
     for (const Expression of Node.Expressions) {
-      BoundExpressions.push(this.Bind(Expression));
+      const BoundExpression = this.Bind(Expression);
+      switch (BoundExpression.Kind) {
+        case BoundKind.BoundCellReference:
+          this.Environment.TryGet(BoundExpression as BoundCellReference);
+      }
+      Expressions.push(BoundExpression);
     }
-    return new BoundSyntaxTree(BoundKind.BoundSyntaxTree, BoundExpressions);
+    return new BoundSyntaxTree(BoundKind.BoundSyntaxTree, Expressions);
   }
 }

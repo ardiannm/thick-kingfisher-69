@@ -1,7 +1,7 @@
 import { BoundKind } from "./BoundKind";
-import { BoundHasReference } from "./BoundHasReference";
+import { HasReference } from "./HasReference";
 
-export class BoundCellExpression extends BoundHasReference {
+export class BoundCellReference extends HasReference {
   constructor(public Kind: BoundKind, public Reference: string) {
     super(Kind, Reference);
   }

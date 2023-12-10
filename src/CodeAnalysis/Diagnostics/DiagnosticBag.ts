@@ -21,54 +21,52 @@ export class DiagnosticBag {
   }
 
   BadTokenFound(Token: SyntaxToken) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, `Bad Character '${Token.Text}' Found.`));
+    const Message = `Bad character '${Token.Text}' found.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, Message));
   }
 
   TokenNotAMatch(Expected: SyntaxKind, Matched: SyntaxKind) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Parser, `Expected <${Expected}>; Found <${Matched}>.`));
-  }
-
-  UndeclaredVariable(Reference: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Environment, `Reference '${Reference}' Has Not Been Declared.`));
-  }
-
-  MissingEvaluationMethod(Kind: BoundKind) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, `Method For Evaluating <${Kind}> Is Missing.`));
-  }
-
-  MissingOperatorKind(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `Unexpected Operator Kind <${Kind}>.`));
-  }
-
-  CircularDependency(ForRef: string, InRef: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `Circular Dependency Detected For '${ForRef}' In '${InRef}'.`));
-  }
-
-  MissingBindingMethod(Kind: SyntaxKind) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `Method For Binding <${Kind}> Is Missing.`));
-  }
-
-  CantUseAsAReference(Unexpected: SyntaxKind) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `<${Unexpected}> Can't Be Used As A Reference.`));
-  }
-
-  CantFindReference(Reference: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `Cannot Find Reference '${Reference}'.`));
-  }
-
-  CannotRedeclareReference(Reference: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `'${Reference}' Already Exists. Reference Re-Assignments Are Not Allowed.`));
+    const Message = `Expected <${Expected}>; found <${Matched}>.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Parser, Message));
   }
 
   EmptySyntaxForEvaluator() {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, `Syntax Program Cannot Be Empty.`));
+    const Message = `Syntax program cannot be empty.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, Message));
   }
 
-  ValueDoesNotExist(Reference: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Environment, `Value For '${Reference}' Does Not Exist.`));
+  MissingEvaluationMethod(Kind: BoundKind) {
+    const Message = `Method for evaluating <${Kind}> is missing.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, Message));
+  }
+
+  MissingOperatorKind(Kind: SyntaxKind) {
+    const Message = `Unexpected operator kind <${Kind}>.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
+
+  CircularDependency(ForRef: string, InRef: string) {
+    const Message = `Circular dependency detected for '${ForRef}' in '${InRef}'.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
+
+  MissingBindingMethod(Kind: SyntaxKind) {
+    const Message = `Method for binding <${Kind}> is missing.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
+
+  CantUseAsAReference(Unexpected: SyntaxKind) {
+    const Message = `<${Unexpected}> can't be used as a reference.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
+
+  CantFindReference(Reference: string) {
+    const Message = `Cannot find reference '${Reference}'.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
   }
 
   UsedBeforeItsDeclaration(Reference: string) {
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, `Using '${Reference}' Before Its Declaration.`));
+    const Message = `Using '${Reference}' before its declaration.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
   }
 }
