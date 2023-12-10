@@ -7,10 +7,10 @@ import { BoundSyntaxTree } from "./CodeAnalysis/Binding/BoundSyntaxTree";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
-import { BoundCellExpression } from "./CodeAnalysis/Binding/BoundCellExpression";
-import { CellExpression } from "./CodeAnalysis/CellExpression";
+import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
+import { CellReference } from "./CodeAnalysis/CellReference";
 import { Environment } from "./Environment";
-import { BoundDeclaration } from "./CodeAnalysis/Binding/BoundDeclaration";
+import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 
 // Evaluator class responsible for evaluating bound syntax nodes.
 
@@ -28,23 +28,23 @@ export class Evaluator {
         return this.EvaluateSyntaxTree(Node as NodeType<BoundSyntaxTree>);
       case BoundKind.BoundNumber:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
-      case BoundKind.BoundCellExpression:
-        return this.EvaluateCellReference(Node as NodeType<CellExpression>);
+      case BoundKind.BoundCellReference:
+        return this.EvaluateCellReference(Node as NodeType<CellReference>);
       case BoundKind.BoundUnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.BoundDeclaration:
-        return this.EvaluateDeclaration(Node as NodeType<BoundDeclaration>);
+      case BoundKind.BoundCell:
+        return this.EvaluateCell(Node as NodeType<BoundCell>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
   }
 
   // Evaluation method for EvaluateReferenceDeclaration syntax node.
-  private EvaluateDeclaration(Node: BoundDeclaration): number {
+  private EvaluateCell(Node: BoundCell): number {
     const Value = this.Evaluate(Node.Expression);
-    for (const Bound of this.Env.Assign(Node, Value)) this.Env.SetValue(Bound.Reference, this.Evaluate(Bound.Expression));
+    for (const ForChange of this.Env.Assign(Node, Value)) this.Env.SetValue(ForChange.Reference, this.Evaluate(ForChange.Expression));
     return Value;
   }
 
@@ -81,7 +81,7 @@ export class Evaluator {
     }
   }
 
-  private EvaluateCellReference(Node: BoundCellExpression): number {
+  private EvaluateCellReference(Node: BoundCellReference): number {
     return this.Env.GetValue(Node);
   }
 

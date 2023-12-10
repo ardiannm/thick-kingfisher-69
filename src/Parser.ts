@@ -5,8 +5,8 @@ import { Declaration } from "./CodeAnalysis/Declaration";
 import { BinaryExpression } from "./CodeAnalysis/BinaryExpression";
 import { UnaryExpression } from "./CodeAnalysis/UnaryExpression";
 import { ParenthesizedExpression } from "./CodeAnalysis/ParenthesizedExpression";
-import { RangeExpression } from "./CodeAnalysis/RangeExpression";
-import { CellExpression } from "./CodeAnalysis/CellExpression";
+import { RangeReference } from "./CodeAnalysis/RangeReference";
+import { CellReference } from "./CodeAnalysis/CellReference";
 import { SyntaxFacts } from "./CodeAnalysis/SyntaxFacts";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
@@ -96,7 +96,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.ColonToken)) {
       this.NextToken();
       const Right = this.ParseCell();
-      return new RangeExpression(SyntaxKind.RangeExpression, Left, Right);
+      return new RangeReference(SyntaxKind.RangeReference, Left, Right);
     }
     return Left;
   }
@@ -106,7 +106,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
-      return new CellExpression(SyntaxKind.CellExpression, Left, Right);
+      return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();
   }
