@@ -26,12 +26,8 @@ export class Parser {
   constructor(public readonly Source: SourceText) {
     // Tokenize the source text and filter out space and bad tokens.
     for (const Token of SyntaxTree.Lex(Source.Text)) {
-      if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
-        this.Tokens.push(Token);
-      }
-      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token.Text);
+      if (!(Token.Kind === SyntaxKind.SpaceToken)) this.Tokens.push(Token);
     }
-    console.log(this.Tokens);
   }
 
   // ParseSyntaxTree method parses the source text and generates the abstract syntax tree (AST).
