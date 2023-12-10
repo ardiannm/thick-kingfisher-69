@@ -16,7 +16,7 @@ const report = (Obj: string = "") => {
 };
 
 export class Interpreter {
-  private Env = new Environment();
+  private Environment = new Environment();
 
   private LoadSource(): string {
     const FullPath = path.normalize(path.join(".", "src", "IO", ".lang"));
@@ -28,9 +28,9 @@ export class Interpreter {
     while (true) {
       const Input = Promp.question("> ") || SourceContent;
       try {
-        const Output = new Binder(this.Env).Bind(SyntaxTree.Parse(Input));
-        const Value = new Evaluator(this.Env).Evaluate(Output);
-        report(JSON.stringify(Value) + "\n");
+        const Tree = SyntaxTree.Bind(Input, this.Environment);
+        const Evaluation = new Evaluator(this.Environment).Evaluate(Tree);
+        report(JSON.stringify(Evaluation) + "\n");
       } catch (error) {
         report((error as Diagnostic).Message + "\n");
       }

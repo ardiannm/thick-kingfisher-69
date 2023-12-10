@@ -5,6 +5,8 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
+import { Environment } from "../../Environment";
+import { Binder } from "../../Binder";
 
 // SyntaxTree class represents the abstract syntax tree (AST) of the programming language.
 
@@ -24,9 +26,16 @@ export class SyntaxTree extends SyntaxNode {
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
 
-  // Syntax analysis: Generates an abstract syntax tree (AST) from the input text using the Parser.
+  // Syntax analysis: Generates a syntax tree from the input text using the Parser.
   static Parse(Text: string) {
     const Source = SourceText.From(Text);
     return new Parser(Source).ParseSyntaxTree();
+  }
+
+  // Context analysis: Generates a bound syntax tree using the ouput tree from the Parser.
+  static Bind(Text: string, Environment: Environment) {
+    const Source = SourceText.From(Text);
+    const Tree = new Parser(Source).ParseSyntaxTree();
+    return new Binder(Environment).Bind(Tree);
   }
 }
