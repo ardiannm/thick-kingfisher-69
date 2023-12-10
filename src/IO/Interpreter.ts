@@ -3,51 +3,71 @@ import * as path from "path";
 
 import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
 import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
-import { Binder } from "../Binder";
 import { Environment } from "../Environment";
 import { Evaluator } from "../Evaluator";
 
 import Promp from "readline-sync";
 
-const report = (Obj: string = "") => {
-  const Format = typeof Obj === "string" ? Obj : JSON.stringify(Obj, undefined, 2);
-  console.log(Format);
-  return Obj;
-};
-
 export class Interpreter {
   private Environment = new Environment();
+  private Buffer = new Array<string>();
+  private Width = 0;
+
+  constructor() {
+    console.clear();
+    this.Buffer = this.Report(this.LoadSource(), "Interpreter: Source text content from file.").trim().split("\n");
+    for (const Line of this.Buffer) {
+      this.Width = Math.max(this.Width, Line.length);
+    }
+  }
 
   private LoadSource(): string {
     const FullPath = path.normalize(path.join(".", "src", "IO", ".lang"));
     return fs.readFileSync(FullPath, "utf8");
   }
 
-  Run(): void {
-    let InputBuffer = report(this.LoadSource()).trim().split("\n");
+  private Report(Str: string = "", Message?: string) {
+    console.log();
+    console.log(Str);
+    if (Message) {
+      console.log("-".repeat(Math.max(Message.length, this.Width)));
+      console.log(Message);
+    }
+    console.log();
+    return Str;
+  }
 
+  private Input() {
+    return this.Buffer.join("\n");
+  }
+
+  Run() {
     while (true) {
       const InputLine = Promp.question("> ");
-
+      console.clear();
       // Provide a way to exit the loop
       if (InputLine.toLowerCase() === "exit") {
         break;
       }
-
+      // Clear the last line
+      if (InputLine.toLowerCase() === "cls") {
+        console.clear();
+        this.Buffer.pop();
+        const Message = this.Buffer.length > 0 ? "Interpreter: Line " + (this.Buffer.length + 1) + " removed." : "";
+        this.Report(this.Input(), Message);
+        continue;
+      }
       if (InputLine.trim()) {
         // Concatenate the input to the buffer
-        InputBuffer.push(InputLine);
+        this.Buffer.push(InputLine);
       }
-
-      const Input = InputBuffer.join("\n");
-
       try {
-        const Tree = SyntaxTree.Bind(Input, this.Environment);
+        const Tree = SyntaxTree.Bind(this.Input(), this.Environment);
         const Evaluation = new Evaluator(this.Environment).Evaluate(Tree);
-        report(JSON.stringify(Evaluation) + "\n");
+        const Value = JSON.stringify(Evaluation);
+        this.Report(this.Input(), Value);
       } catch (error) {
-        report(Input);
-        report((error as Diagnostic).Message + "\n");
+        this.Report(this.Input(), (error as Diagnostic).Message);
       }
     }
   }
