@@ -27,6 +27,12 @@ export class Interpreter {
     const SourceContent = report(this.LoadSource());
     while (true) {
       const Input = Promp.question("> ") || SourceContent;
+
+      // Provide a way to exit the loop
+      if (Input.toLowerCase() === "exit") {
+        break;
+      }
+
       try {
         const Tree = SyntaxTree.Bind(Input, this.Environment);
         const Evaluation = new Evaluator(this.Environment).Evaluate(Tree);
