@@ -14,7 +14,7 @@ export class Lexer {
 
   // Checks if a character is a space character.
   private IsSpace(Char: string): boolean {
-    return Char === " " || Char === "\t" || Char === "\n" || Char === "\r";
+    return Char === " " || Char === "\t" || Char === "\r";
   }
 
   // Checks if a character is a digit.

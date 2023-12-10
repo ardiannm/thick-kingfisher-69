@@ -28,4 +28,5 @@ export enum SyntaxKind {
   // HelperTokens
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
+  NewLineToken = "NewLineToken"
 }

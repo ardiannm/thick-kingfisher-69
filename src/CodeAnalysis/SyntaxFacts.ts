@@ -44,6 +44,8 @@ export class SyntaxFacts {
         return SyntaxKind.GreaterToken;
       case ";":
         return SyntaxKind.SemiColonToken;
+      case "\n":
+        return SyntaxKind.NewLineToken;
       case "":
         return SyntaxKind.EndOfFileToken;
       default:

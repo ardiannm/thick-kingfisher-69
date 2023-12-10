@@ -37,24 +37,27 @@ export class Parser {
   ParseSyntaxTree() {
     const Expressions = new Array<Expression>();
     while (this.Any()) {
-      Expressions.push(this.ParseReferenceDeclaration());
-      this.ExpectToken(SyntaxKind.SemiColonToken);
+      const Expression = this.ParseDeclaration();
+      Expressions.push(Expression);
     }
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
   }
 
   // Parses a cell reference which, when changed, auto-updates other cells that it references.
-  private ParseReferenceDeclaration() {
+  private ParseDeclaration() {
     const Left = this.ParseBinaryExpression();
-    if (this.MatchToken(SyntaxKind.PointerToken)) {
-      this.NextToken();
-      return new Declaration(SyntaxKind.Declaration, Left, this.ParseBinaryExpression());
+    if (this.MatchToken(SyntaxKind.EndOfFileToken)) {
+      return Left;
     }
-    return Left;
+    const Right = this.ParseBinaryExpression();
+    if (this.Any()) {
+      this.ExpectToken(SyntaxKind.NewLineToken);
+    }
+    return new Declaration(SyntaxKind.Declaration, Left, Right);
   }
 
   // Parse expressions with binary operators.
-  private ParseBinaryExpression(ParentPrecedence = 0) {
+  private ParseBinaryExpression(ParentPrecedence = 0): Expression {
     let Left = this.ParseUnaryExpression();
     while (true) {
       const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken.Kind);
@@ -87,22 +90,22 @@ export class Parser {
       const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }
-    return this.ParseRange();
+    return this.ParseRangeReference();
   }
 
   // Parse range reference (e.g., B4:C, B:E).
-  private ParseRange() {
-    const Left = this.ParseCell();
+  private ParseRangeReference() {
+    const Left = this.ParseCellReference();
     if (this.MatchToken(SyntaxKind.ColonToken)) {
       this.NextToken();
-      const Right = this.ParseCell();
+      const Right = this.ParseCellReference();
       return new RangeReference(SyntaxKind.RangeReference, Left, Right);
     }
     return Left;
   }
 
   // Parse cell reference (e.g., A1, B7).
-  private ParseCell() {
+  private ParseCellReference() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const Left = this.NextToken();
       const Right = this.NextToken();
