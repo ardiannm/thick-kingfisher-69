@@ -2,12 +2,14 @@ import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/Syntax/SyntaxToken";
 import { SyntaxFacts } from "./CodeAnalysis/Syntax/SyntaxFacts";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
+import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 
 // Lexer class responsible for converting source text into tokens.
 
 export class Lexer {
   // Index to keep track of the current position in the source text.
   private Index = 0;
+  private Diagnostics = new DiagnosticBag();
 
   // Constructor that takes a SourceText object.
   constructor(public readonly Source: SourceText) {}
@@ -53,7 +55,6 @@ export class Lexer {
       if (Kind !== SyntaxFacts.Kind(this.Peek(Offset))) return false;
       Offset++;
     }
-    Kinds.forEach(() => this.Next());
     return true;
   }
 
@@ -75,7 +76,12 @@ export class Lexer {
       while (this.IsDigit(this.Current)) {
         this.Next();
       }
-      if (this.MatchKind(SyntaxKind.DotToken)) this.Next();
+      if (this.MatchKind(SyntaxKind.DotToken)) {
+        this.Next();
+        if (!this.IsDigit(this.Current)) {
+          throw this.Diagnostics.WrongFloatingNumberFormat();
+        }
+      }
       while (this.IsDigit(this.Current)) {
         this.Next();
       }
@@ -90,9 +96,8 @@ export class Lexer {
       return new SyntaxToken(SyntaxKind.SpaceToken, this.Source.Text.substring(Start, this.Index));
     }
 
-    // Check if the token is a composite token.
-    if (this.MatchKind(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      return new SyntaxToken(SyntaxKind.PointerToken, this.Source.Text.substring(Start, this.Index));
+    if (this.MatchKind(SyntaxKind.BadToken)) {
+      throw this.Diagnostics.BadTokenFound(this.Current);
     }
 
     // Otherwise, treat the token as a single character.

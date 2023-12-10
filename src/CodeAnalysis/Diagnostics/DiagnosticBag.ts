@@ -20,8 +20,8 @@ export class DiagnosticBag {
     return Diagnose;
   }
 
-  BadTokenFound(Token: SyntaxToken) {
-    const Message = `Bad character '${Token.Text}' found.`;
+  BadTokenFound(Text: string) {
+    const Message = `Bad character '${Text}' found.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, Message));
   }
 
@@ -73,5 +73,10 @@ export class DiagnosticBag {
   UsedBeforeItsDeclaration(Reference: string) {
     const Message = `Using '${Reference}' before its declaration.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
+
+  WrongFloatingNumberFormat() {
+    const Message = `Wrong floating number format.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, Message));
   }
 }

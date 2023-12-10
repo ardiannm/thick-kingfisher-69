@@ -15,8 +15,6 @@ export enum SyntaxKind {
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
   IsKeyword = "IsKeyword",
-  // CompositeTokens
-  PointerToken = "PointerToken",
   // Expressions
   SyntaxTree = "SyntaxTree",
   BinaryExpression = "BinaryExpression",

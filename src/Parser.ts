@@ -29,8 +29,9 @@ export class Parser {
       if (!(Token.Kind === SyntaxKind.SpaceToken) && !(Token.Kind === SyntaxKind.BadToken)) {
         this.Tokens.push(Token);
       }
-      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token);
+      if (Token.Kind === SyntaxKind.BadToken) this.Diagnostics.BadTokenFound(Token.Text);
     }
+    console.log(this.Tokens);
   }
 
   // ParseSyntaxTree method parses the source text and generates the abstract syntax tree (AST).
