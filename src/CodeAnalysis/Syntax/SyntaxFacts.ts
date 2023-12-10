@@ -40,8 +40,6 @@ export class SyntaxFacts {
         return SyntaxKind.OpenParenToken;
       case ")":
         return SyntaxKind.CloseParenToken;
-      case ">":
-        return SyntaxKind.GreaterToken;
       case ".":
         return SyntaxKind.DotToken;
       case "":
