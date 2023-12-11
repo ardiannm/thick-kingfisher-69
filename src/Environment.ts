@@ -74,7 +74,7 @@ export class Environment {
     ForChange.clear();
   }
 
-  TryGet(Reference: string) {
+  Assert(Reference: string) {
     if (this.HasNode(Reference)) return;
     throw this.Diagnostics.CantFindReference(Reference);
   }

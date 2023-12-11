@@ -25,13 +25,12 @@ import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { Environment } from "./Environment";
 import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
 import { CopyCell } from "./CodeAnalysis/Syntax/CopyCell";
-import { BoundCopyCell } from "./CodeAnalysis/Binding/BoundCopyCell";
 
 // Binder class responsible for binding syntax nodes to their corresponding bound nodes.
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
-  constructor(public Environment: Environment) {}
+  constructor(public Env: Environment) {}
 
   // Bind method takes a SyntaxNode and returns the corresponding BoundNode.
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -68,8 +67,9 @@ export class Binder {
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Right) as BoundCellReference;
-    this.Environment.TryGet(Right.Reference);
-    return new BoundCopyCell(BoundKind.BoundCopyCell, Left, Right);
+    this.Env.Assert(Right.Reference);
+    const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, new Set([Right.Reference]), new Set<string>(), Right);
+    return this.Env.Declare(Bound);
   }
 
   private BindDeclaration(Node: Declaration) {
@@ -78,8 +78,8 @@ export class Binder {
         const Left = this.Bind(Node.Left) as BoundCellReference;
         const Scope = new Binder(new Environment());
         const Expression = Scope.Bind(Node.Expression);
-        const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, Scope.Environment.Stack, new Set<string>(), Expression);
-        return this.Environment.Declare(Bound);
+        const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, Scope.Env.Stack, new Set<string>(), Expression);
+        return this.Env.Declare(Bound);
       default:
         throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
@@ -144,7 +144,7 @@ export class Binder {
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
     const Bound = new BoundCellReference(BoundKind.BoundCellReference, Reference);
-    this.Environment.ReferToCell(Bound);
+    this.Env.ReferToCell(Bound);
     return Bound;
   }
 
@@ -166,7 +166,7 @@ export class Binder {
       const BoundExpression = this.Bind(Expression);
       switch (BoundExpression.Kind) {
         case BoundKind.BoundCellReference:
-          this.Environment.TryGet((BoundExpression as BoundCellReference).Reference);
+          this.Env.Assert((BoundExpression as BoundCellReference).Reference);
       }
       Expressions.push(BoundExpression);
     }
