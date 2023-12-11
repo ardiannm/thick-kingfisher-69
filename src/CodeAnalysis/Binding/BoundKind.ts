@@ -7,4 +7,5 @@ export enum BoundKind {
   BoundIdentifier = "BoundIdentifier",
   BoundNumber = "BoundNumber",
   BoundUnaryExpression = "BoundUnaryExpression",
+  BoundCopyCell = "BoundCopyCell"
 }

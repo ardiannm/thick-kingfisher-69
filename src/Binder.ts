@@ -24,6 +24,8 @@ import { ParenthesizedExpression } from "./CodeAnalysis/Syntax/ParenthesizedExpr
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { Environment } from "./Environment";
 import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
+import { CopyCell } from "./CodeAnalysis/Syntax/CopyCell";
+import { BoundCopyCell } from "./CodeAnalysis/Binding/BoundCopyCell";
 
 // Binder class responsible for binding syntax nodes to their corresponding bound nodes.
 
@@ -53,9 +55,20 @@ export class Binder {
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.Declaration:
         return this.BindDeclaration(Node as NodeType<Declaration>);
+      case SyntaxKind.CopyCell:
+        return this.BindCopyCell(Node as NodeType<CopyCell>);
       default:
         throw this.Diagnostics.MissingBindingMethod(Node.Kind);
     }
+  }
+
+  private BindCopyCell(Node: CopyCell) {
+    if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Right.Kind !== SyntaxKind.CellReference) {
+      throw this.Diagnostics.ObjectsToCopy(Node.Left.Kind, Node.Right.Kind);
+    }
+    const Left = this.Bind(Node.Left) as BoundCellReference;
+    const Right = this.Bind(Node.Right) as BoundCellReference;
+    return new BoundCopyCell(BoundKind.BoundCopyCell, Left, Right);
   }
 
   private BindDeclaration(Node: Declaration) {

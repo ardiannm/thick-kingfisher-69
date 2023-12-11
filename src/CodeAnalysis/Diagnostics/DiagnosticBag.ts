@@ -79,4 +79,9 @@ export class DiagnosticBag {
     const Message = `Wrong floating number format.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, Message));
   }
+
+  ObjectsToCopy(Left: SyntaxKind, Right: SyntaxKind) {
+    const Message = `Can't copy <${Left}> to <${Right}>`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
+  }
 }
