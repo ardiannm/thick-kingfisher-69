@@ -74,8 +74,8 @@ export class Environment {
     ForChange.clear();
   }
 
-  TryGet(Node: BoundCellReference) {
-    if (this.HasNode(Node.Reference)) return;
-    throw this.Diagnostics.CantFindReference(Node.Reference);
+  TryGet(Reference: string) {
+    if (this.HasNode(Reference)) return;
+    throw this.Diagnostics.CantFindReference(Reference);
   }
 }

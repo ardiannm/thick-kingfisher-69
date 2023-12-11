@@ -66,7 +66,7 @@ export class DiagnosticBag {
   }
 
   CantFindReference(Reference: string) {
-    const Message = `Cannot find reference '${Reference}'.`;
+    const Message = `Can't find reference '${Reference}'.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
   }
 

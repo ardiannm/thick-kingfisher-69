@@ -68,6 +68,7 @@ export class Binder {
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Right) as BoundCellReference;
+    this.Environment.TryGet(Left.Reference);
     return new BoundCopyCell(BoundKind.BoundCopyCell, Left, Right);
   }
 
@@ -165,7 +166,7 @@ export class Binder {
       const BoundExpression = this.Bind(Expression);
       switch (BoundExpression.Kind) {
         case BoundKind.BoundCellReference:
-          this.Environment.TryGet(BoundExpression as BoundCellReference);
+          this.Environment.TryGet((BoundExpression as BoundCellReference).Reference);
       }
       Expressions.push(BoundExpression);
     }
