@@ -68,6 +68,18 @@ export class Binder {
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Right) as BoundCellReference;
     this.Env.Assert(Right.Reference);
+
+    /**
+     * in case of 'A7 copy A4'
+     * got to A4 in the environment and get the bound expression of this cell
+     * traverse the bound expression of this cell and modify all the expression dependencies to account for the relative change in positioning due to copying
+     * alternatively go to 'A4' and get the string representation of the bound expression
+     * tokenize it with recursive decent parsing enough to extract parse cell values and modify the reference when the token kind is a cell reference
+     * the string representation apparoach ensures it keeps the original white spaces and other trivias
+     * question is how to you modify cell reference dependencies without losing white spaces and other trivia
+     */
+
+    // This implementation is not correct yet
     const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, new Set([Right.Reference]), new Set<string>(), Right);
     return this.Env.Declare(Bound);
   }

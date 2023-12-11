@@ -1,23 +1,22 @@
 import { DiagnosticKind } from "./DiagnosticKind";
 import { Diagnostic } from "./Diagnostic";
-import { SyntaxToken } from "../Syntax/SyntaxToken";
 import { SyntaxKind } from "../Syntax/SyntaxKind";
 import { BoundKind } from "../Binding/BoundKind";
 
 export class DiagnosticBag {
-  private Stack = new Array<Diagnostic>();
+  private Diagnostics = new Array<Diagnostic>();
 
   Any() {
-    return this.Stack.length > 0;
+    return this.Diagnostics.length > 0;
   }
 
   Clear() {
-    this.Stack = new Array<Diagnostic>();
+    this.Diagnostics = new Array<Diagnostic>();
   }
 
-  private ReportError(Diagnose: Diagnostic) {
-    this.Stack.push(Diagnose);
-    return Diagnose;
+  private ReportError(Diagnostic: Diagnostic) {
+    this.Diagnostics.push(Diagnostic);
+    return Diagnostic;
   }
 
   BadTokenFound(Text: string) {
