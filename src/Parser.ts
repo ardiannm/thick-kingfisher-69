@@ -11,6 +11,7 @@ import { SyntaxFacts } from "./CodeAnalysis/Syntax/SyntaxFacts";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
 import { Expression } from "./CodeAnalysis/Syntax/Expression";
+import { CopyCell } from "./CodeAnalysis/Syntax/CopyCell";
 
 // Parser class responsible for syntactic analysis and building the abstract syntax tree (AST).
 
@@ -34,11 +35,21 @@ export class Parser {
   ParseSyntaxTree() {
     const Expressions = new Array<Expression>();
     while (this.Any()) {
-      const Expression = this.ParseDeclaration();
+      const Expression = this.ParseCopyCell();
       Expressions.push(Expression);
     }
     this.ExpectToken(SyntaxKind.EndOfFileToken);
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
+  }
+
+  private ParseCopyCell() {
+    if (this.MatchToken(SyntaxKind.CopyKeyword)) {
+      this.NextToken();
+      const Left = this.ParseCellReference();
+      const Right = this.ParseCellReference();
+      return new CopyCell(SyntaxKind.CopyCell, Left, Right);
+    }
+    return this.ParseDeclaration();
   }
 
   // Parses a cell reference which, when changed, auto-updates other cells that it references.

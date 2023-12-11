@@ -15,6 +15,7 @@ export enum SyntaxKind {
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
   IsKeyword = "IsKeyword",
+  CopyKeyword = "CopyKeyword",
   // Expressions
   SyntaxTree = "SyntaxTree",
   BinaryExpression = "BinaryExpression",
@@ -24,6 +25,7 @@ export enum SyntaxKind {
   RangeReference = "RangeReference",
   Declaration = "Declaration",
   // HelperTokens
-  EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
+  EndOfFileToken = "EndOfFileToken",
+  CopyCell = "CopyCell"
 }
