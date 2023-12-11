@@ -35,26 +35,21 @@ export class Parser {
   ParseSyntaxTree() {
     const Expressions = new Array<Expression>();
     while (this.Any()) {
-      const Expression = this.ParseCopyCell();
+      const Expression = this.ParseStatement();
       Expressions.push(Expression);
     }
     this.ExpectToken(SyntaxKind.EndOfFileToken);
     return new SyntaxTree(SyntaxKind.SyntaxTree, Expressions);
   }
 
-  private ParseCopyCell() {
+  // Parses a cell reference which, when changed, auto-updates other cells that it references.
+  private ParseStatement() {
+    const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.CopyKeyword)) {
       this.NextToken();
-      const Left = this.ParseCellReference();
       const Right = this.ParseCellReference();
       return new CopyCell(SyntaxKind.CopyCell, Left, Right);
     }
-    return this.ParseDeclaration();
-  }
-
-  // Parses a cell reference which, when changed, auto-updates other cells that it references.
-  private ParseDeclaration() {
-    const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.IsKeyword)) {
       this.NextToken();
       const Right = this.ParseBinaryExpression();

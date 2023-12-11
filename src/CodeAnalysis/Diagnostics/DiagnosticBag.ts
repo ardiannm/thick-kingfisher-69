@@ -80,7 +80,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, Message));
   }
 
-  ObjectsToCopy(Left: SyntaxKind, Right: SyntaxKind) {
+  NodesThatCantCopy(Left: SyntaxKind, Right: SyntaxKind) {
     const Message = `Can't copy <${Left}> to <${Right}>`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, Message));
   }

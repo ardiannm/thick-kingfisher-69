@@ -64,11 +64,11 @@ export class Binder {
 
   private BindCopyCell(Node: CopyCell) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Right.Kind !== SyntaxKind.CellReference) {
-      throw this.Diagnostics.ObjectsToCopy(Node.Left.Kind, Node.Right.Kind);
+      throw this.Diagnostics.NodesThatCantCopy(Node.Left.Kind, Node.Right.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Right) as BoundCellReference;
-    this.Environment.TryGet(Left.Reference);
+    this.Environment.TryGet(Right.Reference);
     return new BoundCopyCell(BoundKind.BoundCopyCell, Left, Right);
   }
 
