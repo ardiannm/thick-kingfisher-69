@@ -14,31 +14,7 @@ export class Interpreter {
   private Width = 0;
 
   constructor() {
-    console.clear();
-    this.Buffer = this.Report(this.LoadSource(), "Interpreter: Source text content from file.").trim().split("\n");
-    for (const Line of this.Buffer) {
-      this.Width = Math.max(this.Width, Line.length);
-    }
-  }
-
-  private LoadSource(): string {
-    const FullPath = path.normalize(path.join(".", "src", "IO", ".lang"));
-    return fs.readFileSync(FullPath, "utf8");
-  }
-
-  private Report(Str: string = "", Message?: string) {
-    console.log();
-    console.log(Str);
-    if (Message) {
-      console.log("-".repeat(Math.max(Message.length, this.Width)));
-      console.log(Message);
-    }
-    console.log();
-    return Str;
-  }
-
-  private Input() {
-    return this.Buffer.join("\n");
+    this.GenerateStart();
   }
 
   Run() {
@@ -48,6 +24,11 @@ export class Interpreter {
       // Provide a way to exit the loop
       if (InputLine.toLowerCase() === "exit") {
         break;
+      }
+      // Provide a way to exit the loop
+      if (InputLine.toLowerCase() === "reset") {
+        this.GenerateStart();
+        continue;
       }
       // Clear the last line
       if (InputLine.toLowerCase() === "cls") {
@@ -70,5 +51,33 @@ export class Interpreter {
         this.Report(this.Input(), (error as Diagnostic).Message);
       }
     }
+  }
+
+  private GenerateStart() {
+    console.clear();
+    this.Buffer = this.Report(this.LoadSource(), "Interpreter: Source text content from file.").split("\n");
+    for (const Line of this.Buffer) {
+      this.Width = Math.max(this.Width, Line.length);
+    }
+  }
+
+  private LoadSource(): string {
+    const FullPath = path.join(".", "src", "IO", ".lang");
+    return fs.readFileSync(FullPath, "utf8");
+  }
+
+  private Report(Str: string = "", Message?: string) {
+    console.log();
+    console.log(Str);
+    if (Message) {
+      console.log("-".repeat(Math.max(Message.length, this.Width)));
+      console.log(Message);
+    }
+    console.log();
+    return Str;
+  }
+
+  private Input() {
+    return this.Buffer.join("\n");
   }
 }
