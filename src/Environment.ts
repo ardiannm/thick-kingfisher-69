@@ -4,7 +4,7 @@ import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 
 export class Environment {
   private Nodes = new Map<string, BoundCell>();
-  private NodeValue = new Map<string, number>();
+  private NodeValues = new Map<string, number>();
 
   Stack = new Set<string>();
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
@@ -22,12 +22,12 @@ export class Environment {
   }
 
   GetValue(Node: BoundCellReference): number {
-    if (this.NodeValue.has(Node.Reference)) return this.NodeValue.get(Node.Reference);
+    if (this.NodeValues.has(Node.Reference)) return this.NodeValues.get(Node.Reference);
     throw this.Diagnostics.CantFindReference(Node.Reference);
   }
 
   SetValue(Reference: string, Value: number): number {
-    this.NodeValue.set(Reference, Value);
+    this.NodeValues.set(Reference, Value);
     return Value;
   }
 
@@ -75,5 +75,11 @@ export class Environment {
   Assert(Reference: string) {
     if (this.HasNode(Reference)) return;
     throw this.Diagnostics.CantFindReference(Reference);
+  }
+
+  Clear() {
+    this.Nodes.clear();
+    this.NodeValues.clear();
+    this.Stack.clear();
   }
 }

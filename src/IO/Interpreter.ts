@@ -10,7 +10,7 @@ import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
 import Promp from "readline-sync";
 
 export class Interpreter {
-  private Environment = new Environment();
+  private Env = new Environment();
   private Buffer = new Array<string>();
   private Width = 0;
 
@@ -23,10 +23,6 @@ export class Interpreter {
 
       console.clear();
 
-      if (InputLine.toLowerCase() === "exit") {
-        break;
-      }
-
       if (InputLine.toLowerCase() === "cls") {
         console.clear();
         this.Buffer.pop();
@@ -35,13 +31,24 @@ export class Interpreter {
         continue;
       }
 
+      if (InputLine.toLowerCase() === "reset") {
+        this.Env.Clear();
+        this.Buffer.length = 0;
+        console.clear();
+        continue;
+      }
+
+      if (InputLine.toLowerCase() === "exit") {
+        break;
+      }
+
       if (InputLine.trim()) {
         this.Buffer.push(InputLine);
       }
 
       try {
-        const Tree = SyntaxTree.Bind(this.Input(), this.Environment);
-        const Evaluation = new Evaluator(this.Environment).Evaluate(Tree);
+        const Tree = SyntaxTree.Bind(this.Input(), this.Env);
+        const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
         const Value = JSON.stringify(Evaluation);
         this.Print(this.Input(), Value);
       } catch (error) {

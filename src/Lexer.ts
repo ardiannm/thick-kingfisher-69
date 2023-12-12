@@ -7,6 +7,7 @@ import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 export class Lexer {
   private Index = 0;
   private Diagnostics = new DiagnosticBag();
+  private Start = this.Index;
 
   constructor(public readonly Source: SourceText) {}
 
@@ -32,6 +33,10 @@ export class Lexer {
     return this.Peek(0);
   }
 
+  private get Text() {
+    return this.Source.Text.substring(this.Start, this.Index);
+  }
+
   private Next() {
     const Char = this.Current;
     this.Index++;
@@ -48,44 +53,27 @@ export class Lexer {
   }
 
   Lex(): SyntaxToken {
-    const Start = this.Index;
+    this.Start = this.Index;
 
     if (this.IsLetter(this.Current)) {
       while (this.IsLetter(this.Current)) {
         this.Next();
       }
-      const Text = this.Source.Text.substring(Start, this.Index);
-      return new SyntaxToken(SyntaxFacts.KeywordTokenKind(Text), Text);
+      const Text = this.Text;
+      const Kind = SyntaxFacts.KeywordTokenKind(Text);
+      return new SyntaxToken(Kind, Text);
     }
 
     if (this.IsDigit(this.Current)) {
-      while (this.IsDigit(this.Current)) {
-        this.Next();
-      }
-      if (this.MatchKind(SyntaxKind.DotToken)) {
-        this.Next();
-        if (!this.IsDigit(this.Current)) {
-          throw this.Diagnostics.WrongFloatingNumberFormat();
-        }
-      }
-      while (this.IsDigit(this.Current)) {
-        this.Next();
-      }
-      return new SyntaxToken(SyntaxKind.NumberToken, this.Source.Text.substring(Start, this.Index));
+      return this.ParseNumberToken();
     }
 
     if (this.IsSpace(this.Current)) {
-      while (this.IsSpace(this.Current)) {
-        this.Next();
-      }
-      return new SyntaxToken(SyntaxKind.SpaceToken, this.Source.Text.substring(Start, this.Index));
+      return this.ParseSpaceToken();
     }
 
     if (this.MatchKind(SyntaxKind.HashToken)) {
-      while (!this.MatchKind(SyntaxKind.NewLineToken) && !this.MatchKind(SyntaxKind.EndOfFileToken)) {
-        this.Next();
-      }
-      return new SyntaxToken(SyntaxKind.CommentToken, this.Source.Text.substring(Start, this.Index));
+      return this.ParseCommentToken();
     }
 
     if (this.MatchKind(SyntaxKind.BadToken)) {
@@ -94,5 +82,35 @@ export class Lexer {
 
     const Kind = SyntaxFacts.Kind(this.Current);
     return new SyntaxToken(Kind, this.Next());
+  }
+
+  private ParseCommentToken() {
+    while (!this.MatchKind(SyntaxKind.NewLineToken) && !this.MatchKind(SyntaxKind.EndOfFileToken)) {
+      this.Next();
+    }
+    return new SyntaxToken(SyntaxKind.CommentToken, this.Text);
+  }
+
+  private ParseSpaceToken() {
+    while (this.IsSpace(this.Current)) {
+      this.Next();
+    }
+    return new SyntaxToken(SyntaxKind.SpaceToken, this.Text);
+  }
+
+  private ParseNumberToken() {
+    while (this.IsDigit(this.Current)) {
+      this.Next();
+    }
+    if (this.MatchKind(SyntaxKind.DotToken)) {
+      this.Next();
+      if (!this.IsDigit(this.Current)) {
+        throw this.Diagnostics.WrongFloatingNumberFormat();
+      }
+    }
+    while (this.IsDigit(this.Current)) {
+      this.Next();
+    }
+    return new SyntaxToken(SyntaxKind.NumberToken, this.Text);
   }
 }
