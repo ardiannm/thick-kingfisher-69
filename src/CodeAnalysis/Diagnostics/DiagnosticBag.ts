@@ -3,7 +3,6 @@ import { Diagnostic } from "./Diagnostic";
 import { SyntaxKind } from "../Syntax/SyntaxKind";
 import { BoundKind } from "../Binding/BoundKind";
 import { DiagnosticCode } from "./DiagnosticCode";
-import { BoundDeclarationKind } from "../Binding/BoundDeclarationKind";
 
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
@@ -86,7 +85,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
   }
 
-  public MissingDeclarationStatement(Kind: BoundDeclarationKind) {
+  public MissingDeclarationStatement(Kind: BoundKind) {
     const Message = `Method for binding <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
   }

@@ -13,27 +13,22 @@ import { BoundKind } from "./Binding/BoundKind";
 import { BoundNumber } from "./Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./Binding/BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./Binding/BoundRangeReference";
-import { BoundCell } from "./Binding/BoundCell";
-import { BoundRoot } from "./Binding/BoundRoot";
 import { HasReference } from "./Binding/HasReference";
 import { UnaryExpression } from "./Syntax/UnaryExpression";
 import { BoundUnaryExpression } from "./Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
-import { Environment } from "../Environment";
-import { BoundExpression } from "./Binding/BoundExpression";
-import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 import { BoundNode } from "./Binding/BoundNode";
+import { BoundDeclarationStatement } from "./Binding/BoundDeclarationStatement";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
-  constructor(public Env: Environment) {}
+  private Stack = new Set<string>();
+  private Map = new Map<string, Set<string>>();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case SyntaxKind.SyntaxRoot:
-        return this.BindSyntaxRoot(Node as NodeType<SyntaxRoot>);
       case SyntaxKind.IdentifierToken:
         return this.BindIdentifier(Node as NodeType<SyntaxToken>);
       case SyntaxKind.NumberToken:
@@ -77,10 +72,12 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
-        const Scope = new Binder(new Environment());
-        const Expression = Scope.Bind(Node.Expression);
-        const Bound = new BoundCell(BoundKind.BoundCell, Left.Reference, Scope.Env.Stack, new Set<string>(), Expression);
-        return this.Env.Declare(Bound);
+        this.Stack.clear();
+        const Expression = this.Bind(Node.Expression);
+        Left.Reference;
+
+        this.Stack.clear();
+        return new BoundDeclarationStatement(BoundKind.IsStatement, Left, Expression);
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
   }
@@ -134,9 +131,8 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Reference = Node.Left.Text + Node.Right.Text;
-    const Bound = new BoundCellReference(BoundKind.BoundCellReference, Reference);
-    this.Env.ReferToCell(Bound);
-    return Bound;
+    this.Stack.add(Reference);
+    return new BoundCellReference(BoundKind.BoundCellReference, Reference);
   }
 
   private BindIdentifier(Node: SyntaxToken) {
@@ -146,18 +142,5 @@ export class Binder {
   private BindNumber(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
     return new BoundNumber(BoundKind.BoundNumber, Node.Text, Value);
-  }
-
-  private BindSyntaxRoot(Node: SyntaxRoot) {
-    const Expressions = new Array<BoundExpression>();
-    for (const Expression of Node.Expressions) {
-      const BoundExpression = this.Bind(Expression);
-      switch (BoundExpression.Kind) {
-        case BoundKind.BoundCellReference:
-          this.Env.Assert((BoundExpression as BoundCellReference).Reference);
-      }
-      Expressions.push(BoundExpression);
-    }
-    return new BoundRoot(BoundKind.BoundRoot, Expressions);
   }
 }

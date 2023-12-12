@@ -1,5 +1,4 @@
 export enum BoundKind {
-  BoundRoot = "BoundRoot",
   BoundCell = "BoundCell",
   BoundBinaryExpression = "BoundBinaryExpression",
   BoundRangeReference = "BoundRangeReference",
@@ -9,5 +8,5 @@ export enum BoundKind {
   BoundUnaryExpression = "BoundUnaryExpression",
   BoundCopyCell = "BoundCopyCell",
   IsStatement = "IsStatement",
-  CopyStatement = "CopyStatement"
+  CopyStatement = "CopyStatement",
 }

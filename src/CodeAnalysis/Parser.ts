@@ -11,7 +11,6 @@ import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SourceText } from "./SourceText/SourceText";
 import { Expression } from "./Syntax/Expression";
-import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 
 export class Parser {
   private Index = 0;
@@ -32,13 +31,9 @@ export class Parser {
   }
 
   Parse() {
-    const Expressions = new Array<Expression>();
-    while (this.Any()) {
-      const Expression = this.ParseStatement();
-      Expressions.push(Expression);
-    }
+    const Statement = this.ParseStatement();
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new SyntaxRoot(SyntaxKind.SyntaxRoot, Expressions);
+    return Statement;
   }
 
   private ParseStatement() {

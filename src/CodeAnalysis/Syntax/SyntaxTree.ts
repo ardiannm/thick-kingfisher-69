@@ -3,13 +3,11 @@ import { Parser } from "../Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
-import { Environment } from "../../Environment";
-import { SyntaxRoot } from "./SyntaxRoot";
 import { Binder } from "../Binder";
 import { BoundNode } from "../Binding/BoundNode";
 
 export class SyntaxTree {
-  private constructor(public Root: SyntaxRoot) {}
+  private constructor(public Root: BoundNode) {}
 
   static *Lex(Text: string) {
     const Tokenizer = new Lexer(SourceText.From(Text));
@@ -25,10 +23,10 @@ export class SyntaxTree {
     return new Parser(Source).Parse();
   }
 
-  static Bind(Text: string, Environment: Environment) {
+  static Bind(Text: string) {
     const Source = SourceText.From(Text);
     const Tree = new Parser(Source).Parse();
-    return new Binder(Environment).Bind(Tree);
+    return new Binder().Bind(Tree);
   }
 
   public static Print<T>(Node: T, Indent = ""): string {
