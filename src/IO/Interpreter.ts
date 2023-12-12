@@ -5,6 +5,7 @@ import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
 import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
 import { Environment } from "../Environment";
 import { Evaluator } from "../Evaluator";
+import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
 
 import Promp from "readline-sync";
 
@@ -13,11 +14,9 @@ export class Interpreter {
   private Buffer = new Array<string>();
   private Width = 0;
 
-  constructor() {
-    console.clear();
-  }
-
   Run() {
+    console.clear();
+
     while (true) {
       const InputLine = Promp.question("> ");
       this.Width = Math.max(this.Width, InputLine.length);
@@ -46,8 +45,9 @@ export class Interpreter {
         const Value = JSON.stringify(Evaluation);
         this.Report(this.Input(), Value);
       } catch (error) {
-        this.Buffer.push("# " + this.Buffer.pop());
-        this.Report(this.Input(), (error as Diagnostic).Message);
+        const Diagnostic = error as Diagnostic;
+        if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
+        this.Report(this.Input(), Diagnostic.Message);
       }
     }
   }

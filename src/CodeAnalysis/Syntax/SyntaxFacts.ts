@@ -42,6 +42,10 @@ export class SyntaxFacts {
         return SyntaxKind.CloseParenToken;
       case ".":
         return SyntaxKind.DotToken;
+      case "#":
+        return SyntaxKind.HashToken;
+      case "\n":
+        return SyntaxKind.NewLineToken;
       case "":
         return SyntaxKind.EndOfFileToken;
       default:

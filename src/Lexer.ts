@@ -11,7 +11,7 @@ export class Lexer {
   constructor(public readonly Source: SourceText) {}
 
   private IsSpace(Char: string): boolean {
-    return Char === " " || Char === "\n" || Char === "\t" || Char === "\r";
+    return Char === " " || Char === "\t" || Char === "\r";
   }
 
   private IsDigit(Char: string): boolean {
@@ -79,6 +79,13 @@ export class Lexer {
         this.Next();
       }
       return new SyntaxToken(SyntaxKind.SpaceToken, this.Source.Text.substring(Start, this.Index));
+    }
+
+    if (this.MatchKind(SyntaxKind.HashToken)) {
+      while (!this.MatchKind(SyntaxKind.NewLineToken) && !this.MatchKind(SyntaxKind.EndOfFileToken)) {
+        this.Next();
+      }
+      return new SyntaxToken(SyntaxKind.CommentToken, this.Source.Text.substring(Start, this.Index));
     }
 
     if (this.MatchKind(SyntaxKind.BadToken)) {

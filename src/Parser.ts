@@ -22,7 +22,14 @@ export class Parser {
 
   constructor(public readonly Source: SourceText) {
     for (const Token of SyntaxTree.Lex(Source.Text)) {
-      if (!(Token.Kind === SyntaxKind.SpaceToken)) this.Tokens.push(Token);
+      switch (Token.Kind) {
+        case SyntaxKind.NewLineToken:
+        case SyntaxKind.SpaceToken:
+        case SyntaxKind.CommentToken:
+          continue;
+        default:
+          this.Tokens.push(Token);
+      }
     }
   }
 

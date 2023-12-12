@@ -10,6 +10,7 @@ export enum SyntaxKind {
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
   DotToken = "DotToken",
+  HashToken = "HashToken",
 
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
@@ -27,4 +28,6 @@ export enum SyntaxKind {
   BadToken = "BadToken",
   EndOfFileToken = "EndOfFileToken",
   CopyCell = "CopyCell",
+  NewLineToken = "NewLineToken",
+  CommentToken = "CommentToken"
 }
