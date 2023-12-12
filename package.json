@@ -1,5 +1,5 @@
 {
-  "version": "v1.0.0",
+  "version": "v3.3.1",
   "description": "",
   "scripts": {
     "dev": "npm start",

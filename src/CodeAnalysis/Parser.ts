@@ -153,7 +153,7 @@ export class Parser {
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
     const Token = this.NextToken();
-    throw this.Diagnostics.TokenNotAMatch(Kind, Token.Kind);
+    throw this.Diagnostics.TokenNotAMatch(Token.Kind);
   }
 
   private Any() {
