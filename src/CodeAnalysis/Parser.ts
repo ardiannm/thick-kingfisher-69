@@ -11,7 +11,6 @@ import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SourceText } from "./SourceText/SourceText";
 import { Expression } from "./Syntax/Expression";
-import { CopyCell } from "./Syntax/CopyCell";
 import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 
 export class Parser {
@@ -45,15 +44,12 @@ export class Parser {
 
   private ParseStatement() {
     const Left = this.ParseBinaryExpression();
-    if (this.MatchToken(SyntaxKind.CopyKeyword)) {
-      this.NextToken();
-      const Right = this.ParseBinaryExpression();
-      return new CopyCell(SyntaxKind.CopyCell, Left, Right);
-    }
-    if (this.MatchToken(SyntaxKind.IsKeyword)) {
-      this.NextToken();
-      const Right = this.ParseBinaryExpression();
-      return new DeclarationStatement(SyntaxKind.Declaration, Left, Right);
+    switch (this.CurrentToken.Kind) {
+      case SyntaxKind.IsKeyword:
+      case SyntaxKind.CopyKeyword:
+        const Keyword = this.NextToken();
+        const Right = this.ParseBinaryExpression();
+        return new DeclarationStatement(SyntaxKind.DeclarationStatement, Left, Keyword, Right);
     }
     return Left;
   }

@@ -3,6 +3,7 @@ import { Diagnostic } from "./Diagnostic";
 import { SyntaxKind } from "../Syntax/SyntaxKind";
 import { BoundKind } from "../Binding/BoundKind";
 import { DiagnosticCode } from "./DiagnosticCode";
+import { BoundDeclarationKind } from "../Binding/BoundDeclarationKind";
 
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
@@ -82,6 +83,11 @@ export class DiagnosticBag {
 
   public CantCopyNode(Left: SyntaxKind, Right: SyntaxKind) {
     const Message = `Can't copy <${Left}> to <${Right}>`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
+  }
+
+  public MissingDeclarationStatement(Kind: BoundDeclarationKind) {
+    const Message = `Method for binding <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
   }
 }

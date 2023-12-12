@@ -1,5 +1,8 @@
 export enum SyntaxKind {
   SpaceToken = "SpaceToken",
+  CommentToken = "CommentToken",
+  NewLineToken = "NewLineToken",
+
   IdentifierToken = "IdentifierToken",
   NumberToken = "NumberToken",
   PlusToken = "PlusToken",
@@ -12,6 +15,9 @@ export enum SyntaxKind {
   DotToken = "DotToken",
   HashToken = "HashToken",
 
+  EndOfFileToken = "EndOfFileToken",
+  BadToken = "BadToken",
+
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
   IsKeyword = "IsKeyword",
@@ -23,11 +29,5 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   CellReference = "CellReference",
   RangeReference = "RangeReference",
-  Declaration = "Declaration",
-
-  BadToken = "BadToken",
-  EndOfFileToken = "EndOfFileToken",
-  CopyCell = "CopyCell",
-  NewLineToken = "NewLineToken",
-  CommentToken = "CommentToken"
+  DeclarationStatement = "DeclarationStatement",
 }
