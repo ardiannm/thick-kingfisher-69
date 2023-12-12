@@ -48,13 +48,19 @@ export class Interpreter {
 
       try {
         const Tree = SyntaxTree.Bind(this.Input(), this.Env);
+        console.log(SyntaxTree.Print(SyntaxTree.Bind(InputLine, this.Env)));
+
         const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
         const Value = JSON.stringify(Evaluation);
         this.Print(this.Input(), Value);
       } catch (error) {
-        const Diagnostic = error as Diagnostic;
-        if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
-        this.Print(this.Input(), Diagnostic.Message);
+        if (error instanceof Diagnostic) {
+          const Diagnostic = error as Diagnostic;
+          if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
+          this.Print(this.Input(), Diagnostic.Message);
+        } else {
+          console.log(error);
+        }
       }
     }
   }

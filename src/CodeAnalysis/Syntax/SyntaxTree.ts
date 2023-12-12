@@ -6,6 +6,7 @@ import { SourceText } from "../SourceText/SourceText";
 import { Environment } from "../../Environment";
 import { SyntaxRoot } from "./SyntaxRoot";
 import { Binder } from "../Binder";
+import { BoundNode } from "../Binding/BoundNode";
 
 export class SyntaxTree {
   private constructor(public Root: SyntaxRoot) {}
@@ -28,5 +29,34 @@ export class SyntaxTree {
     const Source = SourceText.From(Text);
     const Tree = new Parser(Source).Parse();
     return new Binder(Environment).Bind(Tree);
+  }
+
+  public static Print<T>(Node: T, Indent = ""): string {
+    var Text = "";
+    if (typeof Node === "string") {
+      return `"${Node}"`;
+    }
+    if (typeof Node === "number") {
+      return `${Node}`;
+    }
+    if (Node instanceof Set) {
+      return this.Print(Array.from(Node));
+    }
+    if (Node instanceof Array) {
+      for (const Item of Node) {
+        Text += this.Print(Item, Indent) + " ";
+      }
+    }
+    if (Node instanceof BoundNode) {
+      for (const [Root, Branch] of Object.entries(Node)) {
+        const NewIndent = Indent + " ".repeat(3);
+        if (Root === "Kind") {
+          Text += "\n" + Indent + NewIndent + Node.Kind;
+        } else {
+          Text += "\n" + Indent + NewIndent + " ".repeat(3) + Root + " " + this.Print(Branch, NewIndent);
+        }
+      }
+    }
+    return Text;
   }
 }
