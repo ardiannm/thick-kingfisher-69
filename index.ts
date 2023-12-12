@@ -1,3 +1,3 @@
-import { Interpreter } from "./src/IO/Interpreter";
+import { Interpreter } from "./src/Interpreter/Interpreter";
 
 new Interpreter().Run();

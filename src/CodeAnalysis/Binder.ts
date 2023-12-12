@@ -24,12 +24,13 @@ import { Environment } from "../Environment";
 import { BoundExpression } from "./Binding/BoundExpression";
 import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 import { BoundDeclarationKind } from "./Binding/BoundDeclarationKind";
+import { BoundNode } from "./Binding/BoundNode";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
   constructor(public Env: Environment) {}
 
-  Bind<Kind extends SyntaxNode>(Node: Kind) {
+  Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.SyntaxRoot:
@@ -57,19 +58,20 @@ export class Binder {
   private BindDeclarationStatement(Node: DeclarationStatement) {
     const Kind = this.BindDeclarationKind(Node.Keyword.Kind);
     switch (Kind) {
-      case BoundDeclarationKind.DeclarationIs:
+      case BoundDeclarationKind.DeclareIs:
         return this.BindDeclarationIs(Node);
     }
     throw this.Diagnostics.MissingDeclarationStatement(Kind);
   }
 
-  private BindDeclarationKind(Keyword: SyntaxKind): BoundDeclarationKind {
-    switch (Keyword) {
+  private BindDeclarationKind(Kind: SyntaxKind): BoundDeclarationKind {
+    switch (Kind) {
       case SyntaxKind.IsKeyword:
-        return BoundDeclarationKind.DeclarationIs;
+        return BoundDeclarationKind.DeclareIs;
       case SyntaxKind.CopyKeyword:
-        return BoundDeclarationKind.DeclarationCopy;
+        return BoundDeclarationKind.DeclareCopy;
     }
+    throw this.Diagnostics.MissingBindingMethod(Kind);
   }
 
   private BindDeclarationIs(Node: DeclarationStatement) {
@@ -102,6 +104,7 @@ export class Binder {
       case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
     }
+    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -117,6 +120,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
+    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2022",
@@ -10,5 +11,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
   },
-  "include": ["index.ts"]
+  "include": [
+    "index.ts",
+    "src/**/*.ts", // adjust this path based on your project structure
+    "types/**/*.d.ts" // adjust this path based on your project structure
+  ]
 }

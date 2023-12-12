@@ -5,10 +5,12 @@ export enum SyntaxKind {
 
   IdentifierToken = "IdentifierToken",
   NumberToken = "NumberToken",
+
   PlusToken = "PlusToken",
   MinusToken = "MinusToken",
   SlashToken = "SlashToken",
   StarToken = "StarToken",
+
   ColonToken = "ColonToken",
   OpenParenToken = "OpenParenToken",
   CloseParenToken = "CloseParenToken",
@@ -31,3 +33,5 @@ export enum SyntaxKind {
   RangeReference = "RangeReference",
   DeclarationStatement = "DeclarationStatement",
 }
+
+export enum OperatorKind {}

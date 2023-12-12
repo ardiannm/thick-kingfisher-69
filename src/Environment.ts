@@ -22,7 +22,7 @@ export class Environment {
   }
 
   GetValue(Node: BoundCellReference): number {
-    if (this.NodeValues.has(Node.Reference)) return this.NodeValues.get(Node.Reference);
+    if (this.NodeValues.has(Node.Reference)) return this.NodeValues.get(Node.Reference) as number;
     throw this.Diagnostics.CantFindReference(Node.Reference);
   }
 
@@ -47,8 +47,8 @@ export class Environment {
     for (const Dependency of Node.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Dependency));
   }
 
-  private GetNode(Reference: string) {
-    if (this.HasNode(Reference)) return this.Nodes.get(Reference);
+  private GetNode(Reference: string): BoundCell {
+    if (this.HasNode(Reference)) return this.Nodes.get(Reference) as BoundCell;
     throw this.Diagnostics.CantFindReference(Reference);
   }
 

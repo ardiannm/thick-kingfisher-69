@@ -16,7 +16,6 @@ import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
-
   private Diagnostics = new DiagnosticBag();
 
   constructor(public readonly Source: SourceText) {
@@ -68,7 +67,7 @@ export class Parser {
     return Left;
   }
 
-  private ParseUnaryExpression() {
+  private ParseUnaryExpression(): Expression {
     const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken();

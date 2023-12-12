@@ -1,4 +1,4 @@
 export enum BoundDeclarationKind {
-  DeclarationIs = "DeclarationIs",
-  DeclarationCopy = "DeclarationCopy"
+  DeclareIs = "DeclareIs",
+  DeclareCopy = "DeclareCopy"
 }
