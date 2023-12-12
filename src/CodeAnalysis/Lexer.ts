@@ -1,6 +1,6 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { SyntaxFacts } from "./Syntax/SyntaxFacts";
+import { Facts } from "./Syntax/Facts";
 import { SourceText } from "./SourceText/SourceText";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
@@ -46,7 +46,7 @@ export class Lexer {
   private MatchKind(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      if (Kind !== SyntaxFacts.Kind(this.Peek(Offset))) return false;
+      if (Kind !== Facts.Kind(this.Peek(Offset))) return false;
       Offset++;
     }
     return true;
@@ -71,14 +71,14 @@ export class Lexer {
       throw this.Diagnostics.BadTokenFound(this.Char);
     }
 
-    return new SyntaxToken(SyntaxFacts.Kind(this.Char), this.Next());
+    return new SyntaxToken(Facts.Kind(this.Char), this.Next());
   }
 
   private ParseIdentifier() {
     while (this.IsLetter(this.Char)) {
       this.Next();
     }
-    return new SyntaxToken(SyntaxFacts.KeywordTokenKind(this.Text), this.Text);
+    return new SyntaxToken(Facts.KeywordTokenKind(this.Text), this.Text);
   }
 
   private ParseCommentToken() {

@@ -9,18 +9,6 @@ export class Environment {
 
   Stack = new Set<string>();
 
-  ReferToCell(Node: BoundCellReference): void {
-    this.Stack.add(Node.Name);
-  }
-
-  Declare(Node: BoundCell): BoundCell {
-    if (Node.Dependencies.has(Node.Name)) {
-      throw this.Diagnostics.UsedBeforeItsDeclaration(Node.Name);
-    }
-    this.DetectCircularDependency(Node.Name, Node);
-    return this.SetNode(Node);
-  }
-
   GetValue(Node: BoundCellReference): number {
     if (this.NodeValues.has(Node.Name)) return this.NodeValues.get(Node.Name) as number;
     throw this.Diagnostics.CantFindName(Node.Name);
@@ -42,11 +30,6 @@ export class Environment {
     return this.DetectForChange(Node, new Set<string>());
   }
 
-  private DetectCircularDependency(Reference: string, Node: BoundCell): void {
-    if (Node.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Node.Name);
-    for (const Dependency of Node.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Dependency));
-  }
-
   private GetNode(Reference: string): BoundCell {
     if (this.HasNode(Reference)) return this.Nodes.get(Reference) as BoundCell;
     throw this.Diagnostics.CantFindName(Reference);
@@ -54,11 +37,6 @@ export class Environment {
 
   private HasNode(Reference: string) {
     return this.Nodes.has(Reference);
-  }
-
-  private SetNode(Node: BoundCell) {
-    if (!this.HasNode(Node.Name)) this.Nodes.set(Node.Name, Node);
-    return Node;
   }
 
   private *DetectForChange(Node: BoundCell, ForChange: Set<string>): Generator<BoundCell> {
@@ -70,11 +48,6 @@ export class Environment {
       yield* this.DetectForChange(NextNode, ForChange);
     }
     ForChange.clear();
-  }
-
-  Assert(Reference: string) {
-    if (this.HasNode(Reference)) return;
-    throw this.Diagnostics.CantFindName(Reference);
   }
 
   Clear() {

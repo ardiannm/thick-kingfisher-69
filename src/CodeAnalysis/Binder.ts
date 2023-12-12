@@ -96,12 +96,12 @@ export class Binder {
 
   private BindBinaryExpression(Node: BinaryExpression) {
     const Left = this.Bind(Node.Left);
-    const Operator = this.BindOperatorKind(Node.Operator.Kind);
+    const Operator = this.BindBinaryOperatorKind(Node.Operator.Kind);
     const Right = this.Bind(Node.Right);
     return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, Left, Operator, Right);
   }
 
-  private BindOperatorKind(Kind: SyntaxKind): BoundBinaryOperatorKind {
+  private BindBinaryOperatorKind(Kind: SyntaxKind): BoundBinaryOperatorKind {
     switch (Kind) {
       case SyntaxKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;

@@ -1,6 +1,6 @@
 import { SyntaxKind } from "./SyntaxKind";
 
-export class SyntaxFacts {
+export class Facts {
   public static UnaryOperatorPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.PlusToken:
