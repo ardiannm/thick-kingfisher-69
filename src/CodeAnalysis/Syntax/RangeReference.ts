@@ -1,8 +1,8 @@
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
-import { Expression } from "./Expression";
+import { ExpressionSyntax } from "./ExpressionSyntax";
 
-export class RangeReference extends Expression {
+export class RangeReference extends ExpressionSyntax {
   constructor(public Kind: SyntaxKind, public Left: SyntaxNode, public Right: SyntaxNode) {
     super(Kind);
   }

@@ -1,3 +1,3 @@
-import { SyntaxNode } from "./SyntaxNode";
+import { ExpressionSyntax } from "./ExpressionSyntax";
 
-export abstract class StatementSyntax extends SyntaxNode {}
+export abstract class StatementSyntax extends ExpressionSyntax {}

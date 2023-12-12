@@ -5,6 +5,7 @@ import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
 import { Binder } from "../Binder";
 import { BoundNode } from "../Binding/BoundNode";
+import { BoundProgram } from "../Binding/BoundProgram";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -26,7 +27,7 @@ export class SyntaxTree {
   static Bind(Text: string) {
     const Source = SourceText.From(Text);
     const Tree = new Parser(Source).Parse();
-    return new Binder().Bind(Tree);
+    return new Binder().Bind(Tree) as BoundProgram;
   }
 
   public static Print<T>(Node: T, Indent = ""): string {

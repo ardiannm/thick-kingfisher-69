@@ -36,7 +36,7 @@ export class Evaluator {
 
   private EvaluateCell(Node: BoundCell): number {
     const Value = this.Evaluate(Node.Expression);
-    for (const ForChange of this.Env.Assign(Node, Value)) this.Env.SetValue(ForChange.Reference, this.Evaluate(ForChange.Expression));
+    for (const ForChange of this.Env.Assign(Node, Value)) this.Env.SetValue(ForChange.Name, this.Evaluate(ForChange.Expression));
     return Value;
   }
 

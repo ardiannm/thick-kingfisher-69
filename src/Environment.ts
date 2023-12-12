@@ -10,20 +10,20 @@ export class Environment {
   Stack = new Set<string>();
 
   ReferToCell(Node: BoundCellReference): void {
-    this.Stack.add(Node.Reference);
+    this.Stack.add(Node.Name);
   }
 
   Declare(Node: BoundCell): BoundCell {
-    if (Node.Dependencies.has(Node.Reference)) {
-      throw this.Diagnostics.UsedBeforeItsDeclaration(Node.Reference);
+    if (Node.Dependencies.has(Node.Name)) {
+      throw this.Diagnostics.UsedBeforeItsDeclaration(Node.Name);
     }
-    this.DetectCircularDependency(Node.Reference, Node);
+    this.DetectCircularDependency(Node.Name, Node);
     return this.SetNode(Node);
   }
 
   GetValue(Node: BoundCellReference): number {
-    if (this.NodeValues.has(Node.Reference)) return this.NodeValues.get(Node.Reference) as number;
-    throw this.Diagnostics.CantFindReference(Node.Reference);
+    if (this.NodeValues.has(Node.Name)) return this.NodeValues.get(Node.Name) as number;
+    throw this.Diagnostics.CantFindReference(Node.Name);
   }
 
   SetValue(Reference: string, Value: number): number {
@@ -32,18 +32,18 @@ export class Environment {
   }
 
   Assign(Node: BoundCell, Value: number): Generator<BoundCell> {
-    const State = this.GetNode(Node.Reference);
+    const State = this.GetNode(Node.Name);
     Node.Dependents = State.Dependents;
     for (const Reference of State.Dependencies) {
       const Dependency = this.GetNode(Reference);
       Node.Dependencies.has(Reference) ? Dependency.Notify(Node) : Dependency.DoNoNotify(Node);
     }
-    this.SetValue(Node.Reference, Value);
+    this.SetValue(Node.Name, Value);
     return this.DetectForChange(Node, new Set<string>());
   }
 
   private DetectCircularDependency(Reference: string, Node: BoundCell): void {
-    if (Node.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Node.Reference);
+    if (Node.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Node.Name);
     for (const Dependency of Node.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Dependency));
   }
 
@@ -57,7 +57,7 @@ export class Environment {
   }
 
   private SetNode(Node: BoundCell) {
-    if (!this.HasNode(Node.Reference)) this.Nodes.set(Node.Reference, Node);
+    if (!this.HasNode(Node.Name)) this.Nodes.set(Node.Name, Node);
     return Node;
   }
 

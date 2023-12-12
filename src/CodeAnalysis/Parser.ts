@@ -10,7 +10,9 @@ import { CellReference } from "./Syntax/CellReference";
 import { SyntaxFacts } from "./Syntax/SyntaxFacts";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SourceText } from "./SourceText/SourceText";
-import { Expression } from "./Syntax/Expression";
+import { ExpressionSyntax } from "./Syntax/ExpressionSyntax";
+import { StatementSyntax } from "./Syntax/StatementSyntax";
+import { Program } from "./Syntax/Program";
 
 export class Parser {
   private Index = 0;
@@ -31,9 +33,13 @@ export class Parser {
   }
 
   Parse() {
-    const Statement = this.ParseStatement();
+    const Expressions = new Array<StatementSyntax>();
+    while (this.Any()) {
+      const Statement = this.ParseStatement();
+      Expressions.push(Statement);
+    }
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return Statement;
+    return new Program(SyntaxKind.Program, Expressions);
   }
 
   private ParseStatement() {
@@ -48,7 +54,7 @@ export class Parser {
     return Left;
   }
 
-  private ParseBinaryExpression(ParentPrecedence = 0): Expression {
+  private ParseBinaryExpression(ParentPrecedence = 0): ExpressionSyntax {
     let Left = this.ParseUnaryExpression();
     while (true) {
       const BinaryPrecedence = SyntaxFacts.BinaryOperatorPrecedence(this.CurrentToken.Kind);
@@ -62,7 +68,7 @@ export class Parser {
     return Left;
   }
 
-  private ParseUnaryExpression(): Expression {
+  private ParseUnaryExpression(): ExpressionSyntax {
     const BinaryPrecedence = SyntaxFacts.UnaryOperatorPrecedence(this.CurrentToken.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken();

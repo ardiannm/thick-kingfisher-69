@@ -20,6 +20,9 @@ import { BoundUnaryOperatorKind } from "./Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
 import { BoundNode } from "./Binding/BoundNode";
 import { BoundDeclarationStatement } from "./Binding/BoundDeclarationStatement";
+import { Program } from "./Syntax/Program";
+import { BoundStatement } from "./Binding/BoundStatement";
+import { BoundProgram } from "./Binding/BoundProgram";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
@@ -29,6 +32,8 @@ export class Binder {
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
+      case SyntaxKind.Program:
+        return this.BindProgram(Node as NodeType<Program>);
       case SyntaxKind.IdentifierToken:
         return this.BindIdentifier(Node as NodeType<SyntaxToken>);
       case SyntaxKind.NumberToken:
@@ -47,6 +52,14 @@ export class Binder {
         return this.BindDeclarationStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingBindingMethod(Node.Kind);
+  }
+
+  private BindProgram(Node: Program) {
+    const BoundStatements = new Array<BoundStatement>();
+    for (const Statement of Node.Root) {
+      BoundStatements.push(this.Bind(Statement));
+    }
+    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Map);
   }
 
   private BindDeclarationStatement(Node: DeclarationStatement) {
@@ -74,8 +87,7 @@ export class Binder {
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Stack.clear();
         const Expression = this.Bind(Node.Expression);
-        Left.Reference;
-
+        this.Map.set(Left.Name, new Set(this.Stack));
         this.Stack.clear();
         return new BoundDeclarationStatement(BoundKind.IsStatement, Left, Expression);
     }
@@ -126,7 +138,7 @@ export class Binder {
   private BindRangeReference(Node: RangeReference) {
     const BoundLeft = this.Bind(Node.Left) as HasReference;
     const BoundRight = this.Bind(Node.Right) as HasReference;
-    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Reference + ":" + BoundRight.Reference);
+    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Name + ":" + BoundRight.Name);
   }
 
   private BindCellReference(Node: CellReference) {

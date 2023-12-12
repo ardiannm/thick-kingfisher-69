@@ -32,6 +32,7 @@ export enum SyntaxKind {
   CellReference = "CellReference",
   RangeReference = "RangeReference",
   DeclarationStatement = "DeclarationStatement",
+  Program = "Program"
 }
 
 export enum OperatorKind {}

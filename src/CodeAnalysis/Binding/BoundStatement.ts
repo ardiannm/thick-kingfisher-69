@@ -1,3 +1,3 @@
-import { BoundNode } from "./BoundNode";
+import { BoundExpression } from "./BoundExpression";
 
-export class BoundStatement extends BoundNode {}
+export class BoundStatement extends BoundExpression {}
