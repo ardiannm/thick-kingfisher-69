@@ -166,6 +166,6 @@ export class Binder {
 
   private BindNumber(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(BoundKind.BoundNumber, Node.Text, Value);
+    return new BoundNumber(BoundKind.BoundNumber, Value);
   }
 }

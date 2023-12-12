@@ -49,6 +49,11 @@ export class Interpreter {
       try {
         const Tree = SyntaxTree.Bind(this.Input());
         console.log(SyntaxTree.Print(Tree));
+        //
+        console.log();
+        console.log(Tree.Map);
+        console.log();
+        //
         // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
         // const Value = JSON.stringify(Evaluation);
         // this.Print(this.Input(), Value);

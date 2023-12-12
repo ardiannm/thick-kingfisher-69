@@ -1,8 +1,8 @@
 import { BoundKind } from "./BoundKind";
-import { IsReferable } from "./IsReferable";
+import { BoundNode } from "./BoundNode";
 
-export class BoundNumber extends IsReferable {
-  constructor(public Kind: BoundKind, public Name: string, public Value: number) {
-    super(Kind, Name);
+export class BoundNumber extends BoundNode {
+  constructor(public Kind: BoundKind, public Value: number) {
+    super(Kind);
   }
 }
