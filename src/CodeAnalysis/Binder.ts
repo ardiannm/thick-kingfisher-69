@@ -23,7 +23,6 @@ import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
 import { Environment } from "../Environment";
 import { BoundExpression } from "./Binding/BoundExpression";
 import { SyntaxRoot } from "./Syntax/SyntaxRoot";
-import { BoundDeclarationKind } from "./Binding/BoundDeclarationKind";
 import { BoundNode } from "./Binding/BoundNode";
 
 export class Binder {
@@ -58,23 +57,23 @@ export class Binder {
   private BindDeclarationStatement(Node: DeclarationStatement) {
     const Kind = this.BindDeclarationKind(Node.Keyword.Kind);
     switch (Kind) {
-      case BoundDeclarationKind.DeclareIs:
-        return this.BindDeclarationIs(Node);
+      case BoundKind.IsStatement:
+        return this.BindIsStatement(Node);
     }
     throw this.Diagnostics.MissingDeclarationStatement(Kind);
   }
 
-  private BindDeclarationKind(Kind: SyntaxKind): BoundDeclarationKind {
+  private BindDeclarationKind(Kind: SyntaxKind): BoundKind {
     switch (Kind) {
       case SyntaxKind.IsKeyword:
-        return BoundDeclarationKind.DeclareIs;
+        return BoundKind.IsStatement;
       case SyntaxKind.CopyKeyword:
-        return BoundDeclarationKind.DeclareCopy;
+        return BoundKind.CopyStatement;
     }
     throw this.Diagnostics.MissingBindingMethod(Kind);
   }
 
-  private BindDeclarationIs(Node: DeclarationStatement) {
+  private BindIsStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;

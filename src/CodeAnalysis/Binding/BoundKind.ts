@@ -8,4 +8,6 @@ export enum BoundKind {
   BoundNumber = "BoundNumber",
   BoundUnaryExpression = "BoundUnaryExpression",
   BoundCopyCell = "BoundCopyCell",
+  IsStatement = "IsStatement",
+  CopyStatement = "CopyStatement"
 }
