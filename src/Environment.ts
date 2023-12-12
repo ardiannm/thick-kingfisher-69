@@ -23,7 +23,7 @@ export class Environment {
 
   GetValue(Node: BoundCellReference): number {
     if (this.NodeValues.has(Node.Name)) return this.NodeValues.get(Node.Name) as number;
-    throw this.Diagnostics.CantFindReference(Node.Name);
+    throw this.Diagnostics.CantFindName(Node.Name);
   }
 
   SetValue(Reference: string, Value: number): number {
@@ -43,13 +43,13 @@ export class Environment {
   }
 
   private DetectCircularDependency(Reference: string, Node: BoundCell): void {
-    if (Node.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Reference, Node.Name);
+    if (Node.Dependencies.has(Reference)) throw this.Diagnostics.CircularDependency(Node.Name);
     for (const Dependency of Node.Dependencies) this.DetectCircularDependency(Reference, this.GetNode(Dependency));
   }
 
   private GetNode(Reference: string): BoundCell {
     if (this.HasNode(Reference)) return this.Nodes.get(Reference) as BoundCell;
-    throw this.Diagnostics.CantFindReference(Reference);
+    throw this.Diagnostics.CantFindName(Reference);
   }
 
   private HasNode(Reference: string) {
@@ -74,7 +74,7 @@ export class Environment {
 
   Assert(Reference: string) {
     if (this.HasNode(Reference)) return;
-    throw this.Diagnostics.CantFindReference(Reference);
+    throw this.Diagnostics.CantFindName(Reference);
   }
 
   Clear() {

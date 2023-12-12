@@ -23,27 +23,11 @@ import { BoundDeclarationStatement } from "./Binding/BoundDeclarationStatement";
 import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
-
-export class BoundScope {
-  Map = new Map<string, Set<string>>();
-  Stack = new Set<string>();
-
-  public RegisterDependencies(Name: string, Dependencies: Set<string>) {
-    this.Map.set(Name, new Set(Dependencies));
-  }
-
-  public ReferTo(Name: string) {
-    this.Stack.add(Name);
-  }
-
-  public CearStack() {
-    this.Stack.clear();
-  }
-}
+import { BoundScope } from "./Binding/BoundScope";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
-  private Env: BoundScope = new BoundScope();
+  private Scope: BoundScope = new BoundScope();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -75,7 +59,7 @@ export class Binder {
     for (const Statement of Node.Root) {
       BoundStatements.push(this.Bind(Statement));
     }
-    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Env.Map);
+    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Scope.Dependencies);
   }
 
   private BindDeclarationStatement(Node: DeclarationStatement) {
@@ -101,10 +85,10 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
-        this.Env.CearStack();
+        this.Scope.CearNames();
         const Expression = this.Bind(Node.Expression);
-        this.Env.RegisterDependencies(Left.Name, this.Env.Stack);
-        this.Env.CearStack();
+        this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
+        this.Scope.CearNames();
         return new BoundDeclarationStatement(BoundKind.IsStatement, Left, Expression);
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
@@ -159,7 +143,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.Left.Text + Node.Right.Text;
-    this.Env.ReferTo(Name);
+    this.Scope.ReferToThis(Name);
     return new BoundCellReference(BoundKind.BoundCellReference, Name);
   }
 

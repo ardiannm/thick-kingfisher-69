@@ -50,8 +50,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.MissingOperatorKind, Message));
   }
 
-  public CircularDependency(ForRef: string, InRef: string) {
-    const Message = `Circular dependency detected for '${ForRef}' in '${InRef}'.`;
+  public CircularDependency(Name: string) {
+    const Message = `Circular dependency found in '${Name}'.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CircularDependency, Message));
   }
 
@@ -60,18 +60,18 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.MissingBindingMethod, Message));
   }
 
-  public CantUseAsAReference(Unexpected: SyntaxKind) {
+  public CantUseAsAReference(Unexpected: string) {
     const Message = `<${Unexpected}> can't be used as a reference.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantUseAsAReference, Message));
   }
 
-  public CantFindReference(Reference: string) {
-    const Message = `Can't find reference '${Reference}'.`;
+  public CantFindName(Name: string) {
+    const Message = `Can't find name '${Name}'.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantFindReference, Message));
   }
 
-  public UsedBeforeItsDeclaration(Reference: string) {
-    const Message = `Using '${Reference}' before its declaration.`;
+  public UsedBeforeItsDeclaration(Name: string) {
+    const Message = `Using '${Name}' before its declaration.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.UsedBeforeItsDeclaration, Message));
   }
 
