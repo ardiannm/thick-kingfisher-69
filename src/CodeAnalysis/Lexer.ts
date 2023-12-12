@@ -1,8 +1,8 @@
-import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
-import { SyntaxToken } from "./CodeAnalysis/Syntax/SyntaxToken";
-import { SyntaxFacts } from "./CodeAnalysis/Syntax/SyntaxFacts";
-import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
-import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
+import { SyntaxKind } from "./Syntax/SyntaxKind";
+import { SyntaxToken } from "./Syntax/SyntaxToken";
+import { SyntaxFacts } from "./Syntax/SyntaxFacts";
+import { SourceText } from "./SourceText/SourceText";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class Lexer {
   private Index = 0;
@@ -59,9 +59,8 @@ export class Lexer {
       while (this.IsLetter(this.Current)) {
         this.Next();
       }
-      const Text = this.Text;
-      const Kind = SyntaxFacts.KeywordTokenKind(Text);
-      return new SyntaxToken(Kind, Text);
+      const Kind = SyntaxFacts.KeywordTokenKind(this.Text);
+      return new SyntaxToken(Kind, this.Text);
     }
 
     if (this.IsDigit(this.Current)) {

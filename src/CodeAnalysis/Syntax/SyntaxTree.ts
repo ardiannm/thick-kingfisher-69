@@ -1,11 +1,11 @@
-import { Lexer } from "../../Lexer";
-import { Parser } from "../../Parser";
+import { Lexer } from "../Lexer";
+import { Parser } from "../Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
 import { Environment } from "../../Environment";
-import { Binder } from "../../Binder";
 import { SyntaxRoot } from "./SyntaxRoot";
+import { Binder } from "../Binder";
 
 export class SyntaxTree {
   private constructor(public Root: SyntaxRoot) {}

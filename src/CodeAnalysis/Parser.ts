@@ -1,18 +1,18 @@
-import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
-import { SyntaxToken } from "./CodeAnalysis/Syntax/SyntaxToken";
-import { SyntaxTree } from "./CodeAnalysis/Syntax/SyntaxTree";
-import { DeclarationStatement } from "./CodeAnalysis/Syntax/DeclarationStatement";
-import { BinaryExpression } from "./CodeAnalysis/Syntax/BinaryExpression";
-import { UnaryExpression } from "./CodeAnalysis/Syntax/UnaryExpression";
-import { ParenthesizedExpression } from "./CodeAnalysis/Syntax/ParenthesizedExpression";
-import { RangeReference } from "./CodeAnalysis/Syntax/RangeReference";
-import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
-import { SyntaxFacts } from "./CodeAnalysis/Syntax/SyntaxFacts";
-import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
-import { SourceText } from "./CodeAnalysis/SourceText/SourceText";
-import { Expression } from "./CodeAnalysis/Syntax/Expression";
-import { CopyCell } from "./CodeAnalysis/Syntax/CopyCell";
-import { SyntaxRoot } from "./CodeAnalysis/Syntax/SyntaxRoot";
+import { SyntaxKind } from "./Syntax/SyntaxKind";
+import { SyntaxToken } from "./Syntax/SyntaxToken";
+import { SyntaxTree } from "./Syntax/SyntaxTree";
+import { DeclarationStatement } from "./Syntax/DeclarationStatement";
+import { BinaryExpression } from "./Syntax/BinaryExpression";
+import { UnaryExpression } from "./Syntax/UnaryExpression";
+import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
+import { RangeReference } from "./Syntax/RangeReference";
+import { CellReference } from "./Syntax/CellReference";
+import { SyntaxFacts } from "./Syntax/SyntaxFacts";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
+import { SourceText } from "./SourceText/SourceText";
+import { Expression } from "./Syntax/Expression";
+import { CopyCell } from "./Syntax/CopyCell";
+import { SyntaxRoot } from "./Syntax/SyntaxRoot";
 
 export class Parser {
   private Index = 0;

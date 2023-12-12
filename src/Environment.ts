@@ -5,9 +5,9 @@ import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 export class Environment {
   private Nodes = new Map<string, BoundCell>();
   private NodeValues = new Map<string, number>();
+  private Diagnostics: DiagnosticBag = new DiagnosticBag();
 
   Stack = new Set<string>();
-  private Diagnostics: DiagnosticBag = new DiagnosticBag();
 
   ReferToCell(Node: BoundCellReference): void {
     this.Stack.add(Node.Reference);
