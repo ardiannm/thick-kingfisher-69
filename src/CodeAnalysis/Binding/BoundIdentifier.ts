@@ -1,7 +1,7 @@
 import { BoundKind } from "./BoundKind";
-import { HasReference } from "./HasReference";
+import { IsReferable } from "./IsReferable";
 
-export class BoundIdentifier extends HasReference {
+export class BoundIdentifier extends IsReferable {
   constructor(public Kind: BoundKind, public Name: string, public Value: string) {
     super(Kind, Name);
   }

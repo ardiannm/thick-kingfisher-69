@@ -45,6 +45,7 @@ export class SyntaxTree {
       for (const Item of Node) {
         Text += this.Print(Item, Indent) + " ";
       }
+      return Text;
     }
     if (Node instanceof BoundNode) {
       for (const [Root, Branch] of Object.entries(Node)) {
