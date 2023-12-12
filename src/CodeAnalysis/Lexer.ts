@@ -56,31 +56,30 @@ export class Lexer {
     this.Start = this.Index;
 
     if (this.IsLetter(this.Current)) {
-      while (this.IsLetter(this.Current)) {
-        this.Next();
-      }
-      const Kind = SyntaxFacts.KeywordTokenKind(this.Text);
-      return new SyntaxToken(Kind, this.Text);
+      return this.ParseIdentifier();
     }
-
     if (this.IsDigit(this.Current)) {
       return this.ParseNumberToken();
     }
-
     if (this.IsSpace(this.Current)) {
       return this.ParseSpaceToken();
     }
-
     if (this.MatchKind(SyntaxKind.HashToken)) {
       return this.ParseCommentToken();
     }
-
     if (this.MatchKind(SyntaxKind.BadToken)) {
       throw this.Diagnostics.BadTokenFound(this.Current);
     }
-
     const Kind = SyntaxFacts.Kind(this.Current);
     return new SyntaxToken(Kind, this.Next());
+  }
+
+  private ParseIdentifier() {
+    while (this.IsLetter(this.Current)) {
+      this.Next();
+    }
+    const Kind = SyntaxFacts.KeywordTokenKind(this.Text);
+    return new SyntaxToken(Kind, this.Text);
   }
 
   private ParseCommentToken() {
