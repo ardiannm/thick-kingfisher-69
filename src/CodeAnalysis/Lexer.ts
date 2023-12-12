@@ -29,7 +29,7 @@ export class Lexer {
     return this.Source.Text.charAt(this.Index + Offset);
   }
 
-  private get Current() {
+  private get Char() {
     return this.Peek(0);
   }
 
@@ -38,7 +38,7 @@ export class Lexer {
   }
 
   private Next() {
-    const Char = this.Current;
+    const Char = this.Char;
     this.Index++;
     return Char;
   }
@@ -55,31 +55,30 @@ export class Lexer {
   Lex(): SyntaxToken {
     this.Start = this.Index;
 
-    if (this.IsLetter(this.Current)) {
+    if (this.IsLetter(this.Char)) {
       return this.ParseIdentifier();
     }
-    if (this.IsDigit(this.Current)) {
+    if (this.IsDigit(this.Char)) {
       return this.ParseNumberToken();
     }
-    if (this.IsSpace(this.Current)) {
+    if (this.IsSpace(this.Char)) {
       return this.ParseSpaceToken();
     }
     if (this.MatchKind(SyntaxKind.HashToken)) {
       return this.ParseCommentToken();
     }
     if (this.MatchKind(SyntaxKind.BadToken)) {
-      throw this.Diagnostics.BadTokenFound(this.Current);
+      throw this.Diagnostics.BadTokenFound(this.Char);
     }
-    const Kind = SyntaxFacts.Kind(this.Current);
-    return new SyntaxToken(Kind, this.Next());
+
+    return new SyntaxToken(SyntaxFacts.Kind(this.Char), this.Next());
   }
 
   private ParseIdentifier() {
-    while (this.IsLetter(this.Current)) {
+    while (this.IsLetter(this.Char)) {
       this.Next();
     }
-    const Kind = SyntaxFacts.KeywordTokenKind(this.Text);
-    return new SyntaxToken(Kind, this.Text);
+    return new SyntaxToken(SyntaxFacts.KeywordTokenKind(this.Text), this.Text);
   }
 
   private ParseCommentToken() {
@@ -90,23 +89,23 @@ export class Lexer {
   }
 
   private ParseSpaceToken() {
-    while (this.IsSpace(this.Current)) {
+    while (this.IsSpace(this.Char)) {
       this.Next();
     }
     return new SyntaxToken(SyntaxKind.SpaceToken, this.Text);
   }
 
   private ParseNumberToken() {
-    while (this.IsDigit(this.Current)) {
+    while (this.IsDigit(this.Char)) {
       this.Next();
     }
     if (this.MatchKind(SyntaxKind.DotToken)) {
       this.Next();
-      if (!this.IsDigit(this.Current)) {
+      if (!this.IsDigit(this.Char)) {
         throw this.Diagnostics.WrongFloatingNumberFormat();
       }
     }
-    while (this.IsDigit(this.Current)) {
+    while (this.IsDigit(this.Char)) {
       this.Next();
     }
     return new SyntaxToken(SyntaxKind.NumberToken, this.Text);
