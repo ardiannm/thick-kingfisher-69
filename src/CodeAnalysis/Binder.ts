@@ -25,8 +25,7 @@ import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
 
 export class BoundScope {
-  private Map = new Map<string, Set<string>>();
-
+  Map = new Map<string, Set<string>>();
   Stack = new Set<string>();
 
   public RegisterDependencies(Name: string, Dependencies: Set<string>) {
@@ -36,13 +35,15 @@ export class BoundScope {
   public ReferTo(Name: string) {
     this.Stack.add(Name);
   }
+
+  public CearStack() {
+    this.Stack.clear();
+  }
 }
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
-  private Map = new Map<string, Set<string>>();
-
-  private Env = new BoundScope();
+  private Env: BoundScope = new BoundScope();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -74,7 +75,7 @@ export class Binder {
     for (const Statement of Node.Root) {
       BoundStatements.push(this.Bind(Statement));
     }
-    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Map);
+    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Env.Map);
   }
 
   private BindDeclarationStatement(Node: DeclarationStatement) {
@@ -100,8 +101,10 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
+        this.Env.CearStack();
         const Expression = this.Bind(Node.Expression);
         this.Env.RegisterDependencies(Left.Name, this.Env.Stack);
+        this.Env.CearStack();
         return new BoundDeclarationStatement(BoundKind.IsStatement, Left, Expression);
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
