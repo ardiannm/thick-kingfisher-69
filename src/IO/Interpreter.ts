@@ -14,21 +14,18 @@ export class Interpreter {
   private Width = 0;
 
   constructor() {
-    this.ConstructBuffer();
+    console.clear();
   }
 
   Run() {
     while (true) {
       const InputLine = Promp.question("> ");
+      this.Width = Math.max(this.Width, InputLine.length);
+
       console.clear();
 
       if (InputLine.toLowerCase() === "exit") {
         break;
-      }
-
-      if (InputLine.toLowerCase() === "reset") {
-        this.ConstructBuffer();
-        continue;
       }
 
       if (InputLine.toLowerCase() === "cls") {
@@ -49,37 +46,25 @@ export class Interpreter {
         const Value = JSON.stringify(Evaluation);
         this.Report(this.Input(), Value);
       } catch (error) {
+        this.Buffer.push("# " + this.Buffer.pop());
         this.Report(this.Input(), (error as Diagnostic).Message);
       }
     }
   }
 
-  private ConstructBuffer() {
-    console.clear();
-    this.Buffer = this.Report(this.LoadSource()).split("\n");
-    for (const Line of this.Buffer) {
-      this.Width = Math.max(this.Width, Line.length);
-    }
+  private Report(Str: string = "", Message?: string) {
+    console.log(Str);
+    if (Message) console.log("\n" + Message);
+    console.log();
+    return Str + "\n";
+  }
+
+  private Input() {
+    return this.Buffer.join("\n");
   }
 
   private LoadSource(): string {
     const FullPath = path.join(".", "src", "IO", ".lang");
     return fs.readFileSync(FullPath, "utf8");
-  }
-
-  private Report(Str: string = "", Message?: string) {
-    console.log();
-    console.log(Str);
-    if (Message) {
-      const Seperator = "-".repeat(Math.max(Message.length, this.Width));
-      console.log(Seperator);
-      console.log(Message);
-    }
-    console.log();
-    return Str;
-  }
-
-  private Input() {
-    return this.Buffer.join("\n");
   }
 }
