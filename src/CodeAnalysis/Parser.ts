@@ -47,7 +47,7 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     if (this.MatchToken(SyntaxKind.CopyKeyword)) {
       this.NextToken();
-      const Right = this.ParseCellReference();
+      const Right = this.ParseBinaryExpression();
       return new CopyCell(SyntaxKind.CopyCell, Left, Right);
     }
     if (this.MatchToken(SyntaxKind.IsKeyword)) {
