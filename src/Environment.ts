@@ -2,8 +2,6 @@ import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 
-// Environment class manages the state of the program's variables and handles change observations.
-
 export class Environment {
   private Nodes = new Map<string, BoundCell>();
   private NodeValue = new Map<string, number>();

@@ -29,7 +29,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Parser, Message));
   }
 
-  EmptySyntaxForEvaluator() {
+  EmptyProgram() {
     const Message = `Syntax program cannot be empty.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Evaluator, Message));
   }
