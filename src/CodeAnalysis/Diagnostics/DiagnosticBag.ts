@@ -80,8 +80,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Lexer, DiagnosticCode.WrongFloatingNumberFormat, Message));
   }
 
-  NodesThatCantCopy(Left: SyntaxKind, Right: SyntaxKind) {
+  CantCopyNode(Left: SyntaxKind, Right: SyntaxKind) {
     const Message = `Can't copy <${Left}> to <${Right}>`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.NodesThatCantCopy, Message));
+    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
   }
 }

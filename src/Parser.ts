@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
 import { SyntaxToken } from "./CodeAnalysis/Syntax/SyntaxToken";
 import { SyntaxTree } from "./CodeAnalysis/Syntax/SyntaxTree";
-import { Declaration } from "./CodeAnalysis/Syntax/Declaration";
+import { DeclarationStatement } from "./CodeAnalysis/Syntax/DeclarationStatement";
 import { BinaryExpression } from "./CodeAnalysis/Syntax/BinaryExpression";
 import { UnaryExpression } from "./CodeAnalysis/Syntax/UnaryExpression";
 import { ParenthesizedExpression } from "./CodeAnalysis/Syntax/ParenthesizedExpression";
@@ -53,7 +53,7 @@ export class Parser {
     if (this.MatchToken(SyntaxKind.IsKeyword)) {
       this.NextToken();
       const Right = this.ParseBinaryExpression();
-      return new Declaration(SyntaxKind.Declaration, Left, Right);
+      return new DeclarationStatement(SyntaxKind.Declaration, Left, Right);
     }
     return Left;
   }

@@ -1,7 +1,7 @@
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { SyntaxKind } from "./CodeAnalysis/Syntax/SyntaxKind";
 import { SyntaxNode } from "./CodeAnalysis/Syntax/SyntaxNode";
-import { Declaration } from "./CodeAnalysis/Syntax/Declaration";
+import { DeclarationStatement } from "./CodeAnalysis/Syntax/DeclarationStatement";
 import { BinaryExpression } from "./CodeAnalysis/Syntax/BinaryExpression";
 import { RangeReference } from "./CodeAnalysis/Syntax/RangeReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
@@ -50,7 +50,7 @@ export class Binder {
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.Declaration:
-        return this.BindDeclaration(Node as NodeType<Declaration>);
+        return this.BindDeclarationStatement(Node as NodeType<DeclarationStatement>);
       case SyntaxKind.CopyCell:
         return this.BindCopyCell(Node as NodeType<CopyCell>);
       default:
@@ -60,7 +60,7 @@ export class Binder {
 
   private BindCopyCell(Node: CopyCell) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Right.Kind !== SyntaxKind.CellReference) {
-      throw this.Diagnostics.NodesThatCantCopy(Node.Left.Kind, Node.Right.Kind);
+      throw this.Diagnostics.CantCopyNode(Node.Left.Kind, Node.Right.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Right) as BoundCellReference;
@@ -80,7 +80,7 @@ export class Binder {
     return this.Env.Declare(Bound);
   }
 
-  private BindDeclaration(Node: Declaration) {
+  private BindDeclarationStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;

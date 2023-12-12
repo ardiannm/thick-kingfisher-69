@@ -1,7 +1,7 @@
 export enum DiagnosticCode {
+  EmptyProgram,
   BadTokenFound,
   TokenNotAMatch,
-  EmptyProgram,
   MissingEvaluationMethod,
   CantDivideByZero,
   MissingOperatorKind,
@@ -11,5 +11,5 @@ export enum DiagnosticCode {
   CantFindReference,
   UsedBeforeItsDeclaration,
   WrongFloatingNumberFormat,
-  NodesThatCantCopy
+  CantCopyNode,
 }
