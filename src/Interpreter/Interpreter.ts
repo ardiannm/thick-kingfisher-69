@@ -125,12 +125,12 @@ export class Interpreter {
       return Text;
     }
     if (Node instanceof BoundNode || Node instanceof SyntaxNode) {
-      for (const [Root, Branch] of Object.entries(Node)) {
+      for (const [Property, Branch] of Object.entries(Node)) {
         const NextIndent = Indent + " ".repeat(1);
-        if (Root === "Kind") {
+        if (Property === "Kind") {
           Text += "\n" + Indent + NextIndent + this.Color(Node.Kind, Color.Azure);
         } else {
-          Text += "\n" + Indent + NextIndent + " ".repeat(1) + this.Color(Root, Color.Moss) + " " + this.Print(Branch, NextIndent);
+          Text += "\n" + Indent + NextIndent + " ".repeat(1) + this.Color(" - " + Property, Color.Moss) + " " + this.Print(Branch, NextIndent);
         }
       }
       return Text;
