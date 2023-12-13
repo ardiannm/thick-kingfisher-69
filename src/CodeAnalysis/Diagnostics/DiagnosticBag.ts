@@ -32,8 +32,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
   }
 
-  public EmptyProgram() {
-    const Message = `Program is empty.`;
+  public SourceCodeIsEmpty() {
+    const Message = `Source code is empty.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.EmptyProgram, Message));
   }
 

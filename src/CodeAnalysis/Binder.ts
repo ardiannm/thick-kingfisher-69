@@ -59,7 +59,7 @@ export class Binder {
 
   private BindProgram(Node: Program) {
     if (Node.Root.length === 0) {
-      throw this.Diagnostics.EmptyProgram();
+      throw this.Diagnostics.SourceCodeIsEmpty();
     }
     const BoundStatements = new Array<BoundStatement>();
     for (const Statement of Node.Root) {

@@ -33,14 +33,17 @@ export class Parser {
     }
   }
 
-  Parse() {
-    const Statements = new Array<StatementSyntax>();
-    while (this.Any()) {
-      const Statement = this.ParseStatement();
-      Statements.push(Statement);
+  public Parse() {
+    if (this.Any()) {
+      const Statements = new Array<StatementSyntax>();
+      while (this.Any()) {
+        const Statement = this.ParseStatement();
+        Statements.push(Statement);
+      }
+      this.ExpectToken(SyntaxKind.EndOfFileToken);
+      return new Program(SyntaxKind.Program, Statements);
     }
-    this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Statements);
+    throw this.Diagnostics.SourceCodeIsEmpty();
   }
 
   private ParseStatement() {

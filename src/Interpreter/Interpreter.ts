@@ -50,14 +50,14 @@ export class Interpreter {
       }
 
       try {
-        this.Evaluate(InputLine);
+        this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
     }
   }
 
-  private Evaluate(Current: string) {
+  private Evaluate() {
     const Tree = SyntaxTree.Bind(this.Input);
     // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
     // const Value = JSON.stringify(Evaluation);
@@ -88,7 +88,7 @@ export class Interpreter {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
-      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
+      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Terracotta));
     } else {
       console.log(error);
     }
