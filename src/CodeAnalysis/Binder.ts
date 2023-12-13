@@ -139,7 +139,7 @@ export class Binder {
   }
 
   private BindIdentifier(Node: SyntaxToken) {
-    return new BoundIdentifier(BoundKind.BoundIdentifier, Node.Text, Node.Text);
+    return new BoundIdentifier(BoundKind.BoundIdentifier, Node.Text);
   }
 
   private BindNumber(Node: SyntaxToken) {
