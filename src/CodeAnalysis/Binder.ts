@@ -1,7 +1,7 @@
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxNode } from "./Syntax/SyntaxNode";
-import { IsStatement } from "./Syntax/IsStatement";
+import { DeclarationStatement } from "./Syntax/DeclarationStatement";
 import { BinaryExpression } from "./Syntax/BinaryExpression";
 import { RangeReference } from "./Syntax/RangeReference";
 import { CellReference } from "./Syntax/CellReference";
@@ -19,11 +19,11 @@ import { BoundUnaryExpression } from "./Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
 import { BoundNode } from "./Binding/BoundNode";
-import { BoundIsStatement } from "./Binding/BoundIsStatement";
 import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
 import { BoundScope } from "./Binding/BoundScope";
+import { BoundCell } from "./Binding/BoundCell";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
@@ -49,7 +49,7 @@ export class Binder {
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.IsStatement:
-        return this.BindIsStatement(Node as NodeType<IsStatement>);
+        return this.BindIsStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingBindingMethod(Node.Kind);
   }
@@ -62,15 +62,16 @@ export class Binder {
     return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Scope.Dependencies);
   }
 
-  private BindIsStatement(Node: IsStatement) {
+  private BindIsStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope.CearNames();
         const Expression = this.Bind(Node.Expression);
         this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
+        const Bound = new BoundCell(BoundKind.BoundCell, Left.Name, 0, Expression, new Set<string>(this.Scope.Names), new Set<string>());
         this.Scope.CearNames();
-        return new BoundIsStatement(BoundKind.IsStatement, Left, Expression);
+        return Bound;
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
   }

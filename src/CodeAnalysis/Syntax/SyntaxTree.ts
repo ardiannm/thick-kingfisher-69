@@ -49,11 +49,11 @@ export class SyntaxTree {
     }
     if (Node instanceof BoundNode) {
       for (const [Root, Branch] of Object.entries(Node)) {
-        const NewIndent = Indent + " ".repeat(3);
+        const NewIndent = Indent + " ".repeat(2);
         if (Root === "Kind") {
           Text += "\n" + Indent + NewIndent + Node.Kind;
         } else {
-          Text += "\n" + Indent + NewIndent + " ".repeat(3) + Root + " " + this.Print(Branch, NewIndent);
+          Text += "\n" + Indent + NewIndent + " ".repeat(2) + Root + " " + this.Print(Branch, NewIndent);
         }
       }
     }

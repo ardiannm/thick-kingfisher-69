@@ -12,8 +12,7 @@ import { SourceText } from "./SourceText/SourceText";
 import { ExpressionSyntax } from "./Syntax/ExpressionSyntax";
 import { Program } from "./Syntax/Program";
 import { StatementSyntax } from "./Syntax/StatementSyntax";
-import { IsStatement } from "./Syntax/IsStatement";
-import { CopyStatement } from "./Syntax/CopyStatement";
+import { DeclarationStatement } from "./Syntax/DeclarationStatement";
 
 export class Parser {
   private Index = 0;
@@ -47,9 +46,8 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     switch (this.CurrentToken.Kind) {
       case SyntaxKind.IsKeyword:
-        return new IsStatement(SyntaxKind.IsStatement, Left, this.NextToken(), this.ParseBinaryExpression());
-      case SyntaxKind.CopyKeyword:
-        return new CopyStatement(SyntaxKind.CopyStatement, Left, this.NextToken(), this.ParseBinaryExpression());
+      case SyntaxKind.CopyStatement:
+        return new DeclarationStatement(SyntaxKind.IsStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }

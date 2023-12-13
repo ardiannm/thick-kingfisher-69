@@ -6,7 +6,9 @@ export class BoundScope {
   Diagnostics: DiagnosticBag = new DiagnosticBag();
 
   public RegisterDependencies(Name: string, Dependencies: Set<string>) {
-    if (Dependencies.has(Name)) throw this.Diagnostics.UsedBeforeItsDeclaration(Name);
+    if (Dependencies.has(Name)) {
+      throw this.Diagnostics.UsedBeforeItsDeclaration(Name);
+    }
     this.Check(Name, Dependencies);
     this.Dependencies.set(Name, new Set(Dependencies));
   }

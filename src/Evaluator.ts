@@ -10,7 +10,6 @@ import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
 import { Environment } from "./Environment";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
-import { BoundIsStatement } from "./CodeAnalysis/Binding/BoundIsStatement";
 
 export class Evaluator {
   private Diagnostics = new DiagnosticBag();
@@ -31,18 +30,9 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.IsStatement:
-        return this.EvaluateIsStatement(Node as NodeType<BoundIsStatement>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
-  }
-
-  private EvaluateIsStatement(Node: BoundIsStatement): number {
-    const Definition = Node.Definition as BoundCellReference;
-    const Value = this.Evaluate(Node.Assignee);
-    this.Env.Assign(Definition.Name, Value, Node.Assignee);
-    return this.Env.GetValue(Definition.Name);
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
