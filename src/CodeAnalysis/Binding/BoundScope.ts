@@ -31,4 +31,9 @@ export class BoundScope {
       this.Check(Name, Deps);
     }
   }
+
+  public Assert(Name: string) {
+    if (this.Dependencies.has(Name)) return;
+    throw this.Diagnostics.CantFindName(Name);
+  }
 }

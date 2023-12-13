@@ -61,7 +61,12 @@ export class Binder {
     }
     const BoundStatements = new Array<BoundStatement>();
     for (const Statement of Node.Root) {
-      BoundStatements.push(this.Bind(Statement));
+      const Bound = this.Bind(Statement);
+      switch (Bound.Kind) {
+        case BoundKind.BoundCellReference:
+          this.Scope.Assert((Bound as BoundCellReference).Name);
+      }
+      BoundStatements.push(Bound);
     }
     return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Scope.Dependencies);
   }
