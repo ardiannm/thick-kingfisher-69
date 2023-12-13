@@ -1,3 +1,5 @@
+import Promp from "readline-sync";
+
 import * as fs from "fs";
 import * as path from "path";
 
@@ -6,13 +8,20 @@ import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
 import { Environment } from "../Environment";
 import { Evaluator } from "../Evaluator";
 import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
-
-import Promp from "readline-sync";
+import { BoundNode } from "../CodeAnalysis/Binding/BoundNode";
+import { SyntaxNode } from "../CodeAnalysis/Syntax/SyntaxNode";
+import { Color } from "./Color";
+import { RgbColor } from "./RgbColor";
 
 export class Interpreter {
   private Env = new Environment();
   private Buffer = new Array<string>();
   private Width = 0;
+
+  private LoadSource(): string {
+    const FullPath = path.join(".", "src", "IO", ".lang");
+    return fs.readFileSync(FullPath, "utf8");
+  }
 
   Run() {
     console.clear();
@@ -20,46 +29,68 @@ export class Interpreter {
     while (true) {
       const InputLine = Promp.question("> ");
       this.Width = Math.max(this.Width, InputLine.length);
-
       console.clear();
 
-      if (InputLine.toLowerCase() === "cls") {
-        console.clear();
-        this.Buffer.pop();
-        const Message = this.Buffer.length > 0 ? "Interpreter: Line " + (this.Buffer.length + 1) + " removed." : "";
-        this.Print(this.Input(), Message);
-        continue;
+      switch (InputLine.toLowerCase()) {
+        case "cls":
+          this.ClearScreen();
+          continue;
+        case "tree":
+          this.ShowTree();
+          continue;
+        case "reset":
+          this.ResetBuffer();
+          continue;
       }
 
-      if (InputLine.toLowerCase() === "reset") {
-        this.Buffer.length = 0;
-        console.clear();
-        continue;
-      }
-
-      if (InputLine.toLowerCase() === "exit") {
-        break;
-      }
+      if (InputLine.toLowerCase() === "exit") break;
 
       if (InputLine.trim()) {
         this.Buffer.push(InputLine);
       }
 
       try {
-        const Tree = SyntaxTree.Bind(this.Input());
-        this.Print(SyntaxTree.Print(Tree));
-        // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
-        // const Value = JSON.stringify(Evaluation);
-        // this.Print(this.Input(), Value);
+        this.Evaluate();
       } catch (error) {
-        if (error instanceof Diagnostic) {
-          const Diagnostic = error as Diagnostic;
-          if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
-          this.Print(this.Input(), Diagnostic.Message);
-        } else {
-          console.log(error);
-        }
+        this.ErrorHandler(error as Error);
       }
+    }
+  }
+
+  private Evaluate() {
+    const Tree = SyntaxTree.Bind(this.Input);
+    const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
+    const Value = JSON.stringify(Evaluation);
+    this.Print(this.Input, Value);
+  }
+
+  private ResetBuffer() {
+    this.Buffer.length = 0;
+    console.clear();
+  }
+
+  private ShowTree() {
+    try {
+      this.Print(Interpreter.Print(SyntaxTree.Bind(this.Input)));
+    } catch (error) {
+      this.ErrorHandler(error as Error);
+    }
+  }
+
+  private ClearScreen() {
+    console.clear();
+    this.Buffer.pop();
+    const Message = this.Buffer.length > 0 ? "Interpreter: Line " + (this.Buffer.length + 1) + " removed." : "";
+    this.Print(this.Input, Message);
+  }
+
+  private ErrorHandler(error: Error) {
+    if (error instanceof Diagnostic) {
+      const Diagnostic = error as Diagnostic;
+      if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
+      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Azure));
+    } else {
+      console.log(error);
     }
   }
 
@@ -70,12 +101,57 @@ export class Interpreter {
     return Str + "\n";
   }
 
-  private Input() {
+  private get Input() {
     return this.Buffer.join("\n");
   }
 
-  private LoadSource(): string {
-    const FullPath = path.join(".", "src", "IO", ".lang");
-    return fs.readFileSync(FullPath, "utf8");
+  public static Print<T>(Node: T, Indent = ""): string {
+    var Text = "";
+    if (typeof Node === "string") {
+      Text += this.Color(`${Node}`, Color.Terracotta);
+      return Text;
+    }
+    if (typeof Node === "number") {
+      Text += this.Color(`${Node}`, Color.Sage);
+      return Text;
+    }
+    if (Node instanceof Set) {
+      return this.Print(Array.from(Node));
+    }
+    if (Node instanceof Array) {
+      for (const Item of Node) {
+        Text += this.Print(Item, Indent) + " ";
+      }
+      return Text;
+    }
+    if (Node instanceof BoundNode || Node instanceof SyntaxNode) {
+      for (const [Root, Branch] of Object.entries(Node)) {
+        const NewIndent = Indent + " ".repeat(1);
+        if (Root === "Kind") {
+          Text += "\n" + Indent + NewIndent + this.Color(Node.Kind, Color.Azure);
+        } else {
+          Text += "\n" + Indent + NewIndent + " ".repeat(1) + this.Color(Root.toLowerCase(), Color.Moss) + " " + this.Print(Branch, NewIndent);
+        }
+      }
+      return Text;
+    }
+    return Text;
+  }
+
+  static Color(Text: string, Hex: string): string {
+    return this.HexToColorCode(Hex) + Text + "\x1b[0m";
+  }
+
+  private static HexToRgb(Hex: string): RgbColor {
+    const BingInt = parseInt(Hex.substring(1), 16);
+    const r = (BingInt >> 16) & 255;
+    const g = (BingInt >> 8) & 255;
+    const b = BingInt & 255;
+    return new RgbColor(r, g, b);
+  }
+
+  public static HexToColorCode(Hex: string) {
+    const RgbColor = this.HexToRgb(Hex);
+    return `\x1b[38;2;${RgbColor.r};${RgbColor.g};${RgbColor.b}m`;
   }
 }
