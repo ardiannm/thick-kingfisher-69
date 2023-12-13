@@ -9,16 +9,20 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperato
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
 import { Environment } from "./Environment";
-import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
+import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
+import { BoundIsStatement } from "./CodeAnalysis/Binding/BoundIsStatement";
 
 export class Evaluator {
   private Diagnostics = new DiagnosticBag();
+  private Value: number = 0;
 
   constructor(private Env: Environment) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
+      case BoundKind.BoundProgram:
+        return this.EvaluateProgram(Node as NodeType<BoundProgram>);
       case BoundKind.BoundNumber:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
       case BoundKind.BoundCellReference:
@@ -27,17 +31,25 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.BoundCell:
-        return this.EvaluateCell(Node as NodeType<BoundCell>);
+      case BoundKind.IsStatement:
+        return this.EvaluateIsStatement(Node as NodeType<BoundIsStatement>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
   }
 
-  private EvaluateCell(Node: BoundCell): number {
-    const Value = this.Evaluate(Node.Expression);
-    for (const ForChange of this.Env.Assign(Node, Value)) this.Env.SetValue(ForChange.Name, this.Evaluate(ForChange.Expression));
-    return Value;
+  private EvaluateIsStatement(Node: BoundIsStatement): number {
+    const Definition = Node.Definition as BoundCellReference;
+    const Value = this.Evaluate(Node.Assignee);
+    this.Env.Assign(Definition.Name, Node.Assignee, Value);
+    return this.Env.GetValue(Definition.Name);
+  }
+
+  private EvaluateProgram(Node: BoundProgram): number {
+    for (const Statement of Node.Root) {
+      this.Value = this.Evaluate(Statement);
+    }
+    return this.Value;
   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression) {
@@ -73,7 +85,7 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Env.GetValue(Node);
+    return this.Env.GetValue(Node.Name);
   }
 
   private EvaluateNumber(Node: BoundNumber) {

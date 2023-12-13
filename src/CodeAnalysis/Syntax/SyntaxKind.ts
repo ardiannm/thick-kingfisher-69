@@ -31,8 +31,9 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   CellReference = "CellReference",
   RangeReference = "RangeReference",
-  DeclarationStatement = "DeclarationStatement",
-  Program = "Program"
+  IsStatement = "IsStatement",
+  CopyStatement = "CopyStatement",
+  Program = "Program",
 }
 
 export enum OperatorKind {}

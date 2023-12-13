@@ -85,8 +85,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
   }
 
-  public MissingDeclarationStatement(Kind: BoundKind) {
-    const Message = `Method for binding <${Kind}> is missing.`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.Binder, DiagnosticCode.CantCopyNode, Message));
+  public HasNeverBeenAssigned(Name: string) {
+    const Message = `Value for '${Name}' is has never been assigned.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Environment, DiagnosticCode.HasNeverBeenAssigned, Message));
   }
 }

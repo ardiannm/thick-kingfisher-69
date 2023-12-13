@@ -1,58 +1,39 @@
+import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
+import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
-import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
-import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
+
+export class Cell {
+  constructor(public Kind: BoundKind, public Name: string, public Dependencies: Set<string>, public Dependents: Set<string>, public Expression: BoundExpression) {}
+
+  Notify(Bound: Cell): void {
+    this.Dependents.add(Bound.Name);
+  }
+
+  DoNoNotify(Bound: Cell): void {
+    this.Dependents.delete(Bound.Name);
+  }
+}
 
 export class Environment {
-  private Nodes = new Map<string, BoundCell>();
-  private NodeValues = new Map<string, number>();
+  private Expressions = new Map<string, Cell>();
+  private Values = new Map<string, number>();
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
 
-  Stack = new Set<string>();
-
-  GetValue(Node: BoundCellReference): number {
-    if (this.NodeValues.has(Node.Name)) return this.NodeValues.get(Node.Name) as number;
-    throw this.Diagnostics.CantFindName(Node.Name);
+  GetValue(Name: string): number {
+    if (this.Values.has(Name)) return this.Values.get(Name) as number;
+    throw this.Diagnostics.HasNeverBeenAssigned(Name);
   }
 
-  SetValue(Reference: string, Value: number): number {
-    this.NodeValues.set(Reference, Value);
-    return Value;
-  }
+  Assign(Name: string, Expression: BoundExpression, Value: number) {}
 
-  Assign(Node: BoundCell, Value: number): Generator<BoundCell> {
-    const State = this.GetNode(Node.Name);
-    Node.Dependents = State.Dependents;
-    for (const Reference of State.Dependencies) {
-      const Dependency = this.GetNode(Reference);
-      Node.Dependencies.has(Reference) ? Dependency.Notify(Node) : Dependency.DoNoNotify(Node);
-    }
-    this.SetValue(Node.Name, Value);
-    return this.DetectForChange(Node, new Set<string>());
-  }
-
-  private GetNode(Reference: string): BoundCell {
-    if (this.HasNode(Reference)) return this.Nodes.get(Reference) as BoundCell;
-    throw this.Diagnostics.CantFindName(Reference);
-  }
-
-  private HasNode(Reference: string) {
-    return this.Nodes.has(Reference);
-  }
-
-  private *DetectForChange(Node: BoundCell, ForChange: Set<string>): Generator<BoundCell> {
-    for (const Reference of Node.Dependents) {
-      if (ForChange.has(Reference)) continue;
-      ForChange.add(Reference);
-      const NextNode = this.GetNode(Reference);
+  private *DetectForChange(Node: Cell, ForChange: Set<string>): Generator<Cell> {
+    for (const Name of Node.Dependents) {
+      if (ForChange.has(Name)) continue;
+      ForChange.add(Name);
+      const NextNode = this.Expressions.get(Name) as Cell;
       yield NextNode;
       yield* this.DetectForChange(NextNode, ForChange);
     }
     ForChange.clear();
-  }
-
-  Clear() {
-    this.Nodes.clear();
-    this.NodeValues.clear();
-    this.Stack.clear();
   }
 }

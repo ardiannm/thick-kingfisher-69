@@ -1,7 +1,7 @@
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxNode } from "./Syntax/SyntaxNode";
-import { DeclarationStatement } from "./Syntax/DeclarationStatement";
+import { IsStatement } from "./Syntax/IsStatement";
 import { BinaryExpression } from "./Syntax/BinaryExpression";
 import { RangeReference } from "./Syntax/RangeReference";
 import { CellReference } from "./Syntax/CellReference";
@@ -19,7 +19,7 @@ import { BoundUnaryExpression } from "./Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./Binding/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
 import { BoundNode } from "./Binding/BoundNode";
-import { BoundDeclarationStatement } from "./Binding/BoundDeclarationStatement";
+import { BoundIsStatement } from "./Binding/BoundIsStatement";
 import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
@@ -48,8 +48,8 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.DeclarationStatement:
-        return this.BindDeclarationStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.IsStatement:
+        return this.BindIsStatement(Node as NodeType<IsStatement>);
     }
     throw this.Diagnostics.MissingBindingMethod(Node.Kind);
   }
@@ -62,26 +62,7 @@ export class Binder {
     return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Scope.Dependencies);
   }
 
-  private BindDeclarationStatement(Node: DeclarationStatement) {
-    const Kind = this.BindDeclarationKind(Node.Keyword.Kind);
-    switch (Kind) {
-      case BoundKind.IsStatement:
-        return this.BindIsStatement(Node);
-    }
-    throw this.Diagnostics.MissingDeclarationStatement(Kind);
-  }
-
-  private BindDeclarationKind(Kind: SyntaxKind): BoundKind {
-    switch (Kind) {
-      case SyntaxKind.IsKeyword:
-        return BoundKind.IsStatement;
-      case SyntaxKind.CopyKeyword:
-        return BoundKind.CopyStatement;
-    }
-    throw this.Diagnostics.MissingBindingMethod(Kind);
-  }
-
-  private BindIsStatement(Node: DeclarationStatement) {
+  private BindIsStatement(Node: IsStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
@@ -89,7 +70,7 @@ export class Binder {
         const Expression = this.Bind(Node.Expression);
         this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
         this.Scope.CearNames();
-        return new BoundDeclarationStatement(BoundKind.IsStatement, Left, Expression);
+        return new BoundIsStatement(BoundKind.IsStatement, Left, Expression);
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
   }

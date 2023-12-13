@@ -32,7 +32,6 @@ export class Interpreter {
       }
 
       if (InputLine.toLowerCase() === "reset") {
-        this.Env.Clear();
         this.Buffer.length = 0;
         console.clear();
         continue;
@@ -48,9 +47,9 @@ export class Interpreter {
 
       try {
         const Tree = SyntaxTree.Bind(this.Input());
-        // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
-        // const Value = JSON.stringify(Evaluation);
-        this.Print(this.Input());
+        const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
+        const Value = JSON.stringify(Evaluation);
+        this.Print(this.Input(), Value);
       } catch (error) {
         if (error instanceof Diagnostic) {
           const Diagnostic = error as Diagnostic;

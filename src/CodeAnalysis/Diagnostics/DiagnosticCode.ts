@@ -12,4 +12,5 @@ export enum DiagnosticCode {
   UsedBeforeItsDeclaration,
   WrongFloatingNumberFormat,
   CantCopyNode,
+  HasNeverBeenAssigned,
 }

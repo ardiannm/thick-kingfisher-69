@@ -1,7 +1,6 @@
 import { SyntaxKind } from "./Syntax/SyntaxKind";
 import { SyntaxToken } from "./Syntax/SyntaxToken";
 import { SyntaxTree } from "./Syntax/SyntaxTree";
-import { DeclarationStatement } from "./Syntax/DeclarationStatement";
 import { BinaryExpression } from "./Syntax/BinaryExpression";
 import { UnaryExpression } from "./Syntax/UnaryExpression";
 import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
@@ -11,8 +10,10 @@ import { Facts } from "./Syntax/Facts";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { SourceText } from "./SourceText/SourceText";
 import { ExpressionSyntax } from "./Syntax/ExpressionSyntax";
-import { StatementSyntax } from "./Syntax/StatementSyntax";
 import { Program } from "./Syntax/Program";
+import { StatementSyntax } from "./Syntax/StatementSyntax";
+import { IsStatement } from "./Syntax/IsStatement";
+import { CopyStatement } from "./Syntax/CopyStatement";
 
 export class Parser {
   private Index = 0;
@@ -46,10 +47,9 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     switch (this.CurrentToken.Kind) {
       case SyntaxKind.IsKeyword:
+        return new IsStatement(SyntaxKind.IsStatement, Left, this.NextToken(), this.ParseBinaryExpression());
       case SyntaxKind.CopyKeyword:
-        const Keyword = this.NextToken();
-        const Right = this.ParseBinaryExpression();
-        return new DeclarationStatement(SyntaxKind.DeclarationStatement, Left, Keyword, Right);
+        return new CopyStatement(SyntaxKind.CopyStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }
