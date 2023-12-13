@@ -32,8 +32,7 @@ export class BoundScope {
     }
   }
 
-  public Assert(Name: string) {
-    if (this.Dependencies.has(Name)) return;
-    throw this.Diagnostics.CantFindName(Name);
+  public CheckNames() {
+    for (const Name of this.Names) if (!this.Dependencies.has(Name)) throw this.Diagnostics.CantFindName(Name);
   }
 }

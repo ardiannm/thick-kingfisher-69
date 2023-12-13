@@ -50,14 +50,14 @@ export class Interpreter {
       }
 
       try {
-        this.Evaluate();
+        this.Evaluate(InputLine);
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
     }
   }
 
-  private Evaluate() {
+  private Evaluate(Current: string) {
     const Tree = SyntaxTree.Bind(this.Input);
     // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
     // const Value = JSON.stringify(Evaluation);
