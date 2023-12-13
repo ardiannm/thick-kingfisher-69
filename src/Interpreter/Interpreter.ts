@@ -1,12 +1,12 @@
 import Promp from "readline-sync";
 
-import * as fs from "fs";
-import * as path from "path";
+// import * as fs from "fs";
+// import * as path from "path";
 
 import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
 import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
-import { Environment } from "../Environment";
-import { Evaluator } from "../Evaluator";
+// import { Environment } from "../Environment";
+// import { Evaluator } from "../Evaluator";
 import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
 import { BoundNode } from "../CodeAnalysis/Binding/BoundNode";
 import { SyntaxNode } from "../CodeAnalysis/Syntax/SyntaxNode";
@@ -14,14 +14,14 @@ import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
 
 export class Interpreter {
-  private Env = new Environment();
+  // private Env = new Environment();
   private Buffer = new Array<string>();
   private Width = 0;
 
-  private LoadSource(): string {
-    const FullPath = path.join(".", "src", "IO", ".lang");
-    return fs.readFileSync(FullPath, "utf8");
-  }
+  // private LoadSource(): string {
+  //   const FullPath = path.join(".", "src", "IO", ".lang");
+  //   return fs.readFileSync(FullPath, "utf8");
+  // }
 
   Run() {
     console.clear();
