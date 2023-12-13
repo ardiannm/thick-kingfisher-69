@@ -41,7 +41,7 @@ export class Evaluator {
   private EvaluateIsStatement(Node: BoundIsStatement): number {
     const Definition = Node.Definition as BoundCellReference;
     const Value = this.Evaluate(Node.Assignee);
-    this.Env.Assign(Definition.Name, Node.Assignee, Value);
+    this.Env.Assign(Definition.Name, Value, Node.Assignee);
     return this.Env.GetValue(Definition.Name);
   }
 

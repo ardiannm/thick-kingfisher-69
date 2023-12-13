@@ -1,36 +1,40 @@
+import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 
-export class Cell {
-  constructor(public Kind: BoundKind, public Name: string, public Dependencies: Set<string>, public Dependents: Set<string>, public Expression: BoundExpression) {}
-
-  Notify(Bound: Cell): void {
-    this.Dependents.add(Bound.Name);
-  }
-
-  DoNoNotify(Bound: Cell): void {
-    this.Dependents.delete(Bound.Name);
-  }
-}
-
 export class Environment {
-  private Expressions = new Map<string, Cell>();
-  private Values = new Map<string, number>();
+  private Documents = new Map<string, BoundCell>();
   private Diagnostics: DiagnosticBag = new DiagnosticBag();
 
-  GetValue(Name: string): number {
-    if (this.Values.has(Name)) return this.Values.get(Name) as number;
-    throw this.Diagnostics.HasNeverBeenAssigned(Name);
+  private Has(Name: string): boolean {
+    return this.Documents.has(Name);
   }
 
-  Assign(Name: string, Expression: BoundExpression, Value: number) {}
+  private Get(Name: string): BoundCell {
+    if (this.Has(Name)) {
+      return this.Documents.get(Name) as BoundCell;
+    }
+    throw this.Diagnostics.DocumentDoesNotExist(Name);
+  }
 
-  private *DetectForChange(Node: Cell, ForChange: Set<string>): Generator<Cell> {
+  Assign(Name: string, Value: number, Expression: BoundExpression) {
+    this.Documents.set(Name, new BoundCell(BoundKind.BoundCell, Name, Value, Expression, new Set<string>(), new Set<string>()));
+  }
+
+  GetValue(Name: string): number {
+    try {
+      return this.Get(Name).Value;
+    } catch (error) {
+      throw this.Diagnostics.HasNeverBeenAssigned(Name);
+    }
+  }
+
+  private *DetectForChange(Node: BoundCell, ForChange: Set<string>): Generator<BoundCell> {
     for (const Name of Node.Dependents) {
       if (ForChange.has(Name)) continue;
       ForChange.add(Name);
-      const NextNode = this.Expressions.get(Name) as Cell;
+      const NextNode = this.Get(Name);
       yield NextNode;
       yield* this.DetectForChange(NextNode, ForChange);
     }

@@ -86,7 +86,12 @@ export class DiagnosticBag {
   }
 
   public HasNeverBeenAssigned(Name: string) {
-    const Message = `Value for '${Name}' is has never been assigned.`;
+    const Message = `Value for '${Name}' has never been assigned.`;
     return this.ReportError(new Diagnostic(DiagnosticKind.Environment, DiagnosticCode.HasNeverBeenAssigned, Message));
+  }
+
+  public DocumentDoesNotExist(Name: string) {
+    const Message = `Document for '${Name}' doesn't exist.`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.Environment, DiagnosticCode.DocumentDoesNotExist, Message));
   }
 }
