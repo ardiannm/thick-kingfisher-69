@@ -3,10 +3,11 @@ import { SyntaxToken } from "./Syntax/SyntaxToken";
 import { Facts } from "./Syntax/Facts";
 import { SourceText } from "./SourceText/SourceText";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
+import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 
 export class Lexer {
   private Index = 0;
-  private Diagnostics = new DiagnosticBag();
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.Lexer);
   private Start = this.Index;
 
   constructor(public readonly Source: SourceText) {}

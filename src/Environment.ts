@@ -1,25 +1,36 @@
-import { BoundCell } from "./CodeAnalysis/Binding/BoundCell";
 import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
-import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
+import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
+
+export class Cell {
+  constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
+
+  public Notify(Bound: Cell): void {
+    this.Dependents.add(Bound.Name);
+  }
+
+  public DoNoNotify(Bound: Cell): void {
+    this.Dependents.delete(Bound.Name);
+  }
+}
 
 export class Environment {
-  private Documents = new Map<string, BoundCell>();
-  private Diagnostics: DiagnosticBag = new DiagnosticBag();
+  private Documents = new Map<string, Cell>();
+  private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Environment);
 
   private Has(Name: string): boolean {
     return this.Documents.has(Name);
   }
 
-  private Get(Name: string): BoundCell {
+  private Get(Name: string): Cell {
     if (this.Has(Name)) {
-      return this.Documents.get(Name) as BoundCell;
+      return this.Documents.get(Name) as Cell;
     }
     throw this.Diagnostics.DocumentDoesNotExist(Name);
   }
 
   Assign(Name: string, Value: number, Expression: BoundExpression) {
-    this.Documents.set(Name, new BoundCell(BoundKind.BoundCell, Name, Value, Expression, new Set<string>(), new Set<string>()));
+    this.Documents.set(Name, new Cell(Name, Value, Expression, new Set<string>(), new Set<string>()));
   }
 
   GetValue(Name: string): number {
@@ -30,7 +41,7 @@ export class Environment {
     }
   }
 
-  private *DetectForChange(Node: BoundCell, ForChange: Set<string>): Generator<BoundCell> {
+  private *DetectForChange(Node: Cell, ForChange: Set<string>): Generator<Cell> {
     for (const Name of Node.Dependents) {
       if (ForChange.has(Name)) continue;
       ForChange.add(Name);

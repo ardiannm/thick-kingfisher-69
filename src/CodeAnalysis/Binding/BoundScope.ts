@@ -1,9 +1,11 @@
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class BoundScope {
+  private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
+
   Dependencies = new Map<string, Set<string>>();
   Names = new Set<string>();
-  Diagnostics: DiagnosticBag = new DiagnosticBag();
 
   public RegisterDependencies(Name: string, Dependencies: Set<string>) {
     if (Dependencies.has(Name)) {

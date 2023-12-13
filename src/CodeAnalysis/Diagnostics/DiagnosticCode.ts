@@ -13,5 +13,5 @@ export enum DiagnosticCode {
   WrongFloatingNumberFormat,
   CantCopyNode,
   HasNeverBeenAssigned,
-  DocumentDoesNotExist
+  DocumentDoesNotExist,
 }

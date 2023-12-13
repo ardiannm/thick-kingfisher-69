@@ -9,5 +9,5 @@ export enum BoundKind {
   IsStatement = "IsStatement",
   CopyStatement = "CopyStatement",
   BoundProgram = "BoundProgram",
-  BoundCell = "BoundCell"
+  BoundIsStatement = "BoundIsStatement",
 }

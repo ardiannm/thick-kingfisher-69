@@ -13,11 +13,12 @@ import { ExpressionSyntax } from "./Syntax/ExpressionSyntax";
 import { Program } from "./Syntax/Program";
 import { StatementSyntax } from "./Syntax/StatementSyntax";
 import { DeclarationStatement } from "./Syntax/DeclarationStatement";
+import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken>();
-  private Diagnostics = new DiagnosticBag();
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.Parser);
 
   constructor(public readonly Source: SourceText) {
     for (const Token of SyntaxTree.Lex(Source.Text)) {

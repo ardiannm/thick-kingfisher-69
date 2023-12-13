@@ -23,10 +23,11 @@ import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
 import { BoundScope } from "./Binding/BoundScope";
-import { BoundCell } from "./Binding/BoundCell";
+import { BoundIsStatement } from "./Binding/BoundIsStatement";
+import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 
 export class Binder {
-  private Diagnostics: DiagnosticBag = new DiagnosticBag();
+  private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
   private Scope: BoundScope = new BoundScope();
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -55,6 +56,9 @@ export class Binder {
   }
 
   private BindProgram(Node: Program) {
+    if (Node.Root.length === 0) {
+      throw this.Diagnostics.EmptyProgram();
+    }
     const BoundStatements = new Array<BoundStatement>();
     for (const Statement of Node.Root) {
       BoundStatements.push(this.Bind(Statement));
@@ -69,7 +73,7 @@ export class Binder {
         this.Scope.CearNames();
         const Expression = this.Bind(Node.Expression);
         this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
-        const Bound = new BoundCell(BoundKind.BoundCell, Left.Name, 0, Expression, new Set<string>(this.Scope.Names), new Set<string>());
+        const Bound = new BoundIsStatement(BoundKind.BoundIsStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
         this.Scope.CearNames();
         return Bound;
     }

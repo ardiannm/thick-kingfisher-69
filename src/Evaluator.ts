@@ -10,9 +10,10 @@ import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
 import { Environment } from "./Environment";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
+import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
 
 export class Evaluator {
-  private Diagnostics = new DiagnosticBag();
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
   private Value: number = 0;
 
   constructor(private Env: Environment) {}
