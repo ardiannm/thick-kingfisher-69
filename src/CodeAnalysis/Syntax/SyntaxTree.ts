@@ -33,10 +33,10 @@ export class SyntaxTree {
   public static Print<T>(Node: T, Indent = ""): string {
     var Text = "";
     if (typeof Node === "string") {
-      return `"${Node}"`;
+      Text += this.Color(`${Node}`, Color.Terracotta);
     }
     if (typeof Node === "number") {
-      return `${Node}`;
+      Text += this.Color(`${Node}`, Color.Sage);
     }
     if (Node instanceof Set) {
       return this.Print(Array.from(Node));
@@ -45,18 +45,48 @@ export class SyntaxTree {
       for (const Item of Node) {
         Text += this.Print(Item, Indent) + " ";
       }
-      return Text;
     }
     if (Node instanceof BoundNode) {
       for (const [Root, Branch] of Object.entries(Node)) {
-        const NewIndent = Indent + " ".repeat(2);
+        const NewIndent = Indent + " ".repeat(1);
         if (Root === "Kind") {
-          Text += "\n" + Indent + NewIndent + Node.Kind;
+          Text += "\n" + Indent + NewIndent + this.Color(Node.Kind, Color.Azure);
         } else {
-          Text += "\n" + Indent + NewIndent + " ".repeat(2) + Root + " " + this.Print(Branch, NewIndent);
+          Text += "\n" + Indent + NewIndent + " ".repeat(1) + this.Color(Root.toLowerCase(), Color.Moss) + " " + this.Print(Branch, NewIndent);
         }
       }
     }
     return Text;
   }
+
+  private static Color(Text: string, Hex: string): string {
+    return this.HexToColorCode(Hex) + Text + "\x1b[0m";
+  }
+
+  private static HexToRgb(Hex: string): RgbColor {
+    // Remove the hash and parse the hex color code to RGB values
+    const BingInt = parseInt(Hex.substring(1), 16);
+    const r = (BingInt >> 16) & 255;
+    const g = (BingInt >> 8) & 255;
+    const b = BingInt & 255;
+    return new RgbColor(r, g, b);
+  }
+
+  public static HexToColorCode(Hex: string) {
+    const RgbColor = this.HexToRgb(Hex);
+    return `\x1b[38;2;${RgbColor.r};${RgbColor.g};${RgbColor.b}m`;
+  }
+}
+
+class RgbColor {
+  constructor(public r: number, public g: number, public b: number) {}
+}
+
+enum Color {
+  Turquoise = "#4ec9b0",
+  Terracotta = "#ce9178",
+  Moss = "#6a9955",
+  Buff = "#dcdcaa",
+  Azure = "#569cd6",
+  Sage = "#b5cea8",
 }
