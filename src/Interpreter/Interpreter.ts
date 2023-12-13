@@ -59,9 +59,9 @@ export class Interpreter {
 
   private Evaluate() {
     const Tree = SyntaxTree.Bind(this.Input);
-    const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
-    const Value = JSON.stringify(Evaluation);
-    this.Print(this.Input, Value);
+    // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
+    // const Value = JSON.stringify(Evaluation);
+    this.Print(this.Input);
   }
 
   private ResetBuffer() {
@@ -88,7 +88,7 @@ export class Interpreter {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
-      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Azure));
+      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
     } else {
       console.log(error);
     }
@@ -126,11 +126,11 @@ export class Interpreter {
     }
     if (Node instanceof BoundNode || Node instanceof SyntaxNode) {
       for (const [Root, Branch] of Object.entries(Node)) {
-        const NewIndent = Indent + " ".repeat(1);
+        const NextIndent = Indent + " ".repeat(1);
         if (Root === "Kind") {
-          Text += "\n" + Indent + NewIndent + this.Color(Node.Kind, Color.Azure);
+          Text += "\n" + Indent + NextIndent + this.Color(Node.Kind, Color.Azure);
         } else {
-          Text += "\n" + Indent + NewIndent + " ".repeat(1) + this.Color(Root.toLowerCase(), Color.Moss) + " " + this.Print(Branch, NewIndent);
+          Text += "\n" + Indent + NextIndent + " ".repeat(1) + this.Color(Root, Color.Moss) + " " + this.Print(Branch, NextIndent);
         }
       }
       return Text;

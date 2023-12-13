@@ -10,4 +10,6 @@ export enum BoundKind {
   CopyStatement = "CopyStatement",
   BoundProgram = "BoundProgram",
   BoundIsStatement = "BoundIsStatement",
+  BoundRowReference = "BoundRowReference",
+  BoundColumnReference = "BoundColumnReference",
 }

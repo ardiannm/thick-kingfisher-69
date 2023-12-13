@@ -9,17 +9,17 @@ export class DiagnosticBag {
 
   constructor(public Kind: DiagnosticKind) {}
 
-  Any() {
-    return this.Diagnostics.length > 0;
-  }
-
-  Clear() {
-    this.Diagnostics = new Array<Diagnostic>();
-  }
-
   private ReportError(Diagnostic: Diagnostic) {
     this.Diagnostics.push(Diagnostic);
     return Diagnostic;
+  }
+
+  public Any() {
+    return this.Diagnostics.length > 0;
+  }
+
+  public Clear() {
+    this.Diagnostics = new Array<Diagnostic>();
   }
 
   public BadTokenFound(Text: string) {
@@ -95,5 +95,10 @@ export class DiagnosticBag {
   public DocumentDoesNotExist(Name: string) {
     const Message = `Document for '${Name}' doesn't exist.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.DocumentDoesNotExist, Message));
+  }
+
+  public NotARangeMember(Name: string) {
+    const Message = `<${Name}> is not a range member and it can't be bound.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotARangeMember, Message));
   }
 }

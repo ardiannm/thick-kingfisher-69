@@ -13,7 +13,6 @@ import { BoundKind } from "./Binding/BoundKind";
 import { BoundNumber } from "./Binding/BoundNumber";
 import { BoundBinaryOperatorKind } from "./Binding/BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./Binding/BoundRangeReference";
-import { IsReferable } from "./Binding/IsReferable";
 import { UnaryExpression } from "./Syntax/UnaryExpression";
 import { BoundUnaryExpression } from "./Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./Binding/BoundUnaryOperatorKind";
@@ -25,6 +24,9 @@ import { BoundProgram } from "./Binding/BoundProgram";
 import { BoundScope } from "./Binding/BoundScope";
 import { BoundIsStatement } from "./Binding/BoundIsStatement";
 import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
+import { BoundRowReference } from "./Binding/BoundRowReference";
+import { BoundColumnReference } from "./Binding/BoundColumnReference";
+import { IsReferable } from "./Binding/IsReferable";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
@@ -126,14 +128,29 @@ export class Binder {
     return this.Bind(Node.Expression);
   }
 
+  private BindRangeMember<Kind extends SyntaxNode>(Node: Kind) {
+    type NodeType<T> = Kind & T;
+    switch (Node.Kind) {
+      case SyntaxKind.NumberToken:
+        return new BoundRowReference(BoundKind.BoundRowReference, (Node as NodeType<SyntaxToken>).Text);
+      case SyntaxKind.IdentifierToken:
+        return new BoundColumnReference(BoundKind.BoundColumnReference, (Node as NodeType<SyntaxToken>).Text);
+      case SyntaxKind.CellReference:
+        return this.BindCellReference(Node as NodeType<CellReference>);
+    }
+    throw this.Diagnostics.NotARangeMember(Node.Kind);
+  }
+
   private BindRangeReference(Node: RangeReference) {
-    const BoundLeft = this.Bind(Node.Left) as IsReferable;
-    const BoundRight = this.Bind(Node.Right) as IsReferable;
-    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Name + ":" + BoundRight.Name);
+    const BoundLeft = this.BindRangeMember(Node.Left);
+    const BoundRight = this.BindRangeMember(Node.Right);
+    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Kind + ":" + BoundRight.Name);
   }
 
   private BindCellReference(Node: CellReference) {
-    const Name = Node.Left.Text + Node.Right.Text;
+    const BoundLeft = this.BindRangeMember(Node.Left) as IsReferable;
+    const BoundRight = this.BindRangeMember(Node.Right) as IsReferable;
+    const Name = BoundLeft.Name + BoundRight.Name;
     this.Scope.ReferToThis(Name);
     return new BoundCellReference(BoundKind.BoundCellReference, Name);
   }

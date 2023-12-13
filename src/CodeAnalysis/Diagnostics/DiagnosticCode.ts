@@ -14,4 +14,5 @@ export enum DiagnosticCode {
   CantCopyNode,
   HasNeverBeenAssigned,
   DocumentDoesNotExist,
+  NotARangeMember
 }
