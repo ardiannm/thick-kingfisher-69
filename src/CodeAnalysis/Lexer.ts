@@ -68,10 +68,14 @@ export class Lexer {
     if (this.MatchKind(SyntaxKind.HashToken)) {
       return this.ParseCommentToken();
     }
+    if (this.MatchKind(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
+      this.Next();
+      this.Next();
+      return new SyntaxToken(SyntaxKind.PointerToken, this.Text);
+    }
     if (this.MatchKind(SyntaxKind.BadToken)) {
       throw this.Diagnostics.BadTokenFound(this.Char);
     }
-
     return new SyntaxToken(Facts.Kind(this.Char), this.Next());
   }
 

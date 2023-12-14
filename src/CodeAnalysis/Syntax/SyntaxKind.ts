@@ -16,9 +16,12 @@ export enum SyntaxKind {
   CloseParenToken = "CloseParenToken",
   DotToken = "DotToken",
   HashToken = "HashToken",
+  GreaterToken = "GreaterToken",
 
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
+
+  PointerToken = "PointerToken",
 
   FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
@@ -31,9 +34,7 @@ export enum SyntaxKind {
   ParenthesizedExpression = "ParenthesizedExpression",
   CellReference = "CellReference",
   RangeReference = "RangeReference",
-  IsStatement = "IsStatement",
+  RefersToStatement = "RefersToStatement",
   CopyStatement = "CopyStatement",
   Program = "Program",
 }
-
-export enum OperatorKind {}

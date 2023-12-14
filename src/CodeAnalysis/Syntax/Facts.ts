@@ -44,6 +44,8 @@ export class Facts {
         return SyntaxKind.DotToken;
       case "#":
         return SyntaxKind.HashToken;
+      case ">":
+        return SyntaxKind.GreaterToken;
       case "\n":
         return SyntaxKind.NewLineToken;
       case "":

@@ -22,7 +22,7 @@ import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
 import { BoundScope } from "./Binding/BoundScope";
-import { BoundIsStatement } from "./Binding/BoundIsStatement";
+import { BoundRefersToStatement } from "./Binding/BoundRefersToStatement";
 import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 import { BoundRowReference } from "./Binding/BoundRowReference";
 import { BoundColumnReference } from "./Binding/BoundColumnReference";
@@ -51,8 +51,8 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.IsStatement:
-        return this.BindIsStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.RefersToStatement:
+        return this.BindRefersToStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingBindingMethod(Node.Kind);
   }
@@ -67,17 +67,17 @@ export class Binder {
       BoundStatements.push(Bound);
     }
     this.Scope.CheckNames();
-    return new BoundProgram(BoundKind.BoundProgram, BoundStatements, this.Scope.Dependencies);
+    return new BoundProgram(BoundKind.Program, BoundStatements, this.Scope.Dependencies);
   }
 
-  private BindIsStatement(Node: DeclarationStatement) {
+  private BindRefersToStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope.CearNames();
         const Expression = this.Bind(Node.Expression);
         this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
-        const Bound = new BoundIsStatement(BoundKind.BoundIsStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
+        const Bound = new BoundRefersToStatement(BoundKind.RefersToStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
         this.Scope.CearNames();
         return Bound;
     }
@@ -88,7 +88,7 @@ export class Binder {
     const Left = this.Bind(Node.Left);
     const Operator = this.BindBinaryOperatorKind(Node.Operator.Kind);
     const Right = this.Bind(Node.Right);
-    return new BoundBinaryExpression(BoundKind.BoundBinaryExpression, Left, Operator, Right);
+    return new BoundBinaryExpression(BoundKind.BinaryExpression, Left, Operator, Right);
   }
 
   private BindBinaryOperatorKind(Kind: SyntaxKind): BoundBinaryOperatorKind {
@@ -108,7 +108,7 @@ export class Binder {
   private BindUnaryExpression(Node: UnaryExpression) {
     const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
     const Right = this.Bind(Node.Right);
-    return new BoundUnaryExpression(BoundKind.BoundUnaryExpression, Operator, Right);
+    return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
   }
 
   private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {
@@ -129,9 +129,9 @@ export class Binder {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
-        return new BoundRowReference(BoundKind.BoundRowReference, (Node as NodeType<SyntaxToken>).Text);
+        return new BoundRowReference(BoundKind.RowReference, (Node as NodeType<SyntaxToken>).Text);
       case SyntaxKind.IdentifierToken:
-        return new BoundColumnReference(BoundKind.BoundColumnReference, (Node as NodeType<SyntaxToken>).Text);
+        return new BoundColumnReference(BoundKind.ColumnReference, (Node as NodeType<SyntaxToken>).Text);
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
@@ -141,7 +141,7 @@ export class Binder {
   private BindRangeReference(Node: RangeReference) {
     const BoundLeft = this.BindRangeMember(Node.Left);
     const BoundRight = this.BindRangeMember(Node.Right);
-    return new BoundRangeReference(BoundKind.BoundRangeReference, BoundLeft.Kind + ":" + BoundRight.Name);
+    return new BoundRangeReference(BoundKind.RangeReference, BoundLeft.Kind + ":" + BoundRight.Name);
   }
 
   private BindCellReference(Node: CellReference) {
@@ -149,15 +149,15 @@ export class Binder {
     const BoundRight = this.BindRangeMember(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
     this.Scope.ReferToThis(Name);
-    return new BoundCellReference(BoundKind.BoundCellReference, Name);
+    return new BoundCellReference(BoundKind.CellReference, Name);
   }
 
   private BindIdentifier(Node: SyntaxToken) {
-    return new BoundIdentifier(BoundKind.BoundIdentifier, Node.Text);
+    return new BoundIdentifier(BoundKind.Identifier, Node.Text);
   }
 
   private BindNumber(Node: SyntaxToken) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(BoundKind.BoundNumber, Value);
+    return new BoundNumber(BoundKind.Number, Value);
   }
 }

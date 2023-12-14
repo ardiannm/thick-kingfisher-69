@@ -22,6 +22,7 @@ export class Parser {
 
   constructor(public readonly Source: SourceText) {
     for (const Token of SyntaxTree.Lex(Source.Text)) {
+      console.log(Token);
       switch (Token.Kind) {
         case SyntaxKind.NewLineToken:
         case SyntaxKind.SpaceToken:
@@ -48,10 +49,10 @@ export class Parser {
 
   private ParseStatement() {
     const Left = this.ParseBinaryExpression();
-    switch (this.CurrentToken.Kind) {
-      case SyntaxKind.IsKeyword:
+    switch (this.Token.Kind) {
+      case SyntaxKind.PointerToken:
       case SyntaxKind.CopyStatement:
-        return new DeclarationStatement(SyntaxKind.IsStatement, Left, this.NextToken(), this.ParseBinaryExpression());
+        return new DeclarationStatement(SyntaxKind.RefersToStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }
@@ -59,7 +60,7 @@ export class Parser {
   private ParseBinaryExpression(ParentPrecedence = 0): ExpressionSyntax {
     let Left = this.ParseUnaryExpression();
     while (true) {
-      const BinaryPrecedence = Facts.BinaryOperatorPrecedence(this.CurrentToken.Kind);
+      const BinaryPrecedence = Facts.BinaryOperatorPrecedence(this.Token.Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
@@ -71,7 +72,7 @@ export class Parser {
   }
 
   private ParseUnaryExpression(): ExpressionSyntax {
-    const BinaryPrecedence = Facts.UnaryOperatorPrecedence(this.CurrentToken.Kind);
+    const BinaryPrecedence = Facts.UnaryOperatorPrecedence(this.Token.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken();
       const Right = this.ParseUnaryExpression();
@@ -110,7 +111,7 @@ export class Parser {
   }
 
   private ParseLiteral() {
-    const Kind = this.CurrentToken.Kind;
+    const Kind = this.Token.Kind;
     switch (Kind) {
       // case SyntaxKind.TrueToken:
       // case SyntaxKind.FalseToken:
@@ -129,12 +130,12 @@ export class Parser {
     return this.Tokens[Index];
   }
 
-  private get CurrentToken() {
+  private get Token() {
     return this.PeekToken(0);
   }
 
   private NextToken() {
-    const Token = this.CurrentToken;
+    const Token = this.Token;
     this.Index++;
     return Token;
   }

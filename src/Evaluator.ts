@@ -21,15 +21,15 @@ export class Evaluator {
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case BoundKind.BoundProgram:
+      case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
-      case BoundKind.BoundNumber:
+      case BoundKind.Number:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
-      case BoundKind.BoundCellReference:
+      case BoundKind.CellReference:
         return this.EvaluateCellReference(Node as NodeType<CellReference>);
-      case BoundKind.BoundUnaryExpression:
+      case BoundKind.UnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
-      case BoundKind.BoundBinaryExpression:
+      case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
