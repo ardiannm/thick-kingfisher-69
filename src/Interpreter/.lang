@@ -1,26 +1,6 @@
-97e934e9	751.19
-8d42e123	454.06
-ce368399	123.01
+A1 -> 1
+A2 -> 3
 
-# .fin
-
-action transfer
-
-    case not amount > sender.balance:
-        from sender.address to receiver.address send amount
-        show message = “Shuma prej <> eshte dergu ne llogarine e <>” amount receiver.name to sender
-        transfer sender receiver amount
-    otherwise:
-        show “Ti qoj neser se sot spaskna pare”
-
-transfer <97e934e9> <8d42e123> <115.07>
-
-
-
-# .d.fin.
-
-transfer
-    <account> sender; <account> receiver; <number> amount;
-
+A3 -> A1+A2
 
 
