@@ -38,12 +38,6 @@ export class Lexer {
     return this.Source.Text.substring(this.Start, this.Index);
   }
 
-  private Next() {
-    const Char = this.Char;
-    this.Index++;
-    return Char;
-  }
-
   private MatchKind(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
@@ -69,50 +63,46 @@ export class Lexer {
       return this.ParseCommentToken();
     }
     if (this.MatchKind(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
-      this.Next();
-      this.Next();
+      this.Index += 2;
       return new SyntaxToken(SyntaxKind.PointerToken, this.Text);
     }
     if (this.MatchKind(SyntaxKind.BadToken)) {
       throw this.Diagnostics.BadTokenFound(this.Char);
     }
-    return new SyntaxToken(Facts.Kind(this.Char), this.Next());
+
+    this.Index += 1;
+
+    return new SyntaxToken(Facts.Kind(this.Text), this.Text);
   }
 
   private ParseIdentifier() {
-    while (this.IsLetter(this.Char)) {
-      this.Next();
-    }
+    while (this.IsLetter(this.Char)) this.Index += 1;
     return new SyntaxToken(Facts.KeywordTokenKind(this.Text), this.Text);
   }
 
   private ParseCommentToken() {
-    while (!this.MatchKind(SyntaxKind.NewLineToken) && !this.MatchKind(SyntaxKind.EndOfFileToken)) {
-      this.Next();
+    while (true) {
+      this.Index += 1;
+      if (this.MatchKind(SyntaxKind.NewLineToken)) break;
+      if (this.MatchKind(SyntaxKind.EndOfFileToken)) break;
     }
     return new SyntaxToken(SyntaxKind.CommentToken, this.Text);
   }
 
   private ParseSpaceToken() {
-    while (this.IsSpace(this.Char)) {
-      this.Next();
-    }
+    while (this.IsSpace(this.Char)) this.Index += 1;
     return new SyntaxToken(SyntaxKind.SpaceToken, this.Text);
   }
 
   private ParseNumberToken() {
-    while (this.IsDigit(this.Char)) {
-      this.Next();
-    }
+    while (this.IsDigit(this.Char)) this.Index += 1;
     if (this.MatchKind(SyntaxKind.DotToken)) {
-      this.Next();
+      this.Index += 1;
       if (!this.IsDigit(this.Char)) {
         throw this.Diagnostics.WrongFloatingNumberFormat();
       }
     }
-    while (this.IsDigit(this.Char)) {
-      this.Next();
-    }
+    while (this.IsDigit(this.Char)) this.Index += 1;
     return new SyntaxToken(SyntaxKind.NumberToken, this.Text);
   }
 }
