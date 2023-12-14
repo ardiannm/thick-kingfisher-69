@@ -57,12 +57,10 @@ export class Facts {
 
   public static KeywordTokenKind(text: string): SyntaxKind {
     switch (text) {
-      case "True":
+      case "true":
         return SyntaxKind.TrueKeyword;
-      case "False":
+      case "false":
         return SyntaxKind.FalseKeyword;
-      case "is":
-        return SyntaxKind.IsKeyword;
       case "copy":
         return SyntaxKind.CopyKeyword;
       default:

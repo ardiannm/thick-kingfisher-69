@@ -38,7 +38,7 @@ export class Lexer {
     return this.Source.Text.substring(this.Start, this.Index);
   }
 
-  private MatchKind(...Kinds: Array<SyntaxKind>) {
+  private Match(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
       if (Kind !== Facts.Kind(this.Peek(Offset))) return false;
@@ -59,14 +59,14 @@ export class Lexer {
     if (this.IsSpace(this.Char)) {
       return this.ParseSpaceToken();
     }
-    if (this.MatchKind(SyntaxKind.HashToken)) {
+    if (this.Match(SyntaxKind.HashToken)) {
       return this.ParseCommentToken();
     }
-    if (this.MatchKind(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
+    if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
       this.Index += 2;
       return new SyntaxToken(SyntaxKind.PointerToken, this.Text);
     }
-    if (this.MatchKind(SyntaxKind.BadToken)) {
+    if (this.Match(SyntaxKind.BadToken)) {
       throw this.Diagnostics.BadTokenFound(this.Char);
     }
 
@@ -83,8 +83,8 @@ export class Lexer {
   private ParseCommentToken() {
     while (true) {
       this.Index += 1;
-      if (this.MatchKind(SyntaxKind.NewLineToken)) break;
-      if (this.MatchKind(SyntaxKind.EndOfFileToken)) break;
+      if (this.Match(SyntaxKind.NewLineToken)) break;
+      if (this.Match(SyntaxKind.EndOfFileToken)) break;
     }
     return new SyntaxToken(SyntaxKind.CommentToken, this.Text);
   }
@@ -96,7 +96,7 @@ export class Lexer {
 
   private ParseNumberToken() {
     while (this.IsDigit(this.Char)) this.Index += 1;
-    if (this.MatchKind(SyntaxKind.DotToken)) {
+    if (this.Match(SyntaxKind.DotToken)) {
       this.Index += 1;
       if (!this.IsDigit(this.Char)) {
         throw this.Diagnostics.WrongFloatingNumberFormat();

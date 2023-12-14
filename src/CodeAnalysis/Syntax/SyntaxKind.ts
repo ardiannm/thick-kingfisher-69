@@ -23,9 +23,8 @@ export enum SyntaxKind {
 
   PointerToken = "PointerToken",
 
-  FalseKeyword = "FalseKeyword",
   TrueKeyword = "TrueKeyword",
-  IsKeyword = "IsKeyword",
+  FalseKeyword = "FalseKeyword",
   CopyKeyword = "CopyKeyword",
 
   SyntaxRoot = "SyntaxRoot",

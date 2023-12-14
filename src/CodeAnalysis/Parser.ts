@@ -22,7 +22,6 @@ export class Parser {
 
   constructor(public readonly Source: SourceText) {
     for (const Token of SyntaxTree.Lex(Source.Text)) {
-      console.log(Token);
       switch (Token.Kind) {
         case SyntaxKind.NewLineToken:
         case SyntaxKind.SpaceToken:
