@@ -25,7 +25,7 @@ export class BoundScope {
 
   private Check(Name: string, Dependencies: Set<string>) {
     for (const Dep of Dependencies) {
-      if (!this.Dependencies.has(Dep)) throw this.Diagnostics.CantFindName(Dep);
+      if (!this.Dependencies.has(Dep)) throw this.Diagnostics.NotFound(Dep);
       const Deps = this.Dependencies.get(Dep) as Set<string>;
       if (Deps.has(Name)) throw this.Diagnostics.CircularDependency(Dep);
       this.Check(Name, Deps);
@@ -33,6 +33,6 @@ export class BoundScope {
   }
 
   public CheckNames() {
-    for (const Name of this.Names) if (!this.Dependencies.has(Name)) throw this.Diagnostics.CantFindName(Name);
+    for (const Name of this.Names) if (!this.Dependencies.has(Name)) throw this.Diagnostics.NotFound(Name);
   }
 }

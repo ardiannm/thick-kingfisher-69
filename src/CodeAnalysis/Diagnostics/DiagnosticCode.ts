@@ -8,11 +8,11 @@ export enum DiagnosticCode {
   CircularDependency,
   MissingBindingMethod,
   CantUseAsAReference,
-  CantFindReference,
+  NotFound,
   UsedBeforeItsDeclaration,
   WrongFloatingNumberFormat,
   CantCopyNode,
   HasNeverBeenAssigned,
   DocumentDoesNotExist,
-  NotARangeMember
+  NotARangeMember,
 }

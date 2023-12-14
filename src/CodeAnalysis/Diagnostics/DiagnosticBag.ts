@@ -67,9 +67,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseAsAReference, Message));
   }
 
-  public CantFindName(Name: string) {
+  public NotFound(Name: string) {
     const Message = `Can't find name '${Name}'.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantFindReference, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotFound, Message));
   }
 
   public UsedBeforeItsDeclaration(Name: string) {
