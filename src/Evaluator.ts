@@ -8,15 +8,16 @@ import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
-import { Environment1 } from "./Environment1";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
 import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
+import { BoundScope } from "./CodeAnalysis/BoundScope";
+import { BoundReferenceStatement } from "./CodeAnalysis/Binding/BoundReferenceStatement";
 
 export class Evaluator {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
   private Value: number = 0;
 
-  constructor(private Env: Environment1) {}
+  constructor(private Scope: BoundScope) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -31,6 +32,8 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
+      case BoundKind.ReferenceStatement:
+        return this.EvaluateReferenceStatement(Node as NodeType<BoundReferenceStatement>);
       default:
         throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
     }
@@ -41,6 +44,12 @@ export class Evaluator {
       this.Value = this.Evaluate(Statement);
     }
     return this.Value;
+  }
+
+  private EvaluateReferenceStatement(Node: BoundReferenceStatement) {
+    const Value = this.Evaluate(Node.Expression);
+    this.Scope.Assign(Node, Value);
+    return Value;
   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression) {
@@ -76,7 +85,7 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Env.GetValue(Node.Name);
+    return this.Scope.VarGet(Node.Name).Value;
   }
 
   private EvaluateNumber(Node: BoundNumber) {

@@ -66,7 +66,7 @@ export class Binder {
       const Bound = this.Bind(Statement);
       BoundStatements.push(Bound);
     }
-    return new BoundProgram(BoundKind.Program, BoundStatements);
+    return new BoundProgram(BoundKind.Program, BoundStatements, this.Scope);
   }
 
   private BindReferenceStatement(Node: DeclarationStatement) {
@@ -77,7 +77,7 @@ export class Binder {
         const Expression = this.Bind(Node.Expression);
         const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
         this.Scope = this.Scope.Parent as BoundScope;
-        this.Scope.TryDeclare(Bound.Name, Bound.Dependencies);
+        this.Scope.VarSet(Bound.Name, Bound.Dependencies);
         return Bound;
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);

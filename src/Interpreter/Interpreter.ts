@@ -6,7 +6,7 @@ import Promp from "readline-sync";
 import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
 import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
 // import { Environment } from "../Environment";
-// import { Evaluator } from "../Evaluator";
+import { Evaluator } from "../Evaluator";
 import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
 import { BoundNode } from "../CodeAnalysis/Binding/BoundNode";
 import { SyntaxNode } from "../CodeAnalysis/Syntax/SyntaxNode";
@@ -58,10 +58,10 @@ export class Interpreter {
   }
 
   private Evaluate() {
-    const Tree = SyntaxTree.Bind(this.Input);
-    // const Evaluation = new Evaluator(this.Env).Evaluate(Tree);
+    const BoundTree = SyntaxTree.Bind(this.Input);
+    const Evaluation = new Evaluator(BoundTree.Scope).Evaluate(BoundTree);
     // const Value = JSON.stringify(Evaluation);
-    this.Print(this.Input);
+    this.Print(this.Input, Evaluation.toString());
   }
 
   private ResetBuffer() {

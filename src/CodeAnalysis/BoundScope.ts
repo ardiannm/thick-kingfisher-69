@@ -1,6 +1,7 @@
 import { BoundExpression } from "./Binding/BoundExpression";
 import { BoundKind } from "./Binding/BoundKind";
 import { BoundNumber } from "./Binding/BoundNumber";
+import { BoundReferenceStatement } from "./Binding/BoundReferenceStatement";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 
@@ -17,7 +18,7 @@ export class Cell {
 }
 
 export class BoundScope {
-  private Data = new Map<string, Cell>();
+  private Vars = new Map<string, Cell>();
   private Expression = new BoundNumber(BoundKind.Number, 0);
   private Diagnostics = new DiagnosticBag(DiagnosticKind.BoundScope);
 
@@ -30,7 +31,7 @@ export class BoundScope {
   }
 
   private ResolveScope(Name: string): BoundScope | undefined {
-    if (this.Data.has(Name)) {
+    if (this.Vars.has(Name)) {
       return this;
     }
     if (this.Parent) {
@@ -39,24 +40,24 @@ export class BoundScope {
     return undefined;
   }
 
-  TryDeclare(Name: string, Dependencies: Set<string>): boolean {
+  public VarSet(Name: string, Dependencies: Set<string>): boolean {
     this.Detect(Name, Dependencies);
     const Scope = this.ResolveScope(Name) as BoundScope;
     if (Scope === undefined) {
-      this.Data.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
+      this.Vars.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
       return true;
     }
-    const Data = Scope.Data.get(Name) as Cell;
-    Data.Dependencies = Dependencies;
+    const Var = Scope.Vars.get(Name) as Cell;
+    Var.Dependencies = Dependencies;
     return false;
   }
 
-  private TryLookUp(Name: string): Cell {
+  public VarGet(Name: string): Cell {
     const Scope = this.ResolveScope(Name);
     if (Scope === undefined) {
       throw this.Diagnostics.NotFound(Name);
     }
-    return Scope.Data.get(Name) as Cell;
+    return Scope.Vars.get(Name) as Cell;
   }
 
   private Detect(Name: string, Dependencies: Set<string>) {
@@ -64,11 +65,18 @@ export class BoundScope {
       throw this.Diagnostics.UsedBeforeItsDeclaration(Name);
     }
     for (const Dep of Dependencies) {
-      const Deps = this.TryLookUp(Dep).Dependencies;
+      const Deps = this.VarGet(Dep).Dependencies;
       if (Deps.has(Name)) {
         throw this.Diagnostics.CircularDependency(Dep);
       }
       this.Detect(Name, Deps);
     }
+  }
+
+  public Assign(Node: BoundReferenceStatement, Value: number) {
+    const Var = this.VarGet(Node.Name);
+    Var.Value = Value;
+    Var.Expression = Node.Expression;
+    Var.Dependencies = Node.Dependencies;
   }
 }
