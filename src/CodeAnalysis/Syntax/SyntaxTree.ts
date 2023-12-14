@@ -15,6 +15,12 @@ export class SyntaxTree {
     var Token: SyntaxToken;
     do {
       Token = Tokenizer.Lex();
+      switch (Token.Kind) {
+        case SyntaxKind.NewLineToken:
+        case SyntaxKind.SpaceToken:
+        case SyntaxKind.CommentToken:
+          continue;
+      }
       yield Token;
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }

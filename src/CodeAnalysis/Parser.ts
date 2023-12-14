@@ -21,16 +21,7 @@ export class Parser {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Parser);
 
   constructor(public readonly Source: SourceText) {
-    for (const Token of SyntaxTree.Lex(Source.Text)) {
-      switch (Token.Kind) {
-        case SyntaxKind.NewLineToken:
-        case SyntaxKind.SpaceToken:
-        case SyntaxKind.CommentToken:
-          continue;
-        default:
-          this.Tokens.push(Token);
-      }
-    }
+    this.Tokens = [...SyntaxTree.Lex(Source.Text)];
   }
 
   public Parse() {

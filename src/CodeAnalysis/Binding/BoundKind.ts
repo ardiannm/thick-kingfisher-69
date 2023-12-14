@@ -8,5 +8,5 @@ export enum BoundKind {
   RangeReference = "RangeReference",
   CellReference = "CellReference",
   Identifier = "Identifier",
-  Number = "Number"
+  Number = "Number",
 }
