@@ -15,7 +15,7 @@ export class Cell {
 }
 
 export class BoundScope {
-  constructor(public Parent?: BoundScope) {}
+  constructor(public Parent: BoundScope | undefined) {}
 
   private Expression = new BoundNumber(BoundKind.Number, 0);
   private Data = new Map<string, Cell>();
@@ -26,22 +26,24 @@ export class BoundScope {
     this.Names.add(Name);
   }
 
-  public TryDeclare(Name: string, Dependencies: Set<string>): boolean {
-    if (this.TryLookUp(Name)) {
-      (this.Data.get(Name) as Cell).Dependencies = Dependencies;
-      return false;
-    }
-    this.Data.set(Name, new Cell(Name, 0, this.Expression, Dependencies, new Set<string>()));
-    return true;
-  }
-
-  public TryLookUp(Name: string): boolean {
+  private ResolveScope(Name: string): BoundScope | undefined {
     if (this.Data.has(Name)) {
-      return true;
+      return this;
     }
     if (this.Parent) {
-      return this.Parent.TryLookUp(Name);
+      return this.ResolveScope(Name);
     }
+    return undefined;
+  }
+
+  public TryDeclare(Name: string, Dependencies: Set<string>): boolean {
+    const Scope = this.ResolveScope(Name) as BoundScope;
+    if (Scope === undefined) {
+      this.Data.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
+      return true;
+    }
+    const Data = Scope.Data.get(Name) as Cell;
+    Data.Dependencies = Dependencies;
     return false;
   }
 }
