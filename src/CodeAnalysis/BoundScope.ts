@@ -8,12 +8,17 @@ import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
 
-  public Notify(Bound: Cell): void {
-    this.Dependents.add(Bound.Name);
+  public Notify(Name: string): void {
+    if (this.Dependents.has(Name)) return;
+    console.log("'" + this.Name + "' ~~~ '" + Name + "'");
+    this.Dependents.add(Name);
   }
 
-  public DoNoNotify(Bound: Cell): void {
-    this.Dependents.delete(Bound.Name);
+  public DoNotNotify(Name: string): void {
+    if (this.Dependents.has(Name)) {
+      console.log("'" + this.Name + "' ~/~ '" + Name + "'");
+      this.Dependents.delete(Name);
+    }
   }
 }
 
@@ -26,7 +31,7 @@ export class BoundScope {
 
   constructor(public Parent: BoundScope | undefined) {}
 
-  Push(Name: string) {
+  public Push(Name: string) {
     this.Names.add(Name);
   }
 
@@ -75,8 +80,14 @@ export class BoundScope {
 
   public Assign(Node: BoundReferenceStatement, Value: number) {
     const Var = this.VarGet(Node.Name);
-    Var.Value = Value;
+
+    Var.Dependencies.forEach((Dep) => this.VarGet(Dep).DoNotNotify(Var.Name));
+    Node.Dependencies.forEach((Dep) => this.VarGet(Dep).Notify(Var.Name));
+
+    console.log();
+
     Var.Expression = Node.Expression;
     Var.Dependencies = Node.Dependencies;
+    Var.Value = Value;
   }
 }
