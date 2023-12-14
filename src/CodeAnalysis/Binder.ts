@@ -21,8 +21,8 @@ import { BoundNode } from "./Binding/BoundNode";
 import { Program } from "./Syntax/Program";
 import { BoundStatement } from "./Binding/BoundStatement";
 import { BoundProgram } from "./Binding/BoundProgram";
-import { BoundScope } from "./Binding/BoundScope";
-import { BoundRefersToStatement } from "./Binding/BoundRefersToStatement";
+import { BoundScope } from "./BoundScope";
+import { BoundReferenceStatement } from "./Binding/BoundReferenceStatement";
 import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 import { BoundRowReference } from "./Binding/BoundRowReference";
 import { BoundColumnReference } from "./Binding/BoundColumnReference";
@@ -51,8 +51,8 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.RefersToStatement:
-        return this.BindRefersToStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.ReferenceStatement:
+        return this.BindReferenceStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingBindingMethod(Node.Kind);
   }
@@ -66,19 +66,18 @@ export class Binder {
       const Bound = this.Bind(Statement);
       BoundStatements.push(Bound);
     }
-    this.Scope.CheckNames();
-    return new BoundProgram(BoundKind.Program, BoundStatements, this.Scope.Dependencies);
+    return new BoundProgram(BoundKind.Program, BoundStatements);
   }
 
-  private BindRefersToStatement(Node: DeclarationStatement) {
+  private BindReferenceStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
-        this.Scope.CearNames();
+        this.Scope = new BoundScope(this.Scope);
         const Expression = this.Bind(Node.Expression);
-        this.Scope.RegisterDependencies(Left.Name, this.Scope.Names);
-        const Bound = new BoundRefersToStatement(BoundKind.RefersToStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
-        this.Scope.CearNames();
+        const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
+        this.Scope = this.Scope.Parent as BoundScope;
+        this.Scope.TryDeclare(Bound.Name, Bound.Dependencies);
         return Bound;
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
@@ -148,7 +147,7 @@ export class Binder {
     const BoundLeft = this.BindRangeMember(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeMember(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    this.Scope.ReferToThis(Name);
+    this.Scope.Push(Name);
     return new BoundCellReference(BoundKind.CellReference, Name);
   }
 

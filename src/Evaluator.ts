@@ -8,7 +8,7 @@ import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
 import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
-import { Environment } from "./Environment";
+import { Environment1 } from "./Environment1";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
 import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
 
@@ -16,7 +16,7 @@ export class Evaluator {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
   private Value: number = 0;
 
-  constructor(private Env: Environment) {}
+  constructor(private Env: Environment1) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;

@@ -14,7 +14,7 @@ export class Cell {
   }
 }
 
-export class Environment {
+export class Environment1 {
   private Documents = new Map<string, Cell>();
   private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Environment);
 

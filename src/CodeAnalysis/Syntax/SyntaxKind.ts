@@ -1,6 +1,6 @@
 export enum SyntaxKind {
   Program = "Program",
-  RefersToStatement = "RefersToStatement",
+  ReferenceStatement = "ReferenceStatement",
   CopyStatement = "CopyStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",

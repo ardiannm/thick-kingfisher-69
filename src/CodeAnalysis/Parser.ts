@@ -42,7 +42,7 @@ export class Parser {
     switch (this.Token.Kind) {
       case SyntaxKind.PointerToken:
       case SyntaxKind.CopyStatement:
-        return new DeclarationStatement(SyntaxKind.RefersToStatement, Left, this.NextToken(), this.ParseBinaryExpression());
+        return new DeclarationStatement(SyntaxKind.ReferenceStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }

@@ -1,6 +1,6 @@
 export enum BoundKind {
   Program = "Program",
-  RefersToStatement = "RefersToStatement",
+  ReferenceStatement = "ReferenceStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   RowReference = "RowReference",
