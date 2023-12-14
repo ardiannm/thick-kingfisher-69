@@ -13,48 +13,13 @@ export class Lexer {
 
   constructor(public readonly Source: SourceText) {}
 
-  private IsSpace(Char: string): boolean {
-    return Char === " " || Char === "\t" || Char === "\r";
-  }
-
-  private IsDigit(Char: string): boolean {
-    const CharCode = Char.charCodeAt(0);
-    return CharCode >= 48 && CharCode <= 57;
-  }
-
-  private IsLetter(Char: string): boolean {
-    const CharCode = Char.charCodeAt(0);
-    return (CharCode >= 65 && CharCode <= 90) || (CharCode >= 97 && CharCode <= 122);
-  }
-
-  private Peek(Offset: number): string {
-    return this.Source.Text.charAt(this.Index + Offset);
-  }
-
-  private get Char() {
-    return this.Peek(0);
-  }
-
-  private get Text() {
-    return this.Source.Text.substring(this.Start, this.Index);
-  }
-
-  private Match(...Kinds: Array<SyntaxKind>) {
-    let Offset = 0;
-    for (const Kind of Kinds) {
-      if (Kind !== Facts.Kind(this.Peek(Offset))) return false;
-      Offset++;
-    }
-    return true;
-  }
-
   Lex(): SyntaxToken {
     this.Start = this.Index;
     this.Kind = Facts.Kind(this.Char);
 
     switch (this.Kind) {
       case SyntaxKind.BadToken:
-        // If bad token found it may either be a letter or number or space token
+        // If bad token matched from the syntax facts this may still be either a letter, number or space token
 
         if (this.IsLetter(this.Char)) {
           return this.ParseIdentifier();
@@ -70,7 +35,7 @@ export class Lexer {
         throw this.Diagnostics.BadTokenFound(this.Char);
 
       case SyntaxKind.HashToken:
-        // Special case for hash token when it comes to comments
+        // special case for hash token when it comes to comments
         return this.ParseCommentToken();
 
       case SyntaxKind.MinusToken:
@@ -127,5 +92,40 @@ export class Lexer {
       this.Index += 1;
     }
     return new SyntaxToken(SyntaxKind.NumberToken, this.Text);
+  }
+
+  private IsSpace(Char: string): boolean {
+    return Char === " " || Char === "\t" || Char === "\r";
+  }
+
+  private IsDigit(Char: string): boolean {
+    const CharCode = Char.charCodeAt(0);
+    return CharCode >= 48 && CharCode <= 57;
+  }
+
+  private IsLetter(Char: string): boolean {
+    const CharCode = Char.charCodeAt(0);
+    return (CharCode >= 65 && CharCode <= 90) || (CharCode >= 97 && CharCode <= 122);
+  }
+
+  private Peek(Offset: number): string {
+    return this.Source.Text.charAt(this.Index + Offset);
+  }
+
+  private get Char() {
+    return this.Peek(0);
+  }
+
+  private get Text() {
+    return this.Source.Text.substring(this.Start, this.Index);
+  }
+
+  private Match(...Kinds: Array<SyntaxKind>) {
+    let Offset = 0;
+    for (const Kind of Kinds) {
+      if (Kind !== Facts.Kind(this.Peek(Offset))) return false;
+      Offset++;
+    }
+    return true;
   }
 }
