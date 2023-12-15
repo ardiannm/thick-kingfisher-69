@@ -69,7 +69,7 @@ export class DiagnosticBag {
 
   NameNotFound(Name: string) {
     const Message = `Can't find name '${Name}'.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotFound, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NameNotFound, Message));
   }
 
   UsedBeforeItsDeclaration(Name: string) {
