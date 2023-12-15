@@ -43,7 +43,7 @@ export class Interpreter {
           continue;
       }
 
-      if (InputLine.toLowerCase() === "exit") break;
+      if (InputLine.toLowerCase() === "q") break;
 
       if (InputLine.trim()) {
         this.Buffer.push(InputLine);
