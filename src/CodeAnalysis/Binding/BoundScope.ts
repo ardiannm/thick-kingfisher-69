@@ -4,6 +4,8 @@ import { BoundNumber } from "./BoundNumber";
 import { BoundReferenceStatement } from "./BoundReferenceStatement";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
+import { Interpreter } from "../Interpreter/Interpreter";
+import { Color } from "../Interpreter/Color";
 
 export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
@@ -99,6 +101,7 @@ export class BoundScope {
   }
 
   SetValueForCell(Name: string, Value: number) {
+    console.log(Interpreter.Color(Name + " -> " + Value, Color.Moss));
     this.TryLookUpCell(Name).Value = Value;
   }
 }

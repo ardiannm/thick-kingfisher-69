@@ -1,11 +1,10 @@
 import Promp from "readline-sync";
 
-// import * as fs from "fs";
-// import * as path from "path";
+import * as fs from "fs";
+import * as path from "path";
 
 import { Diagnostic } from "../Diagnostics/Diagnostic";
 import { SyntaxTree } from "../Syntax/SyntaxTree";
-// import { Environment } from "../Environment";
 import { Evaluator } from "../../Evaluator";
 import { DiagnosticCode } from "../Diagnostics/DiagnosticCode";
 import { BoundNode } from "../Binding/BoundNode";
@@ -18,10 +17,10 @@ export class Interpreter {
   private Buffer = new Array<string>();
   private Width = 0;
 
-  // private LoadSource(): string {
-  //   const FullPath = path.join(".", "src", "IO", ".lang");
-  //   return fs.readFileSync(FullPath, "utf8");
-  // }
+  private LoadSource(): string {
+    const FullPath = path.join(".", "src", "IO", ".lang");
+    return fs.readFileSync(FullPath, "utf8");
+  }
 
   Run() {
     console.clear();
@@ -59,9 +58,10 @@ export class Interpreter {
 
   private Evaluate() {
     const BoundTree = SyntaxTree.Bind(this.Input);
+    this.Print(this.Input);
     const Evaluation = new Evaluator(BoundTree.Scope).Evaluate(BoundTree);
-    // const Value = JSON.stringify(Evaluation);
-    this.Print(this.Input, Evaluation.toString());
+    const Value = JSON.stringify(Evaluation);
+    this.Print(Interpreter.Color(Value, Color.Sage));
   }
 
   private ResetBuffer() {
