@@ -8,96 +8,97 @@ import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
 export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
 
-  public Notify(Name: string): void {
+  Notify(Name: string): void {
     this.Dependents.add(Name);
   }
 
-  public DoNotNotify(Name: string): void {
+  DoNotNotify(Name: string): void {
     this.Dependents.delete(Name);
   }
 }
 
 export class BoundScope {
-  private Vars = new Map<string, Cell>();
-  private Expression = new BoundNumber(BoundKind.Number, 0);
   private Diagnostics = new DiagnosticBag(DiagnosticKind.BoundScope);
+  private Data = new Map<string, Cell>();
+  private Expression = new BoundNumber(BoundKind.Number, 0);
+  private ForChange = new Set<string>();
 
   Names = new Set<string>();
 
   constructor(public Parent: BoundScope | undefined) {}
 
-  public Push(Name: string) {
+  PushCell(Name: string) {
     this.Names.add(Name);
   }
 
-  private ResolveScope(Name: string): BoundScope | undefined {
-    if (this.Vars.has(Name)) {
+  private ResolveScopeForCell(Name: string): BoundScope | undefined {
+    if (this.Data.has(Name)) {
       return this;
     }
     if (this.Parent) {
-      return this.ResolveScope(Name);
+      return this.ResolveScopeForCell(Name);
     }
     return undefined;
   }
 
-  public VarSet(Name: string, Dependencies: Set<string>): boolean {
-    this.Detect(Name, Dependencies);
-    const Scope = this.ResolveScope(Name) as BoundScope;
+  TryDeclareCell(Name: string, Dependencies: Set<string>): boolean {
+    this.DetectCircularDependencies(Name, Dependencies);
+    const Scope = this.ResolveScopeForCell(Name) as BoundScope;
     if (Scope === undefined) {
-      this.Vars.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
+      this.Data.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
       return true;
     }
-    const Var = Scope.Vars.get(Name) as Cell;
-    Var.Dependencies = Dependencies;
+    const Data = Scope.Data.get(Name) as Cell;
+    Data.Dependencies = Dependencies;
     return false;
   }
 
-  public VarGet(Name: string): Cell {
-    const Scope = this.ResolveScope(Name);
+  TryLookUpCell(Name: string): Cell {
+    const Scope = this.ResolveScopeForCell(Name);
     if (Scope === undefined) {
       throw this.Diagnostics.NotFound(Name);
     }
-    return Scope.Vars.get(Name) as Cell;
+    return Scope.Data.get(Name) as Cell;
   }
 
-  private Detect(Name: string, Dependencies: Set<string>) {
+  private DetectCircularDependencies(Name: string, Dependencies: Set<string>) {
     if (Dependencies.has(Name)) {
       throw this.Diagnostics.UsedBeforeItsDeclaration(Name);
     }
     for (const Dep of Dependencies) {
-      const Deps = this.VarGet(Dep).Dependencies;
+      const Deps = this.TryLookUpCell(Dep).Dependencies;
       if (Deps.has(Name)) {
         throw this.Diagnostics.CircularDependency(Dep);
       }
-      this.Detect(Name, Deps);
+      this.DetectCircularDependencies(Name, Deps);
     }
   }
 
-  public Assign(Node: BoundReferenceStatement, Value: number) {
-    const Var = this.VarGet(Node.Name);
+  Assign(Node: BoundReferenceStatement, Value: number) {
+    const Data = this.TryLookUpCell(Node.Name);
 
-    Var.Dependencies.forEach((Dep) => this.VarGet(Dep).DoNotNotify(Var.Name));
-    Node.Dependencies.forEach((Dep) => this.VarGet(Dep).Notify(Var.Name));
+    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
+    for (const Dep of Node.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
 
-    Var.Expression = Node.Expression;
-    Var.Dependencies = Node.Dependencies;
-    Var.Value = Value;
+    Data.Expression = Node.Expression;
+    Data.Dependencies = Node.Dependencies;
+    Data.Value = Value;
 
-    return this.DetectForChange(Var, new Set<string>());
+    return this.DetectAndNotifyForChange(Data);
   }
 
-  private *DetectForChange(Node: Cell, ForChange: Set<string>): Generator<Cell> {
+  private *DetectAndNotifyForChange(Node: Cell): Generator<Cell> {
     for (const Dep of Node.Dependents) {
-      if (ForChange.has(Dep)) continue;
-      ForChange.add(Dep);
-      const NextNode = this.VarGet(Dep);
+      if (this.ForChange.has(Dep)) continue;
+      this.ForChange.add(Dep);
+      const NextNode = this.TryLookUpCell(Dep);
       yield NextNode;
-      this.DetectForChange(NextNode, ForChange);
+      this.DetectAndNotifyForChange(NextNode);
     }
-    ForChange.clear();
+    this.ForChange.clear();
   }
 
-  public Set(Name: string, Value: number) {
-    this.VarGet(Name).Value = Value;
+  SetValueForCell(Name: string, Value: number) {
+    this.TryLookUpCell(Name).Value = Value;
   }
 }

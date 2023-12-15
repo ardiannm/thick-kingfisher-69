@@ -50,7 +50,7 @@ export class Evaluator {
     const Value = this.Evaluate(Node.Expression);
     const Dependents = this.Scope.Assign(Node, Value);
     for (const Dep of Dependents) {
-      this.Scope.Set(Dep.Name, this.Evaluate(Dep.Expression));
+      this.Scope.SetValueForCell(Dep.Name, this.Evaluate(Dep.Expression));
     }
     return Value;
   }
@@ -88,7 +88,7 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Scope.VarGet(Node.Name).Value;
+    return this.Scope.TryLookUpCell(Node.Name).Value;
   }
 
   private EvaluateNumber(Node: BoundNumber) {

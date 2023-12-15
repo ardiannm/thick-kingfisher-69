@@ -77,7 +77,7 @@ export class Binder {
         const Expression = this.Bind(Node.Expression);
         const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
         this.Scope = this.Scope.Parent as BoundScope;
-        this.Scope.VarSet(Bound.Name, Bound.Dependencies);
+        this.Scope.TryDeclareCell(Bound.Name, Bound.Dependencies);
         return Bound;
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
@@ -147,7 +147,7 @@ export class Binder {
     const BoundLeft = this.BindRangeMember(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeMember(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    this.Scope.Push(Name);
+    this.Scope.PushCell(Name);
     return new BoundCellReference(BoundKind.CellReference, Name);
   }
 
