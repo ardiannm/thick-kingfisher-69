@@ -9,16 +9,11 @@ export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
 
   public Notify(Name: string): void {
-    if (this.Dependents.has(Name)) return;
-    console.log("'" + this.Name + "' ~~~ '" + Name + "'");
     this.Dependents.add(Name);
   }
 
   public DoNotNotify(Name: string): void {
-    if (this.Dependents.has(Name)) {
-      console.log("'" + this.Name + "' ~/~ '" + Name + "'");
-      this.Dependents.delete(Name);
-    }
+    this.Dependents.delete(Name);
   }
 }
 
@@ -84,10 +79,25 @@ export class BoundScope {
     Var.Dependencies.forEach((Dep) => this.VarGet(Dep).DoNotNotify(Var.Name));
     Node.Dependencies.forEach((Dep) => this.VarGet(Dep).Notify(Var.Name));
 
-    console.log();
-
     Var.Expression = Node.Expression;
     Var.Dependencies = Node.Dependencies;
     Var.Value = Value;
+
+    return this.DetectForChange(Var, new Set<string>());
+  }
+
+  private *DetectForChange(Node: Cell, ForChange: Set<string>): Generator<Cell> {
+    for (const Dep of Node.Dependents) {
+      if (ForChange.has(Dep)) continue;
+      ForChange.add(Dep);
+      const NextNode = this.VarGet(Dep);
+      yield NextNode;
+      this.DetectForChange(NextNode, ForChange);
+    }
+    ForChange.clear();
+  }
+
+  public Set(Name: string, Value: number) {
+    this.VarGet(Name).Value = Value;
   }
 }

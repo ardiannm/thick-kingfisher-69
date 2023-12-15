@@ -48,7 +48,10 @@ export class Evaluator {
 
   private EvaluateReferenceStatement(Node: BoundReferenceStatement) {
     const Value = this.Evaluate(Node.Expression);
-    this.Scope.Assign(Node, Value);
+    const Dependents = this.Scope.Assign(Node, Value);
+    for (const Dep of Dependents) {
+      this.Scope.Set(Dep.Name, this.Evaluate(Dep.Expression));
+    }
     return Value;
   }
 
