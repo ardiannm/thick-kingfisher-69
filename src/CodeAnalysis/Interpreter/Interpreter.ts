@@ -108,7 +108,7 @@ export class Interpreter {
   public static Print<T>(Node: T, Indent = ""): string {
     var Text = "";
     if (typeof Node === "string") {
-      Text += this.Color(`${Node}`, Color.Terracotta);
+      Text += this.Color(`${Node}`, Color.Sage);
       return Text;
     }
     if (typeof Node === "number") {
@@ -126,11 +126,10 @@ export class Interpreter {
     }
     if (Node instanceof BoundNode || Node instanceof SyntaxNode) {
       for (const [Property, Branch] of Object.entries(Node)) {
-        const NextIndent = Indent + " ".repeat(1);
         if (Property === "Kind") {
-          Text += "\n" + Indent + NextIndent + this.Color(Node.Kind, Color.Azure);
+          Text += "\n" + Indent + Indent + " " + this.Color("-" + Node.Kind, Color.Azure);
         } else {
-          Text += "\n" + Indent + NextIndent + " ".repeat(1) + this.Color(" - " + Property, Color.Moss) + " " + this.Print(Branch, NextIndent);
+          Text += "\n" + Indent + Indent + " " + "  " + this.Color(Property, Color.Moss) + " " + this.Print(Branch, Indent + " ");
         }
       }
       return Text;
