@@ -14,91 +14,81 @@ export class DiagnosticBag {
     return Diagnostic;
   }
 
-  public Any() {
+  Any() {
     return this.Diagnostics.length > 0;
   }
 
-  public Clear() {
+  Clear() {
     this.Diagnostics = new Array<Diagnostic>();
   }
 
-  public BadTokenFound(Text: string) {
+  BadTokenFound(Text: string) {
     const Message = `Bad character '${Text}' found.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.BadTokenFound, Message));
   }
 
-  public TokenNotAMatch(Matched: SyntaxKind) {
+  TokenNotAMatch(Matched: SyntaxKind) {
     const Message = `Unexpected token found <${Matched}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
   }
 
-  public SourceCodeIsEmpty() {
+  ProgramIsEmpty() {
     const Message = `Source code is empty.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.EmptyProgram, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ProgramIsEmpty, Message));
   }
 
-  public MissingEvaluationMethod(Kind: BoundKind) {
+  MissingEvaluationMethod(Kind: BoundKind) {
     const Message = `Method for evaluating <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingEvaluationMethod, Message));
   }
 
-  public CantDivideByZero() {
+  CantDivideByZero() {
     const Message = `Can't divide by zero.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantDivideByZero, Message));
   }
 
-  public MissingOperatorKind(Kind: SyntaxKind) {
+  MissingOperatorKind(Kind: SyntaxKind) {
     const Message = `Unexpected operator kind <${Kind}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
   }
 
-  public CircularDependency(Name: string) {
+  CircularDependency(Name: string) {
     const Message = `Circular dependency found in '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CircularDependency, Message));
   }
 
-  public MissingBindingMethod(Kind: SyntaxKind) {
+  MissingBindingMethod(Kind: SyntaxKind) {
     const Message = `Method for binding <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingBindingMethod, Message));
   }
 
-  public CantUseAsAReference(Unexpected: string) {
+  CantUseAsAReference(Unexpected: string) {
     const Message = `<${Unexpected}> can't be used as a reference.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseAsAReference, Message));
   }
 
-  public NotFound(Name: string) {
+  NameNotFound(Name: string) {
     const Message = `Can't find name '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotFound, Message));
   }
 
-  public UsedBeforeItsDeclaration(Name: string) {
+  UsedBeforeItsDeclaration(Name: string) {
     const Message = `Using '${Name}' before its declaration.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.UsedBeforeItsDeclaration, Message));
   }
 
-  public WrongFloatingNumberFormat() {
+  WrongFloatingNumberFormat() {
     const Message = `Wrong floating number format.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.WrongFloatingNumberFormat, Message));
   }
 
-  public CantCopyNode(Left: SyntaxKind, Right: SyntaxKind) {
-    const Message = `Can't copy <${Left}> to <${Right}>`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantCopyNode, Message));
-  }
-
-  public HasNeverBeenAssigned(Name: string) {
-    const Message = `Value for '${Name}' has never been assigned.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.HasNeverBeenAssigned, Message));
-  }
-
-  public DocumentDoesNotExist(Name: string) {
-    const Message = `Document for '${Name}' doesn't exist.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.DocumentDoesNotExist, Message));
-  }
-
-  public NotARangeMember(Name: string) {
-    const Message = `<${Name}> is not a range member and it can't be bound.`;
+  NotARangeMember(Kind: SyntaxKind) {
+    const Message = `<${Kind}> is not a range member and it can't be bound.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotARangeMember, Message));
+  }
+
+  CantWriteExpression(Kind: SyntaxKind) {
+    const Message = `<${Kind}> can't be written directly outside in the global scope.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantWriteExpression, Message));
   }
 }

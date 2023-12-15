@@ -34,7 +34,7 @@ export class Parser {
       this.ExpectToken(SyntaxKind.EndOfFileToken);
       return new Program(SyntaxKind.Program, Statements);
     }
-    throw this.Diagnostics.SourceCodeIsEmpty();
+    throw this.Diagnostics.ProgramIsEmpty();
   }
 
   private ParseStatement() {

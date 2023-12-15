@@ -56,7 +56,7 @@ export class BoundScope {
   TryLookUpCell(Name: string): Cell {
     const Scope = this.ResolveScopeForCell(Name);
     if (Scope === undefined) {
-      throw this.Diagnostics.NotFound(Name);
+      throw this.Diagnostics.NameNotFound(Name);
     }
     return Scope.Data.get(Name) as Cell;
   }

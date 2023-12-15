@@ -87,7 +87,7 @@ export class Interpreter {
   private ErrorHandler(error: Error) {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
-      if (Diagnostic.Code !== DiagnosticCode.EmptyProgram) this.Buffer.push("# " + this.Buffer.pop());
+      if (Diagnostic.Code !== DiagnosticCode.ProgramIsEmpty) this.Buffer.push("# " + this.Buffer.pop());
       this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
     } else {
       console.log(error);

@@ -59,14 +59,20 @@ export class Binder {
 
   private BindProgram(Node: Program) {
     if (Node.Root.length === 0) {
-      throw this.Diagnostics.SourceCodeIsEmpty();
+      throw this.Diagnostics.ProgramIsEmpty();
     }
-    const BoundStatements = new Array<BoundStatement>();
-    for (const Statement of Node.Root) {
-      const Bound = this.Bind(Statement);
-      BoundStatements.push(Bound);
+    const Root = new Array<BoundStatement>();
+    for (const Branch of Node.Root) {
+      switch (Branch.Kind) {
+        case SyntaxKind.CellReference:
+        case SyntaxKind.ReferenceStatement:
+          Root.push(this.Bind(Branch));
+          continue;
+        default:
+          throw this.Diagnostics.CantWriteExpression(Branch.Kind);
+      }
     }
-    return new BoundProgram(BoundKind.Program, BoundStatements, this.Scope);
+    return new BoundProgram(BoundKind.Program, Root, this.Scope);
   }
 
   private BindReferenceStatement(Node: DeclarationStatement) {

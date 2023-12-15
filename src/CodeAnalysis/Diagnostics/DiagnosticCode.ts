@@ -1,5 +1,5 @@
 export enum DiagnosticCode {
-  EmptyProgram,
+  ProgramIsEmpty,
   BadTokenFound,
   TokenNotAMatch,
   MissingEvaluationMethod,
@@ -15,4 +15,5 @@ export enum DiagnosticCode {
   HasNeverBeenAssigned,
   DocumentDoesNotExist,
   NotARangeMember,
+  CantWriteExpression,
 }
