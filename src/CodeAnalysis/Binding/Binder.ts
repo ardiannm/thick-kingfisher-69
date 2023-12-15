@@ -30,7 +30,8 @@ import { IsReferable } from "./IsReferable";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
-  private Scope: BoundScope = new BoundScope(undefined);
+
+  constructor(private Scope: BoundScope) {}
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;

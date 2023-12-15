@@ -11,11 +11,13 @@ import { BoundNode } from "../Binding/BoundNode";
 import { SyntaxNode } from "../Syntax/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
+import { BoundScope } from "../Binding/BoundScope";
 
 export class Interpreter {
   // private Env = new Environment();
   private Buffer = new Array<string>();
   private Width = 0;
+  private Scope = new BoundScope(undefined);
 
   private LoadSource(): string {
     const FullPath = path.join(".", "src", "IO", ".lang");
@@ -49,19 +51,20 @@ export class Interpreter {
       }
 
       try {
-        this.Evaluate();
+        this.Evaluate(InputLine);
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
     }
   }
 
-  private Evaluate() {
-    const BoundTree = SyntaxTree.Bind(this.Input);
-    this.Print(this.Input);
+  private Evaluate(InputLine: string) {
+    const BoundTree = SyntaxTree.Bind(InputLine, this.Scope);
+    this.LoggerLog(this.Input);
     const Evaluation = new Evaluator(BoundTree.Scope).Evaluate(BoundTree);
     const Value = JSON.stringify(Evaluation);
-    this.Print(Interpreter.Color(Value, Color.Sage));
+    console.log();
+    this.LoggerLog(Interpreter.Color(Value, Color.Azure));
   }
 
   private ResetBuffer() {
@@ -71,7 +74,8 @@ export class Interpreter {
 
   private ShowTree() {
     try {
-      this.Print(Interpreter.Print(SyntaxTree.Bind(this.Input)));
+      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input, this.Scope));
+      this.LoggerLog(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
@@ -81,20 +85,20 @@ export class Interpreter {
     console.clear();
     this.Buffer.pop();
     const Message = this.Buffer.length > 0 ? "Interpreter: Line " + (this.Buffer.length + 1) + " removed." : "";
-    this.Print(this.Input, Message);
+    this.LoggerLog(this.Input, Message);
   }
 
   private ErrorHandler(error: Error) {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.ProgramIsEmpty) this.Buffer.push("# " + this.Buffer.pop());
-      this.Print(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
+      this.LoggerLog(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
     } else {
       console.log(error);
     }
   }
 
-  private Print(Str: string = "", Message?: string) {
+  private LoggerLog(Str: string = "", Message?: string) {
     console.log(Str);
     if (Message) console.log("\n" + Message);
     console.log();

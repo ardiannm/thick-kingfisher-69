@@ -6,6 +6,7 @@ import { SourceText } from "../SourceText/SourceText";
 import { Binder } from "../Binding/Binder";
 import { BoundNode } from "../Binding/BoundNode";
 import { BoundProgram } from "../Binding/BoundProgram";
+import { BoundScope } from "../Binding/BoundScope";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -30,9 +31,9 @@ export class SyntaxTree {
     return new Parser(Source).Parse();
   }
 
-  static Bind(Text: string) {
+  static Bind(Text: string, Scope: BoundScope) {
     const Source = SourceText.From(Text);
     const Tree = new Parser(Source).Parse();
-    return new Binder().Bind(Tree) as BoundProgram;
+    return new Binder(Scope).Bind(Tree) as BoundProgram;
   }
 }
