@@ -1,9 +1,9 @@
-import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { Facts } from "./Syntax/Facts";
-import { SourceText } from "./SourceText/SourceText";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
+import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxToken } from "./SyntaxToken";
+import { Facts } from "./Facts";
+import { SourceText } from "../SourceText/SourceText";
+import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Lexer {
   private Index = 0;

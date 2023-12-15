@@ -10,7 +10,7 @@ import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
 import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
-import { BoundScope } from "./CodeAnalysis/BoundScope";
+import { BoundScope } from "./CodeAnalysis/Binding/BoundScope";
 import { BoundReferenceStatement } from "./CodeAnalysis/Binding/BoundReferenceStatement";
 
 export class Evaluator {

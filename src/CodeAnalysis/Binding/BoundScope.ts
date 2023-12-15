@@ -1,9 +1,9 @@
-import { BoundExpression } from "./Binding/BoundExpression";
-import { BoundKind } from "./Binding/BoundKind";
-import { BoundNumber } from "./Binding/BoundNumber";
-import { BoundReferenceStatement } from "./Binding/BoundReferenceStatement";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
+import { BoundExpression } from "./BoundExpression";
+import { BoundKind } from "./BoundKind";
+import { BoundNumber } from "./BoundNumber";
+import { BoundReferenceStatement } from "./BoundReferenceStatement";
+import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}

@@ -1,4 +1,4 @@
-import { BoundScope } from "../BoundScope";
+import { BoundScope } from "./BoundScope";
 import { BoundKind } from "./BoundKind";
 import { BoundStatement } from "./BoundStatement";
 

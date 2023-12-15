@@ -3,13 +3,13 @@ import Promp from "readline-sync";
 // import * as fs from "fs";
 // import * as path from "path";
 
-import { Diagnostic } from "../CodeAnalysis/Diagnostics/Diagnostic";
-import { SyntaxTree } from "../CodeAnalysis/Syntax/SyntaxTree";
+import { Diagnostic } from "../Diagnostics/Diagnostic";
+import { SyntaxTree } from "../Syntax/SyntaxTree";
 // import { Environment } from "../Environment";
-import { Evaluator } from "../Evaluator";
-import { DiagnosticCode } from "../CodeAnalysis/Diagnostics/DiagnosticCode";
-import { BoundNode } from "../CodeAnalysis/Binding/BoundNode";
-import { SyntaxNode } from "../CodeAnalysis/Syntax/SyntaxNode";
+import { Evaluator } from "../../Evaluator";
+import { DiagnosticCode } from "../Diagnostics/DiagnosticCode";
+import { BoundNode } from "../Binding/BoundNode";
+import { SyntaxNode } from "../Syntax/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
 

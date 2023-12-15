@@ -1,9 +1,9 @@
-import { Lexer } from "../Lexer";
-import { Parser } from "../Parser";
+import { Lexer } from "./Lexer";
+import { Parser } from "./Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
-import { Binder } from "../Binder";
+import { Binder } from "../Binding/Binder";
 import { BoundNode } from "../Binding/BoundNode";
 import { BoundProgram } from "../Binding/BoundProgram";
 

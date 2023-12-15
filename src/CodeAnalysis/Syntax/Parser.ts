@@ -1,19 +1,19 @@
-import { SyntaxKind } from "./Syntax/SyntaxKind";
-import { SyntaxToken } from "./Syntax/SyntaxToken";
-import { SyntaxTree } from "./Syntax/SyntaxTree";
-import { BinaryExpression } from "./Syntax/BinaryExpression";
-import { UnaryExpression } from "./Syntax/UnaryExpression";
-import { ParenthesizedExpression } from "./Syntax/ParenthesizedExpression";
-import { RangeReference } from "./Syntax/RangeReference";
-import { CellReference } from "./Syntax/CellReference";
-import { Facts } from "./Syntax/Facts";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { SourceText } from "./SourceText/SourceText";
-import { ExpressionSyntax } from "./Syntax/ExpressionSyntax";
-import { Program } from "./Syntax/Program";
-import { StatementSyntax } from "./Syntax/StatementSyntax";
-import { DeclarationStatement } from "./Syntax/DeclarationStatement";
-import { DiagnosticKind } from "./Diagnostics/DiagnosticKind";
+import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxToken } from "./SyntaxToken";
+import { SyntaxTree } from "./SyntaxTree";
+import { BinaryExpression } from "./BinaryExpression";
+import { UnaryExpression } from "./UnaryExpression";
+import { ParenthesizedExpression } from "./ParenthesizedExpression";
+import { RangeReference } from "./RangeReference";
+import { CellReference } from "./CellReference";
+import { Facts } from "./Facts";
+import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
+import { SourceText } from "../SourceText/SourceText";
+import { ExpressionSyntax } from "./ExpressionSyntax";
+import { Program } from "./Program";
+import { StatementSyntax } from "./StatementSyntax";
+import { DeclarationStatement } from "./DeclarationStatement";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Parser {
   private Index = 0;
