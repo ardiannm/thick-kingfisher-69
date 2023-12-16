@@ -37,9 +37,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ProgramIsEmpty, Message));
   }
 
-  MissingEvaluationMethod(Kind: BoundKind) {
-    const Message = `Method for evaluating <${Kind}> is missing.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingEvaluationMethod, Message));
+  MissingMethod(Kind: SyntaxKind | BoundKind) {
+    const Message = `Method for <${Kind}> is missing.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
   }
 
   CantDivideByZero() {
@@ -55,11 +55,6 @@ export class DiagnosticBag {
   CircularDependency(Name: string) {
     const Message = `Circular dependency found in '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CircularDependency, Message));
-  }
-
-  MissingBindingMethod(Kind: SyntaxKind) {
-    const Message = `Method for binding <${Kind}> is missing.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingBindingMethod, Message));
   }
 
   CantUseAsAReference(Unexpected: string) {

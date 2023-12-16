@@ -54,7 +54,7 @@ export class Binder {
       case SyntaxKind.ReferenceStatement:
         return this.BindReferenceStatement(Node as NodeType<DeclarationStatement>);
     }
-    throw this.Diagnostics.MissingBindingMethod(Node.Kind);
+    throw this.Diagnostics.MissingMethod(Node.Kind);
   }
 
   private BindProgram(Node: Program) {

@@ -35,7 +35,7 @@ export class Evaluator {
       case BoundKind.ReferenceStatement:
         return this.EvaluateReferenceStatement(Node as NodeType<BoundReferenceStatement>);
       default:
-        throw this.Diagnostics.MissingEvaluationMethod(Node.Kind);
+        throw this.Diagnostics.MissingMethod(Node.Kind);
     }
   }
 
