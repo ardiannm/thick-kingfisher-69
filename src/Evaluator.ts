@@ -1,17 +1,17 @@
-import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
-import { BoundKind } from "./CodeAnalysis/Binding/BoundKind";
-import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
-import { BoundNumber } from "./CodeAnalysis/Binding/BoundNumber";
-import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/BoundBinaryOperatorKind";
-import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
+import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
+import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
+import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
+import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
+import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
-import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/BoundUnaryOperatorKind";
-import { BoundCellReference } from "./CodeAnalysis/Binding/BoundCellReference";
-import { CellReference } from "./CodeAnalysis/Syntax/CellReference";
-import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
+import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
+import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
+import { CellReference } from "./CodeAnalysis/Parser/CellReference";
+import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
-import { BoundScope } from "./CodeAnalysis/Binding/BoundScope";
-import { BoundReferenceStatement } from "./CodeAnalysis/Binding/BoundReferenceStatement";
+import { BoundScope } from "./CodeAnalysis/Binder/BoundScope";
+import { BoundReferenceStatement } from "./CodeAnalysis/Binder/BoundReferenceStatement";
 
 export class Evaluator {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);

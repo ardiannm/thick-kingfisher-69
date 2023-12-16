@@ -3,10 +3,10 @@ import { Parser } from "./Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../SourceText/SourceText";
-import { Binder } from "../Binding/Binder";
-import { BoundNode } from "../Binding/BoundNode";
-import { BoundProgram } from "../Binding/BoundProgram";
-import { BoundScope } from "../Binding/BoundScope";
+import { Binder } from "../Binder/Binder";
+import { BoundNode } from "../Binder/BoundNode";
+import { BoundProgram } from "../Binder/BoundProgram";
+import { BoundScope } from "../Binder/BoundScope";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}

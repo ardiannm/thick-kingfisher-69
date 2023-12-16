@@ -4,11 +4,11 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { Diagnostic } from "../Diagnostics/Diagnostic";
-import { SyntaxTree } from "../Syntax/SyntaxTree";
+import { SyntaxTree } from "../Parser/SyntaxTree";
 import { Evaluator } from "../../Evaluator";
 import { DiagnosticCode } from "../Diagnostics/DiagnosticCode";
-import { BoundNode } from "../Binding/BoundNode";
-import { SyntaxNode } from "../Syntax/SyntaxNode";
+import { BoundNode } from "../Binder/BoundNode";
+import { SyntaxNode } from "../Parser/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
 
