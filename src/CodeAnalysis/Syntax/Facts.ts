@@ -61,8 +61,6 @@ export class Facts {
         return SyntaxKind.TrueKeyword;
       case "false":
         return SyntaxKind.FalseKeyword;
-      case "copy":
-        return SyntaxKind.CopyKeyword;
       default:
         return SyntaxKind.IdentifierToken;
     }

@@ -41,7 +41,6 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     switch (this.Token.Kind) {
       case SyntaxKind.PointerToken:
-      case SyntaxKind.CopyStatement:
         return new DeclarationStatement(SyntaxKind.ReferenceStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;

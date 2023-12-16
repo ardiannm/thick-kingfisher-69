@@ -1,7 +1,6 @@
 export enum SyntaxKind {
   Program = "Program",
   ReferenceStatement = "ReferenceStatement",
-  CopyStatement = "CopyStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   ParenthesizedExpression = "ParenthesizedExpression",
@@ -13,7 +12,6 @@ export enum SyntaxKind {
   NewLineToken = "NewLineToken",
   TrueKeyword = "TrueKeyword",
   FalseKeyword = "FalseKeyword",
-  CopyKeyword = "CopyKeyword",
   PointerToken = "PointerToken",
   SpaceToken = "SpaceToken",
   PlusToken = "PlusToken",
