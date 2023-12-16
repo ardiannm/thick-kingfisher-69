@@ -11,6 +11,8 @@ import { BoundNode } from "../Binder/BoundNode";
 import { SyntaxNode } from "../Parser/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
+import { Rewriter } from "../Rewriter/Rewriter";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Interpreter {
   // private Env = new Environment();
@@ -50,7 +52,13 @@ export class Interpreter {
 
       try {
         console.clear();
-        console.log(JSON.stringify(SyntaxTree.Parse(InputLine), undefined, 2));
+        const Tree = SyntaxTree.Parse(InputLine);
+        console.log(JSON.stringify(Tree, undefined, 2));
+        const New = new Rewriter().Rewrite(Tree);
+        console.log();
+        console.log(Interpreter.Color(DiagnosticKind.Rewriter, Color.Teal));
+        console.log();
+        console.log(JSON.stringify(New, undefined, 2));
         // this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
