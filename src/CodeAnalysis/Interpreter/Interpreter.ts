@@ -53,7 +53,7 @@ export class Interpreter {
       try {
         console.clear();
         const Tree = SyntaxTree.Parse(InputLine);
-        console.log(JSON.stringify(Tree, undefined, 2));
+        // console.log(JSON.stringify(Tree, undefined, 2));
         const New = new Rewriter().Rewrite(Tree);
         console.log();
         console.log(Interpreter.Color(DiagnosticKind.Rewriter, Color.Teal));

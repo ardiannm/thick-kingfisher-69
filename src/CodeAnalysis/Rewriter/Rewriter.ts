@@ -1,6 +1,7 @@
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { BinaryExpression } from "../Parser/BinaryExpression";
+import { Facts } from "../Parser/Facts";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
 import { SyntaxKind } from "../Parser/SyntaxKind";
@@ -52,6 +53,15 @@ export class Rewriter {
   private RewriteBinaryExpression(Node: BinaryExpression) {
     Node.Left = this.Rewrite(Node.Left);
     Node.Right = this.Rewrite(Node.Right);
+    var Right = Node.Right as BinaryExpression;
+    if (Right.Kind === SyntaxKind.BinaryExpression) {
+      const Precedence = Facts.BinaryOperatorPrecedence(Right.Operator.Kind) === Facts.BinaryOperatorPrecedence(Node.Operator.Kind);
+      if (Precedence) {
+        const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, this.Rewrite(Right.Left));
+        const Written = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Right.Operator, this.Rewrite(Right.Right));
+        return this.Rewrite(Written);
+      }
+    }
     return Node;
   }
 }
