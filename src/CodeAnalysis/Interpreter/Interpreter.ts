@@ -49,7 +49,9 @@ export class Interpreter {
       }
 
       try {
-        this.Evaluate();
+        console.clear();
+        console.log(JSON.stringify(SyntaxTree.Parse(InputLine), undefined, 2));
+        // this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
@@ -107,7 +109,7 @@ export class Interpreter {
     return this.Buffer.join("\n");
   }
 
-  public static Print<T>(Node: T, Indent = ""): string {
+  static Print<T>(Node: T, Indent = ""): string {
     var Text = "";
     if (typeof Node === "string") {
       Text += this.Color(`${Node}`, Color.Sage);
@@ -151,7 +153,7 @@ export class Interpreter {
     return new RgbColor(r, g, b);
   }
 
-  public static HexToColorCode(Hex: string) {
+  static HexToColorCode(Hex: string) {
     const RgbColor = this.HexToRgb(Hex);
     return `\x1b[38;2;${RgbColor.r};${RgbColor.g};${RgbColor.b}m`;
   }
