@@ -78,6 +78,7 @@ export class BoundScope {
   }
 
   Assign(Node: BoundReferenceStatement, Value: number) {
+    console.log();
     this.LastExec = Node.Name + " " + Value;
 
     const Data = this.TryLookUpCell(Node.Name);
@@ -116,7 +117,7 @@ export class BoundScope {
       Text += Math.abs(Diff) + ")";
     }
 
-    console.log(Interpreter.Color(this.LastExec + "\t// " + Text, Color.Moss));
+    console.log(Interpreter.Color(this.LastExec + "\t" + Text, Color.Moss));
     Data.Value = Value;
   }
 }

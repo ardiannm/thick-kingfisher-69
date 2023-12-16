@@ -11,13 +11,11 @@ import { BoundNode } from "../Binding/BoundNode";
 import { SyntaxNode } from "../Syntax/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
-import { BoundScope } from "../Binding/BoundScope";
 
 export class Interpreter {
   // private Env = new Environment();
   private Buffer = new Array<string>();
   private Width = 0;
-  private Scope = new BoundScope(undefined);
 
   private LoadSource(): string {
     const FullPath = path.join(".", "src", "IO", ".lang");
@@ -51,15 +49,15 @@ export class Interpreter {
       }
 
       try {
-        this.Evaluate(InputLine);
+        this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
     }
   }
 
-  private Evaluate(InputLine: string) {
-    const BoundTree = SyntaxTree.Bind(this.Input, this.Scope);
+  private Evaluate() {
+    const BoundTree = SyntaxTree.Bind(this.Input);
     this.LoggerLog(this.Input);
     const Evaluation = new Evaluator(BoundTree.Scope).Evaluate(BoundTree);
     const Value = JSON.stringify(Evaluation);
@@ -74,7 +72,7 @@ export class Interpreter {
 
   private ShowTree() {
     try {
-      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input, this.Scope));
+      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input));
       this.LoggerLog(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);

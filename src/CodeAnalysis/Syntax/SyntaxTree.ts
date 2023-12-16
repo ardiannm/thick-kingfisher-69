@@ -31,9 +31,9 @@ export class SyntaxTree {
     return new Parser(Source).Parse();
   }
 
-  static Bind(Text: string, Scope: BoundScope) {
+  static Bind(Text: string) {
     const Source = SourceText.From(Text);
     const Tree = new Parser(Source).Parse();
-    return new Binder(Scope).Bind(Tree) as BoundProgram;
+    return new Binder().Bind(Tree) as BoundProgram;
   }
 }
