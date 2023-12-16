@@ -3,3 +3,7 @@ A2 -> A1+3
 A3 -> A1+A2+4
 A4 -> A1+A2+A3+5
 A3 -> 6
+A1 -> 3 # should not call for A3 but it does
+A2 -> 4
+A4 -> 0
+A2 -> 7 # should not call for A4 but it does

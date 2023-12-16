@@ -27,6 +27,7 @@ export class BoundScope {
 
   Names = new Set<string>();
 
+  private LastExec: string = "";
   constructor(public Parent: BoundScope | undefined) {}
 
   PushCell(Name: string) {
@@ -77,6 +78,8 @@ export class BoundScope {
   }
 
   Assign(Node: BoundReferenceStatement, Value: number) {
+    this.LastExec = Node.Name + " " + Value;
+
     const Data = this.TryLookUpCell(Node.Name);
 
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
@@ -101,7 +104,19 @@ export class BoundScope {
   }
 
   SetValueForCell(Name: string, Value: number) {
-    console.log(Interpreter.Color(Name + " -> " + Value, Color.Moss));
-    this.TryLookUpCell(Name).Value = Value;
+    const Data = this.TryLookUpCell(Name);
+
+    const Diff = Value - Data.Value;
+    var Text = Name + " -> " + Value;
+
+    if (Diff !== 0) {
+      Text += " (";
+      if (Diff > 0) Text += "+";
+      else if (Diff < 0) Text += "-";
+      Text += Math.abs(Diff) + ")";
+    }
+
+    console.log(Interpreter.Color(this.LastExec + "\t// " + Text, Color.Moss));
+    Data.Value = Value;
   }
 }
