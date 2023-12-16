@@ -1,5 +1,7 @@
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
+import { BinaryExpression } from "../Parser/BinaryExpression";
+import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
@@ -19,6 +21,10 @@ export class Rewriter {
         return this.RewriteProgram(Node as NodeType<Program>);
       case SyntaxKind.UnaryExpression:
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
+      case SyntaxKind.ParenthesizedExpression:
+        return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
+      case SyntaxKind.BinaryExpression:
+        return this.RewriteBinaryExpression(Node as NodeType<BinaryExpression>);
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
     }
@@ -36,6 +42,16 @@ export class Rewriter {
     }
     Node.Right = this.Rewrite(Node.Right);
     if (Node.Operator.Kind === SyntaxKind.PlusToken) return this.Rewrite(Node.Right);
+    return Node;
+  }
+
+  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Rewrite(Node.Expression);
+  }
+
+  private RewriteBinaryExpression(Node: BinaryExpression) {
+    Node.Left = this.Rewrite(Node.Left);
+    Node.Right = this.Rewrite(Node.Right);
     return Node;
   }
 }
