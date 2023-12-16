@@ -7,3 +7,4 @@ A1 -> 3 # should not call for A3 but it does
 A2 -> 4
 A4 -> 0
 A2 -> 7 # should not call for A4 but it does
+A1

@@ -1,6 +1,10 @@
 {
   "version": "3.4.1",
   "description": "",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/ardiannm/Parser.git"
+  },
   "scripts": {
     "dev": "npm start",
     "test": "npm run build && node obj/test.js",
