@@ -44,7 +44,7 @@ export class Rewriter {
     }
     Node.Right = this.Rewrite(Node.Right);
     if (Node.Operator.Kind === SyntaxKind.PlusToken) return this.Rewrite(Node.Right);
-    return Node;
+    return this.SwitchOperator(Node);
   }
 
   private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -82,6 +82,8 @@ export class Rewriter {
         return this.SwitchBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.SwitchOperator((Node as NodeType<ParenthesizedExpression>).Expression);
+      case SyntaxKind.UnaryExpression:
+        return this.SwitchOperator((Node as NodeType<UnaryExpression>).Right);
       default:
         throw this.Diagnostics.MissingSwitchMethod(Node.Kind);
     }

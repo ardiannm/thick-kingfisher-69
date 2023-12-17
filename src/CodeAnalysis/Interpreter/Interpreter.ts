@@ -58,7 +58,7 @@ export class Interpreter {
         console.log();
         console.log(Interpreter.Color(DiagnosticKind.Rewriter, Color.Teal));
         console.log();
-        console.log(JSON.stringify(New, undefined, 2));
+        console.log(JSON.stringify(New.ObjectId, undefined, 2));
         // this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
