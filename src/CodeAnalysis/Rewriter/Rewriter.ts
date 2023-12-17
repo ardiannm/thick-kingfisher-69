@@ -52,7 +52,7 @@ export class Rewriter {
         return this.Rewrite(Node.Right);
 
       case SyntaxKind.MinusToken:
-        return new UnaryExpression(SyntaxKind.UnaryExpression, Node.Operator, this.Rewrite(Node.Right));
+        return this.SwitchOperator(this.Rewrite(Node.Right));
     }
     return Node;
   }
