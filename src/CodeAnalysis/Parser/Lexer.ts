@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { Facts } from "./Facts";
-import { SourceText } from "../SourceText/SourceText";
+import { SourceText } from "../Text/SourceText";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 

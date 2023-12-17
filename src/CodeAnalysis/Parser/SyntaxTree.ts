@@ -2,7 +2,7 @@ import { Lexer } from "./Lexer";
 import { Parser } from "./Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
-import { SourceText } from "../SourceText/SourceText";
+import { SourceText } from "../Text/SourceText";
 import { Binder } from "../Binder/Binder";
 import { BoundNode } from "../Binder/BoundNode";
 import { BoundProgram } from "../Binder/BoundProgram";

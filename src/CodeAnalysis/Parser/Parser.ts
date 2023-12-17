@@ -8,7 +8,7 @@ import { RangeReference } from "./RangeReference";
 import { CellReference } from "./CellReference";
 import { Facts } from "./Facts";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
-import { SourceText } from "../SourceText/SourceText";
+import { SourceText } from "../Text/SourceText";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
