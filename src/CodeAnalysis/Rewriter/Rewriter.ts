@@ -37,12 +37,7 @@ export class Rewriter {
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    const Right = this.Rewrite(Node.Right) as UnaryExpression;
-    if (Right.Kind === SyntaxKind.UnaryExpression) {
-      const Operator = this.SwitchSign(Node.Operator);
-      return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Operator, Right.Right);
-    }
-    return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, Right);
+    return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
   }
 
   private RewriteUnaryExpression(Node: UnaryExpression) {
@@ -58,8 +53,6 @@ export class Rewriter {
   SwitchSign<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case SyntaxKind.BinaryExpression:
-        return this.SwitchBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.UnaryExpression:
         return this.SwitchUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
@@ -86,8 +79,13 @@ export class Rewriter {
   }
 
   private SwitchBinaryExpression(Node: BinaryExpression) {
-    const Binary = new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchSign(Node.Left), Node.Operator, this.SwitchSign(Node.Right));
-    return this.Rewrite(Binary);
+    switch (Node.Operator.Kind) {
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
+        return this.Rewrite(new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchSign(Node.Left), Node.Operator, this.SwitchSign(Node.Right)));
+      case SyntaxKind.StarToken:
+        return this.Rewrite(new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchSign(Node.Left), Node.Operator, this.SwitchSign(Node.Right)));
+    }
   }
 
   private SwitchUnaryExpression(Node: UnaryExpression) {
