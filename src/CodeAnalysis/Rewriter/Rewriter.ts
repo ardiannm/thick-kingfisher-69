@@ -23,6 +23,7 @@ export class Rewriter {
       case SyntaxKind.ParenthesizedExpression:
         return this.Rewrite((Node as NodeType<ParenthesizedExpression>).Expression);
       case SyntaxKind.NumberToken:
+      case SyntaxKind.CellReference:
         return Node;
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
@@ -51,13 +52,7 @@ export class Rewriter {
         return this.Rewrite(Node.Right);
 
       case SyntaxKind.MinusToken:
-        switch (Node.Right.Kind) {
-          case SyntaxKind.UnaryExpression:
-            const Left = Node.Right as UnaryExpression;
-            if (Left.Operator.Kind === SyntaxKind.MinusToken) return this.Rewrite(Left.Right);
-          default:
-            return this.SwitchOperator(Node.Right);
-        }
+        return new UnaryExpression(SyntaxKind.UnaryExpression, Node.Operator, this.Rewrite(Node.Right));
     }
     return Node;
   }
@@ -72,7 +67,8 @@ export class Rewriter {
       case SyntaxKind.ParenthesizedExpression:
         return this.SwitchParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.NumberToken:
-        return this.SwitchNumberToken(Node as NodeType<SyntaxToken>);
+      case SyntaxKind.CellReference:
+        return this.SwitchSyntaxNode(Node as NodeType<SyntaxNode>);
       case SyntaxKind.PlusToken:
         return new SyntaxToken(SyntaxKind.MinusToken, "-");
       case SyntaxKind.MinusToken:
@@ -86,7 +82,7 @@ export class Rewriter {
     return this.SwitchOperator(Node.Expression);
   }
 
-  private SwitchNumberToken(Node: SyntaxToken) {
+  private SwitchSyntaxNode(Node: SyntaxNode) {
     return new UnaryExpression(SyntaxKind.UnaryExpression, new SyntaxToken(SyntaxKind.MinusToken, "-"), Node);
   }
 

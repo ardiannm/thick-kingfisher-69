@@ -120,8 +120,8 @@ export class Binder {
         switch (Node.Right.Kind) {
           case SyntaxKind.NumberToken:
             return new BoundNumber(BoundKind.Number, -Right.Value);
-          case SyntaxKind.NumberToken:
-            return Right;
+          default:
+            throw this.Diagnostics.MissingMethod(Node.Right.Kind);
         }
       case BoundUnaryOperatorKind.Identity:
         return Right;

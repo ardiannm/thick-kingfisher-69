@@ -73,7 +73,7 @@ export class Interpreter {
 
   private ShowTree() {
     try {
-      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input));
+      const Tree = Interpreter.Print(SyntaxTree.Rewrite(this.Input));
       this.LoggerLog(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);
