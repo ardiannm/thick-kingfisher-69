@@ -22,6 +22,7 @@ export class Rewriter {
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.Rewrite((Node as NodeType<ParenthesizedExpression>).Expression);
+      case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
         return Node;
@@ -66,6 +67,7 @@ export class Rewriter {
         return this.SwitchUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.SwitchParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
+      case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
         return this.SwitchSyntaxNode(Node as NodeType<SyntaxNode>);

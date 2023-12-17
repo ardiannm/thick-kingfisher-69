@@ -119,10 +119,11 @@ export class Binder {
     switch (Operator) {
       case BoundUnaryOperatorKind.Negation:
         switch (Node.Right.Kind) {
-          case SyntaxKind.CellReference:
-            return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
           case SyntaxKind.NumberToken:
             return new BoundNumber(BoundKind.Number, -Right.Value);
+          case SyntaxKind.IdentifierToken:
+          case SyntaxKind.CellReference:
+            return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
           default:
             throw this.Diagnostics.MissingUnaryOperatorMethod(Operator, Node.Right.Kind);
         }
