@@ -53,12 +53,13 @@ export class Interpreter {
       try {
         console.clear();
         const Tree = SyntaxTree.Parse(InputLine);
-        // console.log(JSON.stringify(Tree, undefined, 2));
         const Written = new Rewriter().Rewrite(Tree);
-        console.log();
-        console.log(Interpreter.Color(DiagnosticKind.Rewriter, Color.Teal));
-        console.log();
-        console.log(JSON.stringify(Written.ObjectId, undefined, 2));
+
+        console.log(Interpreter.Color("------------------------ TREE -------------------------------------", Color.Teal));
+        console.log(JSON.stringify(Tree, undefined, 2));
+        console.log(Interpreter.Color("----------------------- REWRITER ----------------------------------", Color.Teal));
+        console.log(JSON.stringify(Written, undefined, 2));
+
         // this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);
