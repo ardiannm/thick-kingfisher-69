@@ -49,7 +49,7 @@ export class Parser {
   private ParseBinaryExpression(ParentPrecedence = 0): ExpressionSyntax {
     let Left = this.ParseUnaryExpression();
     while (true) {
-      const BinaryPrecedence = Facts.BinaryOperatorPrecedence(this.Token.Kind);
+      const BinaryPrecedence = Facts.BinaryPrecedence(this.Token.Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
@@ -61,7 +61,7 @@ export class Parser {
   }
 
   private ParseUnaryExpression(): ExpressionSyntax {
-    const BinaryPrecedence = Facts.UnaryOperatorPrecedence(this.Token.Kind);
+    const BinaryPrecedence = Facts.UnaryPrecedence(this.Token.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken();
       const Right = this.ParseUnaryExpression();

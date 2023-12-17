@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./SyntaxKind";
 
 export class Facts {
-  public static UnaryOperatorPrecedence(kind: SyntaxKind) {
+  public static UnaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.PlusToken:
       case SyntaxKind.MinusToken:
@@ -11,7 +11,7 @@ export class Facts {
     }
   }
 
-  public static BinaryOperatorPrecedence(kind: SyntaxKind) {
+  public static BinaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.StarToken:
       case SyntaxKind.SlashToken:
