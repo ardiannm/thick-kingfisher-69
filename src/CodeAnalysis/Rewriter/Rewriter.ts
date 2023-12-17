@@ -15,18 +15,13 @@ export class Rewriter {
   Rewrite<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case SyntaxKind.NumberToken:
-      case SyntaxKind.CellReference:
-      case SyntaxKind.RangeReference:
-        return Node;
       case SyntaxKind.Program:
         return this.RewriteProgram(Node as NodeType<Program>);
-      case SyntaxKind.UnaryExpression:
-        return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.RewriteBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.ParenthesizedExpression:
-        return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
+      case SyntaxKind.UnaryExpression:
+      case SyntaxKind.NumberToken:
+        return Node;
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
     }
@@ -37,89 +32,35 @@ export class Rewriter {
     return new Program(SyntaxKind.Program, Root);
   }
 
-  private RewriteUnaryExpression(Node: UnaryExpression) {
-    // return this.SwitchOperator(Node);
-
-    switch (Node.Operator.Kind) {
-      // just return in case plus token
-      case SyntaxKind.PlusToken:
-        return this.Rewrite(Node.Right);
-
-      case SyntaxKind.MinusToken:
-        switch (Node.Right.Kind) {
-          case SyntaxKind.UnaryExpression:
-          case SyntaxKind.ParenthesizedExpression:
-            return this.Rewrite(this.SwitchOperator(Node.Right));
-        }
-    }
-    return new UnaryExpression(SyntaxKind.UnaryExpression, Node.Operator, this.Rewrite(Node.Right));
-  }
-
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    const Binary = new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
-    return this.FlattenBinaryExpression(Binary);
-  }
-
-  private FlattenBinaryExpression(Node: BinaryExpression): BinaryExpression {
-    if (Node.Right.Kind === SyntaxKind.BinaryExpression) {
-      const Right = Node.Right as BinaryExpression;
-      const LeftPrecendence = Facts.BinaryPrecedence(Node.Operator.Kind);
-      const RightPrecendence = Facts.BinaryPrecedence(Right.Operator.Kind);
-      if (LeftPrecendence === RightPrecendence) {
-        const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
-        const Written = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Right.Operator, Right.Right);
-        return this.FlattenBinaryExpression(Written);
-      }
-      return new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, this.FlattenBinaryExpression(Right));
+    switch (Node.Operator.Kind) {
+      case SyntaxKind.MinusToken:
+        const Left = this.Rewrite(Node.Left);
+        const Right = this.Rewrite(this.SwitchOperator(Node.Right));
+        const Operator = this.SwitchOperator(Node.Operator);
+        return new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
     }
     return Node;
-  }
-
-  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.Rewrite(Node.Expression);
   }
 
   SwitchOperator<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case SyntaxKind.CellReference:
-      case SyntaxKind.RangeReference:
-        return Node;
-      case SyntaxKind.BinaryExpression:
-        return this.SwitchBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.SwitchParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
-      case SyntaxKind.UnaryExpression:
-        return this.SwitchUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.NumberToken:
         return this.SwitchNumberToken(Node as NodeType<SyntaxToken>);
+      case SyntaxKind.PlusToken:
+        return new SyntaxToken(SyntaxKind.MinusToken, "-");
+      case SyntaxKind.MinusToken:
+        return new SyntaxToken(SyntaxKind.PlusToken, "+");
       default:
         throw this.Diagnostics.MissingSwitchMethod(Node.Kind);
     }
   }
 
-  private SwitchBinaryExpression(Node: BinaryExpression) {
-    switch (Node.Operator.Kind) {
-      case SyntaxKind.PlusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.MinusToken, "-"), Node.Right);
-      case SyntaxKind.MinusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.PlusToken, "+"), Node.Right);
-    }
-    return Node;
-  }
-
   private SwitchParenthesizedExpression(Node: ParenthesizedExpression) {
     return this.SwitchOperator(Node.Expression);
-  }
-
-  private SwitchUnaryExpression(Node: UnaryExpression) {
-    switch (Node.Operator.Kind) {
-      case SyntaxKind.PlusToken:
-        return new UnaryExpression(SyntaxKind.UnaryExpression, new SyntaxToken(SyntaxKind.MinusToken, "-"), Node.Right);
-      case SyntaxKind.MinusToken:
-        return new UnaryExpression(SyntaxKind.UnaryExpression, new SyntaxToken(SyntaxKind.PlusToken, "+"), Node.Right);
-    }
-    return Node;
   }
 
   private SwitchNumberToken(Node: SyntaxToken) {
