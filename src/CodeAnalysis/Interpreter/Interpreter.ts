@@ -31,9 +31,6 @@ export class Interpreter {
       console.clear();
 
       switch (InputLine.toLowerCase()) {
-        case "cls":
-          this.ClearScreen();
-          continue;
         case "tree":
           this.ShowTree();
           continue;
