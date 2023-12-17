@@ -33,7 +33,7 @@ export class SyntaxTree {
   }
 
   static Bind(Text: string) {
-    return new Binder().Bind(SyntaxTree.Parse(Text)) as BoundProgram;
+    return new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
   }
 
   static Rewrite(Text: string) {
