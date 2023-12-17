@@ -24,6 +24,8 @@ export class Rewriter {
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.RewriteBinaryExpression(Node as NodeType<BinaryExpression>);
+      case SyntaxKind.ParenthesizedExpression:
+        return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
     }
@@ -56,6 +58,10 @@ export class Rewriter {
     return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
   }
 
+  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Rewrite(Node.Expression);
+  }
+
   SwitchOperator<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
@@ -78,9 +84,9 @@ export class Rewriter {
   private SwitchBinaryExpression(Node: BinaryExpression) {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.MinusToken, "-"), this.SwitchOperator(Node.Right));
+        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.MinusToken, "-"), Node.Right);
       case SyntaxKind.MinusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.PlusToken, "+"), this.SwitchOperator(Node.Right));
+        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.PlusToken, "+"), Node.Right);
     }
     return Node;
   }
