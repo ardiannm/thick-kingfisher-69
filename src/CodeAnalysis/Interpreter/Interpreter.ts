@@ -52,8 +52,6 @@ export class Interpreter {
       }
 
       try {
-        console.clear();
-        console.log(Interpreter.Color("----------------------- REWRITER ----------------------------------", Color.Terracotta));
         this.ShowTree();
 
         // this.Evaluate();
@@ -70,25 +68,20 @@ export class Interpreter {
 
   private ShowTree() {
     try {
-      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input));
+      const Tree = Interpreter.Print(SyntaxTree.Rewrite(this.Input));
+      console.clear();
+      console.log(Interpreter.Color(this.Input, Color.Sage));
       this.LoggerLog(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
   }
 
-  private ClearScreen() {
-    console.clear();
-    this.Buffer.pop();
-    const Message = this.Buffer.length > 0 ? "Interpreter: Line " + (this.Buffer.length + 1) + " removed." : "";
-    this.LoggerLog(this.Input, Message);
-  }
-
   private ErrorHandler(error: Error) {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.ProgramIsEmpty) this.Buffer.push("# " + this.Buffer.pop());
-      this.LoggerLog(this.Input, Interpreter.Color(Diagnostic.Message, Color.Teal));
+      this.LoggerLog(Interpreter.Color(this.Input, Color.Sage), Interpreter.Color(Diagnostic.Message, Color.Sage));
     } else {
       console.log(error);
     }

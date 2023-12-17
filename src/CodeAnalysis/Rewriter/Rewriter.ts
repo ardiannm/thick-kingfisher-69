@@ -40,8 +40,8 @@ export class Rewriter {
     switch (Node.Operator.Kind) {
       case SyntaxKind.MinusToken:
         const Left = this.Rewrite(Node.Left);
-        const Right = this.Rewrite(this.SwitchOperator(Node.Right));
-        const Operator = this.SwitchOperator(Node.Operator);
+        const Operator = this.SwitchOperands(Node.Operator);
+        const Right = this.Rewrite(this.SwitchOperands(Node.Right));
         return new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
     }
     return Node;
@@ -51,14 +51,13 @@ export class Rewriter {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return this.Rewrite(Node.Right);
-
       case SyntaxKind.MinusToken:
-        return this.SwitchOperator(this.Rewrite(Node.Right));
+        return this.SwitchOperands(this.Rewrite(Node.Right));
     }
     return Node;
   }
 
-  SwitchOperator<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
+  SwitchOperands<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.BinaryExpression:
@@ -81,7 +80,7 @@ export class Rewriter {
   }
 
   private SwitchParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.SwitchOperator(Node.Expression);
+    return this.SwitchOperands(Node.Expression);
   }
 
   private SwitchSyntaxNode(Node: SyntaxNode) {
@@ -89,7 +88,7 @@ export class Rewriter {
   }
 
   private SwitchBinaryExpression(Node: BinaryExpression) {
-    const Binary = new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), Node.Operator, this.SwitchOperator(Node.Right));
+    const Binary = new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperands(Node.Left), Node.Operator, this.SwitchOperands(Node.Right));
     return this.Rewrite(Binary);
   }
 
@@ -98,7 +97,7 @@ export class Rewriter {
       case SyntaxKind.MinusToken:
         return Node.Right;
       case SyntaxKind.PlusToken:
-        return new UnaryExpression(SyntaxKind.UnaryExpression, this.SwitchOperator(Node.Operator), Node.Right);
+        return new UnaryExpression(SyntaxKind.UnaryExpression, this.SwitchOperands(Node.Operator), Node.Right);
     }
     return Node;
   }
