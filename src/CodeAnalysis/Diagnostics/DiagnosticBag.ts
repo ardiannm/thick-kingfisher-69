@@ -42,6 +42,11 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
   }
 
+  MissingSwitchMethod(Kind: SyntaxKind) {
+    const Message = `Method for switching operators within <${Kind}> is missing.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchMethod, Message));
+  }
+
   CantDivideByZero() {
     const Message = `Can't divide by zero.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantDivideByZero, Message));

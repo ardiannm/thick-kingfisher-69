@@ -12,4 +12,5 @@ export enum DiagnosticCode {
   WrongFloatingNumberFormat,
   NotARangeMember,
   CantWriteExpression,
+  MissingSwitchMethod,
 }

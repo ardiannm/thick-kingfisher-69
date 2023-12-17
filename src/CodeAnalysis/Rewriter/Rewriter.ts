@@ -6,6 +6,7 @@ import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
+import { SyntaxToken } from "../Parser/SyntaxToken";
 import { UnaryExpression } from "../Parser/UnaryExpression";
 
 export class Rewriter {
@@ -52,7 +53,12 @@ export class Rewriter {
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
     Node.Left = this.Rewrite(Node.Left);
+
+    if (Node.Right.Kind === SyntaxKind.ParenthesizedExpression && Node.Operator.Kind === SyntaxKind.MinusToken) {
+      Node.Right = this.SwitchOperator(Node.Right);
+    }
     Node.Right = this.Rewrite(Node.Right);
+
     var Right = Node.Right as BinaryExpression;
     if (Right.Kind === SyntaxKind.BinaryExpression) {
       const Precedence = Facts.BinaryOperatorPrecedence(Right.Operator.Kind) === Facts.BinaryOperatorPrecedence(Node.Operator.Kind);
@@ -62,6 +68,34 @@ export class Rewriter {
         return this.Rewrite(Written);
       }
     }
+    return Node;
+  }
+
+  SwitchOperator<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
+    type NodeType<T> = Kind & T;
+    switch (Node.Kind) {
+      case SyntaxKind.NumberToken:
+      case SyntaxKind.CellReference:
+      case SyntaxKind.RangeReference:
+        return Node;
+      case SyntaxKind.BinaryExpression:
+        return this.SwitchBinaryExpression(Node as NodeType<BinaryExpression>);
+      case SyntaxKind.ParenthesizedExpression:
+        return this.SwitchOperator((Node as NodeType<ParenthesizedExpression>).Expression);
+      default:
+        throw this.Diagnostics.MissingSwitchMethod(Node.Kind);
+    }
+  }
+
+  private SwitchBinaryExpression(Node: BinaryExpression) {
+    switch (Node.Operator.Kind) {
+      case SyntaxKind.PlusToken:
+        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.MinusToken, "-"), this.SwitchOperator(Node.Right));
+      case SyntaxKind.MinusToken:
+        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchOperator(Node.Left), new SyntaxToken(SyntaxKind.PlusToken, "+"), this.SwitchOperator(Node.Right));
+    }
+    Node.Left = this.Rewrite(Node.Left);
+    Node.Right = this.Rewrite(Node.Right);
     return Node;
   }
 }
