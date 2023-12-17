@@ -20,6 +20,8 @@ export class Rewriter {
         return this.RewriteBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.UnaryExpression:
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
+      case SyntaxKind.ParenthesizedExpression:
+        return this.Rewrite((Node as NodeType<ParenthesizedExpression>).Expression);
       case SyntaxKind.NumberToken:
         return Node;
       default:
