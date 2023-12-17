@@ -3,6 +3,7 @@ import { Diagnostic } from "./Diagnostic";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { BoundKind } from "../Binder/BoundKind";
 import { DiagnosticCode } from "./DiagnosticCode";
+import { BoundUnaryOperatorKind } from "../Binder/BoundUnaryOperatorKind";
 
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
@@ -55,6 +56,11 @@ export class DiagnosticBag {
   MissingOperatorKind(Kind: SyntaxKind) {
     const Message = `Unexpected operator kind <${Kind}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
+  }
+
+  MissingUnaryOperatorMethod(Operator: BoundUnaryOperatorKind, Kind: SyntaxKind) {
+    const Message = `Missing operator kind <${Operator}> for <${Kind}>.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingUnaryOperatorMethod, Message));
   }
 
   CircularDependency(Name: string) {

@@ -64,6 +64,7 @@ export class Binder {
     const Root = new Array<BoundStatement>();
     for (const Branch of Node.Root) {
       switch (Branch.Kind) {
+        case SyntaxKind.NumberToken:
         case SyntaxKind.CellReference:
         case SyntaxKind.ReferenceStatement:
         case SyntaxKind.UnaryExpression:
@@ -118,10 +119,12 @@ export class Binder {
     switch (Operator) {
       case BoundUnaryOperatorKind.Negation:
         switch (Node.Right.Kind) {
+          case SyntaxKind.CellReference:
+            return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
           case SyntaxKind.NumberToken:
             return new BoundNumber(BoundKind.Number, -Right.Value);
           default:
-            throw this.Diagnostics.MissingMethod(Node.Right.Kind);
+            throw this.Diagnostics.MissingUnaryOperatorMethod(Operator, Node.Right.Kind);
         }
       case BoundUnaryOperatorKind.Identity:
         return Right;
