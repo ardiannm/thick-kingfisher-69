@@ -1,6 +1,7 @@
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { BinaryExpression } from "../Parser/BinaryExpression";
+import { Facts } from "../Parser/Facts";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
 import { SyntaxKind } from "../Parser/SyntaxKind";
@@ -55,7 +56,24 @@ export class Rewriter {
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
+    const Binary = new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
+    return this.FlattenBinaryExpression(Binary);
+  }
+
+  /** todo: flatten this one */
+
+  private FlattenBinaryExpression(Node: BinaryExpression): BinaryExpression {
+    if (Node.Right.Kind === SyntaxKind.BinaryExpression) {
+      const Right = Node.Right as BinaryExpression;
+      const Precedence = Facts.BinaryPrecedence(Node.Operator.Kind) === Facts.BinaryPrecedence(Right.Operator.Kind);
+      if (Precedence) {
+        const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
+        const Written = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Node.Operator, Right.Right);
+        return this.FlattenBinaryExpression(Written);
+      }
+      return new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, this.FlattenBinaryExpression(Right));
+    }
+    return Node;
   }
 
   private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
