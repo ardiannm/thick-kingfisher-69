@@ -56,7 +56,6 @@ export class Interpreter {
 
       try {
         console.clear();
-
         console.log(Interpreter.Color("----------------------- REWRITER ----------------------------------", Color.Terracotta));
         this.ShowTree();
 
@@ -65,15 +64,6 @@ export class Interpreter {
         this.ErrorHandler(error as Error);
       }
     }
-  }
-
-  private Evaluate() {
-    const BoundTree = SyntaxTree.Bind(this.Input);
-    this.LoggerLog(this.Input);
-    const Evaluation = new Evaluator(BoundTree.Scope).Evaluate(BoundTree);
-    const Value = JSON.stringify(Evaluation);
-    console.log();
-    this.LoggerLog(Interpreter.Color(Value, Color.Azure));
   }
 
   private ResetBuffer() {
