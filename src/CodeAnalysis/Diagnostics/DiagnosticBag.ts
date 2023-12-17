@@ -58,11 +58,6 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
   }
 
-  MissingUnaryOperatorMethod(Operator: BoundUnaryOperatorKind, Kind: SyntaxKind) {
-    const Message = `Missing operator kind <${Operator}> for <${Kind}>.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingUnaryOperatorMethod, Message));
-  }
-
   CircularDependency(Name: string) {
     const Message = `Circular dependency found in '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CircularDependency, Message));

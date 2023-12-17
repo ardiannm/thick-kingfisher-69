@@ -114,22 +114,12 @@ export class Binder {
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
-    const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
-    const Right = this.Bind(Node.Right) as BoundNumber;
-    switch (Operator) {
-      case BoundUnaryOperatorKind.Negation:
-        switch (Node.Right.Kind) {
-          case SyntaxKind.NumberToken:
-            return new BoundNumber(BoundKind.Number, -Right.Value);
-          case SyntaxKind.IdentifierToken:
-          case SyntaxKind.CellReference:
-            return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
-          default:
-            throw this.Diagnostics.MissingUnaryOperatorMethod(Operator, Node.Right.Kind);
-        }
-      case BoundUnaryOperatorKind.Identity:
-        return Right;
+    switch (Node.Operator.Kind) {
+      case SyntaxKind.MinusToken:
+      case SyntaxKind.PlusToken:
+        return new BoundUnaryExpression(BoundKind.UnaryExpression, this.BindUnaryOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
     }
+    return this.Bind(Node.Right);
   }
 
   private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {

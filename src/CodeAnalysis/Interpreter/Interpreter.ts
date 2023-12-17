@@ -68,7 +68,7 @@ export class Interpreter {
 
   private ShowTree() {
     try {
-      const Tree = Interpreter.Print(SyntaxTree.Rewrite(this.Input));
+      const Tree = Interpreter.Print(SyntaxTree.Bind(this.Input));
       console.clear();
       console.log(Interpreter.Color(this.Input, Color.Sage));
       this.LoggerLog(Tree);
