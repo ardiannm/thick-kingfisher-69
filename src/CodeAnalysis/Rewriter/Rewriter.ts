@@ -60,15 +60,14 @@ export class Rewriter {
     return this.FlattenBinaryExpression(Binary);
   }
 
-  /** todo: flatten this one */
-
   private FlattenBinaryExpression(Node: BinaryExpression): BinaryExpression {
     if (Node.Right.Kind === SyntaxKind.BinaryExpression) {
       const Right = Node.Right as BinaryExpression;
-      const Precedence = Facts.BinaryPrecedence(Node.Operator.Kind) === Facts.BinaryPrecedence(Right.Operator.Kind);
-      if (Precedence) {
+      const LeftPrecendence = Facts.BinaryPrecedence(Node.Operator.Kind);
+      const RightPrecendence = Facts.BinaryPrecedence(Right.Operator.Kind);
+      if (LeftPrecendence === RightPrecendence) {
         const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
-        const Written = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Node.Operator, Right.Right);
+        const Written = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Right.Operator, Right.Right);
         return this.FlattenBinaryExpression(Written);
       }
       return new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, this.FlattenBinaryExpression(Right));

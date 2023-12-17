@@ -12,7 +12,6 @@ import { SyntaxNode } from "../Parser/SyntaxNode";
 import { Color } from "./Color";
 import { RgbColor } from "./RgbColor";
 import { Rewriter } from "../Rewriter/Rewriter";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Interpreter {
   // private Env = new Environment();
