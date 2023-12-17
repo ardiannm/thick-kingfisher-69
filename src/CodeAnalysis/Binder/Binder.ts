@@ -66,6 +66,7 @@ export class Binder {
       switch (Branch.Kind) {
         case SyntaxKind.CellReference:
         case SyntaxKind.ReferenceStatement:
+        case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
           Root.push(this.Bind(Branch));
           continue;
@@ -113,8 +114,18 @@ export class Binder {
 
   private BindUnaryExpression(Node: UnaryExpression) {
     const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
-    const Right = this.Bind(Node.Right);
-    return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
+    const Right = this.Bind(Node.Right) as BoundNumber;
+    switch (Operator) {
+      case BoundUnaryOperatorKind.Negation:
+        switch (Node.Right.Kind) {
+          case SyntaxKind.NumberToken:
+            return new BoundNumber(BoundKind.Number, -Right.Value);
+          case SyntaxKind.NumberToken:
+            return Right;
+        }
+      case BoundUnaryOperatorKind.Identity:
+        return Right;
+    }
   }
 
   private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {
