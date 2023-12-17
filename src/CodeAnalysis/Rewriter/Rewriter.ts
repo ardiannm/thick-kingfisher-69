@@ -37,13 +37,12 @@ export class Rewriter {
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    switch (Node.Operator.Kind) {
-      case SyntaxKind.MinusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), this.SwitchSign(Node.Operator), this.Rewrite(this.SwitchSign(Node.Right)));
-      case SyntaxKind.PlusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
+    const Right = this.Rewrite(Node.Right) as UnaryExpression;
+    if (Right.Kind === SyntaxKind.UnaryExpression) {
+      const Operator = this.SwitchSign(Node.Operator);
+      return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Operator, Right.Right);
     }
-    return Node;
+    return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, Right);
   }
 
   private RewriteUnaryExpression(Node: UnaryExpression) {
