@@ -54,11 +54,11 @@ export class Interpreter {
         console.clear();
         const Tree = SyntaxTree.Parse(InputLine);
         // console.log(JSON.stringify(Tree, undefined, 2));
-        const New = new Rewriter().Rewrite(Tree);
+        const Written = new Rewriter().Rewrite(Tree);
         console.log();
         console.log(Interpreter.Color(DiagnosticKind.Rewriter, Color.Teal));
         console.log();
-        console.log(JSON.stringify(New.ObjectId, undefined, 2));
+        console.log(JSON.stringify(Written.ObjectId, undefined, 2));
         // this.Evaluate();
       } catch (error) {
         this.ErrorHandler(error as Error);

@@ -66,6 +66,7 @@ export class Binder {
       switch (Branch.Kind) {
         case SyntaxKind.CellReference:
         case SyntaxKind.ReferenceStatement:
+        case SyntaxKind.BinaryExpression:
           Root.push(this.Bind(Branch));
           continue;
         default:
