@@ -136,7 +136,7 @@ export class Binder {
     return this.Bind(Node.Expression);
   }
 
-  private BindRangeMember<Kind extends SyntaxNode>(Node: Kind) {
+  private BindRangeBranch<Kind extends SyntaxNode>(Node: Kind) {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
@@ -146,18 +146,18 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.NotARangeMember(Node.Kind);
+    throw this.Diagnostics.NotARangeBranch(Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {
-    const BoundLeft = this.BindRangeMember(Node.Left);
-    const BoundRight = this.BindRangeMember(Node.Right);
+    const BoundLeft = this.BindRangeBranch(Node.Left);
+    const BoundRight = this.BindRangeBranch(Node.Right);
     return new BoundRangeReference(BoundKind.RangeReference, BoundLeft.Kind + ":" + BoundRight.Name);
   }
 
   private BindCellReference(Node: CellReference) {
-    const BoundLeft = this.BindRangeMember(Node.Left) as IsReferable;
-    const BoundRight = this.BindRangeMember(Node.Right) as IsReferable;
+    const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
+    const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
     this.Scope.PushCell(Name);
     return new BoundCellReference(BoundKind.CellReference, Name);

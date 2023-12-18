@@ -83,7 +83,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.WrongFloatingNumberFormat, Message));
   }
 
-  NotARangeMember(Kind: SyntaxKind) {
+  NotARangeBranch(Kind: SyntaxKind) {
     const Message = `<${Kind}> is not a range member and it can't be bound.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotARangeMember, Message));
   }
