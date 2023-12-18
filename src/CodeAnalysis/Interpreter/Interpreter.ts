@@ -33,7 +33,7 @@ export class Interpreter {
         case "tree":
           this.ShowTree();
           continue;
-        case "reset":
+        case "a":
           this.ResetBuffer();
           continue;
         case "check":
@@ -42,12 +42,6 @@ export class Interpreter {
       }
 
       if (InputLine.toLowerCase() === "q") break;
-
-      if (InputLine.toLowerCase() === "a") {
-        this.Buffer.length = 0;
-        console.clear();
-        continue;
-      }
 
       if (InputLine.trim()) {
         this.Buffer.push(InputLine);
