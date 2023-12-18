@@ -37,16 +37,22 @@ export class Rewriter {
     return new Program(SyntaxKind.Program, Root);
   }
 
-  // private RewriteBinaryExpression(Node: BinaryExpression) {
-  //   return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
-  // }
-
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    switch (Node.Operator.Kind) {
-      case SyntaxKind.MinusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), this.SwitchSign(Node.Operator), this.Rewrite(this.SwitchSign(Node.Right)));
+    /** @todo flatten the trees and keep them to the simplest form afterwards which means no unary operators within trees if possible */
+    return this.Flatten(new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right)));
+  }
+
+  private Flatten(Node: BinaryExpression) {
+    if (Node.Right.Kind === SyntaxKind.BinaryExpression) {
+      const Right = Node.Right as BinaryExpression;
+      const Precedence = Facts.BinaryPrecedence(Right.Operator.Kind) === Facts.BinaryPrecedence(Node.Operator.Kind);
+      if (Precedence) {
+        /** @todo check the sign */
+        const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
+        return new BinaryExpression(SyntaxKind.BinaryExpression, Left, Right.Operator, Right.Right);
+      }
     }
-    return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right));
+    return Node;
   }
 
   private RewriteUnaryExpression(Node: UnaryExpression) {
