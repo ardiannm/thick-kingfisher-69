@@ -5,7 +5,6 @@ import * as path from "path";
 
 import { Diagnostic } from "../Diagnostics/Diagnostic";
 import { SyntaxTree } from "../Parser/SyntaxTree";
-import { Evaluator } from "../../Evaluator";
 import { DiagnosticCode } from "../Diagnostics/DiagnosticCode";
 import { BoundNode } from "../Binder/BoundNode";
 import { SyntaxNode } from "../Parser/SyntaxNode";
@@ -37,20 +36,9 @@ export class Interpreter {
         case "reset":
           this.ResetBuffer();
           continue;
-      }
-
-      if (InputLine.toLowerCase() === "id") {
-        try {
-          const Tree = SyntaxTree.Parse(this.Input);
-          const Written = SyntaxTree.Rewrite(this.Input);
-          const View = Interpreter.Color("p: " + Tree.ObjectId + "\nw: " + Written.ObjectId, Color.Azure);
-          console.log();
-          console.log(View);
-          console.log();
-        } catch (error) {
-          this.ErrorHandler(error as Error);
-        }
-        continue;
+        case "check":
+          this.CheckTreeResults();
+          continue;
       }
 
       if (InputLine.toLowerCase() === "q") break;
@@ -66,12 +54,24 @@ export class Interpreter {
       }
 
       try {
+        console.log();
         this.ShowTree();
-
-        // this.Evaluate();
+        console.log();
+        this.CheckTreeResults();
       } catch (error) {
         this.ErrorHandler(error as Error);
       }
+    }
+  }
+
+  private CheckTreeResults() {
+    try {
+      const View = Interpreter.Color("parser\t" + SyntaxTree.Evaluate(this.Input) + "\nrewriter\t" + SyntaxTree.EvaluateRewritten(this.Input), Color.Sage);
+      console.log();
+      console.log(View);
+      console.log();
+    } catch (error) {
+      this.ErrorHandler(error as Error);
     }
   }
 

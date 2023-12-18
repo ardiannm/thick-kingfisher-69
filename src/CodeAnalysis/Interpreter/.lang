@@ -29,3 +29,70 @@ A1
 
 
 # ++++++++++++++-----------------++++++++A1
+
+
+
+1-(2-(-4))
+
+ -Program
+   Root
+   -BinaryExpression
+     Left
+     -BinaryExpression
+       Left
+       -NumberToken
+         Text 1
+       Operator
+       -PlusToken
+         Text +
+       Right
+       -UnaryExpression
+         Operator
+         -MinusToken
+           Text -
+         Right
+         -NumberToken
+           Text 2
+     Operator
+     -MinusToken
+       Text -
+     Right
+     -NumberToken
+       Text 4
+
+
+
+
+
+1-(1-2)
+
+ -Program
+   Root
+   -BinaryExpression
+     Left
+     -BinaryExpression
+       Left
+       -NumberToken
+         Text 1
+       Operator
+       -PlusToken
+         Text +
+       Right
+       -UnaryExpression
+         Operator
+         -MinusToken
+           Text -
+         Right
+         -NumberToken
+           Text 1
+     Operator
+     -MinusToken
+       Text -
+     Right
+     -UnaryExpression
+       Operator
+       -MinusToken
+         Text -
+       Right
+       -NumberToken
+         Text 2
