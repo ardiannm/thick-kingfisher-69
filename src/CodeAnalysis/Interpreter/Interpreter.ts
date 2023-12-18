@@ -39,6 +39,20 @@ export class Interpreter {
           continue;
       }
 
+      if (InputLine.toLowerCase() === "id") {
+        try {
+          const Tree = SyntaxTree.Parse(this.Input);
+          const Written = SyntaxTree.Rewrite(this.Input);
+          const View = Interpreter.Color("p: " + Tree.ObjectId + "\nw: " + Written.ObjectId, Color.Azure);
+          console.log();
+          console.log(View);
+          console.log();
+        } catch (error) {
+          this.ErrorHandler(error as Error);
+        }
+        continue;
+      }
+
       if (InputLine.toLowerCase() === "q") break;
 
       if (InputLine.toLowerCase() === "a") {

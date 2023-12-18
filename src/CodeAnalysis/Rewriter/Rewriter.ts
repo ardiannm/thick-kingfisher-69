@@ -59,7 +59,7 @@ export class Rewriter {
     return Node;
   }
 
-  SwitchSign<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
+  private SwitchSign<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.UnaryExpression:
