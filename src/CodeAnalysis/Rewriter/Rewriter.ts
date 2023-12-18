@@ -47,12 +47,10 @@ export class Rewriter {
       var Right = Node.Right as BinaryExpression;
       const Precedence = Facts.BinaryPrecedence(Right.Operator.Kind) === Facts.BinaryPrecedence(Node.Operator.Kind);
       if (Precedence) {
-        /** @todo check the sign */
         if (Node.Operator.Kind === SyntaxKind.MinusToken) {
           Node.Operator = this.SwitchSign(Node.Operator);
           Right = this.SwitchSign(Node.Right) as BinaryExpression;
         }
-        /** @todo check the sign */
         const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
         return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Left), Right.Operator, this.Rewrite(Right.Right));
       }
