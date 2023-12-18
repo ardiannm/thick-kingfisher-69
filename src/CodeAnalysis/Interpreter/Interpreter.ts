@@ -128,7 +128,7 @@ export class Interpreter {
     if (Node instanceof BoundNode || Node instanceof SyntaxNode) {
       for (const [Property, Branch] of Object.entries(Node)) {
         if (Property === "Kind") {
-          Text += "\n" + Indent + Indent + " " + this.Color("-" + Node.Kind, Color.Azure);
+          Text += "\n" + Indent + Indent + " " + this.Color(Node.Kind, Color.Azure);
         } else {
           Text += "\n" + Indent + Indent + " " + "  " + this.Color(Property, Color.Moss) + " " + this.Print(Branch, Indent + " ");
         }
