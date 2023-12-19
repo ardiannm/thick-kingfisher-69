@@ -43,7 +43,7 @@ export class DiagnosticBag {
   }
 
   MissingSwitchMethod(Kind: SyntaxKind) {
-    const Message = `method for switching operators within <${Kind}> is missing.`;
+    const Message = `method for switching operators for <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchMethod, Message));
   }
 

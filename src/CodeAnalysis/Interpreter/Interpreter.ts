@@ -81,7 +81,9 @@ export class Interpreter {
   private CheckResult() {
     try {
       console.log(RgbColor.Sage("Evaluator"));
-      const Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
+      var Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
+      const RewriterValue = SyntaxTree.EvaluateRewriter(this.JoinInputLines) + "";
+      if (RewriterValue !== Value) Value += " " + "(" + RewriterValue + ")";
       console.log(RgbColor.Moss(Value));
     } catch (error) {
       this.ErrorHandler(error as Error);

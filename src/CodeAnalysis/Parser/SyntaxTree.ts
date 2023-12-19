@@ -51,6 +51,11 @@ export class SyntaxTree {
     return new Evaluator(Tree).Evaluate(Tree);
   }
 
+  static EvaluateRewriter(Text: string) {
+    const Tree = new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
+    return new Evaluator(Tree).Evaluate(Tree);
+  }
+
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
     Text += RgbColor.Moss(Node.Kind.toString());
