@@ -120,7 +120,7 @@ export class BoundScope {
       Text += Math.abs(Diff) + ")";
     }
 
-    const View = RgbColor.Moss(Text);
+    const View = RgbColor.Azure(Text);
     console.log(View);
 
     Data.Value = Value;

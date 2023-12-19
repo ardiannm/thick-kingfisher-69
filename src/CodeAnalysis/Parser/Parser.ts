@@ -71,10 +71,10 @@ export class Parser {
   }
 
   private ParseParentheses() {
-    if (this.MatchToken(SyntaxKind.OpenParenToken)) {
+    if (this.MatchToken(SyntaxKind.OpenParenthesisToken)) {
       const Left = this.NextToken();
       const Expression = this.ParseBinaryExpression();
-      const Right = this.ExpectToken(SyntaxKind.CloseParenToken);
+      const Right = this.ExpectToken(SyntaxKind.CloseParenthesisToken);
       return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
     }
     return this.ParseRangeReference();

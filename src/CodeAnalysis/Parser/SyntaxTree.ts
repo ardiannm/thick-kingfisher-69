@@ -55,16 +55,16 @@ export class SyntaxTree {
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += RgbColor.Moss(Node.Kind.toString());
+    Text += RgbColor.Azure(Node.Kind.toString());
     if (Node instanceof SyntaxToken) {
-      return Text + " " + RgbColor.Sage(Node.Text);
+      return Text + " " + RgbColor.Cerulean(Node.Text);
     }
     if (Node instanceof SyntaxNode) {
       const Branches = Array.from(Node.GetBranches());
       for (const [Index, Branch] of Branches.entries()) {
         const LastBranch = Index + 1 == Branches.length;
         const Lead = LastBranch ? "└── " : "├── ";
-        Text += "\n" + RgbColor.Sage(Indent + Lead) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
+        Text += "\n" + RgbColor.Cerulean(Indent + Lead) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
       }
     }
     return Text;

@@ -31,4 +31,16 @@ export class RgbColor {
   static Moss(Text: string) {
     return this.Color(Text, Color.Moss);
   }
+
+  static Turquoise(Text: string) {
+    return this.Color(Text, Color.Turquoise);
+  }
+
+  static Terracotta(Text: string) {
+    return this.Color(Text, Color.Terracotta);
+  }
+
+  static Cerulean(Text: string) {
+    return this.Color(Text, Color.Cerulean);
+  }
 }

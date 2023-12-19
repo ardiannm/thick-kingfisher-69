@@ -6,4 +6,5 @@ export enum Color {
   Azure = "#569cd6",
   Sage = "#b5cea8",
   Teal = "#19c37d",
+  Cerulean = "#9cdcfe",
 }

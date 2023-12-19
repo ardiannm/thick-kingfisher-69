@@ -38,9 +38,9 @@ export class Facts {
       case ":":
         return SyntaxKind.ColonToken;
       case "(":
-        return SyntaxKind.OpenParenToken;
+        return SyntaxKind.OpenParenthesisToken;
       case ")":
-        return SyntaxKind.CloseParenToken;
+        return SyntaxKind.CloseParenthesisToken;
       case ".":
         return SyntaxKind.DotToken;
       case "#":

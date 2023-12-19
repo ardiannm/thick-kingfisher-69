@@ -46,10 +46,10 @@ export class Interpreter {
   private TryCatch() {
     try {
       console.log();
+      console.log(RgbColor.Azure(this.JoinInputLines));
+      console.log();
       this.ShowTrees();
       console.log();
-      console.log(RgbColor.Sage("Interperter showing result for"));
-      console.log(RgbColor.Moss(this.JoinInputLines));
       console.log();
       this.CheckResult();
       console.log();
@@ -62,16 +62,12 @@ export class Interpreter {
     try {
       const ParserTree = SyntaxTree.Parse(this.JoinInputLines);
       const RewriterTree = SyntaxTree.Rewrite(this.JoinInputLines);
-
-      console.log(RgbColor.Sage("ParserTree"));
       console.log(SyntaxTree.Print(ParserTree));
-
       if (ParserTree.ObjectId === RewriterTree.ObjectId) {
         return;
       }
-
       console.log();
-      console.log(RgbColor.Sage("RewriterTree"));
+      console.log();
       console.log(SyntaxTree.Print(RewriterTree));
     } catch (error) {
       this.ErrorHandler(error as Error);
@@ -80,11 +76,14 @@ export class Interpreter {
 
   private CheckResult() {
     try {
-      console.log(RgbColor.Sage("Evaluator"));
       var Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
       const RewriterValue = SyntaxTree.EvaluateRewriter(this.JoinInputLines) + "";
       if (RewriterValue !== Value) Value += " " + "(" + RewriterValue + ")";
-      console.log(RgbColor.Moss(Value));
+      console.log();
+      console.log();
+      console.log(RgbColor.Azure("Evaluator") + "  " + RgbColor.Cerulean(Value));
+      console.log();
+      console.log();
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
@@ -94,7 +93,7 @@ export class Interpreter {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.SourceCodeIsEmpty) this.Lines.push("# " + this.Lines.pop());
-      const Message = RgbColor.Sage(Diagnostic.Message);
+      const Message = RgbColor.Cerulean(Diagnostic.Message);
       console.log(Message);
       console.log();
     } else {
