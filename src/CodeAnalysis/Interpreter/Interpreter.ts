@@ -26,13 +26,13 @@ export class Interpreter {
       console.clear();
 
       switch (InputLine.toLowerCase()) {
-        case "tree":
+        case "t":
           this.ShowTree();
           continue;
         case "a":
           this.ClearLines();
           continue;
-        case "check":
+        case "r":
           this.CheckTreeResults();
           continue;
       }
@@ -56,10 +56,12 @@ export class Interpreter {
 
   private CheckTreeResults() {
     try {
-      const Print = "parser    " + SyntaxTree.Evaluate(this.Input) + "\nrewriter    " + SyntaxTree.EvaluateRewritten(this.Input);
-      const View = RgbColor.Sage(Print);
-      console.log();
-      console.log(View);
+      const Parser = "parser  " + SyntaxTree.Evaluate(this.Input);
+      const Rewriter = "rewriter  " + SyntaxTree.EvaluateRewritten(this.Input);
+      const ViewParser = RgbColor.Sage(Parser);
+      const ViewRewriter = RgbColor.Sage(Rewriter);
+      console.log(ViewParser);
+      console.log(ViewRewriter);
       console.log();
     } catch (error) {
       this.ErrorHandler(error as Error);
@@ -76,6 +78,7 @@ export class Interpreter {
       const Tree = SyntaxTree.Print(SyntaxTree.Rewrite(this.Input));
       console.clear();
       console.log(RgbColor.Sage(this.Input));
+      console.log();
       this.LoggerLog(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);

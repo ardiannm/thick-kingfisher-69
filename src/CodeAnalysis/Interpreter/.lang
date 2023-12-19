@@ -25,74 +25,32 @@ A1
 # id of rewriten "-(1-2)+3+4+-(5-6-7)" should be the same to the object id of "1+2+3+4+5+6+7"
 # and indeed "c90f367a" is the same for both but this also leads to the necessity of writing tests
 # so is this "-(-(1+2+3))+4+5+6+7"
-
-
-
 # ++++++++++++++-----------------++++++++A1
 
 
+1+2+3
+1-(2+3)
 
-1-(2-(-4))
-
- -Program
-   Root
-   -BinaryExpression
-     Left
-     -BinaryExpression
-       Left
-       -NumberToken
-         Text 1
-       Operator
-       -PlusToken
-         Text +
-       Right
-       -UnaryExpression
-         Operator
-         -MinusToken
-           Text -
-         Right
-         -NumberToken
-           Text 2
-     Operator
-     -MinusToken
-       Text -
-     Right
-     -NumberToken
-       Text 4
+Program
+├── BinaryExpression
+│  ├── BinaryExpression
+│  │  ├── NumberToken 1
+│  │  ├── PlusToken +
+│  │  └── NumberToken 2
+│  ├── PlusToken +
+│  └── NumberToken 3
+└── BinaryExpression
+   ├── BinaryExpression
+   │  ├── NumberToken 1
+   │  ├── PlusToken +
+   │  └── UnaryExpression
+   │     ├── MinusToken -
+   │     └── NumberToken 2
+   ├── PlusToken +
+   └── UnaryExpression
+      ├── MinusToken -
+      └── NumberToken 3
 
 
-
-
-
-1-(1-2)
-
- -Program
-   Root
-   -BinaryExpression
-     Left
-     -BinaryExpression
-       Left
-       -NumberToken
-         Text 1
-       Operator
-       -PlusToken
-         Text +
-       Right
-       -UnaryExpression
-         Operator
-         -MinusToken
-           Text -
-         Right
-         -NumberToken
-           Text 1
-     Operator
-     -MinusToken
-       Text -
-     Right
-     -UnaryExpression
-       Operator
-       -MinusToken
-         Text -
-       Right
-       -NumberToken
-         Text 2
+parser  -4
+rewriter  -4

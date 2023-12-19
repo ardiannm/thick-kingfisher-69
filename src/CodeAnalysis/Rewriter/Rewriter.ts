@@ -43,10 +43,10 @@ export class Rewriter {
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
     /** @todo flatten the trees and keep them to the simplest form afterwards which means no unary operators within trees if possible */
-    return this.Flatten(new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right)));
+    return this.FlattenBinaryExpression(new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right)));
   }
 
-  private Flatten(Node: BinaryExpression) {
+  private FlattenBinaryExpression(Node: BinaryExpression) {
     if (Node.Right.Kind === SyntaxKind.BinaryExpression) {
       var Right = Node.Right as BinaryExpression;
       const Precedence = Facts.BinaryPrecedence(Right.Operator.Kind) === Facts.BinaryPrecedence(Node.Operator.Kind);
