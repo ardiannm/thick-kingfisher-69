@@ -67,6 +67,7 @@ export class Binder {
         case SyntaxKind.NumberToken:
         case SyntaxKind.CellReference:
         case SyntaxKind.ReferenceStatement:
+        case SyntaxKind.ParenthesizedExpression:
         case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
           Root.push(this.Bind(Branch));
