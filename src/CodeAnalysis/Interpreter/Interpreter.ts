@@ -82,13 +82,10 @@ export class Interpreter {
 
   private CheckTreeResults() {
     try {
-      const Parser = "parser  " + SyntaxTree.Evaluate(this.JoinInputLines);
-      const Rewriter = "rewriter  " + SyntaxTree.EvaluateRewritten(this.JoinInputLines);
-      const ViewParser = RgbColor.Sage(Parser);
-      const ViewRewriter = RgbColor.Sage(Rewriter);
+      const Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
       console.log();
-      console.log(ViewParser);
-      console.log(ViewRewriter);
+      console.log(RgbColor.Sage("Evaluator"));
+      console.log(RgbColor.Moss(Value));
       console.log();
     } catch (error) {
       this.ErrorHandler(error as Error);
