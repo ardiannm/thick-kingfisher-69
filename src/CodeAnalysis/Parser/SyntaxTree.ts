@@ -9,6 +9,9 @@ import { BoundProgram } from "../Binder/BoundProgram";
 import { BoundScope } from "../Binder/BoundScope";
 import { Rewriter } from "../Rewriter/Rewriter";
 import { Evaluator } from "../../Evaluator";
+import { SyntaxNode } from "./SyntaxNode";
+import { Interpreter } from "../Interpreter/Interpreter";
+import { Color } from "../Interpreter/Color";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -49,5 +52,24 @@ export class SyntaxTree {
   static EvaluateRewritten(Text: string) {
     const Tree = SyntaxTree.Rewrite(Text);
     return new Evaluator(new BoundScope(undefined)).Evaluate(new Binder().Bind(Tree));
+  }
+
+  static Print(Node: SyntaxNode, Indent = "") {
+    let Text = "";
+    Text += Interpreter.Color(Node.Kind.toString(), Color.Moss);
+
+    if (Node instanceof SyntaxToken) {
+      return Text + " " + Interpreter.Color(Node.Text, Color.Sage);
+    }
+
+    if (Node instanceof SyntaxNode) {
+      const Branches = Array.from(Node.GetBranches());
+      for (const [Index, Branch] of Branches.entries()) {
+        const LastBranch = Index + 1 == Branches.length;
+        const Lead = LastBranch ? "└── " : "├── ";
+        Text += "\n" + Interpreter.Color(Indent + Lead, Color.Sage) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
+      }
+    }
+    return Text;
   }
 }
