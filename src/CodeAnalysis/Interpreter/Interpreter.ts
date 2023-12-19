@@ -23,11 +23,12 @@ export class Interpreter {
     while (true) {
       const InputLine = Promp.question("> ");
       this.Width = Math.max(this.Width, InputLine.length);
+
       console.clear();
 
       switch (InputLine.toLowerCase()) {
         case "t":
-          this.ShowTree();
+          this.ShowRewrittenTree();
           continue;
         case "a":
           this.ClearLines();
@@ -43,14 +44,22 @@ export class Interpreter {
         this.Lines.push(InputLine);
       }
 
-      try {
-        console.log();
-        this.ShowTree();
-        console.log();
-        this.CheckTreeResults();
-      } catch (error) {
-        this.ErrorHandler(error as Error);
-      }
+      this.TryCatch();
+    }
+  }
+
+  private TryCatch() {
+    try {
+      console.log();
+      console.log(RgbColor.Sage("Interperter: showing result for:"));
+      console.log();
+      this.ShowParseTree();
+      console.log();
+      this.ShowRewrittenTree();
+      console.log();
+      this.CheckTreeResults();
+    } catch (error) {
+      this.ErrorHandler(error as Error);
     }
   }
 
@@ -73,13 +82,23 @@ export class Interpreter {
     console.clear();
   }
 
-  private ShowTree() {
+  private ShowRewrittenTree() {
     try {
       const Tree = SyntaxTree.Print(SyntaxTree.Rewrite(this.Input));
-      console.clear();
       console.log(RgbColor.Sage(this.Input));
       console.log();
-      this.LoggerLog(Tree);
+      console.log(Tree);
+    } catch (error) {
+      this.ErrorHandler(error as Error);
+    }
+  }
+
+  private ShowParseTree() {
+    try {
+      const Tree = SyntaxTree.Print(SyntaxTree.Parse(this.Input));
+      console.log(RgbColor.Sage(this.Input));
+      console.log();
+      console.log(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
@@ -89,17 +108,12 @@ export class Interpreter {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.ProgramIsEmpty) this.Lines.push("# " + this.Lines.pop());
-      this.LoggerLog(RgbColor.Sage(this.Input), RgbColor.Sage(Diagnostic.Message));
+      const Message = RgbColor.Sage(Diagnostic.Message);
+      console.log(Message);
+      console.log();
     } else {
       console.log(error);
     }
-  }
-
-  private LoggerLog(Str: string = "", Message?: string) {
-    console.log(Str);
-    if (Message) console.log("\n" + Message);
-    console.log();
-    return Str + "\n";
   }
 
   private get Input() {

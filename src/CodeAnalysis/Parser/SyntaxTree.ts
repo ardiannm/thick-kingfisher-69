@@ -58,11 +58,9 @@ export class SyntaxTree {
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
     Text += RgbColor.Moss(Node.Kind.toString());
-
     if (Node instanceof SyntaxToken) {
       return Text + " " + RgbColor.Sage(Node.Text);
     }
-
     if (Node instanceof SyntaxNode) {
       const Branches = Array.from(Node.GetBranches());
       for (const [Index, Branch] of Branches.entries()) {
