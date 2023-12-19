@@ -1,6 +1,7 @@
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { BinaryExpression } from "../Parser/BinaryExpression";
+import { DeclarationStatement } from "../Parser/DeclarationStatement";
 import { Facts } from "../Parser/Facts";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
@@ -23,6 +24,8 @@ export class Rewriter {
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
+      case SyntaxKind.ReferenceStatement:
+        return this.RewriteReferenceStatement(Node as NodeType<DeclarationStatement>);
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
@@ -37,8 +40,10 @@ export class Rewriter {
     return new Program(SyntaxKind.Program, Root);
   }
 
-  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.Rewrite(Node.Expression);
+  private RewriteReferenceStatement(Node: DeclarationStatement) {
+    const Left = this.Rewrite(Node.Left);
+    const Expression = this.Rewrite(Node.Expression);
+    return new DeclarationStatement(SyntaxKind.ReferenceStatement, Left, Node.Keyword, Expression);
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
@@ -70,6 +75,10 @@ export class Rewriter {
         return this.SwitchSign(this.Rewrite(Node.Right));
     }
     return Node;
+  }
+
+  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Rewrite(Node.Expression);
   }
 
   private SwitchSign<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
