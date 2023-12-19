@@ -4,8 +4,7 @@ import { BoundNumber } from "./BoundNumber";
 import { BoundReferenceStatement } from "./BoundReferenceStatement";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
-import { Interpreter } from "../Interpreter/Interpreter";
-import { Color } from "../Interpreter/Color";
+import { RgbColor } from "../Interpreter/RgbColor";
 
 export class Cell {
   constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
@@ -117,7 +116,7 @@ export class BoundScope {
       Text += Math.abs(Diff) + ")";
     }
 
-    console.log(Interpreter.Color(this.LastExec + "\t" + Text, Color.Moss));
+    console.log(RgbColor.Moss(this.LastExec + "\t" + Text));
     Data.Value = Value;
   }
 }

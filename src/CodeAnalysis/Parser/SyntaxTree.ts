@@ -12,6 +12,7 @@ import { Evaluator } from "../../Evaluator";
 import { SyntaxNode } from "./SyntaxNode";
 import { Interpreter } from "../Interpreter/Interpreter";
 import { Color } from "../Interpreter/Color";
+import { RgbColor } from "../Interpreter/RgbColor";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -56,10 +57,10 @@ export class SyntaxTree {
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += Interpreter.Color(Node.Kind.toString(), Color.Moss);
+    Text += RgbColor.Moss(Node.Kind.toString());
 
     if (Node instanceof SyntaxToken) {
-      return Text + " " + Interpreter.Color(Node.Text, Color.Sage);
+      return Text + " " + RgbColor.Sage(Node.Text);
     }
 
     if (Node instanceof SyntaxNode) {
@@ -67,7 +68,7 @@ export class SyntaxTree {
       for (const [Index, Branch] of Branches.entries()) {
         const LastBranch = Index + 1 == Branches.length;
         const Lead = LastBranch ? "└── " : "├── ";
-        Text += "\n" + Interpreter.Color(Indent + Lead, Color.Sage) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
+        Text += "\n" + RgbColor.Sage(Indent + Lead) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
       }
     }
     return Text;
