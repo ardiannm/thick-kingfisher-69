@@ -1,5 +1,5 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxToken } from "./SyntaxToken";
+import { SyntaxToken, TokenKind, TokenMap } from "./SyntaxToken";
 import { Facts } from "./Facts";
 import { SourceText } from "../Text/SourceText";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
@@ -15,7 +15,7 @@ export class Lexer {
 
   Lex(): SyntaxToken {
     this.Start = this.Index;
-    this.Kind = Facts.Kind(this.Char);
+    this.Kind = Facts.Kind(this.Char) as keyof TokenMap;
 
     switch (this.Kind) {
       case SyntaxKind.BadToken:
@@ -50,7 +50,7 @@ export class Lexer {
     // else by default increment index position by one for all cases
     this.Index += 1;
 
-    return new SyntaxToken(this.Kind as SyntaxKind.EndOfFileToken, this.Text);
+    return new SyntaxToken(this.Kind as TokenKind<typeof this.Text>, this.Text as "");
   }
 
   // parse identifier tokens

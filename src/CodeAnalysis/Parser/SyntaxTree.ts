@@ -6,7 +6,6 @@ import { SourceText } from "../Text/SourceText";
 import { Binder } from "../Binder/Binder";
 import { BoundNode } from "../Binder/BoundNode";
 import { BoundProgram } from "../Binder/BoundProgram";
-import { BoundScope } from "../Binder/BoundScope";
 import { Rewriter } from "../Rewriter/Rewriter";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNode } from "./SyntaxNode";

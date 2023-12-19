@@ -70,7 +70,12 @@ export class Rewriter {
           Right = this.SwitchSign(Node.Right) as BinaryExpression;
         }
         const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Left), Right.Operator, this.Rewrite(Right.Right));
+        return new BinaryExpression(
+          SyntaxKind.BinaryExpression,
+          this.Rewrite(Left),
+          Right.Operator,
+          this.Rewrite(Right.Right)
+        );
       }
     }
     return Node;
@@ -142,7 +147,12 @@ export class Rewriter {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
       case SyntaxKind.MinusToken:
-        return new BinaryExpression(SyntaxKind.BinaryExpression, this.SwitchSign(Node.Left), Node.Operator, this.SwitchSign(Node.Right));
+        return new BinaryExpression(
+          SyntaxKind.BinaryExpression,
+          this.SwitchSign(Node.Left),
+          Node.Operator,
+          this.SwitchSign(Node.Right)
+        );
     }
     return Node;
   }
