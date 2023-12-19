@@ -47,8 +47,11 @@ export class Rewriter {
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
-    /** @todo flatten the trees and keep them to the simplest form afterwards which means no unary operators within trees if possible */
-    return this.FlattenBinaryExpression(new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Node.Left), Node.Operator, this.Rewrite(Node.Right)));
+    const Left = this.Rewrite(Node.Left);
+    const Right = this.Rewrite(Node.Right);
+    const Rewritten = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Node.Operator, Right);
+    const Flattened = this.FlattenBinaryExpression(Rewritten);
+    return this.SimplifyBinaryTree(Flattened);
   }
 
   private FlattenBinaryExpression(Node: BinaryExpression) {
@@ -63,6 +66,14 @@ export class Rewriter {
         const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
         return new BinaryExpression(SyntaxKind.BinaryExpression, this.Rewrite(Left), Right.Operator, this.Rewrite(Right.Right));
       }
+    }
+    return Node;
+  }
+
+  private SimplifyBinaryTree(Node: BinaryExpression) {
+    if (Node.Right.Kind === SyntaxKind.UnaryExpression) {
+      Node.Operator = this.SwitchSign(Node.Operator);
+      Node.Right = this.Rewrite(this.SwitchSign(Node.Right));
     }
     return Node;
   }
