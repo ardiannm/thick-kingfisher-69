@@ -51,7 +51,12 @@ export class Rewriter {
     const Right = this.Rewrite(Node.Right);
     const Rewritten = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Node.Operator, Right);
     const Flattened = this.FlattenBinaryExpression(Rewritten);
-    return this.SimplifyBinaryTree(Flattened);
+    switch (Node.Operator.Kind) {
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
+        return this.SimplifyAdditiveBinaryExpression(Flattened);
+    }
+    return Flattened;
   }
 
   private FlattenBinaryExpression(Node: BinaryExpression) {
@@ -70,7 +75,7 @@ export class Rewriter {
     return Node;
   }
 
-  private SimplifyBinaryTree(Node: BinaryExpression) {
+  private SimplifyAdditiveBinaryExpression(Node: BinaryExpression) {
     if (Node.Right.Kind === SyntaxKind.UnaryExpression) {
       Node.Operator = this.SwitchSign(Node.Operator);
       Node.Right = this.Rewrite(this.SwitchSign(Node.Right));
