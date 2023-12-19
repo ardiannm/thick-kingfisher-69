@@ -23,13 +23,13 @@ export class Interpreter {
 
       switch (InputLine.toLowerCase()) {
         case "t":
-          this.ShowRewriterTree();
+          this.ShowTrees();
           continue;
         case "a":
           this.ClearLines();
           continue;
         case "r":
-          this.CheckTreeResults();
+          this.CheckResult();
           continue;
       }
 
@@ -46,47 +46,43 @@ export class Interpreter {
   private TryCatch() {
     try {
       console.log();
-      console.log(RgbColor.Sage("Interperter: showing result for:"));
+      this.ShowTrees();
       console.log();
-      console.log(RgbColor.Sage(this.JoinInputLines));
+      console.log(RgbColor.Sage("Interperter showing result for"));
+      console.log(RgbColor.Moss(this.JoinInputLines));
       console.log();
-      this.ShowParseTree();
+      this.CheckResult();
       console.log();
-      this.ShowRewriterTree();
-      console.log();
-      this.CheckTreeResults();
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
   }
 
-  private ShowParseTree() {
+  private ShowTrees() {
     try {
-      const Tree = SyntaxTree.Print(SyntaxTree.Parse(this.JoinInputLines));
+      const ParserTree = SyntaxTree.Parse(this.JoinInputLines);
+      const RewriterTree = SyntaxTree.Rewrite(this.JoinInputLines);
+
       console.log(RgbColor.Sage("ParserTree"));
-      console.log(Tree);
-    } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
+      console.log(SyntaxTree.Print(ParserTree));
 
-  private ShowRewriterTree() {
-    try {
-      const Tree = SyntaxTree.Print(SyntaxTree.Rewrite(this.JoinInputLines));
+      if (ParserTree.ObjectId === RewriterTree.ObjectId) {
+        return;
+      }
+
+      console.log();
       console.log(RgbColor.Sage("RewriterTree"));
-      console.log(Tree);
+      console.log(SyntaxTree.Print(RewriterTree));
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
   }
 
-  private CheckTreeResults() {
+  private CheckResult() {
     try {
-      const Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
-      console.log();
       console.log(RgbColor.Sage("Evaluator"));
+      const Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
       console.log(RgbColor.Moss(Value));
-      console.log();
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
