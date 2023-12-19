@@ -107,7 +107,7 @@ export class Interpreter {
   private ErrorHandler(error: Error) {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
-      if (Diagnostic.Code !== DiagnosticCode.ProgramIsEmpty) this.Lines.push("# " + this.Lines.pop());
+      if (Diagnostic.Code !== DiagnosticCode.SourceCodeIsEmpty) this.Lines.push("# " + this.Lines.pop());
       const Message = RgbColor.Sage(Diagnostic.Message);
       console.log(Message);
       console.log();

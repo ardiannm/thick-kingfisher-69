@@ -1,5 +1,5 @@
 export enum DiagnosticCode {
-  ProgramIsEmpty,
+  SourceCodeIsEmpty,
   BadTokenFound,
   TokenNotAMatch,
   MissingMethod,

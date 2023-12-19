@@ -32,9 +32,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
   }
 
-  ProgramIsEmpty() {
+  SourceCodeIsEmpty() {
     const Message = `source code is empty.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ProgramIsEmpty, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.SourceCodeIsEmpty, Message));
   }
 
   MissingMethod(Kind: SyntaxKind | BoundKind) {
