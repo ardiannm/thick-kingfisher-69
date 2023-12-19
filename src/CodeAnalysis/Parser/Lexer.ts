@@ -19,7 +19,7 @@ export class Lexer {
 
     switch (this.Kind) {
       case SyntaxKind.BadToken:
-        // If bad token matched from the syntax facts this may still be either a letter, number or space token
+        // if no token matched from the syntax facts this may still be either a letter, number or space token
 
         if (this.IsLetter(this.Char)) {
           return this.ParseIdentifier();

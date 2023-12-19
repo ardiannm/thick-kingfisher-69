@@ -21,7 +21,7 @@ export class Parser {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Parser);
 
   constructor(public readonly Source: SourceText) {
-    this.Tokens = [...SyntaxTree.Lex(Source.Text)];
+    this.Tokens = Array.from(SyntaxTree.Lex(Source.Text));
   }
 
   public Parse() {
