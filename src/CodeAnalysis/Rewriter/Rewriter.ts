@@ -29,6 +29,7 @@ export class Rewriter {
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
+      case SyntaxKind.RangeReference:
         return Node;
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
