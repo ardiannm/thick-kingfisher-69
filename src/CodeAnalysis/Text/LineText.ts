@@ -1,3 +1,3 @@
 export class LineText {
-  constructor(public Number: number, public Start: number, public End: number) {}
+  constructor(public LineIndex: number, public Start: number, public End: number) {}
 }
