@@ -22,7 +22,7 @@ export class Rewriter {
       case SyntaxKind.UnaryExpression:
         return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
-        return this.Rewrite((Node as NodeType<ParenthesizedExpression>).Expression);
+        return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
@@ -35,6 +35,10 @@ export class Rewriter {
   private RewriteProgram(Node: Program) {
     const Root = Node.Root.map((Statement) => this.Rewrite(Statement));
     return new Program(SyntaxKind.Program, Root);
+  }
+
+  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Rewrite(Node.Expression);
   }
 
   private RewriteBinaryExpression(Node: BinaryExpression) {
