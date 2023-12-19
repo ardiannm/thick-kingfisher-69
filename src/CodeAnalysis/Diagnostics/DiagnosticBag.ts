@@ -3,7 +3,6 @@ import { Diagnostic } from "./Diagnostic";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { BoundKind } from "../Binder/BoundKind";
 import { DiagnosticCode } from "./DiagnosticCode";
-import { BoundUnaryOperatorKind } from "../Binder/BoundUnaryOperatorKind";
 
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
@@ -24,42 +23,42 @@ export class DiagnosticBag {
   }
 
   BadTokenFound(Text: string) {
-    const Message = `Bad character '${Text}' found.`;
+    const Message = `bad character '${Text}' found.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.BadTokenFound, Message));
   }
 
   TokenNotAMatch(Matched: SyntaxKind) {
-    const Message = `Unexpected token found <${Matched}>.`;
+    const Message = `unexpected token found <${Matched}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
   }
 
   ProgramIsEmpty() {
-    const Message = `Source code is empty.`;
+    const Message = `source code is empty.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ProgramIsEmpty, Message));
   }
 
   MissingMethod(Kind: SyntaxKind | BoundKind) {
-    const Message = `Method for <${Kind}> is missing.`;
+    const Message = `method for <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
   }
 
   MissingSwitchMethod(Kind: SyntaxKind) {
-    const Message = `Method for switching operators within <${Kind}> is missing.`;
+    const Message = `method for switching operators within <${Kind}> is missing.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchMethod, Message));
   }
 
   CantDivideByZero() {
-    const Message = `Can't divide by zero.`;
+    const Message = `can't divide by zero.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantDivideByZero, Message));
   }
 
   MissingOperatorKind(Kind: SyntaxKind) {
-    const Message = `Unexpected operator kind <${Kind}>.`;
+    const Message = `unexpected operator kind <${Kind}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
   }
 
   CircularDependency(Name: string) {
-    const Message = `Circular dependency found in '${Name}'.`;
+    const Message = `circular dependency found in '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CircularDependency, Message));
   }
 
@@ -69,17 +68,17 @@ export class DiagnosticBag {
   }
 
   NameNotFound(Name: string) {
-    const Message = `Can't find name '${Name}'.`;
+    const Message = `can't find name '${Name}'.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NameNotFound, Message));
   }
 
   UsedBeforeItsDeclaration(Name: string) {
-    const Message = `Using '${Name}' before its declaration.`;
+    const Message = `using '${Name}' before its declaration.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.UsedBeforeItsDeclaration, Message));
   }
 
   WrongFloatingNumberFormat() {
-    const Message = `Wrong floating number format.`;
+    const Message = `wrong floating number format.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.WrongFloatingNumberFormat, Message));
   }
 
