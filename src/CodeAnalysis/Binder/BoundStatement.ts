@@ -1,3 +1,3 @@
 import { BoundExpression } from "./BoundExpression";
 
-export class BoundStatement extends BoundExpression {}
+export abstract class BoundStatement extends BoundExpression {}

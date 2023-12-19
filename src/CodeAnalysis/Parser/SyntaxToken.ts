@@ -1,8 +1,8 @@
-import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
+import { TokenKind } from "./TokenKind";
 
 export class SyntaxToken extends SyntaxNode {
-  constructor(public Kind: SyntaxKind, public Text: string) {
+  constructor(public Kind: TokenKind, public Text: string) {
     super(Kind);
   }
 }

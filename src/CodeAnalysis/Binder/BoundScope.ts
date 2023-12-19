@@ -7,7 +7,13 @@ import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { RgbColor } from "../Interpreter/RgbColor";
 
 export class Cell {
-  constructor(public Name: string, public Value: number, public Expression: BoundExpression, public Dependencies: Set<string>, public Dependents: Set<string>) {}
+  constructor(
+    public Name: string,
+    public Value: number,
+    public Expression: BoundExpression,
+    public Dependencies: Set<string>,
+    public Dependents: Set<string>
+  ) {}
 
   Notify(Name: string): void {
     this.Dependents.add(Name);

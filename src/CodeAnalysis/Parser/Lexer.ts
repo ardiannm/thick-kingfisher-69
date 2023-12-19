@@ -50,7 +50,7 @@ export class Lexer {
     // else by default increment index position by one for all cases
     this.Index += 1;
 
-    return new SyntaxToken(this.Kind, this.Text);
+    return new SyntaxToken(this.Kind as SyntaxKind.EndOfFileToken, this.Text);
   }
 
   // parse identifier tokens
@@ -58,7 +58,7 @@ export class Lexer {
     while (this.IsLetter(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(Facts.KeywordTokenKind(this.Text), this.Text);
+    return new SyntaxToken(Facts.KeywordOrIdentiferTokenKind(this.Text), this.Text);
   }
 
   // parse comment tokens

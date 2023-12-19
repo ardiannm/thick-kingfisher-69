@@ -1,3 +1,4 @@
+import { KeywordOrIdentifier } from "./KeywordOrIdentifier";
 import { SyntaxKind } from "./SyntaxKind";
 
 export class Facts {
@@ -55,7 +56,7 @@ export class Facts {
     }
   }
 
-  public static KeywordTokenKind(text: string): SyntaxKind {
+  public static KeywordOrIdentiferTokenKind(text: string): KeywordOrIdentifier {
     switch (text) {
       case "true":
         return SyntaxKind.TrueKeyword;

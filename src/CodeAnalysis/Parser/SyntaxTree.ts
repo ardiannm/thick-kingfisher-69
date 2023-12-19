@@ -10,10 +10,7 @@ import { BoundScope } from "../Binder/BoundScope";
 import { Rewriter } from "../Rewriter/Rewriter";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNode } from "./SyntaxNode";
-import { Interpreter } from "../Interpreter/Interpreter";
-import { Color } from "../Interpreter/Color";
 import { RgbColor } from "../Interpreter/RgbColor";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { Program } from "./Program";
 
 export class SyntaxTree {
