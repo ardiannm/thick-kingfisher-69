@@ -14,10 +14,14 @@ import { BoundScope } from "./CodeAnalysis/Binder/BoundScope";
 import { BoundReferenceStatement } from "./CodeAnalysis/Binder/BoundReferenceStatement";
 
 export class Evaluator {
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
   private Value: number = 0;
+  private Scope: BoundScope;
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
 
-  constructor(private Scope: BoundScope) {}
+  constructor(public Tree: BoundProgram) {
+    this.Scope = Tree.Scope;
+    this.Scope.Kind = DiagnosticKind.EvaluatorScope;
+  }
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;

@@ -19,15 +19,16 @@ export class Cell {
 }
 
 export class BoundScope {
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.BoundScope);
+  private Diagnostics: DiagnosticBag;
   private Data = new Map<string, Cell>();
   private Expression = new BoundNumber(BoundKind.Number, 0);
   private ForChange = new Set<string>();
 
   Names = new Set<string>();
 
-  private LastExec: string = "";
-  constructor(public Parent: BoundScope | undefined) {}
+  constructor(public Kind: DiagnosticKind = DiagnosticKind.BoundScope, public Parent: BoundScope | undefined) {
+    this.Diagnostics = new DiagnosticBag(this.Kind);
+  }
 
   PushCell(Name: string) {
     this.Names.add(Name);
@@ -77,9 +78,6 @@ export class BoundScope {
   }
 
   Assign(Node: BoundReferenceStatement, Value: number) {
-    console.log();
-    this.LastExec = Node.Name + " " + Value;
-
     const Data = this.TryLookUpCell(Node.Name);
 
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
@@ -116,7 +114,9 @@ export class BoundScope {
       Text += Math.abs(Diff) + ")";
     }
 
-    console.log(RgbColor.Moss(this.LastExec + "\t" + Text));
+    const View = RgbColor.Moss(Text);
+    console.log(View);
+
     Data.Value = Value;
   }
 }

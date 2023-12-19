@@ -12,12 +12,7 @@ export class Interpreter {
   private Lines = new Array<string>();
   private Width = 0;
 
-  private LoadSource(): string {
-    const FullPath = path.join(".", "src", "IO", ".lang");
-    return fs.readFileSync(FullPath, "utf8");
-  }
-
-  Run() {
+  public Run() {
     console.clear();
 
     while (true) {
@@ -28,7 +23,7 @@ export class Interpreter {
 
       switch (InputLine.toLowerCase()) {
         case "t":
-          this.ShowRewrittenTree();
+          this.ShowRewriterTree();
           continue;
         case "a":
           this.ClearLines();
@@ -53,9 +48,11 @@ export class Interpreter {
       console.log();
       console.log(RgbColor.Sage("Interperter: showing result for:"));
       console.log();
+      console.log(RgbColor.Sage(this.JoinInputLines));
+      console.log();
       this.ShowParseTree();
       console.log();
-      this.ShowRewrittenTree();
+      this.ShowRewriterTree();
       console.log();
       this.CheckTreeResults();
     } catch (error) {
@@ -63,42 +60,36 @@ export class Interpreter {
     }
   }
 
+  private ShowParseTree() {
+    try {
+      const Tree = SyntaxTree.Print(SyntaxTree.Parse(this.JoinInputLines));
+      console.log(RgbColor.Sage("ParserTree"));
+      console.log(Tree);
+    } catch (error) {
+      this.ErrorHandler(error as Error);
+    }
+  }
+
+  private ShowRewriterTree() {
+    try {
+      const Tree = SyntaxTree.Print(SyntaxTree.Rewrite(this.JoinInputLines));
+      console.log(RgbColor.Sage("RewriterTree"));
+      console.log(Tree);
+    } catch (error) {
+      this.ErrorHandler(error as Error);
+    }
+  }
+
   private CheckTreeResults() {
     try {
-      const Parser = "parser  " + SyntaxTree.Evaluate(this.Input);
-      const Rewriter = "rewriter  " + SyntaxTree.EvaluateRewritten(this.Input);
+      const Parser = "parser  " + SyntaxTree.Evaluate(this.JoinInputLines);
+      const Rewriter = "rewriter  " + SyntaxTree.EvaluateRewritten(this.JoinInputLines);
       const ViewParser = RgbColor.Sage(Parser);
       const ViewRewriter = RgbColor.Sage(Rewriter);
+      console.log();
       console.log(ViewParser);
       console.log(ViewRewriter);
       console.log();
-    } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
-
-  private ClearLines() {
-    this.Lines.length = 0;
-    console.clear();
-  }
-
-  private ShowRewrittenTree() {
-    try {
-      const Tree = SyntaxTree.Print(SyntaxTree.Rewrite(this.Input));
-      console.log(RgbColor.Sage(this.Input));
-      console.log();
-      console.log(Tree);
-    } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
-
-  private ShowParseTree() {
-    try {
-      const Tree = SyntaxTree.Print(SyntaxTree.Parse(this.Input));
-      console.log(RgbColor.Sage(this.Input));
-      console.log();
-      console.log(Tree);
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
@@ -116,7 +107,17 @@ export class Interpreter {
     }
   }
 
-  private get Input() {
+  private get JoinInputLines() {
     return this.Lines.join("\n");
+  }
+
+  private ClearLines() {
+    this.Lines.length = 0;
+    console.clear();
+  }
+
+  private LoadSource(): string {
+    const FullPath = path.join(".", "src", "IO", ".lang");
+    return fs.readFileSync(FullPath, "utf8");
   }
 }

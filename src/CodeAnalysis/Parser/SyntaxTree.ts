@@ -13,6 +13,7 @@ import { SyntaxNode } from "./SyntaxNode";
 import { Interpreter } from "../Interpreter/Interpreter";
 import { Color } from "../Interpreter/Color";
 import { RgbColor } from "../Interpreter/RgbColor";
+import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -46,13 +47,13 @@ export class SyntaxTree {
   }
 
   static Evaluate(Text: string) {
-    const Tree = SyntaxTree.Parse(Text);
-    return new Evaluator(new BoundScope(undefined)).Evaluate(new Binder().Bind(Tree));
+    const Tree = new Binder().Bind(SyntaxTree.Parse(Text)) as BoundProgram;
+    return new Evaluator(Tree).Evaluate(Tree);
   }
 
   static EvaluateRewritten(Text: string) {
-    const Tree = SyntaxTree.Rewrite(Text);
-    return new Evaluator(new BoundScope(undefined)).Evaluate(new Binder().Bind(Tree));
+    const Tree = new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
+    return new Evaluator(Tree).Evaluate(Tree);
   }
 
   static Print(Node: SyntaxNode, Indent = "") {
