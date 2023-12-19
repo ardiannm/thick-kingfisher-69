@@ -14,6 +14,7 @@ import { Interpreter } from "../Interpreter/Interpreter";
 import { Color } from "../Interpreter/Color";
 import { RgbColor } from "../Interpreter/RgbColor";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
+import { Program } from "./Program";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -35,15 +36,15 @@ export class SyntaxTree {
 
   static Parse(Text: string) {
     const Source = SourceText.From(Text);
-    return new Parser(Source).Parse();
+    return new Parser(Source).Parse() as Program;
+  }
+
+  static Rewrite(Text: string) {
+    return new Rewriter().Rewrite(SyntaxTree.Parse(Text)) as Program;
   }
 
   static Bind(Text: string) {
     return new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
-  }
-
-  static Rewrite(Text: string) {
-    return new Rewriter().Rewrite(SyntaxTree.Parse(Text));
   }
 
   static Evaluate(Text: string) {
