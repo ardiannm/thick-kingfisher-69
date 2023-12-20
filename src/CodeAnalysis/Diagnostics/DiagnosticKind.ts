@@ -4,8 +4,6 @@ export enum DiagnosticKind {
   Evaluator = "Evaluator",
   Binder = "Binder",
   Lexer = "Lexer",
-  BoundScope = "BoundScope",
+  Environment = "BoundScope",
   Rewriter = "Rewriter",
-  EvaluatorScope = "EvaluatorScope",
-  BinderScope = "BinderScope"
 }

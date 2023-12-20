@@ -30,7 +30,8 @@ import { IsReferable } from "./IsReferable";
 
 export class Binder {
   private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
-  private Scope: BoundScope = new BoundScope(DiagnosticKind.BinderScope, undefined);
+
+  constructor(private Scope: BoundScope) {}
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -83,7 +84,7 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
-        this.Scope = new BoundScope(DiagnosticKind.BinderScope, this.Scope);
+        this.Scope = new BoundScope(this.Scope);
         const Expression = this.Bind(Node.Expression);
         const Bound = new BoundReferenceStatement(
           BoundKind.ReferenceStatement,

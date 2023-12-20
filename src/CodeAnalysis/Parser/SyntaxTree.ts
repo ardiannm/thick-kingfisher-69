@@ -3,11 +3,8 @@ import { Parser } from "./Parser";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../Text/SourceText";
-import { Binder } from "../Binder/Binder";
 import { BoundNode } from "../Binder/BoundNode";
-import { BoundProgram } from "../Binder/BoundProgram";
 import { Rewriter } from "../Rewriter/Rewriter";
-import { Evaluator } from "../../Evaluator";
 import { SyntaxNode } from "./SyntaxNode";
 import { RgbColor } from "../Interpreter/RgbColor";
 import { Program } from "./Program";
@@ -37,20 +34,6 @@ export class SyntaxTree {
 
   static Rewrite(Text: string) {
     return new Rewriter().Rewrite(SyntaxTree.Parse(Text)) as Program;
-  }
-
-  static Bind(Text: string) {
-    return new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
-  }
-
-  static Evaluate(Text: string) {
-    const Tree = new Binder().Bind(SyntaxTree.Parse(Text)) as BoundProgram;
-    return new Evaluator(Tree).Evaluate(Tree);
-  }
-
-  static EvaluateRewriter(Text: string) {
-    const Tree = new Binder().Bind(SyntaxTree.Rewrite(Text)) as BoundProgram;
-    return new Evaluator(Tree).Evaluate(Tree);
   }
 
   static Print(Node: SyntaxNode, Indent = "") {

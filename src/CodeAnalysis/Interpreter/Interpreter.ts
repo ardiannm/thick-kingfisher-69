@@ -1,116 +1,68 @@
 import Promp from "readline-sync";
-
-import * as fs from "fs";
-import * as path from "path";
-
-import { Diagnostic } from "../Diagnostics/Diagnostic";
+import { Parser } from "../Parser/Parser";
+import { SourceText } from "../Text/SourceText";
+import { Evaluator } from "../../Evaluator";
+import { BoundScope } from "../Binder/BoundScope";
+import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
-import { DiagnosticCode } from "../Diagnostics/DiagnosticCode";
 import { RgbColor } from "./RgbColor";
+import { Diagnostic } from "../Diagnostics/Diagnostic";
+import { Rewriter } from "../Rewriter/Rewriter";
 
 export class Interpreter {
-  private Lines = new Array<string>();
-  private Width = 0;
-
   public Run() {
     console.clear();
 
+    const Environment = new BoundScope();
+    const RewriterFactory = new Rewriter();
+    const BinderFactory = new Binder(Environment);
+    const EvaluatorFactory = new Evaluator(Environment);
+
     while (true) {
+      console.log();
+
       const InputLine = Promp.question("> ");
-      this.Width = Math.max(this.Width, InputLine.length);
 
       console.clear();
 
-      switch (InputLine.toLowerCase()) {
-        case "t":
-          this.ShowTrees();
-          continue;
-        case "a":
-          this.ClearLines();
-          continue;
-        case "r":
-          this.Evaluate();
-          continue;
+      if (InputLine === "q") break;
+
+      if (InputLine === "a") {
+        console.clear();
+        continue;
       }
 
-      if (InputLine.toLowerCase() === "q") break;
+      const ParserFactory = new Parser(SourceText.From(InputLine));
 
-      if (InputLine.trim()) {
-        this.Lines.push(InputLine);
-      }
+      this.TryCatch(() => {
+        const Program = ParserFactory.Parse();
+        const ParseTree = SyntaxTree.Print(Program);
 
-      this.TryCatch();
+        console.log(ParseTree);
+
+        const RewritternProgram = RewriterFactory.Rewrite(Program);
+        const RewrittenTree = SyntaxTree.Print(RewritternProgram);
+
+        console.log(RewrittenTree);
+
+        const BoundProgram = BinderFactory.Bind(Program);
+        const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
+
+        console.log(RgbColor.Cerulean(Value));
+      });
     }
   }
 
-  private TryCatch() {
+  private TryCatch(Fn: () => void) {
     try {
-      this.ShowTrees();
-      this.Evaluate();
+      Fn();
     } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
-
-  private ShowTrees() {
-    try {
-      const ParserTree = SyntaxTree.Parse(this.JoinInputLines);
-      const RewriterTree = SyntaxTree.Rewrite(this.JoinInputLines);
-      console.log(SyntaxTree.Print(ParserTree));
-      if (ParserTree.ObjectId !== RewriterTree.ObjectId) {
-        console.log();
-        console.log(SyntaxTree.Print(RewriterTree));
+      if (error instanceof Diagnostic) {
+        const Message = RgbColor.Terracotta(error.Message);
+        console.log(Message);
+        return;
       }
-      console.log();
-      console.log(RgbColor.Azure("Expression"));
-      console.log(RgbColor.Cerulean(this.JoinInputLines));
-      if (ParserTree.ObjectId !== RewriterTree.ObjectId) {
-        console.log();
-        console.log(RgbColor.Azure("RewrittenExpression"));
-        console.log(RgbColor.Cerulean(RewriterTree.SourceText));
-      }
-    } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
-
-  private Evaluate() {
-    try {
-      var Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
-      const RewriterValue = SyntaxTree.EvaluateRewriter(this.JoinInputLines) + "";
-      if (RewriterValue !== Value) Value += " " + "(" + RewriterValue + ")";
-      console.log();
-      console.log(RgbColor.Azure("Evaluator"));
-      console.log(RgbColor.Cerulean(Value));
-      console.log();
-    } catch (error) {
-      this.ErrorHandler(error as Error);
-    }
-  }
-
-  private ErrorHandler(error: Error) {
-    if (error instanceof Diagnostic) {
-      const Diagnostic = error as Diagnostic;
-      if (Diagnostic.Code !== DiagnosticCode.SourceCodeIsEmpty) this.Lines.push("# " + this.Lines.pop());
-      console.log();
-      console.log(RgbColor.Cerulean(Diagnostic.Message));
-      console.log();
-    } else {
       console.log(error);
     }
-  }
-
-  private get JoinInputLines() {
-    return this.Lines.join("\n");
-  }
-
-  private ClearLines() {
-    this.Lines.length = 0;
-    console.clear();
-  }
-
-  private LoadSource(): string {
-    const FullPath = path.join(".", "src", "IO", ".lang");
-    return fs.readFileSync(FullPath, "utf8");
   }
 }

@@ -15,13 +15,9 @@ import { BoundReferenceStatement } from "./CodeAnalysis/Binder/BoundReferenceSta
 
 export class Evaluator {
   private Value: number = 0;
-  private Scope: BoundScope;
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
 
-  constructor(public Tree: BoundProgram) {
-    this.Scope = Tree.Scope;
-    this.Scope.Kind = DiagnosticKind.EvaluatorScope;
-  }
+  constructor(private Scope: BoundScope) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;

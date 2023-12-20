@@ -25,16 +25,15 @@ export class Cell {
 }
 
 export class BoundScope {
-  private Diagnostics: DiagnosticBag;
-  private Data = new Map<string, Cell>();
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.Environment);
   private Expression = new BoundNumber(BoundKind.Number, 0);
+
+  private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
 
   Names = new Set<string>();
 
-  constructor(public Kind: DiagnosticKind = DiagnosticKind.BoundScope, public Parent: BoundScope | undefined) {
-    this.Diagnostics = new DiagnosticBag(this.Kind);
-  }
+  constructor(public Parent?: BoundScope) {}
 
   PushCell(Name: string) {
     this.Names.add(Name);
