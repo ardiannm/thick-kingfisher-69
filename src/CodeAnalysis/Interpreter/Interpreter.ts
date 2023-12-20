@@ -1,4 +1,5 @@
 import Promp from "readline-sync";
+
 import { Parser } from "../Parser/Parser";
 import { SourceText } from "../Text/SourceText";
 import { Evaluator } from "../../Evaluator";
@@ -10,45 +11,57 @@ import { Diagnostic } from "../Diagnostics/Diagnostic";
 import { Rewriter } from "../Rewriter/Rewriter";
 
 export class Interpreter {
-  public Run() {
-    console.clear();
+  private Lines = Array<string>();
 
+  public Run() {
     const Environment = new BoundScope();
     const RewriterFactory = new Rewriter();
     const BinderFactory = new Binder(Environment);
     const EvaluatorFactory = new Evaluator(Environment);
 
-    while (true) {
-      console.log();
+    console.clear();
 
+    while (true) {
       const InputLine = Promp.question("> ");
 
       console.clear();
 
       if (InputLine === "q") break;
 
+      if (InputLine === "r") {
+        this.Lines.length = 0;
+        Environment.FactoryReset();
+        continue;
+      }
+
       if (InputLine === "a") {
         console.clear();
         continue;
       }
 
-      const ParserFactory = new Parser(SourceText.From(InputLine));
-
       this.TryCatch(() => {
+        const ParserFactory = new Parser(SourceText.From(InputLine));
         const Program = ParserFactory.Parse();
-        const ParseTree = SyntaxTree.Print(Program);
+        const ParserTree = SyntaxTree.Print(Program);
 
-        console.log(ParseTree);
+        console.log(ParserTree);
 
-        const RewritternProgram = RewriterFactory.Rewrite(Program);
-        const RewrittenTree = SyntaxTree.Print(RewritternProgram);
+        const RewriterProgram = RewriterFactory.Rewrite(Program);
+        const RewriterTree = SyntaxTree.Print(RewriterProgram);
 
-        console.log(RewrittenTree);
+        if (Program.ObjectId !== RewriterProgram.ObjectId) {
+          console.log(RewriterTree);
+        }
+
+        this.Lines.push(InputLine);
+
+        const Source = "\n".repeat(3) + this.Lines.join("\n");
+        console.log(RgbColor.Sandstone(Source));
 
         const BoundProgram = BinderFactory.Bind(Program);
         const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
 
-        console.log(RgbColor.Cerulean(Value));
+        console.log("\n".repeat(1) + RgbColor.Terracotta(Value) + "\n".repeat(1));
       });
     }
   }

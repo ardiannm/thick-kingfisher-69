@@ -43,4 +43,8 @@ export class RgbColor {
   static Cerulean(Text: string) {
     return this.Color(Text, Color.Cerulean);
   }
+
+  static Sandstone(Text: string) {
+    return this.Color(Text, Color.Sandstone);
+  }
 }

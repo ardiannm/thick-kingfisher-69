@@ -119,9 +119,13 @@ export class BoundScope {
       Text += Math.abs(Diff) + ")";
     }
 
-    const View = RgbColor.Azure(Text);
+    const View = RgbColor.Moss(Text);
     console.log(View);
 
     Data.Value = Value;
+  }
+
+  FactoryReset() {
+    this.Data.clear();
   }
 }
