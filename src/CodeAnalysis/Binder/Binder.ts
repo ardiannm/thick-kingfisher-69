@@ -85,7 +85,12 @@ export class Binder {
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope = new BoundScope(DiagnosticKind.BinderScope, this.Scope);
         const Expression = this.Bind(Node.Expression);
-        const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Expression, new Set<string>(this.Scope.Names));
+        const Bound = new BoundReferenceStatement(
+          BoundKind.ReferenceStatement,
+          Left.Name,
+          Expression,
+          new Set<string>(this.Scope.Names)
+        );
         this.Scope = this.Scope.Parent as BoundScope;
         this.Scope.TryDeclareCell(Bound.Name, Bound.Dependencies);
         return Bound;
@@ -118,7 +123,11 @@ export class Binder {
     switch (Node.Operator.Kind) {
       case SyntaxKind.MinusToken:
       case SyntaxKind.PlusToken:
-        return new BoundUnaryExpression(BoundKind.UnaryExpression, this.BindUnaryOperatorKind(Node.Operator.Kind), this.Bind(Node.Right));
+        return new BoundUnaryExpression(
+          BoundKind.UnaryExpression,
+          this.BindUnaryOperatorKind(Node.Operator.Kind),
+          this.Bind(Node.Right)
+        );
     }
     return this.Bind(Node.Right);
   }
