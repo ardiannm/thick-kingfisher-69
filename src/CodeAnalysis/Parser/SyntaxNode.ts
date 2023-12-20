@@ -22,4 +22,11 @@ export abstract class SyntaxNode {
     for (const Branch of this.GetBranches()) ObjectId = crc32(ObjectId + Branch.ObjectId);
     return ObjectId;
   }
+
+  get SourceText(): string {
+    if (this instanceof SyntaxToken) return this.Text;
+    var Text = "";
+    for (const Branch of this.GetBranches()) Text += Branch.SourceText;
+    return Text;
+  }
 }

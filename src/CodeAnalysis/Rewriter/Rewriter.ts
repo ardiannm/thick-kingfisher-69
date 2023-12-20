@@ -55,7 +55,7 @@ export class Rewriter {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
       case SyntaxKind.MinusToken:
-        return this.SimplifyAdditiveBinaryExpression(Flattened);
+        return this.Simplify(Flattened);
     }
     return Flattened;
   }
@@ -81,20 +81,12 @@ export class Rewriter {
     return Node;
   }
 
-  private SimplifyAdditiveBinaryExpression(Node: BinaryExpression) {
-    if (Node.Right.Kind === SyntaxKind.UnaryExpression) {
-      Node.Operator = this.SwitchSign(Node.Operator);
-      Node.Right = this.Rewrite(this.SwitchSign(Node.Right));
-    }
-    return Node;
-  }
-
   private RewriteUnaryExpression(Node: UnaryExpression) {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
         return this.Rewrite(Node.Right);
       case SyntaxKind.MinusToken:
-        return this.SwitchSign(this.Rewrite(Node.Right));
+        return this.Simplify(this.SwitchSign(this.Rewrite(Node.Right)));
     }
     return Node;
   }
@@ -121,7 +113,7 @@ export class Rewriter {
       case SyntaxKind.CellReference:
         return this.SwitchSyntaxNode(Node as NodeType<SyntaxNode>);
       default:
-        throw this.Diagnostics.MissingSwitchMethod(Node.Kind);
+        throw this.Diagnostics.MissingSwitchSignMethod(Node.Kind);
     }
   }
 
@@ -153,6 +145,23 @@ export class Rewriter {
           Node.Operator,
           this.SwitchSign(Node.Right)
         );
+    }
+    return Node;
+  }
+
+  private Simplify<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
+    type NodeType<T> = Kind & T;
+    switch (Node.Kind) {
+      case SyntaxKind.BinaryExpression:
+        return this.SimplifyBinaryExpression(Node as NodeType<BinaryExpression>);
+    }
+    return Node;
+  }
+
+  private SimplifyBinaryExpression(Node: BinaryExpression) {
+    if (Node.Right.Kind === SyntaxKind.UnaryExpression) {
+      Node.Operator = this.SwitchSign(Node.Operator);
+      Node.Right = this.Rewrite(this.SwitchSign(Node.Right));
     }
     return Node;
   }

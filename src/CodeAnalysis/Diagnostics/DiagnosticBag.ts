@@ -42,9 +42,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
   }
 
-  MissingSwitchMethod(Kind: SyntaxKind) {
+  MissingSwitchSignMethod(Kind: SyntaxKind) {
     const Message = `method for switching operators for <${Kind}> is missing.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchMethod, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchSignMethod, Message));
   }
 
   CantDivideByZero() {

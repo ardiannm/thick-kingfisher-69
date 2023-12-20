@@ -29,7 +29,7 @@ export class Interpreter {
           this.ClearLines();
           continue;
         case "r":
-          this.CheckResult();
+          this.Evaluate();
           continue;
       }
 
@@ -45,14 +45,8 @@ export class Interpreter {
 
   private TryCatch() {
     try {
-      console.log();
-      console.log(RgbColor.Azure(this.JoinInputLines));
-      console.log();
       this.ShowTrees();
-      console.log();
-      console.log();
-      this.CheckResult();
-      console.log();
+      this.Evaluate();
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
@@ -63,26 +57,31 @@ export class Interpreter {
       const ParserTree = SyntaxTree.Parse(this.JoinInputLines);
       const RewriterTree = SyntaxTree.Rewrite(this.JoinInputLines);
       console.log(SyntaxTree.Print(ParserTree));
-      if (ParserTree.ObjectId === RewriterTree.ObjectId) {
-        return;
+      if (ParserTree.ObjectId !== RewriterTree.ObjectId) {
+        console.log();
+        console.log(SyntaxTree.Print(RewriterTree));
       }
       console.log();
-      console.log();
-      console.log(SyntaxTree.Print(RewriterTree));
+      console.log(RgbColor.Azure("Expression"));
+      console.log(RgbColor.Cerulean(this.JoinInputLines));
+      if (ParserTree.ObjectId !== RewriterTree.ObjectId) {
+        console.log();
+        console.log(RgbColor.Azure("RewrittenExpression"));
+        console.log(RgbColor.Cerulean(RewriterTree.SourceText));
+      }
     } catch (error) {
       this.ErrorHandler(error as Error);
     }
   }
 
-  private CheckResult() {
+  private Evaluate() {
     try {
       var Value = SyntaxTree.Evaluate(this.JoinInputLines) + "";
       const RewriterValue = SyntaxTree.EvaluateRewriter(this.JoinInputLines) + "";
       if (RewriterValue !== Value) Value += " " + "(" + RewriterValue + ")";
       console.log();
-      console.log();
-      console.log(RgbColor.Azure("Evaluator") + "  " + RgbColor.Cerulean(Value));
-      console.log();
+      console.log(RgbColor.Azure("Evaluator"));
+      console.log(RgbColor.Cerulean(Value));
       console.log();
     } catch (error) {
       this.ErrorHandler(error as Error);
@@ -93,8 +92,8 @@ export class Interpreter {
     if (error instanceof Diagnostic) {
       const Diagnostic = error as Diagnostic;
       if (Diagnostic.Code !== DiagnosticCode.SourceCodeIsEmpty) this.Lines.push("# " + this.Lines.pop());
-      const Message = RgbColor.Cerulean(Diagnostic.Message);
-      console.log(Message);
+      console.log();
+      console.log(RgbColor.Cerulean(Diagnostic.Message));
       console.log();
     } else {
       console.log(error);
