@@ -56,7 +56,7 @@ export class Interpreter {
         this.Lines.push(InputLine);
 
         const Source = "\n".repeat(3) + this.Lines.join("\n");
-        console.log(RgbColor.Sandstone(Source));
+        console.log(RgbColor.Terracotta(Source));
 
         const BoundProgram = BinderFactory.Bind(Program);
         const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
