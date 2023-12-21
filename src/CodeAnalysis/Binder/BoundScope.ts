@@ -85,14 +85,11 @@ export class BoundScope {
 
   Assign(Node: BoundReferenceStatement, Value: number) {
     const Data = this.TryLookUpCell(Node.Name);
-
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
-    for (const Dep of Node.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
-
-    Data.Expression = Node.Expression;
     Data.Dependencies = Node.Dependencies;
+    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
+    Data.Expression = Node.Expression;
     Data.Value = Value;
-
     return this.DetectAndNotifyForChange(Data);
   }
 
