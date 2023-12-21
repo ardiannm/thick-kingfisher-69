@@ -57,6 +57,8 @@ export class BoundScope {
       return true;
     }
     const Data = Scope.Data.get(Name) as Cell;
+    // clean up notification subscriptions before updating dependencies
+    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Name);
     Data.Dependencies = Dependencies; // this cause premature override of dependencies while binding
     return false;
   }
@@ -85,18 +87,12 @@ export class BoundScope {
   Assign(Node: BoundReferenceStatement, Value: number) {
     const Data = this.TryLookUpCell(Node.Name);
 
-    console.log();
-    console.log("before", [Data.Name], [...Data.Dependencies]);
-
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
     for (const Dep of Node.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
 
     Data.Expression = Node.Expression;
     Data.Dependencies = Node.Dependencies;
     Data.Value = Value;
-
-    console.log("assigning ...");
-    console.log("after", [Data.Name], [...Data.Dependencies]);
 
     return this.DetectAndNotifyForChange(Data);
   }
