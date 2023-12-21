@@ -23,10 +23,11 @@ export class Interpreter {
 
     while (true) {
       const InputLine = Promp.question("> ");
-
       console.clear();
 
-      if (InputLine === "q") break;
+      if (InputLine === "q") {
+        break;
+      }
 
       if (InputLine === "r") {
         this.Lines.length = 0;
@@ -40,7 +41,8 @@ export class Interpreter {
       }
 
       this.TryCatch(() => {
-        const ParserFactory = new Parser(SourceText.From(InputLine));
+        const Input = SourceText.From(InputLine);
+        const ParserFactory = new Parser(Input);
         const Program = ParserFactory.Parse();
         const ParserTree = SyntaxTree.Print(Program);
 

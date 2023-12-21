@@ -77,7 +77,7 @@ export class Binder {
           throw this.Diagnostics.CantWriteExpression(Branch.Kind);
       }
     }
-    return new BoundProgram(BoundKind.Program, Root, this.Scope);
+    return new BoundProgram(BoundKind.Program, Root);
   }
 
   private BindReferenceStatement(Node: DeclarationStatement) {
