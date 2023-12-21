@@ -57,9 +57,8 @@ export class BoundScope {
       return true;
     }
     const Data = Scope.Data.get(Name) as Cell;
-    // clean up notification subscriptions before updating dependencies
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Name);
-    Data.Dependencies = Dependencies; // this cause premature override of dependencies while binding
+    Data.Dependencies = Dependencies;
     return false;
   }
 
