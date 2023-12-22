@@ -70,6 +70,8 @@ export class Evaluator {
           throw this.Diagnostics.CantDivideByZero();
         }
         return LeftValue / RightValue;
+      case BoundBinaryOperatorKind.Exponentiation:
+        return LeftValue ** RightValue;
       default:
         throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
     }

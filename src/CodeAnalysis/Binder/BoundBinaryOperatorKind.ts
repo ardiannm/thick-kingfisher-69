@@ -3,4 +3,5 @@ export enum BoundBinaryOperatorKind {
   Subtraction = "Subtraction",
   Multiplication = "Multiplication",
   Division = "Division",
+  Exponentiation = "Exponentiation"
 }

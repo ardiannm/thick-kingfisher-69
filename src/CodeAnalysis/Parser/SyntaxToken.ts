@@ -4,6 +4,9 @@ import { SyntaxNode } from "./SyntaxNode";
 export type TokenMap = {
   [SyntaxKind.PlusToken]: "+";
   [SyntaxKind.MinusToken]: "-";
+  [SyntaxKind.StarToken]: "*";
+  [SyntaxKind.SlashToken]: "/";
+  [SyntaxKind.HatToken]: "^";
   [SyntaxKind.DotToken]: ".";
   [SyntaxKind.HashToken]: "#";
   [SyntaxKind.EndOfFileToken]: "";
@@ -23,6 +26,9 @@ type TokenText<T extends SyntaxKind> = T extends keyof TokenMap ? TokenMap[T] : 
 export class SyntaxToken extends SyntaxNode {
   constructor(Kind: SyntaxKind.PlusToken, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.MinusToken, Text: TokenText<typeof Kind>);
+  constructor(Kind: SyntaxKind.StarToken, Text: TokenText<typeof Kind>);
+  constructor(Kind: SyntaxKind.SlashToken, Text: TokenText<typeof Kind>);
+  constructor(Kind: SyntaxKind.HatToken, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.TrueKeyword, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.FalseKeyword, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.IdentifierToken, Text: TokenText<typeof Kind>);

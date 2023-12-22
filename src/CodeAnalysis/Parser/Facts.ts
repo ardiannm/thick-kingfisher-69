@@ -14,6 +14,8 @@ export class Facts {
 
   public static BinaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
+      case SyntaxKind.HatToken:
+        return 3;
       case SyntaxKind.StarToken:
       case SyntaxKind.SlashToken:
         return 2;
@@ -35,6 +37,8 @@ export class Facts {
         return SyntaxKind.StarToken;
       case "/":
         return SyntaxKind.SlashToken;
+      case "^":
+        return SyntaxKind.HatToken;
       case ":":
         return SyntaxKind.ColonToken;
       case "(":

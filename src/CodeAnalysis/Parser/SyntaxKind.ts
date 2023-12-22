@@ -26,4 +26,5 @@ export enum SyntaxKind {
   HashToken = "HashToken",
   BadToken = "BadToken",
   EndOfFileToken = "EndOfFileToken",
+  HatToken = "HatToken"
 }

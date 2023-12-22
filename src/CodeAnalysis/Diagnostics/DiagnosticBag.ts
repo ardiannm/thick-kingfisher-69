@@ -3,6 +3,8 @@ import { Diagnostic } from "./Diagnostic";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { BoundKind } from "../Binder/BoundKind";
 import { DiagnosticCode } from "./DiagnosticCode";
+import { BoundBinaryOperatorKind } from "../Binder/BoundBinaryOperatorKind";
+import { BoundUnaryOperatorKind } from "../Binder/BoundUnaryOperatorKind";
 
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
@@ -52,7 +54,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantDivideByZero, Message));
   }
 
-  MissingOperatorKind(Kind: SyntaxKind) {
+  MissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
     const Message = `unexpected operator kind <${Kind}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
   }

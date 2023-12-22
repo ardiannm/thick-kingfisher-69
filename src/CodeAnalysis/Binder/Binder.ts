@@ -116,6 +116,8 @@ export class Binder {
         return BoundBinaryOperatorKind.Multiplication;
       case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
+      case SyntaxKind.HatToken:
+        return BoundBinaryOperatorKind.Exponentiation;
     }
     throw this.Diagnostics.MissingOperatorKind(Kind);
   }
