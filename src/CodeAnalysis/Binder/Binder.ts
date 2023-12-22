@@ -52,10 +52,10 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.ReferenceStatement:
-        return this.BindReferenceStatement(Node as NodeType<DeclarationStatement>);
-      case SyntaxKind.CloneCellStatement:
-        return this.BindCloneCellStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.ReferenceCell:
+        return this.BindReferenceCell(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.CloneCell:
+        return this.BindCloneCell(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingMethod(Node.Kind);
   }
@@ -72,8 +72,8 @@ export class Binder {
         case SyntaxKind.ParenthesizedExpression:
         case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
-        case SyntaxKind.ReferenceStatement:
-        case SyntaxKind.CloneCellStatement:
+        case SyntaxKind.ReferenceCell:
+        case SyntaxKind.CloneCell:
           Root.push(this.Bind(Branch));
           continue;
         default:
@@ -83,26 +83,26 @@ export class Binder {
     return new BoundProgram(BoundKind.Program, Root);
   }
 
-  private BindCloneCellStatement(Node: DeclarationStatement) {
+  private BindCloneCell(Node: DeclarationStatement) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
       throw this.Diagnostics.CantUseForCopy(Node.Left.Kind, Node.Expression.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
     const Cell = this.Scope.TryLookUpCell(Right.Name);
-    const Data = new BoundDeclarationStatement(BoundKind.CloneCellStatement, Left.Name, Cell.Expression, Cell.Dependencies);
+    const Data = new BoundDeclarationStatement(BoundKind.CloneCell, Left.Name, Cell.Expression, Cell.Dependencies);
     this.Scope.TryDeclareCell(Data);
     return Data;
   }
 
-  private BindReferenceStatement(Node: DeclarationStatement) {
+  private BindReferenceCell(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope = new BoundScope(this.Scope);
         const Expression = this.Bind(Node.Expression);
         const Dependencies = new Set<string>(this.Scope.Names);
-        const Data = new BoundDeclarationStatement(BoundKind.ReferenceStatement, Left.Name, Expression, Dependencies);
+        const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
         this.Scope = this.Scope.Parent as BoundScope;
         this.Scope.TryDeclareCell(Data);
         return Data;

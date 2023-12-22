@@ -32,9 +32,9 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.ReferenceStatement:
-      case BoundKind.CloneCellStatement:
-        return this.EvaluateReferenceStatement(Node as NodeType<BoundDeclarationStatement>);
+      case BoundKind.ReferenceCell:
+      case BoundKind.CloneCell:
+        return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
     }
@@ -47,7 +47,7 @@ export class Evaluator {
     return this.Value;
   }
 
-  private EvaluateReferenceStatement(Node: BoundDeclarationStatement) {
+  private EvaluateDeclaration(Node: BoundDeclarationStatement) {
     const Value = this.Evaluate(Node.Expression);
     const Dependents = this.Scope.Assign(Node, Value);
     for (const Dep of Dependents) {

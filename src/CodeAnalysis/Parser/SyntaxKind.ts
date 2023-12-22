@@ -1,7 +1,7 @@
 export enum SyntaxKind {
   Program = "Program",
-  CloneCellStatement = "CloneCellStatement",
-  ReferenceStatement = "ReferenceStatement",
+  CloneCell = "CloneCell",
+  ReferenceCell = "ReferenceCell",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   ParenthesizedExpression = "ParenthesizedExpression",
