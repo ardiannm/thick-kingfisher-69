@@ -88,11 +88,13 @@ export class Binder {
       throw this.Diagnostics.CantUseForCopy(Node.Left.Kind, Node.Expression.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
-    const Data = this.Scope.TryLookUpCell(Left.Name);
     const Right = this.Bind(Node.Expression) as BoundCellReference;
-    const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Right.Name, Data.Expression, Data.Dependencies);
-    this.Scope.TryDeclareCell(Bound);
-    return Bound;
+    const Cell = this.Scope.TryLookUpCell(Right.Name);
+    const Dependencies = new Set(Cell.Dependencies);
+    Dependencies.add(Right.Name);
+    const Data = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Cell.Expression, Dependencies);
+    this.Scope.TryDeclareCell(Data);
+    return Data;
   }
 
   private BindReferenceStatement(Node: DeclarationStatement) {
@@ -134,16 +136,14 @@ export class Binder {
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
+    const Right = this.Bind(Node.Right);
     switch (Node.Operator.Kind) {
       case SyntaxKind.MinusToken:
       case SyntaxKind.PlusToken:
-        return new BoundUnaryExpression(
-          BoundKind.UnaryExpression,
-          this.BindUnaryOperatorKind(Node.Operator.Kind),
-          this.Bind(Node.Right)
-        );
+        const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
+        return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
     }
-    return this.Bind(Node.Right);
+    return Right;
   }
 
   private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {
@@ -176,7 +176,7 @@ export class Binder {
   private BindRangeReference(Node: RangeReference) {
     const BoundLeft = this.BindRangeBranch(Node.Left);
     const BoundRight = this.BindRangeBranch(Node.Right);
-    return new BoundRangeReference(BoundKind.RangeReference, BoundLeft.Kind + ":" + BoundRight.Name);
+    return new BoundRangeReference(BoundKind.RangeReference, BoundLeft.Name + ":" + BoundRight.Name);
   }
 
   private BindCellReference(Node: CellReference) {
