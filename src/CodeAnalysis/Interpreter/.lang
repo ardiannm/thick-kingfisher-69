@@ -9,7 +9,6 @@ A4 -> 0
 A2 -> 7
 A1
 
-
 # test case for switching operators within parenthesized expressions before removing parenthesis tokens
 
 1+2+3+4+5+6+7           "c90f367a"
@@ -52,5 +51,21 @@ Program
       └── NumberToken 3
 
 
-parser  -4
-rewriter  -4
+# adding copy statments or clone statments
+
+B3 >> A3
+B4 >> B3
+
+# this below would be a result of a single copy action of a cell over other cells i.e B5, B6, B7, B8.
+
+B5 >> B3
+B6 >> B3
+B7 >> B3
+B8 >> B3
+
+# or
+
+for ref in [B5, B6, B7, B8]:
+   ref >> B3
+
+
