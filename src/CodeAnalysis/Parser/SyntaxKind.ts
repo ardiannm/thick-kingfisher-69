@@ -1,5 +1,6 @@
 export enum SyntaxKind {
   Program = "Program",
+  CopyCellStatement = "CopyCellStatement",
   ReferenceStatement = "ReferenceStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
@@ -26,5 +27,6 @@ export enum SyntaxKind {
   HashToken = "HashToken",
   BadToken = "BadToken",
   EndOfFileToken = "EndOfFileToken",
-  HatToken = "HatToken"
+  HatToken = "HatToken",
+  GreaterGreaterToken = "GreaterGreaterToken",
 }

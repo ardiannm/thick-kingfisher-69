@@ -42,6 +42,8 @@ export class Parser {
     switch (this.Token.Kind) {
       case SyntaxKind.PointerToken:
         return new DeclarationStatement(SyntaxKind.ReferenceStatement, Left, this.NextToken(), this.ParseBinaryExpression());
+      case SyntaxKind.GreaterGreaterToken:
+        return new DeclarationStatement(SyntaxKind.CopyCellStatement, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }

@@ -9,6 +9,8 @@ export type TokenMap = {
   [SyntaxKind.HatToken]: "^";
   [SyntaxKind.DotToken]: ".";
   [SyntaxKind.HashToken]: "#";
+  [SyntaxKind.GreaterToken]: ">";
+  [SyntaxKind.GreaterGreaterToken]: ">>";
   [SyntaxKind.EndOfFileToken]: "";
   [SyntaxKind.TrueKeyword]: "true";
   [SyntaxKind.FalseKeyword]: "false";
@@ -29,6 +31,7 @@ export class SyntaxToken extends SyntaxNode {
   constructor(Kind: SyntaxKind.StarToken, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.SlashToken, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.HatToken, Text: TokenText<typeof Kind>);
+  constructor(Kind: SyntaxKind.GreaterToken, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.TrueKeyword, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.FalseKeyword, Text: TokenText<typeof Kind>);
   constructor(Kind: SyntaxKind.IdentifierToken, Text: TokenText<typeof Kind>);

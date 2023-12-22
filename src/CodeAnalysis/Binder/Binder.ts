@@ -54,6 +54,8 @@ export class Binder {
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ReferenceStatement:
         return this.BindReferenceStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.CopyCellStatement:
+        return this.BindCopyCellStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingMethod(Node.Kind);
   }
@@ -67,10 +69,11 @@ export class Binder {
       switch (Branch.Kind) {
         case SyntaxKind.NumberToken:
         case SyntaxKind.CellReference:
-        case SyntaxKind.ReferenceStatement:
         case SyntaxKind.ParenthesizedExpression:
         case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
+        case SyntaxKind.ReferenceStatement:
+        case SyntaxKind.CopyCellStatement:
           Root.push(this.Bind(Branch));
           continue;
         default:
@@ -80,18 +83,26 @@ export class Binder {
     return new BoundProgram(BoundKind.Program, Root);
   }
 
+  private BindCopyCellStatement(Node: DeclarationStatement) {
+    if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
+      throw this.Diagnostics.CantUseForCopy(Node.Left.Kind, Node.Expression.Kind);
+    }
+    const Left = this.Bind(Node.Left) as BoundCellReference;
+    const Data = this.Scope.TryLookUpCell(Left.Name);
+    const Right = this.Bind(Node.Expression) as BoundCellReference;
+    const Bound = new BoundReferenceStatement(BoundKind.ReferenceStatement, Right.Name, Data.Expression, Data.Dependencies);
+    this.Scope.TryDeclareCell(Bound);
+    return Bound;
+  }
+
   private BindReferenceStatement(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope = new BoundScope(this.Scope);
         const Expression = this.Bind(Node.Expression);
-        const Data = new BoundReferenceStatement(
-          BoundKind.ReferenceStatement,
-          Left.Name,
-          Expression,
-          new Set<string>(this.Scope.Names)
-        );
+        const Dependencies = new Set<string>(this.Scope.Names);
+        const Data = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Expression, Dependencies);
         this.Scope = this.Scope.Parent as BoundScope;
         this.Scope.TryDeclareCell(Data);
         return Data;

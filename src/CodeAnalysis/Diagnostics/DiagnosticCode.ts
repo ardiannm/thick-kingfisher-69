@@ -13,4 +13,5 @@ export enum DiagnosticCode {
   NotARangeMember,
   CantWriteExpression,
   MissingSwitchSignMethod,
+  CantUseForCopy
 }

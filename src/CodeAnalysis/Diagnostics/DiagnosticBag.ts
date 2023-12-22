@@ -40,12 +40,12 @@ export class DiagnosticBag {
   }
 
   MissingMethod(Kind: SyntaxKind | BoundKind) {
-    const Message = `method for <${Kind}> is missing.`;
+    const Message = `method for <${Kind}> is not implemented.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
   }
 
   MissingSwitchSignMethod(Kind: SyntaxKind) {
-    const Message = `method for switching operators for <${Kind}> is missing.`;
+    const Message = `method for switching operators for <${Kind}> is not implemented.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchSignMethod, Message));
   }
 
@@ -67,6 +67,11 @@ export class DiagnosticBag {
   CantUseAsAReference(Unexpected: string) {
     const Message = `<${Unexpected}> can't be used as a reference.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseAsAReference, Message));
+  }
+
+  CantUseForCopy(Kind: SyntaxKind, ExpectedKind: SyntaxKind) {
+    const Message = `can't copy <${Kind}> to <${ExpectedKind}>.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseForCopy, Message));
   }
 
   NameNotFound(Name: string) {

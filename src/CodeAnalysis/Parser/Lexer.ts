@@ -45,6 +45,14 @@ export class Lexer {
           this.Index += 1;
           this.Kind = SyntaxKind.PointerToken;
         }
+
+      case SyntaxKind.GreaterToken:
+        // special case for greater token
+        if (this.Match(SyntaxKind.GreaterToken, SyntaxKind.GreaterToken)) {
+          // increment one more to account for the next token
+          this.Index += 1;
+          this.Kind = SyntaxKind.GreaterGreaterToken;
+        }
     }
 
     // else by default increment index position by one for all cases
