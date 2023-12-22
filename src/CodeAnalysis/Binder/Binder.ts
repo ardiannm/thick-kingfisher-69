@@ -90,8 +90,7 @@ export class Binder {
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
     const Cell = this.Scope.TryLookUpCell(Right.Name);
-    const Dependencies = new Set(Cell.Dependencies);
-    Dependencies.add(Right.Name);
+    const Dependencies = new Set(Right.Name);
     const Data = new BoundReferenceStatement(BoundKind.ReferenceStatement, Left.Name, Cell.Expression, Dependencies);
     this.Scope.TryDeclareCell(Data);
     return Data;
