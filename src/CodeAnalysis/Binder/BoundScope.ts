@@ -49,16 +49,17 @@ export class BoundScope {
     return undefined;
   }
 
-  TryDeclareCell(Name: string, Dependencies: Set<string>): boolean {
-    this.DetectCircularDependencies(Name, Dependencies);
-    const Scope = this.ResolveScopeForCell(Name) as BoundScope;
+  TryDeclareCell(Node: BoundReferenceStatement): boolean {
+    this.DetectCircularDependencies(Node.Name, Node.Dependencies);
+    const Scope = this.ResolveScopeForCell(Node.Name) as BoundScope;
     if (Scope === undefined) {
-      this.Data.set(Name, new Cell(Name, this.Expression.Value, this.Expression, Dependencies, new Set<string>()));
+      const Data = new Cell(Node.Name, this.Expression.Value, this.Expression, Node.Dependencies, new Set<string>());
+      this.Data.set(Node.Name, Data);
       return true;
     }
-    const Data = Scope.Data.get(Name) as Cell;
-    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Name);
-    Data.Dependencies = Dependencies;
+    const Data = Scope.Data.get(Node.Name) as Cell;
+    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryLookUpCell(Dep).DoNotNotify(Node.Name);
+    Data.Dependencies = Node.Dependencies;
     return false;
   }
 
@@ -85,7 +86,7 @@ export class BoundScope {
 
   Assign(Node: BoundReferenceStatement, Value: number) {
     const Data = this.TryLookUpCell(Node.Name);
-    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
+    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
     Data.Dependencies = Node.Dependencies;
     for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
     Data.Expression = Node.Expression;

@@ -86,15 +86,15 @@ export class Binder {
         const Left = this.Bind(Node.Left) as BoundCellReference;
         this.Scope = new BoundScope(this.Scope);
         const Expression = this.Bind(Node.Expression);
-        const Bound = new BoundReferenceStatement(
+        const Data = new BoundReferenceStatement(
           BoundKind.ReferenceStatement,
           Left.Name,
           Expression,
           new Set<string>(this.Scope.Names)
         );
         this.Scope = this.Scope.Parent as BoundScope;
-        this.Scope.TryDeclareCell(Bound.Name, Bound.Dependencies);
-        return Bound;
+        this.Scope.TryDeclareCell(Data);
+        return Data;
     }
     throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
   }
