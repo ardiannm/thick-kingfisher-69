@@ -1,6 +1,6 @@
 export enum DiagnosticKind {
   Parser = "Parser",
-  Environment = "Environment",
+  BoundScope = "BoundScope",
   Evaluator = "Evaluator",
   Binder = "Binder",
   Lexer = "Lexer",

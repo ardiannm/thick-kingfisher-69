@@ -72,12 +72,14 @@ export class Interpreter {
     try {
       Fn();
     } catch (error) {
+      console.log();
       if (error instanceof Diagnostic) {
         const Message = RgbColor.Terracotta(error.Message);
         console.log(Message);
-        return;
+      } else {
+        console.log(error);
       }
-      console.log(error);
+      console.log();
     }
   }
 }

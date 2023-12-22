@@ -25,7 +25,7 @@ export class Cell {
 }
 
 export class BoundScope {
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Environment);
+  private Diagnostics = new DiagnosticBag(DiagnosticKind.BoundScope);
   private Expression = new BoundNumber(BoundKind.Number, 0);
 
   private Data = new Map<string, Cell>();
