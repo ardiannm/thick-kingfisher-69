@@ -54,8 +54,8 @@ export class Binder {
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ReferenceStatement:
         return this.BindReferenceStatement(Node as NodeType<DeclarationStatement>);
-      case SyntaxKind.CopyCellStatement:
-        return this.BindCopyCellStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.CloneStatement:
+        return this.BindCloneStatement(Node as NodeType<DeclarationStatement>);
     }
     throw this.Diagnostics.MissingMethod(Node.Kind);
   }
@@ -73,7 +73,7 @@ export class Binder {
         case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
         case SyntaxKind.ReferenceStatement:
-        case SyntaxKind.CopyCellStatement:
+        case SyntaxKind.CloneStatement:
           Root.push(this.Bind(Branch));
           continue;
         default:
@@ -83,7 +83,7 @@ export class Binder {
     return new BoundProgram(BoundKind.Program, Root);
   }
 
-  private BindCopyCellStatement(Node: DeclarationStatement) {
+  private BindCloneStatement(Node: DeclarationStatement) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
       throw this.Diagnostics.CantUseForCopy(Node.Left.Kind, Node.Expression.Kind);
     }

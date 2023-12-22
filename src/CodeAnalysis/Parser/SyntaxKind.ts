@@ -1,6 +1,6 @@
 export enum SyntaxKind {
   Program = "Program",
-  CopyCellStatement = "CopyCellStatement",
+  CloneStatement = "CloneStatement",
   ReferenceStatement = "ReferenceStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
