@@ -11,7 +11,7 @@ import { CellReference } from "./CodeAnalysis/Parser/CellReference";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
 import { BoundScope } from "./CodeAnalysis/Binder/BoundScope";
-import { BoundReferenceStatement } from "./CodeAnalysis/Binder/BoundReferenceStatement";
+import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 
 export class Evaluator {
   private Value: number = 0;
@@ -33,7 +33,8 @@ export class Evaluator {
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.ReferenceStatement:
-        return this.EvaluateReferenceStatement(Node as NodeType<BoundReferenceStatement>);
+      case BoundKind.CloneCellStatement:
+        return this.EvaluateReferenceStatement(Node as NodeType<BoundDeclarationStatement>);
       default:
         throw this.Diagnostics.MissingMethod(Node.Kind);
     }
@@ -46,7 +47,7 @@ export class Evaluator {
     return this.Value;
   }
 
-  private EvaluateReferenceStatement(Node: BoundReferenceStatement) {
+  private EvaluateReferenceStatement(Node: BoundDeclarationStatement) {
     const Value = this.Evaluate(Node.Expression);
     const Dependents = this.Scope.Assign(Node, Value);
     for (const Dep of Dependents) {

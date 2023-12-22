@@ -25,7 +25,7 @@ export class Rewriter {
       case SyntaxKind.ParenthesizedExpression:
         return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.ReferenceStatement:
-      case SyntaxKind.CloneStatement:
+      case SyntaxKind.CloneCellStatement:
         return this.RewriteReferenceStatement(Node as NodeType<DeclarationStatement>);
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:

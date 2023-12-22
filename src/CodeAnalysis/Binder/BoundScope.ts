@@ -1,7 +1,7 @@
 import { BoundExpression } from "./BoundExpression";
 import { BoundKind } from "./BoundKind";
 import { BoundNumber } from "./BoundNumber";
-import { BoundReferenceStatement } from "./BoundReferenceStatement";
+import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { RgbColor } from "../Interpreter/RgbColor";
@@ -49,7 +49,7 @@ export class BoundScope {
     return undefined;
   }
 
-  TryDeclareCell(Node: BoundReferenceStatement): boolean {
+  TryDeclareCell(Node: BoundDeclarationStatement): boolean {
     this.DetectCircularDependencies(Node.Name, Node.Dependencies);
     const Scope = this.ResolveScopeForCell(Node.Name) as BoundScope;
     if (Scope === undefined) {
@@ -84,7 +84,7 @@ export class BoundScope {
     }
   }
 
-  Assign(Node: BoundReferenceStatement, Value: number) {
+  Assign(Node: BoundDeclarationStatement, Value: number) {
     const Data = this.TryLookUpCell(Node.Name);
     for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
     Data.Dependencies = Node.Dependencies;

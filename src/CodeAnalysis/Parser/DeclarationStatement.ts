@@ -5,7 +5,7 @@ import { SyntaxToken } from "./SyntaxToken";
 
 export class DeclarationStatement extends StatementSyntax {
   constructor(
-    public Kind: SyntaxKind.ReferenceStatement | SyntaxKind.CloneStatement,
+    public Kind: SyntaxKind.ReferenceStatement | SyntaxKind.CloneCellStatement,
     public Left: ExpressionSyntax,
     public Keyword: SyntaxToken,
     public Expression: ExpressionSyntax

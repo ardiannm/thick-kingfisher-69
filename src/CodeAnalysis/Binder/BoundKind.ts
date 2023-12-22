@@ -1,5 +1,6 @@
 export enum BoundKind {
   Program = "Program",
+  CloneCellStatement = "CloneCellStatement",
   ReferenceStatement = "ReferenceStatement",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
