@@ -1,17 +1,14 @@
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken, TokenMap } from "./SyntaxToken";
 import { Facts } from "./Facts";
-import { SourceText } from "../Text/SourceText";
-import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
+import { SourceText } from "../../SourceText";
 
 export class Lexer {
+  constructor(public readonly Input: SourceText) {}
+
   private Index = 0;
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Lexer);
   private Start = this.Index;
   private Kind = SyntaxKind.EndOfFileToken;
-
-  constructor(public readonly Source: SourceText) {}
 
   Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;
@@ -31,7 +28,8 @@ export class Lexer {
         }
 
         // if all else fails then throw a bad token error
-        this.Diagnostics.ReportBadTokenFound(this.Char);
+        this.Input.Diagnostics.ReportBadTokenFound(this.Char);
+        break;
 
       case SyntaxKind.HashToken:
         // special case for hash token when it comes to comments
@@ -93,7 +91,9 @@ export class Lexer {
     }
     if (this.Match(SyntaxKind.DotToken)) {
       this.Index += 1;
-      if (!this.IsDigit(this.Char)) this.Diagnostics.ReportBadFloatingPointNumber();
+      if (!this.IsDigit(this.Char)) {
+        this.Input.Diagnostics.ReportBadFloatingPointNumber();
+      }
     }
     while (this.IsDigit(this.Char)) {
       this.Index += 1;
@@ -116,7 +116,7 @@ export class Lexer {
   }
 
   private Peek(Offset: number): string {
-    return this.Source.Text.charAt(this.Index + Offset);
+    return this.Input.Text.charAt(this.Index + Offset);
   }
 
   private get Char() {
@@ -124,7 +124,7 @@ export class Lexer {
   }
 
   private get Text() {
-    return this.Source.Text.substring(this.Start, this.Index);
+    return this.Input.Text.substring(this.Start, this.Index);
   }
 
   private Match(...Kinds: Array<SyntaxKind>) {

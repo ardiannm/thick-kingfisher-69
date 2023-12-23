@@ -47,4 +47,8 @@ export class RgbColor {
   static Sandstone(Text: string) {
     return this.Color(Text, Color.Sandstone);
   }
+
+  static Teal(Text: string) {
+    return this.Color(Text, Color.Teal);
+  }
 }

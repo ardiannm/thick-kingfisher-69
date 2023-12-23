@@ -4,14 +4,15 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { Parser } from "../Parser/Parser";
-import { SourceText } from "../Text/SourceText";
+import { SourceText } from "../../SourceText";
 import { Evaluator } from "../../Evaluator";
 import { BoundScope } from "../Binder/BoundScope";
 import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
 import { RgbColor } from "./RgbColor";
-import { Diagnostic } from "../Diagnostics/Diagnostic";
+import { Diagnostic } from "../../Diagnostic";
 import { Lowerer } from "../Lowerer/Lowerer";
+import { DiagnosticBag } from "../../DiagnosticBag";
 
 export class Interpreter {
   private Lines = Array<string>();
@@ -51,6 +52,10 @@ export class Interpreter {
         const Program = ParserFactory.Parse();
         const ParserTree = SyntaxTree.Print(Program);
 
+        if (Program.Diagnostics.Any()) {
+          throw Program.Diagnostics;
+        }
+
         console.log(ParserTree);
 
         const LowerProgram = LowererFactory.Lower(Program);
@@ -79,6 +84,10 @@ export class Interpreter {
       if (error instanceof Diagnostic) {
         const Message = RgbColor.Terracotta(error.Message);
         console.log(Message);
+      } else if (error instanceof DiagnosticBag) {
+        for (const Diagnostic of error.Reports) {
+          console.log(RgbColor.Sandstone(Diagnostic.Message));
+        }
       } else {
         console.log(error);
       }

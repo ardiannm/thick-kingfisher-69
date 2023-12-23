@@ -4,18 +4,17 @@ import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
-import { DiagnosticBag } from "./CodeAnalysis/Diagnostics/DiagnosticBag";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Parser/CellReference";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
-import { DiagnosticKind } from "./CodeAnalysis/Diagnostics/DiagnosticKind";
 import { BoundScope } from "./CodeAnalysis/Binder/BoundScope";
 import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
+import { DiagnosticBag } from "./DiagnosticBag";
 
 export class Evaluator {
   private Value: number = 0;
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Evaluator);
+  private Diagnostics = new DiagnosticBag();
 
   constructor(private Scope: BoundScope) {}
 

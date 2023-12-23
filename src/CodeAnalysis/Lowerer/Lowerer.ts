@@ -1,5 +1,3 @@
-import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { BinaryExpression } from "../Parser/BinaryExpression";
 import { DeclarationStatement } from "../Parser/DeclarationStatement";
 import { Facts } from "../Parser/Facts";
@@ -11,8 +9,6 @@ import { SyntaxToken } from "../Parser/SyntaxToken";
 import { UnaryExpression } from "../Parser/UnaryExpression";
 
 export class Lowerer {
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Rewriter);
-
   Lower<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
@@ -27,20 +23,13 @@ export class Lowerer {
       case SyntaxKind.ReferenceCell:
       case SyntaxKind.CloneCell:
         return this.LowerReferenceStatement(Node as NodeType<DeclarationStatement>);
-      case SyntaxKind.IdentifierToken:
-      case SyntaxKind.NumberToken:
-      case SyntaxKind.CellReference:
-      case SyntaxKind.RangeReference:
-        return Node;
-      default:
-        this.Diagnostics.ReportMissingMethod(Node.Kind);
-        return Node;
     }
+    return Node;
   }
 
   private LowerProgram(Node: Program) {
     const Root = Node.Root.map((Statement) => this.Lower(Statement));
-    return new Program(SyntaxKind.Program, Root, Node.EndOfFileToken);
+    return new Program(SyntaxKind.Program, Root, Node.EndOfFileToken, Node.Diagnostics);
   }
 
   private LowerReferenceStatement(Node: DeclarationStatement) {
@@ -109,9 +98,8 @@ export class Lowerer {
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
         return this.SwitchSyntaxNode(Node as NodeType<SyntaxNode>);
-      default:
-        throw this.Diagnostics.ReportSwitchOperatorMethod(Node.Kind);
     }
+    return Node;
   }
 
   private SwitchParenthesizedExpression(Node: ParenthesizedExpression) {

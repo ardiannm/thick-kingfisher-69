@@ -1,0 +1,17 @@
+export enum DiagnosticKind {
+  EmptyProgram = "EmptyProgram",
+  BadTokenFound = "BadTokenFound",
+  TokenNotAMatch = "TokenNotAMatch",
+  MissingMethod = "MissingMethod",
+  CantDivideByZero = "CantDivideByZero",
+  MissingOperatorKind = "MissingOperatorKind",
+  CircularDependency = "CircularDependency",
+  CantUseAsAReference = "CantUseAsAReference",
+  NameNotFound = "NameNotFound",
+  UsedBeforeItsDeclaration = "UsedBeforeItsDeclaration",
+  BadFloatingPointNumber = "BadFloatingPointNumber",
+  NotARangeMember = "NotARangeMember",
+  GloballyNotAllowed = "GloballyNotAllowed",
+  SwitchOperatorMethod = "SwitchOperatorMethod",
+  CantCopy = "ReportCantCopy",
+}

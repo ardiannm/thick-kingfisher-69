@@ -1,4 +1,3 @@
-import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
 import { DeclarationStatement } from "../Parser/DeclarationStatement";
@@ -23,14 +22,11 @@ import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
 import { BoundScope } from "./BoundScope";
 import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { BoundRowReference } from "./BoundRowReference";
 import { BoundColumnReference } from "./BoundColumnReference";
 import { IsReferable } from "./IsReferable";
 
 export class Binder {
-  private Diagnostics: DiagnosticBag = new DiagnosticBag(DiagnosticKind.Binder);
-
   constructor(private Scope: BoundScope) {}
 
   Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
@@ -57,7 +53,7 @@ export class Binder {
       case SyntaxKind.CloneCell:
         return this.BindCloneCell(Node as NodeType<DeclarationStatement>);
     }
-    throw this.Diagnostics.ReportMissingMethod(Node.Kind);
+    throw this.Scope.Diagnostics.ReportMissingMethod(Node.Kind);
   }
 
   private BindProgram(Node: Program) {
@@ -74,15 +70,15 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          throw this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
+          this.Scope.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
-    return new BoundProgram(BoundKind.Program, Root);
+    return new BoundProgram(BoundKind.Program, Root, this.Scope.Diagnostics);
   }
 
   private BindCloneCell(Node: DeclarationStatement) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
-      throw this.Diagnostics.ReportCantCopy(Node.Left.Kind, Node.Expression.Kind);
+      this.Scope.Diagnostics.ReportCantCopy(Node.Left.Kind, Node.Expression.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
@@ -104,7 +100,7 @@ export class Binder {
         this.Scope.TryDeclareCell(Data);
         return Data;
     }
-    throw this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+    throw this.Scope.Diagnostics.CantUseAsAReference(Node.Left.Kind);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -127,7 +123,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Scope.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -148,7 +144,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Scope.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -167,7 +163,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.ReportNotARangeMember(Node.Kind);
+    throw this.Scope.Diagnostics.ReportNotARangeMember(Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {

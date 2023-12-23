@@ -2,9 +2,8 @@ import { BoundExpression } from "./BoundExpression";
 import { BoundKind } from "./BoundKind";
 import { BoundNumber } from "./BoundNumber";
 import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
-import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 import { RgbColor } from "../Interpreter/RgbColor";
+import { DiagnosticBag } from "../../DiagnosticBag";
 
 export class Cell {
   constructor(
@@ -25,13 +24,13 @@ export class Cell {
 }
 
 export class BoundScope {
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.BoundScope);
   private Expression = new BoundNumber(BoundKind.Number, 0);
 
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
 
   Names = new Set<string>();
+  Diagnostics = new DiagnosticBag();
 
   constructor(public Parent?: BoundScope) {}
 

@@ -6,37 +6,47 @@ import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { RangeReference } from "./RangeReference";
 import { CellReference } from "./CellReference";
 import { Facts } from "./Facts";
-import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
-import { SourceText } from "../Text/SourceText";
+import { SourceText } from "../../SourceText";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
 import { DeclarationStatement } from "./DeclarationStatement";
-import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
-import { SyntaxTree } from "./SyntaxTree";
+import { Lexer } from "./Lexer";
 
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
-  private Diagnostics = new DiagnosticBag(DiagnosticKind.Parser);
 
-  constructor(public readonly Source: SourceText) {
-    this.Tokens = Array.from(SyntaxTree.Lex(Source.Text));
+  constructor(public readonly Input: SourceText) {
+    const Tokenizer = new Lexer(Input);
+    var Token: SyntaxToken<SyntaxKind>;
+    do {
+      Token = Tokenizer.Lex();
+      switch (Token.Kind) {
+        case SyntaxKind.BadToken:
+        case SyntaxKind.SpaceToken:
+        case SyntaxKind.CommentToken:
+          continue;
+      }
+      this.Tokens.push(Token);
+    } while (Token.Kind !== SyntaxKind.EndOfFileToken);
   }
 
   public Parse() {
     if (!this.MoreTokens()) {
-      this.Diagnostics.ReportEmptyProgram();
+      this.Input.Diagnostics.ReportEmptyProgram();
     }
     const Members = new Array<StatementSyntax>();
-    while (this.MoreTokens()) {
-      const Token = this.Token;
-      const Member = this.ParseMember();
-      Members.push(Member);
-      if (this.Token === Token) this.NextToken();
+    if (!this.Input.Diagnostics.Any()) {
+      while (this.MoreTokens()) {
+        const Token = this.Token;
+        const Member = this.ParseMember();
+        Members.push(Member);
+        if (this.Token === Token) this.NextToken();
+      }
     }
     const Right = this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members, Right);
+    return new Program(SyntaxKind.Program, Members, Right, this.Input.Diagnostics);
   }
 
   private ParseMember() {
@@ -157,7 +167,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
+    this.Input.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 
