@@ -10,23 +10,23 @@ import { SyntaxNode } from "../Parser/SyntaxNode";
 import { SyntaxToken } from "../Parser/SyntaxToken";
 import { UnaryExpression } from "../Parser/UnaryExpression";
 
-export class Rewriter {
+export class Lowerer {
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Rewriter);
 
-  Rewrite<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
+  Lower<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.Program:
-        return this.RewriteProgram(Node as NodeType<Program>);
+        return this.LowerProgram(Node as NodeType<Program>);
       case SyntaxKind.BinaryExpression:
-        return this.RewriteBinaryExpression(Node as NodeType<BinaryExpression>);
+        return this.LowerBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.UnaryExpression:
-        return this.RewriteUnaryExpression(Node as NodeType<UnaryExpression>);
+        return this.LowerUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
-        return this.RewriteParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
+        return this.LowerParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.ReferenceCell:
       case SyntaxKind.CloneCell:
-        return this.RewriteReferenceStatement(Node as NodeType<DeclarationStatement>);
+        return this.LowerReferenceStatement(Node as NodeType<DeclarationStatement>);
       case SyntaxKind.IdentifierToken:
       case SyntaxKind.NumberToken:
       case SyntaxKind.CellReference:
@@ -38,20 +38,20 @@ export class Rewriter {
     }
   }
 
-  private RewriteProgram(Node: Program) {
-    const Root = Node.Root.map((Statement) => this.Rewrite(Statement));
+  private LowerProgram(Node: Program) {
+    const Root = Node.Root.map((Statement) => this.Lower(Statement));
     return new Program(SyntaxKind.Program, Root, Node.Diagnostics);
   }
 
-  private RewriteReferenceStatement(Node: DeclarationStatement) {
-    const Left = this.Rewrite(Node.Left);
-    const Expression = this.Rewrite(Node.Expression);
+  private LowerReferenceStatement(Node: DeclarationStatement) {
+    const Left = this.Lower(Node.Left);
+    const Expression = this.Lower(Node.Expression);
     return new DeclarationStatement(SyntaxKind.ReferenceCell, Left, Node.Keyword, Expression);
   }
 
-  private RewriteBinaryExpression(Node: BinaryExpression) {
-    const Left = this.Rewrite(Node.Left);
-    const Right = this.Rewrite(Node.Right);
+  private LowerBinaryExpression(Node: BinaryExpression) {
+    const Left = this.Lower(Node.Left);
+    const Right = this.Lower(Node.Right);
     const Rewritten = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Node.Operator, Right);
     const Flattened = this.FlattenBinaryExpression(Rewritten);
     switch (Node.Operator.Kind) {
@@ -72,29 +72,24 @@ export class Rewriter {
           Right = this.SwitchSign(Node.Right) as BinaryExpression;
         }
         const Left = new BinaryExpression(SyntaxKind.BinaryExpression, Node.Left, Node.Operator, Right.Left);
-        return new BinaryExpression(
-          SyntaxKind.BinaryExpression,
-          this.Rewrite(Left),
-          Right.Operator,
-          this.Rewrite(Right.Right)
-        );
+        return new BinaryExpression(SyntaxKind.BinaryExpression, this.Lower(Left), Right.Operator, this.Lower(Right.Right));
       }
     }
     return Node;
   }
 
-  private RewriteUnaryExpression(Node: UnaryExpression) {
+  private LowerUnaryExpression(Node: UnaryExpression) {
     switch (Node.Operator.Kind) {
       case SyntaxKind.PlusToken:
-        return this.Rewrite(Node.Right);
+        return this.Lower(Node.Right);
       case SyntaxKind.MinusToken:
-        return this.Simplify(this.SwitchSign(this.Rewrite(Node.Right)));
+        return this.Simplify(this.SwitchSign(this.Lower(Node.Right)));
     }
     return Node;
   }
 
-  private RewriteParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.Rewrite(Node.Expression);
+  private LowerParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.Lower(Node.Expression);
   }
 
   private SwitchSign<Kind extends SyntaxNode>(Node: Kind): SyntaxNode {
@@ -163,7 +158,7 @@ export class Rewriter {
   private SimplifyBinaryExpression(Node: BinaryExpression) {
     if (Node.Right.Kind === SyntaxKind.UnaryExpression) {
       Node.Operator = this.SwitchSign(Node.Operator);
-      Node.Right = this.Rewrite(this.SwitchSign(Node.Right));
+      Node.Right = this.Lower(this.SwitchSign(Node.Right));
     }
     return Node;
   }

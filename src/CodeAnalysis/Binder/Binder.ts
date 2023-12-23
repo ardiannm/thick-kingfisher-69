@@ -65,8 +65,8 @@ export class Binder {
       throw this.Diagnostics.SourceCodeIsEmpty();
     }
     const Root = new Array<BoundStatement>();
-    for (const Branch of Node.Root) {
-      switch (Branch.Kind) {
+    for (const Member of Node.Root) {
+      switch (Member.Kind) {
         case SyntaxKind.NumberToken:
         case SyntaxKind.CellReference:
         case SyntaxKind.ParenthesizedExpression:
@@ -74,10 +74,10 @@ export class Binder {
         case SyntaxKind.BinaryExpression:
         case SyntaxKind.ReferenceCell:
         case SyntaxKind.CloneCell:
-          Root.push(this.Bind(Branch));
+          Root.push(this.Bind(Member));
           continue;
         default:
-          throw this.Diagnostics.CantWriteExpression(Branch.Kind);
+          throw this.Diagnostics.CantWriteExpression(Member.Kind);
       }
     }
     return new BoundProgram(BoundKind.Program, Root);

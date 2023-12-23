@@ -4,7 +4,7 @@ import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { SourceText } from "../Text/SourceText";
 import { BoundNode } from "../Binder/BoundNode";
-import { Rewriter } from "../Rewriter/Rewriter";
+import { Lowerer } from "../Lowerer/Lowerer";
 import { SyntaxNode } from "./SyntaxNode";
 import { RgbColor } from "../Interpreter/RgbColor";
 import { Program } from "./Program";
@@ -32,7 +32,7 @@ export class SyntaxTree {
   }
 
   static Rewrite(Text: string) {
-    return new Rewriter().Rewrite(SyntaxTree.Parse(Text)) as Program;
+    return new Lowerer().Lower(SyntaxTree.Parse(Text)) as Program;
   }
 
   static Print(Node: SyntaxNode, Indent = "") {

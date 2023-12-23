@@ -11,14 +11,14 @@ import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
 import { RgbColor } from "./RgbColor";
 import { Diagnostic } from "../Diagnostics/Diagnostic";
-import { Rewriter } from "../Rewriter/Rewriter";
+import { Lowerer } from "../Lowerer/Lowerer";
 
 export class Interpreter {
   private Lines = Array<string>();
 
   public Run() {
     const Environment = new BoundScope();
-    const RewriterFactory = new Rewriter();
+    const LowererFactory = new Lowerer();
     const BinderFactory = new Binder(Environment);
     const EvaluatorFactory = new Evaluator(Environment);
 
@@ -53,11 +53,11 @@ export class Interpreter {
 
         console.log(ParserTree);
 
-        const RewriterProgram = RewriterFactory.Rewrite(Program);
-        const RewriterTree = SyntaxTree.Print(RewriterProgram);
+        const LowerProgram = LowererFactory.Lower(Program);
+        const LowerTree = SyntaxTree.Print(LowerProgram);
 
-        if (Program.ObjectId !== RewriterProgram.ObjectId) {
-          console.log(RewriterTree);
+        if (Program.ObjectId !== LowerProgram.ObjectId) {
+          console.log(LowerTree);
         }
 
         const Source = "\n".repeat(3) + this.Lines.join("\n");
