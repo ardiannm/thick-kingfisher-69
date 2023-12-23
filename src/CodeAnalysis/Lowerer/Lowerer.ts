@@ -40,7 +40,7 @@ export class Lowerer {
 
   private LowerProgram(Node: Program) {
     const Root = Node.Root.map((Statement) => this.Lower(Statement));
-    return new Program(SyntaxKind.Program, Root, Node.Diagnostics);
+    return new Program(SyntaxKind.Program, Root, Node.EndOfFileToken);
   }
 
   private LowerReferenceStatement(Node: DeclarationStatement) {

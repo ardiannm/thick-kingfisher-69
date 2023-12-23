@@ -1,6 +1,5 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxToken } from "./SyntaxToken";
-import { SyntaxTree } from "./SyntaxTree";
+import { SyntaxToken, TokenText } from "./SyntaxToken";
 import { BinaryExpression } from "./BinaryExpression";
 import { UnaryExpression } from "./UnaryExpression";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
@@ -14,6 +13,7 @@ import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
 import { DeclarationStatement } from "./DeclarationStatement";
 import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
+import { SyntaxTree } from "./SyntaxTree";
 
 export class Parser {
   private Index = 0;
@@ -25,18 +25,18 @@ export class Parser {
   }
 
   public Parse() {
-    if (this.MoreTokens()) {
-      const Members = new Array<StatementSyntax>();
-      while (this.MoreTokens()) {
-        const Token = this.Token;
-        const Member = this.ParseMember();
-        Members.push(Member);
-        if (this.Token === Token) this.NextToken();
-      }
-      this.ExpectToken(SyntaxKind.EndOfFileToken);
-      return new Program(SyntaxKind.Program, Members, this.Diagnostics);
+    if (!this.MoreTokens()) {
+      this.Diagnostics.ReportEmptyProgram();
     }
-    throw this.Diagnostics.ReportEmptyProgram();
+    const Members = new Array<StatementSyntax>();
+    while (this.MoreTokens()) {
+      const Token = this.Token;
+      const Member = this.ParseMember();
+      Members.push(Member);
+      if (this.Token === Token) this.NextToken();
+    }
+    const Right = this.ExpectToken(SyntaxKind.EndOfFileToken);
+    return new Program(SyntaxKind.Program, Members, Right);
   }
 
   private ParseMember() {
@@ -153,10 +153,12 @@ export class Parser {
     return true;
   }
 
-  private ExpectToken(Kind: SyntaxKind) {
-    if (this.MatchToken(Kind)) return this.NextToken();
+  private ExpectToken<Kind extends SyntaxKind>(Kind: Kind): SyntaxToken<Kind> {
+    if (this.MatchToken(Kind)) {
+      return this.NextToken() as SyntaxToken<Kind>;
+    }
     this.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
-    return new SyntaxToken(this.Token.Kind, this.Token.Text);
+    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 
   private MoreTokens() {
