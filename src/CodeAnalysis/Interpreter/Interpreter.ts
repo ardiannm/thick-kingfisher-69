@@ -1,5 +1,8 @@
 import Promp from "readline-sync";
 
+import * as fs from "fs";
+import * as path from "path";
+
 import { Parser } from "../Parser/Parser";
 import { SourceText } from "../Text/SourceText";
 import { Evaluator } from "../../Evaluator";
@@ -40,6 +43,8 @@ export class Interpreter {
         continue;
       }
 
+      this.Lines.push(InputLine);
+
       this.TryCatch(() => {
         const Input = SourceText.From(InputLine);
         const ParserFactory = new Parser(Input);
@@ -54,8 +59,6 @@ export class Interpreter {
         if (Program.ObjectId !== RewriterProgram.ObjectId) {
           console.log(RewriterTree);
         }
-
-        this.Lines.push(InputLine);
 
         const Source = "\n".repeat(3) + this.Lines.join("\n");
         console.log(RgbColor.Terracotta(Source));
@@ -81,5 +84,10 @@ export class Interpreter {
       }
       console.log();
     }
+  }
+
+  private OpenFile(): string {
+    const FullPath = path.join(".", "src", "CodeAnalysis", "Interpreter", ".lang");
+    return fs.readFileSync(FullPath, "utf8");
   }
 }

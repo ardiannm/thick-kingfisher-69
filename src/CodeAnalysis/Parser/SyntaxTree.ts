@@ -18,7 +18,6 @@ export class SyntaxTree {
     do {
       Token = Tokenizer.Lex();
       switch (Token.Kind) {
-        case SyntaxKind.NewLineToken:
         case SyntaxKind.SpaceToken:
         case SyntaxKind.CommentToken:
           continue;

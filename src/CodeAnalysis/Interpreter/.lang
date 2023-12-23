@@ -2,70 +2,7 @@ A1 -> 1
 A2 -> A1+3
 A3 -> A1+A2+4
 A4 -> A1+A2+A3+5
-A3 -> 6
-A1 -> 3
-A2 -> 4
-A4 -> 0
-A2 -> 7
-A1
+A1 -> 4
 
-# test case for switching operators within parenthesized expressions before removing parenthesis tokens
-
-1+2+3+4+5+6+7           "c90f367a"
-
--(1-2)+3+4-(5-6-7)      
--(1-2)+3+4--(5-6-7)
-
--(1-2)+3+4+-(5-6-7)     "c90f367a"
--(-(1+2+3))+4+5+6+7     "c90f367a"
-
-# this leads to the necessity to have a method that turns a tree back into a string
-# else the equality of the two can be proven by checking both nodes ids using ObjectId
-# id of rewriten "-(1-2)+3+4+-(5-6-7)" should be the same to the object id of "1+2+3+4+5+6+7"
-# and indeed "c90f367a" is the same for both but this also leads to the necessity of writing tests
-# so is this "-(-(1+2+3))+4+5+6+7"
-# ++++++++++++++-----------------++++++++A1
-
-
-1+2+3
-1-(2+3)
-
-Program
-├── BinaryExpression
-│  ├── BinaryExpression
-│  │  ├── NumberToken 1
-│  │  ├── PlusToken +
-│  │  └── NumberToken 2
-│  ├── PlusToken +
-│  └── NumberToken 3
-└── BinaryExpression
-   ├── BinaryExpression
-   │  ├── NumberToken 1
-   │  ├── PlusToken +
-   │  └── UnaryExpression
-   │     ├── MinusToken -
-   │     └── NumberToken 2
-   ├── PlusToken +
-   └── UnaryExpression
-      ├── MinusToken -
-      └── NumberToken 3
-
-
-# adding copy statments or clone statments
-
-B3 >> A3
-B4 >> B3
-
-# this below would be a result of a single copy action of a cell over other cells i.e B5, B6, B7, B8.
-
-B5 >> B3
-B6 >> B3
-B7 >> B3
-B8 >> B3
-
-# or
-
-for ref in [B5, B6, B7, B8]:
-   ref >> B3
 
 

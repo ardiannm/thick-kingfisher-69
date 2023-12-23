@@ -25,16 +25,16 @@ export class Parser {
   }
 
   public Parse() {
-    if (this.Any()) {
+    if (this.MoreTokens()) {
       const Statements = new Array<StatementSyntax>();
-      while (this.Any()) {
+      while (this.MoreTokens()) {
         const Statement = this.ParseStatement();
         Statements.push(Statement);
+        if (this.MoreTokens()) this.ParseNewLineTokens();
       }
       this.ExpectToken(SyntaxKind.EndOfFileToken);
       return new Program(SyntaxKind.Program, Statements);
     }
-
     throw this.Diagnostics.SourceCodeIsEmpty();
   }
 
@@ -115,6 +115,11 @@ export class Parser {
     }
   }
 
+  private ParseNewLineTokens() {
+    this.ExpectToken(SyntaxKind.NewLineToken);
+    while (this.MatchToken(SyntaxKind.NewLineToken)) this.NextToken();
+  }
+
   private PeekToken(Offset: number) {
     const Index = this.Index + Offset;
     const LastIndex = this.Tokens.length - 1;
@@ -147,7 +152,7 @@ export class Parser {
     throw this.Diagnostics.TokenNotAMatch(Token.Kind);
   }
 
-  private Any() {
+  private MoreTokens() {
     return !this.MatchToken(SyntaxKind.EndOfFileToken);
   }
 }

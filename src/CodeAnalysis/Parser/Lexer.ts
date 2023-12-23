@@ -20,7 +20,6 @@ export class Lexer {
     switch (this.Kind) {
       case SyntaxKind.BadToken:
         // if no token matched from the syntax facts this may still be either a letter, number or space token
-
         if (this.IsLetter(this.Char)) {
           return this.ParseIdentifier();
         }
@@ -58,7 +57,7 @@ export class Lexer {
     // else by default increment index position by one for all cases
     this.Index += 1;
 
-    return new SyntaxToken(this.Kind, this.Text as "");
+    return new SyntaxToken(this.Kind, this.Text);
   }
 
   // parse identifier tokens
