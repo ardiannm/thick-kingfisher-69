@@ -1,5 +1,4 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { TokenKind } from "./SyntaxToken";
 
 export class Facts {
   public static UnaryPrecedence(kind: SyntaxKind) {
@@ -27,7 +26,7 @@ export class Facts {
     }
   }
 
-  public static Kind<T extends string>(text: T): SyntaxKind {
+  public static Kind(text: string): SyntaxKind {
     switch (text) {
       case "+":
         return SyntaxKind.PlusToken;
@@ -60,14 +59,14 @@ export class Facts {
     }
   }
 
-  public static KeywordOrIdentiferTokenKind<T extends string>(text: T): TokenKind<T> {
+  public static KeywordOrIdentiferTokenKind(text: string): SyntaxKind {
     switch (text) {
       case "true":
-        return SyntaxKind.TrueKeyword as TokenKind<T>;
+        return SyntaxKind.TrueKeyword;
       case "false":
-        return SyntaxKind.FalseKeyword as TokenKind<T>;
+        return SyntaxKind.FalseKeyword;
       default:
-        return SyntaxKind.IdentifierToken as TokenKind<T>;
+        return SyntaxKind.IdentifierToken;
     }
   }
 }

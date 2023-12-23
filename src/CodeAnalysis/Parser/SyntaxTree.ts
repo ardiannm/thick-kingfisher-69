@@ -14,7 +14,7 @@ export class SyntaxTree {
 
   static *Lex(Text: string) {
     const Tokenizer = new Lexer(SourceText.From(Text));
-    var Token: SyntaxToken;
+    var Token: SyntaxToken<SyntaxKind>;
     do {
       Token = Tokenizer.Lex();
       switch (Token.Kind) {

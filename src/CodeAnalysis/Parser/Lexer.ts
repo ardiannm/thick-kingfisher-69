@@ -1,5 +1,5 @@
 import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxToken, TokenKind, TokenMap } from "./SyntaxToken";
+import { SyntaxToken, TokenMap } from "./SyntaxToken";
 import { Facts } from "./Facts";
 import { SourceText } from "../Text/SourceText";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
@@ -13,7 +13,7 @@ export class Lexer {
 
   constructor(public readonly Source: SourceText) {}
 
-  Lex(): SyntaxToken {
+  Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;
     this.Kind = Facts.Kind(this.Char) as keyof TokenMap;
 
@@ -58,7 +58,7 @@ export class Lexer {
     // else by default increment index position by one for all cases
     this.Index += 1;
 
-    return new SyntaxToken(this.Kind as TokenKind<typeof this.Text>, this.Text as "");
+    return new SyntaxToken(this.Kind, this.Text as "");
   }
 
   // parse identifier tokens
@@ -99,7 +99,7 @@ export class Lexer {
     while (this.IsDigit(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(SyntaxKind.NumberToken, this.Text);
+    return new SyntaxToken(SyntaxKind.NumberToken, this.Text as TokenMap[SyntaxKind.NumberToken]);
   }
 
   private IsSpace(Char: string): boolean {

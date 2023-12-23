@@ -17,7 +17,7 @@ import { DiagnosticKind } from "../Diagnostics/DiagnosticKind";
 
 export class Parser {
   private Index = 0;
-  private Tokens = new Array<SyntaxToken>();
+  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
   private Diagnostics = new DiagnosticBag(DiagnosticKind.Parser);
 
   constructor(public readonly Source: SourceText) {
@@ -34,6 +34,7 @@ export class Parser {
       this.ExpectToken(SyntaxKind.EndOfFileToken);
       return new Program(SyntaxKind.Program, Statements);
     }
+
     throw this.Diagnostics.SourceCodeIsEmpty();
   }
 
@@ -94,8 +95,8 @@ export class Parser {
 
   private ParseCellReference() {
     if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
-      const Left = this.NextToken();
-      const Right = this.NextToken();
+      const Left = this.NextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
+      const Right = this.NextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       return new CellReference(SyntaxKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();

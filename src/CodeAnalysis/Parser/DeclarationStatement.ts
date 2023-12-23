@@ -7,7 +7,7 @@ export class DeclarationStatement extends StatementSyntax {
   constructor(
     public Kind: SyntaxKind.ReferenceCell | SyntaxKind.CloneCell,
     public Left: ExpressionSyntax,
-    public Keyword: SyntaxToken,
+    public Keyword: SyntaxToken<SyntaxKind>,
     public Expression: ExpressionSyntax
   ) {
     super(Kind);

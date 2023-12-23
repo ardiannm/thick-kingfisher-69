@@ -39,9 +39,9 @@ export class Binder {
       case SyntaxKind.Program:
         return this.BindProgram(Node as NodeType<Program>);
       case SyntaxKind.IdentifierToken:
-        return this.BindIdentifier(Node as NodeType<SyntaxToken>);
+        return this.BindIdentifier(Node as NodeType<SyntaxToken<SyntaxKind.IdentifierToken>>);
       case SyntaxKind.NumberToken:
-        return this.BindNumber(Node as NodeType<SyntaxToken>);
+        return this.BindNumber(Node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>);
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
       case SyntaxKind.RangeReference:
@@ -162,9 +162,11 @@ export class Binder {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.NumberToken:
-        return new BoundRowReference(BoundKind.RowReference, (Node as NodeType<SyntaxToken>).Text);
+        const Row = Node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>;
+        return new BoundRowReference(BoundKind.RowReference, Row.Text);
       case SyntaxKind.IdentifierToken:
-        return new BoundColumnReference(BoundKind.ColumnReference, (Node as NodeType<SyntaxToken>).Text);
+        const Column = Node as NodeType<SyntaxToken<SyntaxKind.IdentifierToken>>;
+        return new BoundColumnReference(BoundKind.ColumnReference, Column.Text);
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
@@ -185,11 +187,11 @@ export class Binder {
     return new BoundCellReference(BoundKind.CellReference, Name);
   }
 
-  private BindIdentifier(Node: SyntaxToken) {
+  private BindIdentifier(Node: SyntaxToken<SyntaxKind.IdentifierToken>) {
     return new BoundIdentifier(BoundKind.Identifier, Node.Text);
   }
 
-  private BindNumber(Node: SyntaxToken) {
+  private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {
     const Value = parseFloat(Node.Text);
     return new BoundNumber(BoundKind.Number, Value);
   }
