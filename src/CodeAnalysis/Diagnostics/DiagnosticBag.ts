@@ -21,51 +21,51 @@ export class DiagnosticBag {
   }
 
   Any() {
-    return this.Diagnostics.length > 0;
+    return this.Count > 0;
   }
 
   Clear() {
     this.Diagnostics = new Array<Diagnostic>();
   }
 
-  BadTokenFound(Text: string) {
+  ReportBadTokenFound(Text: string) {
     const Message = `bad character '${Text}' found.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.BadTokenFound, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportBadTokenFound, Message));
   }
 
-  TokenNotAMatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
+  ReportTokenNotAMatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
     const Message = `expecting <${ExpectedKind}>, matched <${Matched}>.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportTokenNotAMatch, Message));
   }
 
-  SourceCodeIsEmpty() {
-    const Message = `source code is empty.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.SourceCodeIsEmpty, Message));
+  ReportEmptyProgram() {
+    const Message = `program contains no code.`;
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportEmptyProgram, Message));
   }
 
-  MissingMethod(Kind: SyntaxKind | BoundKind) {
+  ReportMissingMethod(Kind: SyntaxKind | BoundKind) {
     const Message = `method for <${Kind}> is not implemented.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingMethod, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportMissingMethod, Message));
   }
 
-  MissingSwitchSignMethod(Kind: SyntaxKind) {
+  ReportSwitchOperatorMethod(Kind: SyntaxKind) {
     const Message = `method for switching operators for <${Kind}> is not implemented.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingSwitchSignMethod, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportSwitchOperatorMethod, Message));
   }
 
-  CantDivideByZero() {
+  ReportCantDivideByZero() {
     const Message = `can't divide by zero.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantDivideByZero, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportCantDivideByZero, Message));
   }
 
-  MissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
+  ReportMissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
     const Message = `unexpected operator kind <${Kind}>.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.MissingOperatorKind, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportMissingOperatorKind, Message));
   }
 
-  CircularDependency(Name: string) {
+  ReportCircularDependency(Name: string) {
     const Message = `circular dependency found in '${Name}'.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CircularDependency, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportCircularDependency, Message));
   }
 
   CantUseAsAReference(Unexpected: string) {
@@ -73,33 +73,33 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseAsAReference, Message));
   }
 
-  CantUseForCopy(Kind: SyntaxKind, ExpectedKind: SyntaxKind) {
+  ReportCantCopy(Kind: SyntaxKind, ExpectedKind: SyntaxKind) {
     const Message = `can't copy <${Kind}> to <${ExpectedKind}>.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantUseForCopy, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportCantCopy, Message));
   }
 
-  NameNotFound(Name: string) {
+  ReportNameNotFound(Name: string) {
     const Message = `can't find name '${Name}'.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NameNotFound, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportNameNotFound, Message));
   }
 
-  UsedBeforeItsDeclaration(Name: string) {
+  ReportUsedBeforeItsDeclaration(Name: string) {
     const Message = `using '${Name}' before its declaration.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.UsedBeforeItsDeclaration, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportUsedBeforeItsDeclaration, Message));
   }
 
-  WrongFloatingNumberFormat() {
+  ReportBadFloatingPointNumber() {
     const Message = `wrong floating number format.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.WrongFloatingNumberFormat, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportBadFloatingPointNumber, Message));
   }
 
-  NotARangeBranch(Kind: SyntaxKind) {
+  ReportNotARangeMember(Kind: SyntaxKind) {
     const Message = `<${Kind}> is not a range member and it can't be bound.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.NotARangeMember, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportNotARangeMember, Message));
   }
 
-  CantWriteExpression(Kind: SyntaxKind) {
+  ReportGloballyNotAllowed(Kind: SyntaxKind) {
     const Message = `<${Kind}> can't be written directly outside in the global scope.`;
-    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.CantWriteExpression, Message));
+    return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.ReportGloballyNotAllowed, Message));
   }
 }

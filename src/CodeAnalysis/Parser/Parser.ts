@@ -36,7 +36,7 @@ export class Parser {
       this.ExpectToken(SyntaxKind.EndOfFileToken);
       return new Program(SyntaxKind.Program, Members, this.Diagnostics);
     }
-    throw this.Diagnostics.SourceCodeIsEmpty();
+    throw this.Diagnostics.ReportEmptyProgram();
   }
 
   private ParseMember() {
@@ -155,7 +155,7 @@ export class Parser {
 
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    this.Diagnostics.TokenNotAMatch(this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind, this.Token.Text);
   }
 

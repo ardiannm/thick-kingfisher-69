@@ -57,13 +57,10 @@ export class Binder {
       case SyntaxKind.CloneCell:
         return this.BindCloneCell(Node as NodeType<DeclarationStatement>);
     }
-    throw this.Diagnostics.MissingMethod(Node.Kind);
+    throw this.Diagnostics.ReportMissingMethod(Node.Kind);
   }
 
   private BindProgram(Node: Program) {
-    if (Node.Root.length === 0) {
-      throw this.Diagnostics.SourceCodeIsEmpty();
-    }
     const Root = new Array<BoundStatement>();
     for (const Member of Node.Root) {
       switch (Member.Kind) {
@@ -77,7 +74,7 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          throw this.Diagnostics.CantWriteExpression(Member.Kind);
+          throw this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
     return new BoundProgram(BoundKind.Program, Root);
@@ -85,7 +82,7 @@ export class Binder {
 
   private BindCloneCell(Node: DeclarationStatement) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
-      throw this.Diagnostics.CantUseForCopy(Node.Left.Kind, Node.Expression.Kind);
+      throw this.Diagnostics.ReportCantCopy(Node.Left.Kind, Node.Expression.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
@@ -130,7 +127,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.MissingOperatorKind(Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -151,7 +148,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.MissingOperatorKind(Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -170,7 +167,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.NotARangeBranch(Node.Kind);
+    throw this.Diagnostics.ReportNotARangeMember(Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {

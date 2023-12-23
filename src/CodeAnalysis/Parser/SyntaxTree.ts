@@ -31,7 +31,7 @@ export class SyntaxTree {
     return new Parser(Source).Parse() as Program;
   }
 
-  static Rewrite(Text: string) {
+  static Lower(Text: string) {
     return new Lowerer().Lower(SyntaxTree.Parse(Text)) as Program;
   }
 

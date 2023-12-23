@@ -36,7 +36,7 @@ export class Evaluator {
       case BoundKind.CloneCell:
         return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
       default:
-        throw this.Diagnostics.MissingMethod(Node.Kind);
+        throw this.Diagnostics.ReportMissingMethod(Node.Kind);
     }
   }
 
@@ -68,13 +68,13 @@ export class Evaluator {
         return LeftValue * RightValue;
       case BoundBinaryOperatorKind.Division:
         if (RightValue === 0) {
-          throw this.Diagnostics.CantDivideByZero();
+          throw this.Diagnostics.ReportCantDivideByZero();
         }
         return LeftValue / RightValue;
       case BoundBinaryOperatorKind.Exponentiation:
         return LeftValue ** RightValue;
       default:
-        throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
+        throw this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
     }
   }
 
@@ -86,7 +86,7 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        throw this.Diagnostics.MissingOperatorKind(Node.OperatorKind);
+        throw this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
     }
   }
 

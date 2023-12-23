@@ -66,19 +66,19 @@ export class BoundScope {
   TryLookUpCell(Name: string): Cell {
     const Scope = this.ResolveScopeForCell(Name);
     if (Scope === undefined) {
-      throw this.Diagnostics.NameNotFound(Name);
+      throw this.Diagnostics.ReportNameNotFound(Name);
     }
     return Scope.Data.get(Name) as Cell;
   }
 
   private DetectCircularDependencies(Name: string, Dependencies: Set<string>) {
     if (Dependencies.has(Name)) {
-      throw this.Diagnostics.UsedBeforeItsDeclaration(Name);
+      throw this.Diagnostics.ReportUsedBeforeItsDeclaration(Name);
     }
     for (const Dep of Dependencies) {
       const Deps = this.TryLookUpCell(Dep).Dependencies;
       if (Deps.has(Name)) {
-        throw this.Diagnostics.CircularDependency(Dep);
+        throw this.Diagnostics.ReportCircularDependency(Dep);
       }
       this.DetectCircularDependencies(Name, Deps);
     }

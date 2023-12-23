@@ -33,7 +33,7 @@ export class Lowerer {
       case SyntaxKind.RangeReference:
         return Node;
       default:
-        this.Diagnostics.MissingMethod(Node.Kind);
+        this.Diagnostics.ReportMissingMethod(Node.Kind);
         return Node;
     }
   }
@@ -110,7 +110,7 @@ export class Lowerer {
       case SyntaxKind.CellReference:
         return this.SwitchSyntaxNode(Node as NodeType<SyntaxNode>);
       default:
-        throw this.Diagnostics.MissingSwitchSignMethod(Node.Kind);
+        throw this.Diagnostics.ReportSwitchOperatorMethod(Node.Kind);
     }
   }
 

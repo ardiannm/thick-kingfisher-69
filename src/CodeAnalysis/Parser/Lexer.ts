@@ -31,7 +31,7 @@ export class Lexer {
         }
 
         // if all else fails then throw a bad token error
-        throw this.Diagnostics.BadTokenFound(this.Char);
+        throw this.Diagnostics.ReportBadTokenFound(this.Char);
 
       case SyntaxKind.HashToken:
         // special case for hash token when it comes to comments
@@ -93,7 +93,7 @@ export class Lexer {
     }
     if (this.Match(SyntaxKind.DotToken)) {
       this.Index += 1;
-      if (!this.IsDigit(this.Char)) throw this.Diagnostics.WrongFloatingNumberFormat();
+      if (!this.IsDigit(this.Char)) throw this.Diagnostics.ReportBadFloatingPointNumber();
     }
     while (this.IsDigit(this.Char)) {
       this.Index += 1;
