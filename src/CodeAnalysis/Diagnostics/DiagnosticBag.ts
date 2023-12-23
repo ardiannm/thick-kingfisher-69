@@ -16,6 +16,10 @@ export class DiagnosticBag {
     return Diagnostic;
   }
 
+  get Count() {
+    return this.Diagnostics.length;
+  }
+
   Any() {
     return this.Diagnostics.length > 0;
   }
@@ -29,8 +33,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.BadTokenFound, Message));
   }
 
-  TokenNotAMatch(Matched: SyntaxKind) {
-    const Message = `unexpected token found <${Matched}>.`;
+  TokenNotAMatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
+    const Message = `expecting <${ExpectedKind}>, matched <${Matched}>.`;
     return this.ReportError(new Diagnostic(this.Kind, DiagnosticCode.TokenNotAMatch, Message));
   }
 

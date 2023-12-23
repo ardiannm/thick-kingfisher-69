@@ -26,16 +26,23 @@ export class Parser {
 
   public Parse() {
     if (this.MoreTokens()) {
-      const Statements = new Array<StatementSyntax>();
+      const Members = new Array<StatementSyntax>();
       while (this.MoreTokens()) {
-        const Statement = this.ParseStatement();
-        Statements.push(Statement);
-        if (this.MoreTokens()) this.ParseNewLineTokens();
+        const Token = this.Token;
+        const Member = this.ParseMember();
+        Members.push(Member);
+        if (this.Token === Token) this.NextToken();
       }
       this.ExpectToken(SyntaxKind.EndOfFileToken);
-      return new Program(SyntaxKind.Program, Statements);
+      return new Program(SyntaxKind.Program, Members, this.Diagnostics);
     }
     throw this.Diagnostics.SourceCodeIsEmpty();
+  }
+
+  private ParseMember() {
+    const Left = this.ParseStatement();
+    if (this.MoreTokens()) this.ParseNewLineTokens();
+    return Left;
   }
 
   private ParseStatement() {
@@ -148,8 +155,8 @@ export class Parser {
 
   private ExpectToken(Kind: SyntaxKind) {
     if (this.MatchToken(Kind)) return this.NextToken();
-    const Token = this.NextToken();
-    throw this.Diagnostics.TokenNotAMatch(Token.Kind);
+    this.Diagnostics.TokenNotAMatch(this.Token.Kind, Kind);
+    return new SyntaxToken(this.Token.Kind, this.Token.Text);
   }
 
   private MoreTokens() {

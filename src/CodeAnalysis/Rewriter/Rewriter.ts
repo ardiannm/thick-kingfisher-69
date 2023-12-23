@@ -33,13 +33,14 @@ export class Rewriter {
       case SyntaxKind.RangeReference:
         return Node;
       default:
-        throw this.Diagnostics.MissingMethod(Node.Kind);
+        this.Diagnostics.MissingMethod(Node.Kind);
+        return Node;
     }
   }
 
   private RewriteProgram(Node: Program) {
     const Root = Node.Root.map((Statement) => this.Rewrite(Statement));
-    return new Program(SyntaxKind.Program, Root);
+    return new Program(SyntaxKind.Program, Root, Node.Diagnostics);
   }
 
   private RewriteReferenceStatement(Node: DeclarationStatement) {
