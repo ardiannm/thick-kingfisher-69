@@ -4,7 +4,7 @@ import { BoundUnaryOperatorKind } from "./BoundUnaryOperatorKind";
 
 export class BoundUnaryExpression extends BoundExpression {
   constructor(
-    public Kind: BoundKind.UnaryExpression,
+    public override Kind: BoundKind.UnaryExpression,
     public OperatorKind: BoundUnaryOperatorKind,
     public Expression: BoundExpression
   ) {

@@ -42,6 +42,7 @@ export class Lexer {
           this.Index += 1;
           this.Kind = SyntaxKind.PointerToken;
         }
+        break;
 
       case SyntaxKind.GreaterToken:
         // special case for greater token

@@ -4,7 +4,7 @@ import { ExpressionSyntax } from "./ExpressionSyntax";
 
 export class BinaryExpression extends ExpressionSyntax {
   constructor(
-    public Kind: SyntaxKind.BinaryExpression,
+    public override Kind: SyntaxKind.BinaryExpression,
     public Left: SyntaxNode,
     public Operator: SyntaxNode,
     public Right: SyntaxNode

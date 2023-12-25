@@ -6,7 +6,7 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 
 export class Program extends SyntaxNode {
   constructor(
-    public Kind: SyntaxKind.Program,
+    public override Kind: SyntaxKind.Program,
     public Root: Array<ExpressionSyntax>,
     public EndOfFileToken: SyntaxToken<SyntaxKind.EndOfFileToken>,
     public Diagnostics: DiagnosticBag

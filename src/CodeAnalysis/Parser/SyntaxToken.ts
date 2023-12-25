@@ -28,7 +28,7 @@ export type TokenMap = {
 export type TokenText<T extends SyntaxKind> = T extends keyof TokenMap ? TokenMap[T] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public Kind: T, public Text: TokenText<T>) {
+  constructor(public override Kind: T, public Text: TokenText<T>) {
     super(Kind);
   }
 }
