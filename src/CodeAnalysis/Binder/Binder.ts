@@ -29,7 +29,7 @@ import { IsReferable } from "./IsReferable";
 export class Binder {
   constructor(private Env: Environment) {}
 
-  Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
+  public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case SyntaxKind.Program:
@@ -82,9 +82,9 @@ export class Binder {
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
-    const Cell = this.Env.TryGetCell(Right.Name);
+    const Cell = this.Env.GetCell(Right.Name);
     const Data = new BoundDeclarationStatement(BoundKind.CloneCell, Left.Name, Cell.Expression, Cell.Dependencies);
-    this.Env.TryDeclareCell(Data);
+    this.Env.DeclareCell(Data);
     return Data;
   }
 
@@ -97,7 +97,7 @@ export class Binder {
         const Dependencies = new Set<string>(this.Env.Names);
         const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
         this.Env = this.Env.ParentEnv as Environment;
-        this.Env.TryDeclareCell(Data);
+        this.Env.DeclareCell(Data);
         return Data;
     }
     throw this.Env.Diagnostics.CantUseAsAReference(Node.Left.Kind);

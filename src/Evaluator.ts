@@ -17,9 +17,9 @@ export class Evaluator {
   private Value: number = 0;
   constructor(private Env: Environment) {}
 
-  Diagnostics = new DiagnosticBag(DiagnosticPhase.Evaluator);
+  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Evaluator);
 
-  Evaluate<Kind extends BoundNode>(Node: Kind): number {
+  public Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case BoundKind.Program:
@@ -91,7 +91,7 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Env.TryGetCell(Node.Name).Value;
+    return this.Env.GetCell(Node.Name).Value;
   }
 
   private EvaluateNumber(Node: BoundNumber) {

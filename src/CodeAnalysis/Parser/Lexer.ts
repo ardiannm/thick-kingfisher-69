@@ -12,9 +12,9 @@ export class Lexer {
   private Start = this.Index;
   private Kind = SyntaxKind.EndOfFileToken;
 
-  Diagnostics = new DiagnosticBag(DiagnosticPhase.Lexer);
+  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Lexer);
 
-  Lex(): SyntaxToken<SyntaxKind> {
+  public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;
     this.Kind = Facts.Kind(this.Char) as keyof TokenMap;
 

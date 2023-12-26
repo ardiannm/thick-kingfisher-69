@@ -1,36 +1,18 @@
-import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 import { RgbColor } from "./CodeAnalysis/Interpreter/RgbColor";
 import { DiagnosticBag } from "./DiagnosticBag";
 import { DiagnosticPhase } from "./DiagnosticPhase";
-
-export class Cell {
-  constructor(
-    public Name: string,
-    public Value: number,
-    public Expression: BoundExpression,
-    public Dependencies: Set<string>,
-    public Dependents: Set<string>
-  ) {}
-
-  Notify(Name: string): void {
-    this.Dependents.add(Name);
-  }
-
-  DoNotNotify(Name: string): void {
-    this.Dependents.delete(Name);
-  }
-}
+import { Cell } from "./Cell";
 
 export class Environment {
   private Expression = new BoundNumber(BoundKind.Number, 0);
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
 
-  Names = new Set<string>();
-  Diagnostics = new DiagnosticBag(DiagnosticPhase.Environment);
+  public readonly Names = new Set<string>();
+  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Environment);
 
   constructor(public ParentEnv?: Environment) {}
 
@@ -48,22 +30,22 @@ export class Environment {
     return undefined;
   }
 
-  TryDeclareCell(Node: BoundDeclarationStatement) {
-    this.Validate(Node);
+  public DeclareCell(Node: BoundDeclarationStatement) {
+    this.ValidateCell(Node);
     const Env = this.ResolveEnvForCell(Node.Name) as Environment;
     if (Env === undefined) {
       const Data = new Cell(Node.Name, this.Expression.Value, this.Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
     } else {
       const Data = Env.Data.get(Node.Name) as Cell;
-      for (const Dep of Data.Dependencies) {
-        if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Node.Name);
+      for (const DepName of Data.Dependencies) {
+        if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Node.Name);
       }
       Data.Dependencies = Node.Dependencies;
     }
   }
 
-  TryGetCell(Name: string): Cell {
+  public GetCell(Name: string): Cell {
     const Env = this.ResolveEnvForCell(Name);
     if (Env === undefined) {
       throw this.Diagnostics.ReportNameNotFound(Name);
@@ -71,7 +53,7 @@ export class Environment {
     return Env.Data.get(Name) as Cell;
   }
 
-  private Validate(Node: BoundDeclarationStatement) {
+  private ValidateCell(Node: BoundDeclarationStatement) {
     if (Node.Dependencies.has(Node.Name)) {
       throw this.Diagnostics.ReportUsedBeforeItsDeclaration(Node.Name);
     }
@@ -79,10 +61,10 @@ export class Environment {
   }
 
   private DetectCircularDependencies(Name: string, Dependencies: Set<string>) {
-    for (const Dep of Dependencies) {
-      const Deps = this.TryGetCell(Dep).Dependencies;
+    for (const DepName of Dependencies) {
+      const Deps = this.GetCell(DepName).Dependencies;
       if (Deps.has(Name)) {
-        this.Diagnostics.ReportCircularDependency(Dep);
+        this.Diagnostics.ReportCircularDependency(DepName);
         return true;
       }
       if (this.DetectCircularDependencies(Name, Deps)) return true;
@@ -90,11 +72,15 @@ export class Environment {
     return false;
   }
 
-  Assign(Node: BoundDeclarationStatement, Value: number) {
-    const Data = this.TryGetCell(Node.Name);
-    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Data.Name);
+  public Assign(Node: BoundDeclarationStatement, Value: number) {
+    const Data = this.GetCell(Node.Name);
+    for (const DepName of Data.Dependencies) {
+      if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Data.Name);
+    }
     Data.Dependencies = Node.Dependencies;
-    for (const Dep of Data.Dependencies) this.TryGetCell(Dep).Notify(Data.Name);
+    for (const DepName of Data.Dependencies) {
+      this.GetCell(DepName).Notify(Data.Name);
+    }
     Data.Expression = Node.Expression;
     Data.Value = Value;
     return this.DetectAndNotifyForChange(Data);
@@ -104,15 +90,15 @@ export class Environment {
     for (const Dep of Node.Dependents) {
       if (this.ForChange.has(Dep)) continue;
       this.ForChange.add(Dep);
-      const NextNode = this.TryGetCell(Dep);
+      const NextNode = this.GetCell(Dep);
       yield NextNode;
       this.DetectAndNotifyForChange(NextNode);
     }
     this.ForChange.clear();
   }
 
-  SetValueForCell(Name: string, Value: number) {
-    const Data = this.TryGetCell(Name);
+  public SetValueForCell(Name: string, Value: number) {
+    const Data = this.GetCell(Name);
 
     const Diff = Value - Data.Value;
     var Text = Name + " -> " + Value;
@@ -130,7 +116,7 @@ export class Environment {
     Data.Value = Value;
   }
 
-  FactoryReset() {
+  public FactoryReset() {
     this.Data.clear();
   }
 }

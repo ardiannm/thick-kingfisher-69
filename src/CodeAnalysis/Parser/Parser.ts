@@ -19,7 +19,7 @@ export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
 
-  Diagnostics = new DiagnosticBag(DiagnosticPhase.Parser);
+  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Parser);
 
   constructor(public readonly Input: SourceText) {
     const Tokenizer = new Lexer(Input);
@@ -171,7 +171,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenMissmatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

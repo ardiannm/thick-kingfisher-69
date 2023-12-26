@@ -41,7 +41,7 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.BadTokenFound, Message));
   }
 
-  ReportTokenNotAMatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
+  ReportTokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
     const Message = `Expecting <${ExpectedKind}>, matched <${Matched}>.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.TokenNotAMatch, Message));
   }
