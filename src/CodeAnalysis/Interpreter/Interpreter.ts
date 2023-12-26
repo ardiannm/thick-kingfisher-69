@@ -10,15 +10,14 @@ import { Environment } from "../../Environment";
 import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
 import { Lowerer } from "../Lowerer/Lowerer";
-import { DiagnosticBag } from "../../DiagnosticBag";
 import { BoundProgram } from "../Binder/BoundProgram";
 
 export class Interpreter {
-  private Lines = Array<string>();
-  private Env = new Environment();
+  private lines = Array<string>();
+  private environment = new Environment();
   private lowerer = new Lowerer();
-  private binder = new Binder(this.Env);
-  private evaluator = new Evaluator(this.Env);
+  private binder = new Binder(this.environment);
+  private evaluator = new Evaluator(this.environment);
 
   public Run() {
     console.clear();
@@ -36,7 +35,9 @@ export class Interpreter {
       }
 
       if (InputLine === "r") {
-        this.Lines.length = 0;
+        this.lines.length = 0;
+        this.environment.Diagnostics.Clear();
+        this.evaluator.Diagnostics.Clear();
         continue;
       }
 
@@ -44,7 +45,7 @@ export class Interpreter {
         break;
       }
 
-      this.Lines.push(InputLine);
+      this.lines.push(InputLine);
 
       const parser = new Parser(SourceText.From(InputLine));
       const Program = parser.Parse();
@@ -63,9 +64,10 @@ export class Interpreter {
 
       if (Program.ObjectId !== LowerProgram.ObjectId) console.log(SyntaxTree.Print(LowerProgram));
 
-      const Source = "\n".repeat(3) + this.Lines.join("\n");
+      const Source = "\n".repeat(3) + this.lines.join("\n");
 
       console.log(Source);
+      console.log();
 
       const BoundProgram = this.binder.Bind(Program) as BoundProgram;
 

@@ -36,12 +36,16 @@ export class Evaluator {
       case BoundKind.CloneCell:
         return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
       default:
-        throw this.Diagnostics.ReportMissingMethod(Node.Kind);
+        this.Diagnostics.ReportMissingMethod(Node.Kind);
+        return 0;
     }
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    for (const Statement of Node.Root) this.Value = this.Evaluate(Statement);
+    for (const Statement of Node.Root) {
+      this.Value = this.Evaluate(Statement);
+    }
+    for (const d of this.Env.Diagnostics.Show) this.Diagnostics.Add(d);
     return this.Value;
   }
 
@@ -66,14 +70,16 @@ export class Evaluator {
         return LeftValue * RightValue;
       case BoundBinaryOperatorKind.Division:
         if (RightValue === 0) {
-          throw this.Diagnostics.ReportCantDivideByZero();
+          this.Diagnostics.ReportCantDivideByZero();
+          return 0;
         }
         return LeftValue / RightValue;
       case BoundBinaryOperatorKind.Exponentiation:
         return LeftValue ** RightValue;
       default:
-        throw this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
     }
+    return 0;
   }
 
   private EvaluateUnaryExpression(Node: BoundUnaryExpression) {
@@ -84,8 +90,9 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        throw this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
     }
+    return 0;
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
