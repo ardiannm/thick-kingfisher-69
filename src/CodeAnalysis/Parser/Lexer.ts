@@ -31,7 +31,7 @@ export class Lexer {
           return this.ParseSpaceToken();
         }
 
-        // if all else fails then throw a bad token error
+        // if all else fails then report a bad token error
         this.Diagnostics.ReportBadTokenFound(this.Char);
         break;
 

@@ -4,7 +4,6 @@ import { SourceText } from "../../SourceText";
 import { BoundNode } from "../Binder/BoundNode";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { SyntaxNode } from "./SyntaxNode";
-import { RgbColor } from "../Interpreter/RgbColor";
 import { Program } from "./Program";
 
 export class SyntaxTree {
@@ -21,16 +20,16 @@ export class SyntaxTree {
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += RgbColor.Sandstone(Node.Kind);
+    Text += Node.Kind;
     if (Node instanceof SyntaxToken) {
-      return Text + " " + RgbColor.Terracotta(Node.Text);
+      return Text + " " + Node.Text;
     }
     if (Node instanceof SyntaxNode) {
       const Branches = Array.from(Node.GetBranches());
       for (const [Index, Branch] of Branches.entries()) {
         const LastBranch = Index + 1 == Branches.length;
         const Lead = LastBranch ? "└── " : "├── ";
-        Text += "\n" + RgbColor.Terracotta(Indent + Lead) + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
+        Text += "\n" + Indent + Lead + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
       }
     }
     return Text;

@@ -9,34 +9,37 @@ import { Evaluator } from "../../Evaluator";
 import { Environment } from "../../Environment";
 import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
-import { RgbColor } from "./RgbColor";
-import { Diagnostic } from "../../Diagnostic";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { DiagnosticBag } from "../../DiagnosticBag";
 import { BoundProgram } from "../Binder/BoundProgram";
 
 export class Interpreter {
   private Lines = Array<string>();
+  private Env = new Environment();
+  private lowerer = new Lowerer();
+  private binder = new Binder(this.Env);
+  private evaluator = new Evaluator(this.Env);
 
   public Run() {
-    const Env = new Environment();
-    const LowererFactory = new Lowerer();
-    const BinderFactory = new Binder(Env);
-    const EvaluatorFactory = new Evaluator(Env);
-
     console.clear();
 
     while (true) {
       const InputLine = Promp.question("> ");
-      console.clear();
 
-      if (InputLine === "q") {
-        break;
-      }
+      console.clear();
 
       if (InputLine === "a") {
         console.clear();
         continue;
+      }
+
+      if (InputLine === "r") {
+        this.Lines.length = 0;
+        break;
+      }
+
+      if (InputLine === "q") {
+        break;
       }
 
       this.Lines.push(InputLine);
@@ -52,8 +55,7 @@ export class Interpreter {
         }
 
         console.log(ParserTree);
-
-        const LowerProgram = LowererFactory.Lower(Program);
+        const LowerProgram = this.lowerer.Lower(Program);
         const LowerTree = SyntaxTree.Print(LowerProgram);
 
         if (Program.ObjectId !== LowerProgram.ObjectId) {
@@ -61,17 +63,15 @@ export class Interpreter {
         }
 
         const Source = "\n".repeat(3) + this.Lines.join("\n");
-        console.log(RgbColor.Terracotta(Source));
-
-        const BoundProgram = BinderFactory.Bind(Program) as BoundProgram;
+        console.log(Source);
+        const BoundProgram = this.binder.Bind(Program) as BoundProgram;
 
         if (BoundProgram.Diagnostics.Any()) {
-          console.log(BoundProgram.Diagnostics.Report);
-          BoundProgram.Diagnostics.Clear();
-        } else {
-          const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
-          console.log("\n".repeat(1) + RgbColor.Terracotta(Value) + "\n".repeat(1));
+          throw BoundProgram.Diagnostics;
         }
+
+        const Value = this.evaluator.Evaluate(BoundProgram).toString();
+        console.log("\n".repeat(1) + Value + "\n".repeat(1));
       });
     }
   }
@@ -81,13 +81,8 @@ export class Interpreter {
       Fn();
     } catch (error) {
       console.log();
-      if (error instanceof Diagnostic) {
-        const Message = RgbColor.Terracotta(error.Message);
-        console.log(Message);
-      } else if (error instanceof DiagnosticBag) {
-        for (const Diagnostic of error.Report) {
-          console.log(RgbColor.Sandstone(Diagnostic.Message));
-        }
+      if (error instanceof DiagnosticBag) {
+        console.log(error.Report.map((e) => e.Print));
       } else {
         console.log(error);
       }

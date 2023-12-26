@@ -5,6 +5,6 @@ export class Diagnostic {
   constructor(public Phase: DiagnosticPhase, public Kind: DiagnosticKind, public Message: string) {}
 
   get Print() {
-    return (this.Message = this.Phase + ": " + this.Message);
+    return this.Phase + ": " + this.Message;
   }
 }
