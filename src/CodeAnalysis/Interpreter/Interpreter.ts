@@ -34,12 +34,6 @@ export class Interpreter {
         break;
       }
 
-      if (InputLine === "r") {
-        this.Lines.length = 0;
-        Env.FactoryReset();
-        continue;
-      }
-
       if (InputLine === "a") {
         console.clear();
         continue;
@@ -73,6 +67,7 @@ export class Interpreter {
 
         if (BoundProgram.Diagnostics.Any()) {
           console.log(BoundProgram.Diagnostics.Report);
+          BoundProgram.Diagnostics.Clear();
         } else {
           const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
           console.log("\n".repeat(1) + RgbColor.Terracotta(Value) + "\n".repeat(1));

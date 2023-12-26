@@ -34,7 +34,9 @@ export class Environment {
     this.ValidateCell(Node);
     const Env = this.ResolveEnvForCell(Node.Name) as Environment;
     if (Env === undefined) {
-      const Data = new Cell(Node.Name, this.Default.Value, this.Default.Expression, Node.Dependencies, new Set<string>());
+      const Value = this.Default.Value;
+      const Expression = this.Default.Expression;
+      const Data = new Cell(Node.Name, Value, Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
     } else {
       const Data = Env.Data.get(Node.Name) as Cell;
@@ -116,9 +118,5 @@ export class Environment {
     console.log(View);
 
     Data.Value = Value;
-  }
-
-  public FactoryReset() {
-    this.Data.clear();
   }
 }

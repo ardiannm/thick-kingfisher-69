@@ -33,7 +33,7 @@ export class DiagnosticBag {
   }
 
   Clear() {
-    this.Diagnostics = new Array<Diagnostic>();
+    this.Diagnostics.length = 0;
   }
 
   ReportBadTokenFound(Text: string) {

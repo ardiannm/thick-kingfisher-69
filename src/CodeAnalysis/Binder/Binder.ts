@@ -91,16 +91,18 @@ export class Binder {
   private BindReferenceCell(Node: DeclarationStatement) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
-        const Left = this.Bind(Node.Left) as BoundCellReference;
-        this.Env = new Environment(this.Env);
-        const Expression = this.Bind(Node.Expression);
-        const Dependencies = new Set<string>(this.Env.Names);
-        const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
-        this.Env = this.Env.ParentEnv as Environment;
-        this.Env.DeclareCell(Data);
-        return Data;
+        break;
+      default:
+        this.Env.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
-    throw this.Env.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+    const Left = this.Bind(Node.Left) as BoundCellReference;
+    this.Env = new Environment(this.Env);
+    const Expression = this.Bind(Node.Expression);
+    const Dependencies = new Set<string>(this.Env.Names);
+    const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
+    this.Env = this.Env.ParentEnv as Environment;
+    this.Env.DeclareCell(Data);
+    return Data;
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
