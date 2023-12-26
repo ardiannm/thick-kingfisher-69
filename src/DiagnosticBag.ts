@@ -9,7 +9,7 @@ import { DiagnosticKind } from "./DiagnosticKind";
 export class DiagnosticBag {
   private Bag = new Array<Diagnostic>();
 
-  constructor(private Phase: DiagnosticPhase, Inherits?: DiagnosticBag) {
+  constructor(public Phase: DiagnosticPhase, Inherits?: DiagnosticBag) {
     if (Inherits) {
       for (const Diagnostic of Inherits.Show) this.Bag.push(Diagnostic);
     }

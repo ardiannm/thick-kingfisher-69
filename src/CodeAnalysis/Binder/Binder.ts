@@ -29,8 +29,9 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Binder {
-  constructor(private Env: Environment) {}
-  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Binder);
+  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {
+    this.Diagnostics.Phase = DiagnosticPhase.Binder;
+  }
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -73,11 +74,10 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          this.Env.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
+          this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
-    for (const d of this.Env.Diagnostics.Show) this.Diagnostics.Add(d);
-    return new BoundProgram(BoundKind.Program, Root, this.Diagnostics);
+    return new BoundProgram(BoundKind.Program, Root);
   }
 
   private BindCloneCell(Node: DeclarationStatement) {
@@ -100,7 +100,7 @@ export class Binder {
         this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
-    this.Env = new Environment(this.Env);
+    this.Env = new Environment(this.Diagnostics, this.Env);
     const Expression = this.Bind(Node.Expression);
     const Dependencies = new Set<string>(this.Env.Names);
     const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);

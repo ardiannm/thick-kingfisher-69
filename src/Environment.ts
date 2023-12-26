@@ -12,9 +12,10 @@ export class Environment {
   private Default = new Cell("", 0, new BoundNumber(BoundKind.Number, 0), new Set<string>(), new Set<string>());
 
   public readonly Names = new Set<string>();
-  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Environment);
 
-  constructor(public ParentEnv?: Environment) {}
+  constructor(private Diagnostics: DiagnosticBag, public ParentEnv?: Environment) {
+    this.Diagnostics.Phase = DiagnosticPhase.Environment;
+  }
 
   PushCell(Name: string) {
     this.Names.add(Name);

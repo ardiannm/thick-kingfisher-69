@@ -5,4 +5,5 @@ export enum DiagnosticPhase {
   Environment = "Environment",
   Evaluator = "Evaluator",
   Lexer = "Lexer",
+  Interpreter = "Interpreter"
 }

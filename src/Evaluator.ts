@@ -15,9 +15,9 @@ import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Evaluator {
   private Value: number = 0;
-  constructor(private Env: Environment) {}
-
-  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Evaluator);
+  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {
+    this.Diagnostics.Phase = DiagnosticPhase.Evaluator;
+  }
 
   public Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -45,7 +45,6 @@ export class Evaluator {
     for (const Statement of Node.Root) {
       this.Value = this.Evaluate(Statement);
     }
-    for (const d of this.Env.Diagnostics.Show) this.Diagnostics.Add(d);
     return this.Value;
   }
 

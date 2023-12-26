@@ -6,13 +6,13 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Lexer {
-  constructor(public readonly Input: SourceText) {}
+  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {
+    this.Diagnostics.Phase = DiagnosticPhase.Lexer;
+  }
 
   private Index = 0;
   private Start = this.Index;
   private Kind = SyntaxKind.EndOfFileToken;
-
-  public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Lexer);
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;

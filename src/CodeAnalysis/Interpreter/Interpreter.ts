@@ -11,13 +11,16 @@ import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { BoundProgram } from "../Binder/BoundProgram";
+import { DiagnosticBag } from "../../DiagnosticBag";
+import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Interpreter {
   private lines = Array<string>();
-  private environment = new Environment();
+  private diagnostics = new DiagnosticBag(DiagnosticPhase.Interpreter);
+  private environment = new Environment(this.diagnostics);
   private lowerer = new Lowerer();
-  private binder = new Binder(this.environment);
-  private evaluator = new Evaluator(this.environment);
+  private binder = new Binder(this.environment, this.diagnostics);
+  private evaluator = new Evaluator(this.environment, this.diagnostics);
 
   public Run() {
     console.clear();
@@ -25,29 +28,29 @@ export class Interpreter {
     while (true) {
       console.log();
 
-      const InputLine = Promp.question("> ");
+      const inputLine = Promp.question("> ");
 
       console.clear();
 
-      if (InputLine === "a") {
+      if (inputLine === "a") {
         console.clear();
         continue;
       }
 
-      if (InputLine === "r") {
+      if (inputLine === "r") {
         this.lines.length = 0;
-        this.environment.Diagnostics.Clear();
-        this.evaluator.Diagnostics.Clear();
+        this.diagnostics.Clear();
         continue;
       }
 
-      if (InputLine === "q") {
+      if (inputLine === "q") {
         break;
       }
 
-      this.lines.push(InputLine);
+      this.lines.push(inputLine);
 
-      const parser = new Parser(SourceText.From(InputLine));
+      const text = SourceText.From(inputLine);
+      const parser = new Parser(text, this.diagnostics);
       const Program = parser.Parse();
 
       const ParserTree = SyntaxTree.Print(Program);
@@ -55,8 +58,8 @@ export class Interpreter {
       console.log(ParserTree);
       console.log();
 
-      if (Program.Diagnostics.Any()) {
-        console.log(Program.Diagnostics.Show.map((e) => e.Print));
+      if (this.diagnostics.Any()) {
+        console.log(this.diagnostics.Show.map((e) => e.Print));
         continue;
       }
 
@@ -71,15 +74,15 @@ export class Interpreter {
 
       const BoundProgram = this.binder.Bind(Program) as BoundProgram;
 
-      if (BoundProgram.Diagnostics.Any()) {
-        console.log(BoundProgram.Diagnostics.Show.map((e) => e.Print));
+      if (this.diagnostics.Any()) {
+        console.log(this.diagnostics.Show.map((e) => e.Print));
         continue;
       }
 
       const Value = this.evaluator.Evaluate(BoundProgram);
 
-      if (this.evaluator.Diagnostics.Any()) {
-        console.log(this.evaluator.Diagnostics.Show.map((e) => e.Print));
+      if (this.diagnostics.Any()) {
+        console.log(this.diagnostics.Show.map((e) => e.Print));
         continue;
       }
 
