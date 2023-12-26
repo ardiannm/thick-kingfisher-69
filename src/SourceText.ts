@@ -1,12 +1,9 @@
-import { DiagnosticBag } from "./DiagnosticBag";
 import { LineText } from "./LineText";
 
 export class SourceText {
   private Index = 0;
   private LineTexts = new Array<LineText>();
   private LineIndex = 1;
-
-  Diagnostics = new DiagnosticBag();
 
   constructor(public Text: string) {
     this.ParseLines();

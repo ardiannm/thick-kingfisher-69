@@ -12,10 +12,14 @@ import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
 import { DeclarationStatement } from "./DeclarationStatement";
 import { Lexer } from "./Lexer";
+import { DiagnosticBag } from "../../DiagnosticBag";
+import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
+
+  Diagnostics = new DiagnosticBag(DiagnosticPhase.Parser);
 
   constructor(public readonly Input: SourceText) {
     const Tokenizer = new Lexer(Input);
@@ -34,10 +38,10 @@ export class Parser {
 
   public Parse() {
     if (!this.MoreTokens()) {
-      this.Input.Diagnostics.ReportEmptyProgram();
+      this.Diagnostics.ReportEmptyProgram();
     }
     const Members = new Array<StatementSyntax>();
-    if (!this.Input.Diagnostics.Any()) {
+    if (!this.Diagnostics.Any()) {
       while (this.MoreTokens()) {
         const Token = this.Token;
         const Member = this.ParseMember();
@@ -46,7 +50,7 @@ export class Parser {
       }
     }
     const Right = this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members, Right, this.Input.Diagnostics);
+    return new Program(SyntaxKind.Program, Members, Right, this.Diagnostics);
   }
 
   private ParseMember() {
@@ -167,7 +171,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Input.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenNotAMatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

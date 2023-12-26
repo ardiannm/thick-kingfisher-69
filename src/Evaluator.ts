@@ -8,15 +8,16 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperator
 import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Parser/CellReference";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
-import { BoundScope } from "./CodeAnalysis/Binder/BoundScope";
+import { Environment } from "./Environment";
 import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 import { DiagnosticBag } from "./DiagnosticBag";
+import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Evaluator {
   private Value: number = 0;
-  private Diagnostics = new DiagnosticBag();
+  constructor(private Env: Environment) {}
 
-  constructor(private Scope: BoundScope) {}
+  Diagnostics = new DiagnosticBag(DiagnosticPhase.Evaluator);
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -48,9 +49,9 @@ export class Evaluator {
 
   private EvaluateDeclaration(Node: BoundDeclarationStatement) {
     const Value = this.Evaluate(Node.Expression);
-    const Dependents = this.Scope.Assign(Node, Value);
+    const Dependents = this.Env.Assign(Node, Value);
     for (const Dep of Dependents) {
-      this.Scope.SetValueForCell(Dep.Name, this.Evaluate(Dep.Expression));
+      this.Env.SetValueForCell(Dep.Name, this.Evaluate(Dep.Expression));
     }
     return Value;
   }
@@ -90,7 +91,7 @@ export class Evaluator {
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Scope.TryLookUpCell(Node.Name).Value;
+    return this.Env.TryGetCell(Node.Name).Value;
   }
 
   private EvaluateNumber(Node: BoundNumber) {

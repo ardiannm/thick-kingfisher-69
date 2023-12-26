@@ -6,7 +6,7 @@ import * as path from "path";
 import { Parser } from "../Parser/Parser";
 import { SourceText } from "../../SourceText";
 import { Evaluator } from "../../Evaluator";
-import { BoundScope } from "../Binder/BoundScope";
+import { Environment } from "../../Environment";
 import { Binder } from "../Binder/Binder";
 import { SyntaxTree } from "../Parser/SyntaxTree";
 import { RgbColor } from "./RgbColor";
@@ -18,10 +18,10 @@ export class Interpreter {
   private Lines = Array<string>();
 
   public Run() {
-    const Environment = new BoundScope();
+    const Env = new Environment();
     const LowererFactory = new Lowerer();
-    const BinderFactory = new Binder(Environment);
-    const EvaluatorFactory = new Evaluator(Environment);
+    const BinderFactory = new Binder(Env);
+    const EvaluatorFactory = new Evaluator(Env);
 
     console.clear();
 
@@ -35,7 +35,7 @@ export class Interpreter {
 
       if (InputLine === "r") {
         this.Lines.length = 0;
-        Environment.FactoryReset();
+        Env.FactoryReset();
         continue;
       }
 
@@ -85,7 +85,7 @@ export class Interpreter {
         const Message = RgbColor.Terracotta(error.Message);
         console.log(Message);
       } else if (error instanceof DiagnosticBag) {
-        for (const Diagnostic of error.Reports) {
+        for (const Diagnostic of error.Report) {
           console.log(RgbColor.Sandstone(Diagnostic.Message));
         }
       } else {

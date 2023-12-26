@@ -1,9 +1,10 @@
-import { BoundExpression } from "./BoundExpression";
-import { BoundKind } from "./BoundKind";
-import { BoundNumber } from "./BoundNumber";
-import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
-import { RgbColor } from "../Interpreter/RgbColor";
-import { DiagnosticBag } from "../../DiagnosticBag";
+import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
+import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
+import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
+import { RgbColor } from "./CodeAnalysis/Interpreter/RgbColor";
+import { DiagnosticBag } from "./DiagnosticBag";
+import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Cell {
   constructor(
@@ -23,71 +24,76 @@ export class Cell {
   }
 }
 
-export class BoundScope {
+export class Environment {
   private Expression = new BoundNumber(BoundKind.Number, 0);
-
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
 
   Names = new Set<string>();
-  Diagnostics = new DiagnosticBag();
+  Diagnostics = new DiagnosticBag(DiagnosticPhase.Environment);
 
-  constructor(public Parent?: BoundScope) {}
+  constructor(public ParentEnv?: Environment) {}
 
   PushCell(Name: string) {
     this.Names.add(Name);
   }
 
-  private ResolveScopeForCell(Name: string): BoundScope | undefined {
+  private ResolveEnvForCell(Name: string): Environment | undefined {
     if (this.Data.has(Name)) {
       return this;
     }
-    if (this.Parent) {
-      return this.ResolveScopeForCell(Name);
+    if (this.ParentEnv) {
+      return this.ResolveEnvForCell(Name);
     }
     return undefined;
   }
 
   TryDeclareCell(Node: BoundDeclarationStatement): boolean {
-    this.DetectCircularDependencies(Node.Name, Node.Dependencies);
-    const Scope = this.ResolveScopeForCell(Node.Name) as BoundScope;
-    if (Scope === undefined) {
+    this.Validate(Node);
+    const Env = this.ResolveEnvForCell(Node.Name) as Environment;
+    if (Env === undefined) {
       const Data = new Cell(Node.Name, this.Expression.Value, this.Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
       return true;
     }
-    const Data = Scope.Data.get(Node.Name) as Cell;
-    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryLookUpCell(Dep).DoNotNotify(Node.Name);
+    const Data = Env.Data.get(Node.Name) as Cell;
+    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Node.Name);
     Data.Dependencies = Node.Dependencies;
     return false;
   }
 
-  TryLookUpCell(Name: string): Cell {
-    const Scope = this.ResolveScopeForCell(Name);
-    if (Scope === undefined) {
+  TryGetCell(Name: string): Cell {
+    const Env = this.ResolveEnvForCell(Name);
+    if (Env === undefined) {
       throw this.Diagnostics.ReportNameNotFound(Name);
     }
-    return Scope.Data.get(Name) as Cell;
+    return Env.Data.get(Name) as Cell;
+  }
+
+  private Validate(Node: BoundDeclarationStatement) {
+    if (Node.Dependencies.has(Node.Name)) {
+      throw this.Diagnostics.ReportUsedBeforeItsDeclaration(Node.Name);
+    }
+    this.DetectCircularDependencies(Node.Name, Node.Dependencies);
   }
 
   private DetectCircularDependencies(Name: string, Dependencies: Set<string>) {
-    if (Dependencies.has(Name)) {
-      throw this.Diagnostics.ReportUsedBeforeItsDeclaration(Name);
-    }
     for (const Dep of Dependencies) {
-      const Deps = this.TryLookUpCell(Dep).Dependencies;
+      const Deps = this.TryGetCell(Dep).Dependencies;
       if (Deps.has(Name)) {
-        throw this.Diagnostics.ReportCircularDependency(Dep);
+        this.Diagnostics.ReportCircularDependency(Dep);
+        return true;
       }
-      this.DetectCircularDependencies(Name, Deps);
+      if (this.DetectCircularDependencies(Name, Deps)) return true;
     }
+    return false;
   }
 
   Assign(Node: BoundDeclarationStatement, Value: number) {
-    const Data = this.TryLookUpCell(Node.Name);
-    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryLookUpCell(Dep).DoNotNotify(Data.Name);
+    const Data = this.TryGetCell(Node.Name);
+    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Data.Name);
     Data.Dependencies = Node.Dependencies;
-    for (const Dep of Data.Dependencies) this.TryLookUpCell(Dep).Notify(Data.Name);
+    for (const Dep of Data.Dependencies) this.TryGetCell(Dep).Notify(Data.Name);
     Data.Expression = Node.Expression;
     Data.Value = Value;
     return this.DetectAndNotifyForChange(Data);
@@ -97,7 +103,7 @@ export class BoundScope {
     for (const Dep of Node.Dependents) {
       if (this.ForChange.has(Dep)) continue;
       this.ForChange.add(Dep);
-      const NextNode = this.TryLookUpCell(Dep);
+      const NextNode = this.TryGetCell(Dep);
       yield NextNode;
       this.DetectAndNotifyForChange(NextNode);
     }
@@ -105,7 +111,7 @@ export class BoundScope {
   }
 
   SetValueForCell(Name: string, Value: number) {
-    const Data = this.TryLookUpCell(Name);
+    const Data = this.TryGetCell(Name);
 
     const Diff = Value - Data.Value;
     var Text = Name + " -> " + Value;

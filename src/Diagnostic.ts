@@ -1,7 +1,8 @@
+import { DiagnosticPhase } from "./DiagnosticPhase";
 import { DiagnosticKind } from "./DiagnosticKind";
 
 export class Diagnostic {
-  constructor(public Code: DiagnosticKind, public Message: string) {
-    this.Message = Code + ": " + this.Message;
+  constructor(Phase: DiagnosticPhase, public Kind: DiagnosticKind, public Message: string) {
+    this.Message = Phase + ": " + this.Message;
   }
 }
