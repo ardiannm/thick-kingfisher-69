@@ -86,9 +86,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.CantCopy, Message));
   }
 
-  ReportCellUndefined(Name: string) {
+  ReportUndefinedCell(Name: string) {
     const Message = `Cell reference '${Name}' is undefined.`;
-    return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.ReportCellUndefined, Message));
+    return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.ReportUndefinedCell, Message));
   }
 
   ReportUsedBeforeItsDeclaration(Name: string) {

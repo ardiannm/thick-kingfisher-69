@@ -7,10 +7,9 @@ import { DiagnosticPhase } from "./DiagnosticPhase";
 import { Cell } from "./Cell";
 
 export class Environment {
-  private Expression = new BoundNumber(BoundKind.Number, 0);
-  private Cell = new Cell("", this.Expression.Value, this.Expression, new Set<string>(), new Set<string>());
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
+  private Default = new Cell("", 0, new BoundNumber(BoundKind.Number, 0), new Set<string>(), new Set<string>());
 
   public readonly Names = new Set<string>();
   public readonly Diagnostics = new DiagnosticBag(DiagnosticPhase.Environment);
@@ -35,7 +34,7 @@ export class Environment {
     this.ValidateCell(Node);
     const Env = this.ResolveEnvForCell(Node.Name) as Environment;
     if (Env === undefined) {
-      const Data = new Cell(Node.Name, this.Expression.Value, this.Expression, Node.Dependencies, new Set<string>());
+      const Data = new Cell(Node.Name, this.Default.Value, this.Default.Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
     } else {
       const Data = Env.Data.get(Node.Name) as Cell;
@@ -49,9 +48,9 @@ export class Environment {
   public GetCell(Name: string): Cell {
     const Env = this.ResolveEnvForCell(Name);
     if (Env === undefined) {
-      this.Diagnostics.ReportCellUndefined(Name);
-      this.Cell.Name = Name;
-      return this.Cell;
+      this.Diagnostics.ReportUndefinedCell(Name);
+      this.Default.Name = Name;
+      return this.Default;
     }
     return Env.Data.get(Name) as Cell;
   }
