@@ -15,9 +15,8 @@ import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Evaluator {
   private Value: number = 0;
-  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {
-    this.Diagnostics.Phase = DiagnosticPhase.Evaluator;
-  }
+  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {}
+  private Phase: DiagnosticPhase = DiagnosticPhase.Evaluator;
 
   public Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -36,7 +35,7 @@ export class Evaluator {
       case BoundKind.CloneCell:
         return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
       default:
-        this.Diagnostics.ReportMissingMethod(Node.Kind);
+        this.Diagnostics.ReportMissingMethod(this.Phase, Node.Kind);
         return 0;
     }
   }
@@ -69,14 +68,14 @@ export class Evaluator {
         return LeftValue * RightValue;
       case BoundBinaryOperatorKind.Division:
         if (RightValue === 0) {
-          this.Diagnostics.ReportCantDivideByZero();
+          this.Diagnostics.ReportCantDivideByZero(this.Phase);
           return 0;
         }
         return LeftValue / RightValue;
       case BoundBinaryOperatorKind.Exponentiation:
         return LeftValue ** RightValue;
       default:
-        this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(this.Phase, Node.OperatorKind);
     }
     return 0;
   }
@@ -89,7 +88,7 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        this.Diagnostics.ReportMissingOperatorKind(Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(this.Phase, Node.OperatorKind);
     }
     return 0;
   }

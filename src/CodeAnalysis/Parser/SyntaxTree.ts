@@ -7,6 +7,7 @@ import { SyntaxNode } from "./SyntaxNode";
 import { Program } from "./Program";
 import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
+import { RgbColor } from "../../Interpreter/RgbColor";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
@@ -23,7 +24,7 @@ export class SyntaxTree {
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += Node.Kind;
+    Text += RgbColor.Teal(Node.Kind);
     if (Node instanceof SyntaxToken) {
       return Text + " " + Node.Text;
     }

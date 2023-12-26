@@ -18,6 +18,7 @@ import { DiagnosticPhase } from "../../DiagnosticPhase";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private Phase = DiagnosticPhase.Parser;
 
   constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {
     const Tokenizer = new Lexer(Input, this.Diagnostics);
@@ -33,13 +34,11 @@ export class Parser {
       }
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
-
-    this.Diagnostics.Phase = DiagnosticPhase.Parser;
   }
 
   public Parse() {
     if (!this.MoreTokens()) {
-      this.Diagnostics.ReportEmptyProgram();
+      this.Diagnostics.ReportEmptyProgram(this.Phase);
     }
     const Members = new Array<StatementSyntax>();
     while (this.MoreTokens()) {
@@ -170,7 +169,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenMissmatch(this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenMissmatch(this.Phase, this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

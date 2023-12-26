@@ -3,19 +3,17 @@ import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 import { RgbColor } from "./Interpreter/RgbColor";
 import { DiagnosticBag } from "./DiagnosticBag";
-import { DiagnosticPhase } from "./DiagnosticPhase";
 import { Cell } from "./Cell";
+import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Environment {
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
   private Default = new Cell("", 0, new BoundNumber(BoundKind.Number, 0), new Set<string>(), new Set<string>());
-
   public readonly Names = new Set<string>();
+  private Phase = DiagnosticPhase.Environment;
 
-  constructor(private Diagnostics: DiagnosticBag, public ParentEnv?: Environment) {
-    this.Diagnostics.Phase = DiagnosticPhase.Environment;
-  }
+  constructor(private Diagnostics: DiagnosticBag, public ParentEnv?: Environment) {}
 
   PushCell(Name: string) {
     this.Names.add(Name);
@@ -51,7 +49,7 @@ export class Environment {
   public GetCell(Name: string): Cell {
     const Env = this.ResolveEnvForCell(Name);
     if (Env === undefined) {
-      this.Diagnostics.ReportUndefinedCell(Name);
+      this.Diagnostics.ReportUndefinedCell(this.Phase, Name);
       this.Default.Name = Name;
       return this.Default;
     }
@@ -60,7 +58,7 @@ export class Environment {
 
   private ValidateCell(Node: BoundDeclarationStatement) {
     if (Node.Dependencies.has(Node.Name)) {
-      this.Diagnostics.ReportUsedBeforeItsDeclaration(Node.Name);
+      this.Diagnostics.ReportUsedBeforeItsDeclaration(this.Phase, Node.Name);
     }
     this.DetectCircularDependencies(Node.Name, Node.Dependencies);
   }
@@ -69,7 +67,7 @@ export class Environment {
     for (const DepName of Dependencies) {
       const Deps = this.GetCell(DepName).Dependencies;
       if (Deps.has(Name)) {
-        this.Diagnostics.ReportCircularDependency(DepName);
+        this.Diagnostics.ReportCircularDependency(this.Phase, DepName);
         return true;
       }
       if (this.DetectCircularDependencies(Name, Deps)) return true;
@@ -115,7 +113,7 @@ export class Environment {
       Text += Math.abs(Diff) + ")";
     }
 
-    const View = RgbColor.Moss(Text);
+    const View = RgbColor.Teal(Text);
     console.log(View);
 
     Data.Value = Value;

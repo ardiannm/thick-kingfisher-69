@@ -29,9 +29,8 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Binder {
-  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {
-    this.Diagnostics.Phase = DiagnosticPhase.Binder;
-  }
+  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {}
+  private Phase = DiagnosticPhase.Binder;
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -57,7 +56,7 @@ export class Binder {
       case SyntaxKind.CloneCell:
         return this.BindCloneCell(Node as NodeType<DeclarationStatement>);
     }
-    throw this.Diagnostics.ReportMissingMethod(Node.Kind);
+    throw this.Diagnostics.ReportMissingMethod(this.Phase, Node.Kind);
   }
 
   private BindProgram(Node: Program) {
@@ -74,7 +73,7 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
+          this.Diagnostics.ReportGloballyNotAllowed(this.Phase, Member.Kind);
       }
     }
     return new BoundProgram(BoundKind.Program, Root);
@@ -82,7 +81,7 @@ export class Binder {
 
   private BindCloneCell(Node: DeclarationStatement) {
     if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
-      this.Diagnostics.ReportCantCopy(Node.Left.Kind, Node.Expression.Kind);
+      this.Diagnostics.ReportCantCopy(this.Phase, Node.Left.Kind, Node.Expression.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     const Right = this.Bind(Node.Expression) as BoundCellReference;
@@ -97,7 +96,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         break;
       default:
-        this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+        this.Diagnostics.CantUseAsAReference(this.Phase, Node.Left.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
     this.Env = new Environment(this.Diagnostics, this.Env);
@@ -129,7 +128,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(this.Phase, Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -150,7 +149,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(this.Phase, Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -169,7 +168,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.ReportNotARangeMember(Node.Kind);
+    throw this.Diagnostics.ReportNotARangeMember(this.Phase, Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {
