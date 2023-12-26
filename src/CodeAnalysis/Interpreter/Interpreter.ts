@@ -24,6 +24,8 @@ export class Interpreter {
     console.clear();
 
     while (true) {
+      console.log();
+
       const InputLine = Promp.question("> ");
 
       console.clear();
@@ -35,7 +37,7 @@ export class Interpreter {
 
       if (InputLine === "r") {
         this.Lines.length = 0;
-        break;
+        continue;
       }
 
       if (InputLine === "q") {
@@ -44,49 +46,34 @@ export class Interpreter {
 
       this.Lines.push(InputLine);
 
-      this.TryCatch(() => {
-        const Input = SourceText.From(InputLine);
-        const ParserFactory = new Parser(Input);
-        const Program = ParserFactory.Parse();
-        const ParserTree = SyntaxTree.Print(Program);
+      const parser = new Parser(SourceText.From(InputLine));
+      const Program = parser.Parse();
+      const ParserTree = SyntaxTree.Print(Program);
 
-        if (Program.Diagnostics.Any()) {
-          throw Program.Diagnostics;
-        }
-
-        console.log(ParserTree);
-        const LowerProgram = this.lowerer.Lower(Program);
-        const LowerTree = SyntaxTree.Print(LowerProgram);
-
-        if (Program.ObjectId !== LowerProgram.ObjectId) {
-          console.log(LowerTree);
-        }
-
-        const Source = "\n".repeat(3) + this.Lines.join("\n");
-        console.log(Source);
-        const BoundProgram = this.binder.Bind(Program) as BoundProgram;
-
-        if (BoundProgram.Diagnostics.Any()) {
-          throw BoundProgram.Diagnostics;
-        }
-
-        const Value = this.evaluator.Evaluate(BoundProgram).toString();
-        console.log("\n".repeat(1) + Value + "\n".repeat(1));
-      });
-    }
-  }
-
-  private TryCatch(Fn: () => void) {
-    try {
-      Fn();
-    } catch (error) {
-      console.log();
-      if (error instanceof DiagnosticBag) {
-        console.log(error.Report.map((e) => e.Print));
-      } else {
-        console.log(error);
+      if (Program.Diagnostics.Any()) {
+        console.log(Program.Diagnostics.Show.map((e) => e.Print));
+        continue;
       }
-      console.log();
+
+      console.log(ParserTree);
+
+      const LowerProgram = this.lowerer.Lower(Program);
+
+      if (Program.ObjectId !== LowerProgram.ObjectId) console.log(SyntaxTree.Print(LowerProgram));
+
+      const Source = "\n".repeat(3) + this.Lines.join("\n");
+
+      console.log(Source);
+
+      const BoundProgram = this.binder.Bind(Program) as BoundProgram;
+
+      if (BoundProgram.Diagnostics.Any()) {
+        console.log(BoundProgram.Diagnostics.Show.map((e) => e.Print));
+        continue;
+      }
+
+      const Value = this.evaluator.Evaluate(BoundProgram);
+      console.log("\n".repeat(1) + Value + "\n".repeat(1));
     }
   }
 

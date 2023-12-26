@@ -7,25 +7,29 @@ import { DiagnosticPhase } from "./DiagnosticPhase";
 import { DiagnosticKind } from "./DiagnosticKind";
 
 export class DiagnosticBag {
-  private Diagnostics = new Array<Diagnostic>();
+  private Bag = new Array<Diagnostic>();
 
-  constructor(private Phase: DiagnosticPhase) {}
+  constructor(private Phase: DiagnosticPhase, Inherits?: DiagnosticBag) {
+    if (Inherits) {
+      for (const Diagnostic of Inherits.Show) this.Bag.push(Diagnostic);
+    }
+  }
 
   private ReportError(Diagnostic: Diagnostic) {
-    this.Diagnostics.push(Diagnostic);
+    this.Bag.push(Diagnostic);
     return Diagnostic;
   }
 
-  get Report() {
-    return this.Diagnostics;
+  get Show() {
+    return this.Bag;
   }
 
   Add(Report: Diagnostic) {
-    this.Diagnostics.push(Report);
+    this.Bag.push(Report);
   }
 
   get Count() {
-    return this.Diagnostics.length;
+    return this.Bag.length;
   }
 
   Any() {
@@ -33,7 +37,7 @@ export class DiagnosticBag {
   }
 
   Clear() {
-    this.Diagnostics.length = 0;
+    this.Bag.length = 0;
   }
 
   ReportBadTokenFound(Text: string) {
@@ -42,7 +46,7 @@ export class DiagnosticBag {
   }
 
   ReportTokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Expecting '${ExpectedKind}' but matched '${Matched}'.`;
+    const Message = `unexpected '${Matched}' found when expecting '${ExpectedKind}'.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.TokenNotAMatch, Message));
   }
 
