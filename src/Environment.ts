@@ -8,6 +8,7 @@ import { Cell } from "./Cell";
 
 export class Environment {
   private Expression = new BoundNumber(BoundKind.Number, 0);
+  private Cell = new Cell("", this.Expression.Value, this.Expression, new Set<string>(), new Set<string>());
   private Data = new Map<string, Cell>();
   private ForChange = new Set<string>();
 
@@ -48,7 +49,9 @@ export class Environment {
   public GetCell(Name: string): Cell {
     const Env = this.ResolveEnvForCell(Name);
     if (Env === undefined) {
-      throw this.Diagnostics.ReportNameNotFound(Name);
+      this.Diagnostics.ReportCellUndefined(Name);
+      this.Cell.Name = Name;
+      return this.Cell;
     }
     return Env.Data.get(Name) as Cell;
   }

@@ -42,7 +42,7 @@ export class DiagnosticBag {
   }
 
   ReportTokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Expecting <${ExpectedKind}>, matched <${Matched}>.`;
+    const Message = `Expecting '${ExpectedKind}' but matched '${Matched}'.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.TokenNotAMatch, Message));
   }
 
@@ -52,12 +52,12 @@ export class DiagnosticBag {
   }
 
   ReportMissingMethod(Kind: SyntaxKind | BoundKind) {
-    const Message = `Method for <${Kind}> is not implemented.`;
+    const Message = `Method for '${Kind}' is not implemented.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.MissingMethod, Message));
   }
 
   ReportSwitchOperatorMethod(Kind: SyntaxKind) {
-    const Message = `Method for switching operators for <${Kind}> is not implemented.`;
+    const Message = `Method for switching operators for '${Kind}' is not implemented.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.SwitchOperatorMethod, Message));
   }
 
@@ -67,7 +67,7 @@ export class DiagnosticBag {
   }
 
   ReportMissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
-    const Message = `Unexpected operator kind <${Kind}>.`;
+    const Message = `Unexpected operator kind '${Kind}'.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.MissingOperatorKind, Message));
   }
 
@@ -77,18 +77,18 @@ export class DiagnosticBag {
   }
 
   CantUseAsAReference(Unexpected: string) {
-    const Message = `<${Unexpected}> can't be used as a reference.`;
+    const Message = `'${Unexpected}' can't be used as a reference.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.CantUseAsAReference, Message));
   }
 
   ReportCantCopy(Kind: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Can't copy <${Kind}> to <${ExpectedKind}>.`;
+    const Message = `Can't copy '${Kind}' to '${ExpectedKind}'.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.CantCopy, Message));
   }
 
-  ReportNameNotFound(Name: string) {
-    const Message = `Can't find name '${Name}'.`;
-    return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.NameNotFound, Message));
+  ReportCellUndefined(Name: string) {
+    const Message = `Cell reference '${Name}' is undefined.`;
+    return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.ReportCellUndefined, Message));
   }
 
   ReportUsedBeforeItsDeclaration(Name: string) {
@@ -102,12 +102,12 @@ export class DiagnosticBag {
   }
 
   ReportNotARangeMember(Kind: SyntaxKind) {
-    const Message = `<${Kind}> is not a range member and it can't be bound.`;
+    const Message = `'${Kind}' is not a range member and it can't be bound.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.NotARangeMember, Message));
   }
 
   ReportGloballyNotAllowed(Kind: SyntaxKind) {
-    const Message = `<${Kind}> can't be written directly outside in the global scope.`;
+    const Message = `'${Kind}' can't be written directly outside in the global scope.`;
     return this.ReportError(new Diagnostic(this.Phase, DiagnosticKind.GloballyNotAllowed, Message));
   }
 }

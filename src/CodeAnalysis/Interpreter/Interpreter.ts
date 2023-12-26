@@ -13,6 +13,7 @@ import { RgbColor } from "./RgbColor";
 import { Diagnostic } from "../../Diagnostic";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { DiagnosticBag } from "../../DiagnosticBag";
+import { BoundProgram } from "../Binder/BoundProgram";
 
 export class Interpreter {
   private Lines = Array<string>();
@@ -68,10 +69,14 @@ export class Interpreter {
         const Source = "\n".repeat(3) + this.Lines.join("\n");
         console.log(RgbColor.Terracotta(Source));
 
-        const BoundProgram = BinderFactory.Bind(Program);
-        const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
+        const BoundProgram = BinderFactory.Bind(Program) as BoundProgram;
 
-        console.log("\n".repeat(1) + RgbColor.Terracotta(Value) + "\n".repeat(1));
+        if (BoundProgram.Diagnostics.Any()) {
+          console.log(BoundProgram.Diagnostics.Report);
+        } else {
+          const Value = EvaluatorFactory.Evaluate(BoundProgram).toString();
+          console.log("\n".repeat(1) + RgbColor.Terracotta(Value) + "\n".repeat(1));
+        }
       });
     }
   }
