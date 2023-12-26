@@ -1,3 +1,3 @@
-import { Interpreter } from "./src/CodeAnalysis/Interpreter/Interpreter";
+import { Interpreter } from "./src/Interpreter/Interpreter";
 
 new Interpreter().Run();

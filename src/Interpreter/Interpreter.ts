@@ -3,16 +3,16 @@ import Promp from "readline-sync";
 import * as fs from "fs";
 import * as path from "path";
 
-import { Parser } from "../Parser/Parser";
-import { SourceText } from "../../SourceText";
-import { Evaluator } from "../../Evaluator";
-import { Environment } from "../../Environment";
-import { Binder } from "../Binder/Binder";
-import { SyntaxTree } from "../Parser/SyntaxTree";
-import { Lowerer } from "../Lowerer/Lowerer";
-import { BoundProgram } from "../Binder/BoundProgram";
-import { DiagnosticBag } from "../../DiagnosticBag";
-import { DiagnosticPhase } from "../../DiagnosticPhase";
+import { Parser } from "../CodeAnalysis/Parser/Parser";
+import { SourceText } from "../SourceText";
+import { Evaluator } from "../Evaluator";
+import { Environment } from "../Environment";
+import { Binder } from "../CodeAnalysis/Binder/Binder";
+import { SyntaxTree } from "../CodeAnalysis/Parser/SyntaxTree";
+import { Lowerer } from "../CodeAnalysis/Lowerer/Lowerer";
+import { BoundProgram } from "../CodeAnalysis/Binder/BoundProgram";
+import { DiagnosticBag } from "../DiagnosticBag";
+import { DiagnosticPhase } from "../DiagnosticPhase";
 
 export class Interpreter {
   private lines = Array<string>();

@@ -1,7 +1,7 @@
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
-import { RgbColor } from "./CodeAnalysis/Interpreter/RgbColor";
+import { RgbColor } from "./Interpreter/RgbColor";
 import { DiagnosticBag } from "./DiagnosticBag";
 import { DiagnosticPhase } from "./DiagnosticPhase";
 import { Cell } from "./Cell";
