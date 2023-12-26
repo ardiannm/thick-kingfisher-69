@@ -48,18 +48,19 @@ export class Environment {
     return undefined;
   }
 
-  TryDeclareCell(Node: BoundDeclarationStatement): boolean {
+  TryDeclareCell(Node: BoundDeclarationStatement) {
     this.Validate(Node);
     const Env = this.ResolveEnvForCell(Node.Name) as Environment;
     if (Env === undefined) {
       const Data = new Cell(Node.Name, this.Expression.Value, this.Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
-      return true;
+    } else {
+      const Data = Env.Data.get(Node.Name) as Cell;
+      for (const Dep of Data.Dependencies) {
+        if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Node.Name);
+      }
+      Data.Dependencies = Node.Dependencies;
     }
-    const Data = Env.Data.get(Node.Name) as Cell;
-    for (const Dep of Data.Dependencies) if (!Node.Dependencies.has(Dep)) this.TryGetCell(Dep).DoNotNotify(Node.Name);
-    Data.Dependencies = Node.Dependencies;
-    return false;
   }
 
   TryGetCell(Name: string): Cell {

@@ -21,9 +21,9 @@ export class SyntaxTree {
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += RgbColor.Sandstone(`"${Node.Kind}"`);
+    Text += RgbColor.Sandstone(Node.Kind);
     if (Node instanceof SyntaxToken) {
-      return Text + " " + RgbColor.Terracotta(`"${Node.Text}"`);
+      return Text + " " + RgbColor.Terracotta(Node.Text);
     }
     if (Node instanceof SyntaxNode) {
       const Branches = Array.from(Node.GetBranches());
