@@ -44,16 +44,14 @@ export class Parser {
       this.Diagnostics.ReportEmptyProgram();
     }
     const Members = new Array<StatementSyntax>();
-    if (!this.Diagnostics.Any()) {
-      while (this.MoreTokens()) {
-        const Token = this.Token;
-        const Member = this.ParseMember();
-        Members.push(Member);
-        if (this.Token === Token) this.NextToken();
-      }
+    while (this.MoreTokens()) {
+      const Token = this.Token;
+      const Member = this.ParseMember();
+      Members.push(Member);
+      if (this.Token === Token) this.NextToken();
     }
-    const Right = this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members, Right, this.Diagnostics);
+    this.ExpectToken(SyntaxKind.EndOfFileToken);
+    return new Program(SyntaxKind.Program, Members, this.Diagnostics);
   }
 
   private ParseMember() {

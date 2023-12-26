@@ -48,14 +48,16 @@ export class Interpreter {
 
       const parser = new Parser(SourceText.From(InputLine));
       const Program = parser.Parse();
+
       const ParserTree = SyntaxTree.Print(Program);
+
+      console.log(ParserTree);
+      console.log();
 
       if (Program.Diagnostics.Any()) {
         console.log(Program.Diagnostics.Show.map((e) => e.Print));
         continue;
       }
-
-      console.log(ParserTree);
 
       const LowerProgram = this.lowerer.Lower(Program);
 
@@ -73,6 +75,12 @@ export class Interpreter {
       }
 
       const Value = this.evaluator.Evaluate(BoundProgram);
+
+      if (this.evaluator.Diagnostics.Any()) {
+        console.log(this.evaluator.Diagnostics.Show.map((e) => e.Print));
+        continue;
+      }
+
       console.log("\n".repeat(1) + Value + "\n".repeat(1));
     }
   }

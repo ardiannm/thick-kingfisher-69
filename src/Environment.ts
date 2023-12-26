@@ -59,7 +59,7 @@ export class Environment {
 
   private ValidateCell(Node: BoundDeclarationStatement) {
     if (Node.Dependencies.has(Node.Name)) {
-      throw this.Diagnostics.ReportUsedBeforeItsDeclaration(Node.Name);
+      this.Diagnostics.ReportUsedBeforeItsDeclaration(Node.Name);
     }
     this.DetectCircularDependencies(Node.Name, Node.Dependencies);
   }

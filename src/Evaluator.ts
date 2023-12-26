@@ -41,9 +41,7 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    for (const Statement of Node.Root) {
-      this.Value = this.Evaluate(Statement);
-    }
+    for (const Statement of Node.Root) this.Value = this.Evaluate(Statement);
     return this.Value;
   }
 
