@@ -56,20 +56,31 @@ export class BoundScope {
     return Data;
   }
 
-  CircularDependency(Node: Cell) {
-    for (const NextNode of this.Dependencies(Node)) {
-      if (NextNode.Dependencies.has(Node.Name)) {
-        return NextNode;
-      }
-    }
-    return undefined;
-  }
-
-  private *Dependencies(Node: Cell): Generator<Cell> {
+  private *IterateDependencies(Node: Cell): Generator<Cell> {
     for (const Dep of Node.Dependencies) {
       const NextNode = this.GetCell(Dep);
       yield NextNode;
-      yield* this.Dependencies(NextNode);
+      yield* this.IterateDependencies(NextNode);
+    }
+  }
+
+  private *IterateDependents(Node: Cell): Generator<Cell> {
+    for (const Dep of Node.Dependents) {
+      const NextNode = this.GetCell(Dep);
+      yield NextNode;
+      yield* this.IterateDependents(NextNode);
+    }
+  }
+
+  HasCircularLogic(Node: Cell) {
+    for (const NextNode of this.IterateDependencies(Node)) if (NextNode.Dependencies.has(Node.Name)) return NextNode;
+    return undefined;
+  }
+
+  public *DetectForChanges(Node: Cell) {
+    for (const PrevNode of this.IterateDependents(Node)) {
+      if (PrevNode === Node) break;
+      yield PrevNode;
     }
   }
 }

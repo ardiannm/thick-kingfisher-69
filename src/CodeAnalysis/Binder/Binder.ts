@@ -96,7 +96,7 @@ export class Binder {
       if (this.Scope.DoesNotHave(Dep)) this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Dep);
     }
     const ThisNode = this.Scope.CreateCell(Left.Name, Expression, Dependencies);
-    const NextNode = this.Scope.CircularDependency(ThisNode);
+    const NextNode = this.Scope.HasCircularLogic(ThisNode);
     if (NextNode) {
       this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, ThisNode.Name, NextNode.Name);
     }
