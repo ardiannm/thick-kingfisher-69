@@ -20,7 +20,7 @@ import { BoundNode } from "./BoundNode";
 import { Program } from "../Parser/Program";
 import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
-import { Environment } from "../../Environment";
+import { BoundScope } from "../../BoundScope";
 import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
 import { BoundRowReference } from "./BoundRowReference";
 import { BoundColumnReference } from "./BoundColumnReference";
@@ -29,7 +29,8 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Binder {
-  constructor(private Env: Environment) {}
+  constructor(private Scope: BoundScope) {}
+  public readonly Diagnostics = new DiagnosticBag();
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -52,10 +53,8 @@ export class Binder {
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxKind.ReferenceCell:
         return this.BindReferenceCell(Node as NodeType<DeclarationStatement>);
-      case SyntaxKind.CloneCell:
-        return this.BindCloneCell(Node as NodeType<DeclarationStatement>);
     }
-    throw this.Env.Diagnostics.ReportMissingMethod(DiagnosticPhase.Binder, Node.Kind);
+    throw this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Binder, Node.Kind);
   }
 
   private BindProgram(Node: Program) {
@@ -72,23 +71,10 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          this.Env.Diagnostics.ReportGloballyNotAllowed(DiagnosticPhase.Binder, Member.Kind);
+          this.Diagnostics.ReportGloballyNotAllowed(DiagnosticPhase.Binder, Member.Kind);
       }
     }
-    this.Env.AssertNames();
-    return new BoundProgram(BoundKind.Program, Root, this.Env.Diagnostics);
-  }
-
-  private BindCloneCell(Node: DeclarationStatement) {
-    if (Node.Left.Kind !== SyntaxKind.CellReference || Node.Expression.Kind !== SyntaxKind.CellReference) {
-      this.Env.Diagnostics.ReportCantCopy(DiagnosticPhase.Binder, Node.Left.Kind, Node.Expression.Kind);
-    }
-    const Left = this.Bind(Node.Left) as BoundCellReference;
-    const Right = this.Bind(Node.Expression) as BoundCellReference;
-    const Cell = this.Env.AssertCell(Right.Name);
-    const Data = new BoundDeclarationStatement(BoundKind.CloneCell, Left.Name, Cell.Expression, Cell.Dependencies);
-    this.Env.DeclareCell(Data);
-    return Data;
+    return new BoundProgram(BoundKind.Program, Root, this.Diagnostics);
   }
 
   private BindReferenceCell(Node: DeclarationStatement) {
@@ -96,16 +82,24 @@ export class Binder {
       case SyntaxKind.CellReference:
         break;
       default:
-        this.Env.Diagnostics.CantUseAsAReference(DiagnosticPhase.Binder, Node.Left.Kind);
+        this.Diagnostics.CantUseAsAReference(DiagnosticPhase.Binder, Node.Left.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
-    this.Env = new Environment(this.Env);
+    this.Scope = new BoundScope(this.Scope);
     const Expression = this.Bind(Node.Expression);
-    const Dependencies = new Set<string>(this.Env.Names);
-    const Data = new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
-    this.Env = this.Env.ParentEnv as Environment;
-    this.Env.DeclareCell(Data);
-    return Data;
+    const Dependencies = new Set<string>(this.Scope.Names);
+    this.Scope = this.Scope.ParentEnv as BoundScope;
+    if (Dependencies.has(Left.Name)) {
+      this.Diagnostics.ReportUsedBeforeItsDeclaration(DiagnosticPhase.Binder, Left.Name);
+    }
+    for (const Dep of Dependencies) {
+      if (this.Scope.DoesNotHave(Dep)) this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Dep);
+    }
+    this.Scope.CreateCell(Left.Name, Expression, Dependencies);
+    if (this.Scope.ContainsCircularLogic(Left.Name)) {
+      this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, Left.Name);
+    }
+    return new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -128,7 +122,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Env.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -149,7 +143,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Env.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -168,7 +162,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Env.Diagnostics.ReportNotARangeMember(DiagnosticPhase.Binder, Node.Kind);
+    throw this.Diagnostics.ReportNotARangeMember(DiagnosticPhase.Binder, Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {
@@ -181,7 +175,7 @@ export class Binder {
     const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    this.Env.PushCell(Name);
+    this.Scope.PushCell(Name);
     return new BoundCellReference(BoundKind.CellReference, Name);
   }
 
