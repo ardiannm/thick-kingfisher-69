@@ -1,7 +1,9 @@
 import { Cell } from "./Cell";
+import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
+import { RgbColor } from "./Interpreter/RgbColor";
 
 export class BoundScope {
   private Data = new Map<string, Cell>();
@@ -36,10 +38,6 @@ export class BoundScope {
 
   GetValue(Name: string) {
     return this.GetCell(Name).Value;
-  }
-
-  SetValueForCell(Name: any, Value: number) {
-    this.GetCell(Name).Value = Value;
   }
 
   CreateCell(Name: string, Expression: BoundExpression, Dependencies: Set<string>) {
@@ -82,5 +80,38 @@ export class BoundScope {
       if (PrevNode === Node) break;
       yield PrevNode;
     }
+  }
+
+  Assign(Node: BoundDeclarationStatement, Value: number) {
+    const Data = this.GetCell(Node.Name);
+    for (const DepName of Data.Dependencies) {
+      if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Data.Name);
+    }
+    Data.Dependencies = Node.Dependencies;
+    for (const DepName of Data.Dependencies) {
+      this.GetCell(DepName).Notify(Data.Name);
+    }
+    Data.Expression = Node.Expression;
+    Data.Value = Value;
+    return this.DetectForChanges(Data);
+  }
+
+  public SetValueForCell(Name: string, Value: number) {
+    const Data = this.GetCell(Name);
+
+    const Diff = Value - Data.Value;
+    var Text = Name + " -> " + Value;
+
+    if (Diff !== 0) {
+      Text += " (";
+      if (Diff > 0) Text += "+";
+      else if (Diff < 0) Text += "-";
+      Text += Math.abs(Diff) + ")";
+    }
+
+    const View = RgbColor.Teal(Text);
+    console.log(View);
+
+    Data.Value = Value;
   }
 }
