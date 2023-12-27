@@ -44,28 +44,32 @@ export class BoundScope {
 
   CreateCell(Name: string, Expression: BoundExpression, Dependencies: Set<string>) {
     if (this.DoesNotHave(Name)) {
-      this.Data.set(Name, new Cell(Name, 0, Expression, Dependencies, new Set<string>()));
+      const Data = new Cell(Name, 0, Expression, Dependencies, new Set<string>());
+      this.Data.set(Name, Data);
       for (const Dep of Dependencies) this.GetCell(Dep).Notify(Name);
-      return true;
+      return Data;
     }
     const Data = this.GetCell(Name);
     for (const Dep of Data.Dependencies) if (!Dependencies.has(Dep)) this.GetCell(Dep).DoNotNotify(Name);
     Data.Dependencies = Dependencies;
     for (const Dep of Data.Dependencies) this.GetCell(Dep).Notify(Name);
-    return false;
+    return Data;
   }
 
-  public ContainsCircularLogic(Name: string) {
-    if (this.Dependencies(Name, new Set<string>()).has(Name)) return true;
-    return false;
-  }
-
-  private Dependencies(Name: string, Deps: Set<string>) {
-    for (const Dep of this.GetCell(Name).Dependencies) {
-      if (Deps.has(Dep)) continue;
-      Deps.add(Dep);
-      this.Dependencies(Dep, Deps);
+  CircularDependency(Node: Cell) {
+    for (const NextNode of this.Dependencies(Node)) {
+      if (NextNode.Dependencies.has(Node.Name)) {
+        return NextNode;
+      }
     }
-    return Deps;
+    return undefined;
+  }
+
+  private *Dependencies(Node: Cell): Generator<Cell> {
+    for (const Dep of Node.Dependencies) {
+      const NextNode = this.GetCell(Dep);
+      yield NextNode;
+      yield* this.Dependencies(NextNode);
+    }
   }
 }

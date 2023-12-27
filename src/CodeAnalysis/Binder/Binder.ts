@@ -95,9 +95,10 @@ export class Binder {
     for (const Dep of Dependencies) {
       if (this.Scope.DoesNotHave(Dep)) this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Dep);
     }
-    this.Scope.CreateCell(Left.Name, Expression, Dependencies);
-    if (this.Scope.ContainsCircularLogic(Left.Name)) {
-      this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, Left.Name);
+    const ThisNode = this.Scope.CreateCell(Left.Name, Expression, Dependencies);
+    const NextNode = this.Scope.CircularDependency(ThisNode);
+    if (NextNode) {
+      this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, ThisNode.Name, NextNode.Name);
     }
     return new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
   }
