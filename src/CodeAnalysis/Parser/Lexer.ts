@@ -6,8 +6,9 @@ import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
 
 export class Lexer {
-  private Phase = DiagnosticPhase.Lexer;
-  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {}
+  constructor(public readonly Input: SourceText) {}
+
+  public readonly Diagnostics = new DiagnosticBag();
 
   private Index = 0;
   private Start = this.Index;
@@ -31,7 +32,7 @@ export class Lexer {
         }
 
         // if all else fails then report a bad token error
-        this.Diagnostics.ReportBadTokenFound(this.Phase, this.Char);
+        this.Diagnostics.ReportBadTokenFound(DiagnosticPhase.Lexer, this.Char);
         break;
 
       case SyntaxKind.HashToken:
@@ -96,7 +97,7 @@ export class Lexer {
     if (this.Match(SyntaxKind.DotToken)) {
       this.Index += 1;
       if (!this.IsDigit(this.Char)) {
-        this.Diagnostics.ReportBadFloatingPointNumber(this.Phase);
+        this.Diagnostics.ReportBadFloatingPointNumber(DiagnosticPhase.Lexer);
       }
     }
     while (this.IsDigit(this.Char)) {

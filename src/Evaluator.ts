@@ -15,8 +15,8 @@ import { DiagnosticPhase } from "./DiagnosticPhase";
 
 export class Evaluator {
   private Value: number = 0;
-  constructor(private Env: Environment, private Diagnostics: DiagnosticBag) {}
-  private Phase: DiagnosticPhase = DiagnosticPhase.Evaluator;
+  constructor(private Env: Environment) {}
+  private Diagnostics = new DiagnosticBag();
 
   public Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -35,12 +35,13 @@ export class Evaluator {
       case BoundKind.CloneCell:
         return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
       default:
-        this.Diagnostics.ReportMissingMethod(this.Phase, Node.Kind);
+        this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Evaluator, Node.Kind);
         return 0;
     }
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
+    this.Diagnostics = new DiagnosticBag(Node.Diagnostics);
     for (const Statement of Node.Root) {
       this.Value = this.Evaluate(Statement);
     }
@@ -68,14 +69,14 @@ export class Evaluator {
         return LeftValue * RightValue;
       case BoundBinaryOperatorKind.Division:
         if (RightValue === 0) {
-          this.Diagnostics.ReportCantDivideByZero(this.Phase);
+          this.Diagnostics.ReportCantDivideByZero(DiagnosticPhase.Evaluator);
           return 0;
         }
         return LeftValue / RightValue;
       case BoundBinaryOperatorKind.Exponentiation:
         return LeftValue ** RightValue;
       default:
-        this.Diagnostics.ReportMissingOperatorKind(this.Phase, Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Evaluator, Node.OperatorKind);
     }
     return 0;
   }
@@ -88,13 +89,13 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -Value;
       default:
-        this.Diagnostics.ReportMissingOperatorKind(this.Phase, Node.OperatorKind);
+        this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Evaluator, Node.OperatorKind);
     }
     return 0;
   }
 
   private EvaluateCellReference(Node: BoundCellReference): number {
-    return this.Env.GetCell(Node.Name).Value;
+    return this.Env.GetValue(Node.Name);
   }
 
   private EvaluateNumber(Node: BoundNumber) {

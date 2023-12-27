@@ -11,11 +11,18 @@ export class Environment {
   private ForChange = new Set<string>();
   private Default = new Cell("", 0, new BoundNumber(BoundKind.Number, 0), new Set<string>(), new Set<string>());
   public readonly Names = new Set<string>();
-  private Phase = DiagnosticPhase.Environment;
 
-  constructor(private Diagnostics: DiagnosticBag, public ParentEnv?: Environment) {}
+  public readonly Diagnostics: DiagnosticBag;
 
-  PushCell(Name: string) {
+  constructor(public ParentEnv?: Environment) {
+    if (this.ParentEnv === undefined) {
+      this.Diagnostics = new DiagnosticBag();
+      return;
+    }
+    this.Diagnostics = this.ParentEnv.Diagnostics;
+  }
+
+  public PushCell(Name: string) {
     this.Names.add(Name);
   }
 
@@ -40,34 +47,49 @@ export class Environment {
     } else {
       const Data = Env.Data.get(Node.Name) as Cell;
       for (const DepName of Data.Dependencies) {
-        if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Node.Name);
+        if (!Node.Dependencies.has(DepName)) this.AssertCell(DepName).DoNotNotify(Node.Name);
       }
       Data.Dependencies = Node.Dependencies;
     }
   }
 
-  public GetCell(Name: string): Cell {
+  public AssertNames() {
+    for (const Name of this.Names)
+      if (this.ResolveEnvForCell(Name) === undefined) {
+        this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Name);
+      }
+  }
+
+  public AssertCell(Name: string): Cell {
     const Env = this.ResolveEnvForCell(Name);
     if (Env === undefined) {
-      this.Diagnostics.ReportUndefinedCell(this.Phase, Name);
+      this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Name);
       this.Default.Name = Name;
       return this.Default;
     }
     return Env.Data.get(Name) as Cell;
   }
 
+  public GetValue(Name: string): number {
+    const Env = this.ResolveEnvForCell(Name);
+    if (Env === undefined) {
+      throw this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Evaluator, Name);
+    }
+    return (Env.Data.get(Name) as Cell).Value;
+  }
+
   private ValidateCell(Node: BoundDeclarationStatement) {
     if (Node.Dependencies.has(Node.Name)) {
-      this.Diagnostics.ReportUsedBeforeItsDeclaration(this.Phase, Node.Name);
+      this.Diagnostics.ReportUsedBeforeItsDeclaration(DiagnosticPhase.Binder, Node.Name);
     }
     this.DetectCircularDependencies(Node.Name, Node.Dependencies);
   }
 
   private DetectCircularDependencies(Name: string, Dependencies: Set<string>) {
     for (const DepName of Dependencies) {
-      const Deps = this.GetCell(DepName).Dependencies;
+      const Deps = this.AssertCell(DepName).Dependencies;
       if (Deps.has(Name)) {
-        this.Diagnostics.ReportCircularDependency(this.Phase, DepName);
+        this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, DepName);
         return true;
       }
       if (this.DetectCircularDependencies(Name, Deps)) return true;
@@ -76,13 +98,13 @@ export class Environment {
   }
 
   public Assign(Node: BoundDeclarationStatement, Value: number) {
-    const Data = this.GetCell(Node.Name);
+    const Data = this.AssertCell(Node.Name);
     for (const DepName of Data.Dependencies) {
-      if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Data.Name);
+      if (!Node.Dependencies.has(DepName)) this.AssertCell(DepName).DoNotNotify(Data.Name);
     }
     Data.Dependencies = Node.Dependencies;
     for (const DepName of Data.Dependencies) {
-      this.GetCell(DepName).Notify(Data.Name);
+      this.AssertCell(DepName).Notify(Data.Name);
     }
     Data.Expression = Node.Expression;
     Data.Value = Value;
@@ -93,7 +115,7 @@ export class Environment {
     for (const Dep of Node.Dependents) {
       if (this.ForChange.has(Dep)) continue;
       this.ForChange.add(Dep);
-      const NextNode = this.GetCell(Dep);
+      const NextNode = this.AssertCell(Dep);
       yield NextNode;
       this.DetectAndNotifyForChange(NextNode);
     }
@@ -101,7 +123,7 @@ export class Environment {
   }
 
   public SetValueForCell(Name: string, Value: number) {
-    const Data = this.GetCell(Name);
+    const Data = this.AssertCell(Name);
 
     const Diff = Value - Data.Value;
     var Text = Name + " -> " + Value;
@@ -117,5 +139,9 @@ export class Environment {
     console.log(View);
 
     Data.Value = Value;
+  }
+
+  public ResetEnv() {
+    this.Diagnostics.ClearDiagnostics();
   }
 }

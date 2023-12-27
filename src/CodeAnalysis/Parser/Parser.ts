@@ -18,10 +18,11 @@ import { DiagnosticPhase } from "../../DiagnosticPhase";
 export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
-  private Phase = DiagnosticPhase.Parser;
 
-  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {
-    const Tokenizer = new Lexer(Input, this.Diagnostics);
+  public readonly Diagnostics: DiagnosticBag;
+
+  constructor(public readonly Input: SourceText) {
+    const Tokenizer = new Lexer(Input);
     var Token: SyntaxToken<SyntaxKind>;
 
     do {
@@ -34,11 +35,13 @@ export class Parser {
       }
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
+
+    this.Diagnostics = new DiagnosticBag(Tokenizer.Diagnostics);
   }
 
   public Parse() {
     if (!this.MoreTokens()) {
-      this.Diagnostics.ReportEmptyProgram(this.Phase);
+      this.Diagnostics.ReportEmptyProgram(DiagnosticPhase.Parser);
     }
     const Members = new Array<StatementSyntax>();
     while (this.MoreTokens()) {
@@ -48,7 +51,7 @@ export class Parser {
       if (this.Token === Token) this.NextToken();
     }
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members);
+    return new Program(SyntaxKind.Program, Members, this.Diagnostics);
   }
 
   private ParseMember() {
@@ -169,7 +172,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenMissmatch(this.Phase, this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenMissmatch(DiagnosticPhase.Parser, this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

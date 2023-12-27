@@ -9,10 +9,8 @@ import { DiagnosticKind } from "./DiagnosticKind";
 export class DiagnosticBag {
   private Bag = new Array<Diagnostic>();
 
-  constructor(public Phase: DiagnosticPhase, Inherits?: DiagnosticBag) {
-    if (Inherits) {
-      for (const Diagnostic of Inherits.Show) this.Bag.push(Diagnostic);
-    }
+  constructor(Inherits?: DiagnosticBag) {
+    if (Inherits) for (const Diagnostic of Inherits.Show) this.Bag.push(Diagnostic);
   }
 
   private ReportError(Diagnostic: Diagnostic) {
@@ -36,8 +34,8 @@ export class DiagnosticBag {
     return this.Count > 0;
   }
 
-  Clear() {
-    this.Bag.length = 0;
+  ClearDiagnostics() {
+    this.Bag = new Array<Diagnostic>();
   }
 
   ReportBadTokenFound(Phase: DiagnosticPhase, Text: string) {

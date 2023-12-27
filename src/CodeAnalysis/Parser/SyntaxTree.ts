@@ -5,17 +5,14 @@ import { BoundNode } from "../Binder/BoundNode";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { SyntaxNode } from "./SyntaxNode";
 import { Program } from "./Program";
-import { DiagnosticBag } from "../../DiagnosticBag";
-import { DiagnosticPhase } from "../../DiagnosticPhase";
 import { RgbColor } from "../../Interpreter/RgbColor";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}
 
-  static Parse(Text: string, Diagnostics?: DiagnosticBag) {
-    const dBag = Diagnostics ? Diagnostics : new DiagnosticBag(DiagnosticPhase.Parser);
+  static Parse(Text: string) {
     const Source = SourceText.From(Text);
-    return new Parser(Source, dBag).Parse() as Program;
+    return new Parser(Source).Parse() as Program;
   }
 
   static Lower(Text: string) {
