@@ -1,6 +1,5 @@
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
-import { DeclarationStatement } from "../Parser/DeclarationStatement";
 import { BinaryExpression } from "../Parser/BinaryExpression";
 import { RangeReference } from "../Parser/RangeReference";
 import { CellReference } from "../Parser/CellReference";
@@ -21,12 +20,13 @@ import { Program } from "../Parser/Program";
 import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
 import { BoundScope } from "../../BoundScope";
-import { BoundDeclarationStatement } from "./BoundDeclarationStatement";
 import { BoundRowReference } from "./BoundRowReference";
 import { BoundColumnReference } from "./BoundColumnReference";
 import { IsReferable } from "./IsReferable";
 import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
+import { CellAssignment } from "../Parser/CellAssignment";
+import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
   constructor(private Scope: BoundScope) {}
@@ -51,8 +51,8 @@ export class Binder {
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.ReferenceCell:
-        return this.BindReferenceCell(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.CellAssignment:
+        return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
     throw this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Binder, Node.Kind);
   }
@@ -66,8 +66,7 @@ export class Binder {
         case SyntaxKind.ParenthesizedExpression:
         case SyntaxKind.UnaryExpression:
         case SyntaxKind.BinaryExpression:
-        case SyntaxKind.ReferenceCell:
-        case SyntaxKind.CloneCell:
+        case SyntaxKind.CellAssignment:
           Root.push(this.Bind(Member));
           continue;
         default:
@@ -77,7 +76,7 @@ export class Binder {
     return new BoundProgram(BoundKind.Program, Root, this.Diagnostics);
   }
 
-  private BindReferenceCell(Node: DeclarationStatement) {
+  private BindCellAssignment(Node: CellAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxKind.CellReference:
         break;
@@ -100,7 +99,7 @@ export class Binder {
     if (NextNode) {
       this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, ThisNode.Name, NextNode.Name);
     }
-    return new BoundDeclarationStatement(BoundKind.ReferenceCell, Left.Name, Expression, Dependencies);
+    return new BoundCellAssignment(BoundKind.CellAssignment, Left.Name, Expression, Dependencies);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -186,6 +185,6 @@ export class Binder {
 
   private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(BoundKind.Number, Value);
+    return new BoundNumber(BoundKind.NumericLiteral, Value);
   }
 }

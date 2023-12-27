@@ -1,4 +1,5 @@
 import Promp from "readline-sync";
+
 import * as fs from "fs";
 import * as path from "path";
 

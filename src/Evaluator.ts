@@ -9,9 +9,9 @@ import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { CellReference } from "./CodeAnalysis/Parser/CellReference";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundScope } from "./BoundScope";
-import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
 import { DiagnosticBag } from "./DiagnosticBag";
 import { DiagnosticPhase } from "./DiagnosticPhase";
+import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 
 export class Evaluator {
   private Value: number = 0;
@@ -23,7 +23,7 @@ export class Evaluator {
     switch (Node.Kind) {
       case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
-      case BoundKind.Number:
+      case BoundKind.NumericLiteral:
         return this.EvaluateNumber(Node as NodeType<BoundNumber>);
       case BoundKind.CellReference:
         return this.EvaluateCellReference(Node as NodeType<CellReference>);
@@ -31,9 +31,8 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-      case BoundKind.ReferenceCell:
-      case BoundKind.CloneCell:
-        return this.EvaluateDeclaration(Node as NodeType<BoundDeclarationStatement>);
+      case BoundKind.CellAssignment:
+        return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       default:
         this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Evaluator, Node.Kind);
         return 0;
@@ -48,7 +47,7 @@ export class Evaluator {
     return this.Value;
   }
 
-  private EvaluateDeclaration(Node: BoundDeclarationStatement) {
+  private EvaluateCellAssignment(Node: BoundCellAssignment) {
     const Value = this.Evaluate(Node.Expression);
     const Dependents = this.Scope.Assign(Node, Value);
     for (const Dep of Dependents) {

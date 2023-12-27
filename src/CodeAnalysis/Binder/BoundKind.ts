@@ -1,7 +1,6 @@
 export enum BoundKind {
   Program = "Program",
-  CloneCell = "CloneCell",
-  ReferenceCell = "ReferenceCell",
+  CellAssignment = "CellAssignment",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   RowReference = "RowReference",
@@ -9,5 +8,5 @@ export enum BoundKind {
   RangeReference = "RangeReference",
   CellReference = "CellReference",
   Identifier = "Identifier",
-  Number = "Number",
+  NumericLiteral = "NumericLiteral",
 }

@@ -3,11 +3,11 @@ import { ExpressionSyntax } from "./ExpressionSyntax";
 import { StatementSyntax } from "./StatementSyntax";
 import { SyntaxToken } from "./SyntaxToken";
 
-export class DeclarationStatement extends StatementSyntax {
+export class CellAssignment extends StatementSyntax {
   constructor(
-    public override Kind: SyntaxKind.ReferenceCell | SyntaxKind.CloneCell,
+    public override Kind: SyntaxKind.CellAssignment,
     public Left: ExpressionSyntax,
-    public Keyword: SyntaxToken<SyntaxKind>,
+    public Keyword: SyntaxToken<SyntaxKind.GreaterGreaterToken>,
     public Expression: ExpressionSyntax
   ) {
     super(Kind);

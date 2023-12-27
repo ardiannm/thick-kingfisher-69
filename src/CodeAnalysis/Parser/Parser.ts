@@ -10,10 +10,10 @@ import { SourceText } from "../../SourceText";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
-import { DeclarationStatement } from "./DeclarationStatement";
 import { Lexer } from "./Lexer";
 import { DiagnosticBag } from "../../DiagnosticBag";
 import { DiagnosticPhase } from "../../DiagnosticPhase";
+import { CellAssignment } from "./CellAssignment";
 
 export class Parser {
   private Index = 0;
@@ -64,9 +64,10 @@ export class Parser {
     const Left = this.ParseBinaryExpression();
     switch (this.Token.Kind) {
       case SyntaxKind.PointerToken:
-        return new DeclarationStatement(SyntaxKind.ReferenceCell, Left, this.NextToken(), this.ParseBinaryExpression());
-      case SyntaxKind.GreaterGreaterToken:
-        return new DeclarationStatement(SyntaxKind.CloneCell, Left, this.NextToken(), this.ParseBinaryExpression());
+        const Keyword = this.NextToken() as SyntaxToken<SyntaxKind.GreaterGreaterToken>;
+        return new CellAssignment(SyntaxKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
+      // case SyntaxKind.GreaterGreaterToken:
+      //   return new DeclarationStatement(SyntaxKind.CloneCell, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }

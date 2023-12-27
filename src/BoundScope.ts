@@ -1,5 +1,5 @@
 import { Cell } from "./Cell";
-import { BoundDeclarationStatement } from "./CodeAnalysis/Binder/BoundDeclarationStatement";
+import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
@@ -8,7 +8,7 @@ import { RgbColor } from "./Interpreter/RgbColor";
 export class BoundScope {
   private Data = new Map<string, Cell>();
   public readonly Names = new Set<string>();
-  private Default = new Cell("", 0, new BoundNumber(BoundKind.Number, 0), new Set<string>(), new Set<string>());
+  private Default = new Cell("", 0, new BoundNumber(BoundKind.NumericLiteral, 0), new Set<string>(), new Set<string>());
 
   constructor(public ParentEnv?: BoundScope) {}
 
@@ -82,7 +82,7 @@ export class BoundScope {
     }
   }
 
-  Assign(Node: BoundDeclarationStatement, Value: number) {
+  Assign(Node: BoundCellAssignment, Value: number) {
     const Data = this.GetCell(Node.Name);
     for (const DepName of Data.Dependencies) {
       if (!Node.Dependencies.has(DepName)) this.GetCell(DepName).DoNotNotify(Data.Name);

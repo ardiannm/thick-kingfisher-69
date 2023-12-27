@@ -1,5 +1,5 @@
 import { BinaryExpression } from "../Parser/BinaryExpression";
-import { DeclarationStatement } from "../Parser/DeclarationStatement";
+import { CellAssignment } from "../Parser/CellAssignment";
 import { Facts } from "../Parser/Facts";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { Program } from "../Parser/Program";
@@ -20,9 +20,8 @@ export class Lowerer {
         return this.LowerUnaryExpression(Node as NodeType<UnaryExpression>);
       case SyntaxKind.ParenthesizedExpression:
         return this.LowerParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
-      case SyntaxKind.ReferenceCell:
-      case SyntaxKind.CloneCell:
-        return this.LowerReferenceStatement(Node as NodeType<DeclarationStatement>);
+      case SyntaxKind.CellAssignment:
+        return this.LowerCellAssignment(Node as NodeType<CellAssignment>);
     }
     return Node;
   }
@@ -32,10 +31,10 @@ export class Lowerer {
     return new Program(SyntaxKind.Program, Root, Node.Diagnostics);
   }
 
-  private LowerReferenceStatement(Node: DeclarationStatement) {
+  private LowerCellAssignment(Node: CellAssignment) {
     const Left = this.Lower(Node.Left);
     const Expression = this.Lower(Node.Expression);
-    return new DeclarationStatement(SyntaxKind.ReferenceCell, Left, Node.Keyword, Expression);
+    return new CellAssignment(SyntaxKind.CellAssignment, Left, Node.Keyword, Expression);
   }
 
   private LowerBinaryExpression(Node: BinaryExpression) {
