@@ -7,7 +7,7 @@ export class BoundCellAssignment extends BoundStatement {
     public override Kind: BoundKind.CellAssignment,
     public Name: string,
     public Expression: BoundNode,
-    public Dependencies: Set<string>
+    public Subjects: Set<string>
   ) {
     super(Kind);
   }

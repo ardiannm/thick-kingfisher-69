@@ -87,7 +87,7 @@ export class Binder {
     this.Scope = new BoundScope(this.Diagnostics, this.Scope);
     const Expression = this.Bind(Node.Expression);
     const Dependencies = new Set<string>(this.Scope.Names);
-    this.Scope = this.Scope.ParentEnv as BoundScope;
+    this.Scope = this.Scope.ParentScope as BoundScope;
     const Data = new BoundCellAssignment(BoundKind.CellAssignment, Left.Name, Expression, Dependencies);
     this.Scope.DefineCell(Data);
     return Data;
