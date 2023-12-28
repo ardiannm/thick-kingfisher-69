@@ -58,13 +58,37 @@ export class BoundScope {
     if (Data === undefined) {
       const Data = new Cell(Node.Name, 0, Node.Expression, Node.Dependencies, new Set<string>());
       this.Data.set(Node.Name, Data);
-      Data.Dependencies.forEach((Dep) => this.GetCell(Dep)?.DoNotNotify(Node.Name));
+      for (const Dep of Data.Dependencies) this.GetCell(Dep)?.Notify(Node.Name);
+      this.CheckDependency(Data);
       return Data;
     }
     for (const Dep of Data.Dependencies) this.GetCell(Dep)?.DoNotNotify(Node.Name);
     Data.Dependencies = Node.Dependencies;
     for (const Dep of Data.Dependencies) this.GetCell(Dep)?.Notify(Node.Name);
     Data.Dependencies = Node.Dependencies;
+    this.CheckDependency(Data);
     return Data;
+  }
+
+  CheckDependency(Data: Cell) {
+    const Deps = new Set<string>();
+    for (const Dep of this.Dependency(Data)) {
+      Deps.add(Dep);
+      if (Deps.has(Data.Name)) {
+        this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, Data.Name, Dep);
+        break;
+      }
+    }
+    console.log([Data.Name], [...Deps]);
+  }
+
+  *Dependency(Node: Cell): Generator<string> {
+    for (const Dep of Node.Dependencies) {
+      const NextNode = this.GetCell(Dep);
+      if (NextNode) {
+        yield NextNode.Name;
+        yield* this.Dependency(NextNode);
+      }
+    }
   }
 }
