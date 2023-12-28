@@ -29,8 +29,8 @@ import { CellAssignment } from "../Parser/CellAssignment";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  constructor(private Scope: BoundScope) {}
   public readonly Diagnostics = new DiagnosticBag();
+  public Scope: BoundScope = new BoundScope(this.Diagnostics);
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -84,22 +84,13 @@ export class Binder {
         this.Diagnostics.CantUseAsAReference(DiagnosticPhase.Binder, Node.Left.Kind);
     }
     const Left = this.Bind(Node.Left) as BoundCellReference;
-    this.Scope = new BoundScope(this.Scope);
+    this.Scope = new BoundScope(this.Diagnostics, this.Scope);
     const Expression = this.Bind(Node.Expression);
     const Dependencies = new Set<string>(this.Scope.Names);
     this.Scope = this.Scope.ParentEnv as BoundScope;
-    if (Dependencies.has(Left.Name)) {
-      this.Diagnostics.ReportUsedBeforeItsDeclaration(DiagnosticPhase.Binder, Left.Name);
-    }
-    for (const Dep of Dependencies) {
-      if (this.Scope.DoesNotHave(Dep)) this.Diagnostics.ReportUndefinedCell(DiagnosticPhase.Binder, Dep);
-    }
-    const ThisNode = this.Scope.CreateCell(Left.Name, Expression, Dependencies);
-    const NextNode = this.Scope.HasCircularLogic(ThisNode);
-    if (NextNode) {
-      this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, ThisNode.Name, NextNode.Name);
-    }
-    return new BoundCellAssignment(BoundKind.CellAssignment, Left.Name, Expression, Dependencies);
+    const Data = new BoundCellAssignment(BoundKind.CellAssignment, Left.Name, Expression, Dependencies);
+    this.Scope.DefineCell(Data);
+    return Data;
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -175,7 +166,7 @@ export class Binder {
     const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    this.Scope.PushCell(Name);
+    this.Scope.RegisterCell(Name);
     return new BoundCellReference(BoundKind.CellReference, Name);
   }
 

@@ -5,8 +5,6 @@ import * as path from "path";
 
 import { Parser } from "../CodeAnalysis/Parser/Parser";
 import { SourceText } from "../SourceText";
-import { Evaluator } from "../Evaluator";
-import { BoundScope } from "../BoundScope";
 import { Binder } from "../CodeAnalysis/Binder/Binder";
 import { SyntaxTree } from "../CodeAnalysis/Parser/SyntaxTree";
 import { Lowerer } from "../CodeAnalysis/Lowerer/Lowerer";
@@ -15,10 +13,9 @@ import { Program } from "../CodeAnalysis/Parser/Program";
 
 export class Interpreter {
   private Lines = new Array<string>();
-  private Environment = new BoundScope();
   private Lower = new Lowerer();
-  private Bind = new Binder(this.Environment);
-  private Evaluate = new Evaluator(this.Environment);
+  private Bind = new Binder();
+  // private Evaluate = new Evaluator();
 
   public Run() {
     console.clear();
@@ -79,8 +76,8 @@ export class Interpreter {
         continue;
       }
 
-      const Value = this.Evaluate.Evaluate(BoundProgram);
-      console.log("\n".repeat(1) + Value + "\n".repeat(1));
+      // const Value = this.Evaluate.Evaluate(BoundProgram);
+      // console.log("\n".repeat(1) + Value + "\n".repeat(1));
     }
   }
 

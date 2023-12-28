@@ -8,7 +8,6 @@ export enum DiagnosticKind {
   CircularDependency = "CircularDependency",
   CantUseAsAReference = "CantUseAsAReference",
   ReportUndefinedCell = "ReportUndefinedCell",
-  UsedBeforeItsDeclaration = "UsedBeforeItsDeclaration",
   BadFloatingPointNumber = "BadFloatingPointNumber",
   NotARangeMember = "NotARangeMember",
   GloballyNotAllowed = "GloballyNotAllowed",

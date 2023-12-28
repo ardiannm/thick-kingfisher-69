@@ -93,11 +93,6 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(Phase, DiagnosticKind.ReportUndefinedCell, Message));
   }
 
-  ReportUsedBeforeItsDeclaration(Phase: DiagnosticPhase, Name: string) {
-    const Message = `Using '${Name}' before its declaration`;
-    return this.ReportError(new Diagnostic(Phase, DiagnosticKind.UsedBeforeItsDeclaration, Message));
-  }
-
   ReportBadFloatingPointNumber(Phase: DiagnosticPhase) {
     const Message = `Wrong floating number format`;
     return this.ReportError(new Diagnostic(Phase, DiagnosticKind.BadFloatingPointNumber, Message));

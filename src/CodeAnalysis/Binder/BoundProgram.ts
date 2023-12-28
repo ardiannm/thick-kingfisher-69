@@ -1,3 +1,4 @@
+import { BoundScope } from "../../BoundScope";
 import { DiagnosticBag } from "../../DiagnosticBag";
 import { BoundKind } from "./BoundKind";
 import { BoundStatement } from "./BoundStatement";
