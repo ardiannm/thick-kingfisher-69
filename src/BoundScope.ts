@@ -59,38 +59,12 @@ export class BoundScope {
       const Data = new Cell(Node.Name, 0, Node.Expression, Node.Subjects, new Set<string>());
       this.Data.set(Node.Name, Data);
       for (const Subject of Data.Subjects) this.GetCell(Subject)?.Notify(Node.Name);
-      const Subjects = this.GetSubjects(Data);
-      console.log(Subjects);
       return Data;
     }
     for (const Subject of Data.Subjects) this.GetCell(Subject)?.DoNotNotify(Node.Name);
     Data.Subjects = Node.Subjects;
     for (const Subject of Data.Subjects) this.GetCell(Subject)?.Notify(Node.Name);
     Data.Subjects = Node.Subjects;
-    const Subjects = this.GetSubjects(Data);
-    console.log(Subjects);
     return Data;
-  }
-
-  private GetSubjects(Data: Cell) {
-    const Subjects = new Set<string>();
-    for (const Subject of this.GenerateSubjects(Data)) {
-      Subjects.add(Subject);
-      if (Subjects.has(Data.Name)) {
-        this.Diagnostics.ReportCircularDependency(DiagnosticPhase.Binder, Data.Name, Subject);
-        break;
-      }
-    }
-    return Subjects;
-  }
-
-  private *GenerateSubjects(Node: Cell): Generator<string> {
-    for (const Subject of Node.Subjects) {
-      const NextNode = this.GetCell(Subject);
-      if (NextNode) {
-        yield NextNode.Name;
-        yield* this.GenerateSubjects(NextNode);
-      }
-    }
   }
 }
