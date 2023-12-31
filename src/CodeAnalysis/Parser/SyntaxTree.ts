@@ -1,11 +1,11 @@
 import { Parser } from "./Parser";
 import { SyntaxToken } from "./SyntaxToken";
-import { SourceText } from "../../SourceText";
 import { BoundNode } from "../Binder/BoundNode";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { SyntaxNode } from "./SyntaxNode";
 import { Program } from "./Program";
-import { RgbColor } from "../../Interpreter/RgbColor";
+import { RgbColor } from "../../Text/RgbColor";
+import { SourceText } from "../../Text/SourceText";
 
 export class SyntaxTree {
   private constructor(public Root: BoundNode) {}

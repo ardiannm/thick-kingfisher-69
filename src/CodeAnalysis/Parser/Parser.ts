@@ -6,14 +6,13 @@ import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { RangeReference } from "./RangeReference";
 import { CellReference } from "./CellReference";
 import { Facts } from "./Facts";
-import { SourceText } from "../../SourceText";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
 import { Lexer } from "./Lexer";
-import { DiagnosticBag } from "../../DiagnosticBag";
-import { DiagnosticPhase } from "../../DiagnosticPhase";
 import { CellAssignment } from "./CellAssignment";
+import { SourceText } from "../../Text/SourceText";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Parser {
   private Index = 0;
@@ -41,7 +40,7 @@ export class Parser {
 
   public Parse() {
     if (!this.MoreTokens()) {
-      this.Diagnostics.ReportEmptyProgram(DiagnosticPhase.Parser);
+      this.Diagnostics.ReportEmptyProgram();
     }
     const Members = new Array<StatementSyntax>();
     while (this.MoreTokens()) {
@@ -173,7 +172,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenMissmatch(DiagnosticPhase.Parser, this.Token.Kind, Kind);
+    this.Diagnostics.ReportTokenMissmatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

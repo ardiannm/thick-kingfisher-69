@@ -23,14 +23,18 @@ import { BoundScope } from "../../BoundScope";
 import { BoundRowReference } from "./BoundRowReference";
 import { BoundColumnReference } from "./BoundColumnReference";
 import { IsReferable } from "./IsReferable";
-import { DiagnosticBag } from "../../DiagnosticBag";
-import { DiagnosticPhase } from "../../DiagnosticPhase";
 import { CellAssignment } from "../Parser/CellAssignment";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  public readonly Diagnostics = new DiagnosticBag();
-  public Scope: BoundScope = new BoundScope(this.Diagnostics);
+  public Scope: BoundScope;
+  public readonly Diagnostics: DiagnosticBag;
+
+  constructor() {
+    this.Diagnostics = new DiagnosticBag();
+    this.Scope = new BoundScope();
+  }
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -54,7 +58,7 @@ export class Binder {
       case SyntaxKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
-    throw this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Binder, Node.Kind);
+    throw this.Diagnostics.ReportMissingMethod(Node.Kind);
   }
 
   private BindProgram(Node: Program) {
@@ -70,7 +74,7 @@ export class Binder {
           Root.push(this.Bind(Member));
           continue;
         default:
-          this.Diagnostics.ReportGloballyNotAllowed(DiagnosticPhase.Binder, Member.Kind);
+          this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
     return new BoundProgram(BoundKind.Program, Root, this.Diagnostics);
@@ -81,16 +85,19 @@ export class Binder {
       case SyntaxKind.CellReference:
         break;
       default:
-        this.Diagnostics.CantUseAsAReference(DiagnosticPhase.Binder, Node.Left.Kind);
+        this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
-    const Left = this.Bind(Node.Left) as BoundCellReference;
-    this.Scope = new BoundScope(this.Diagnostics, this.Scope);
+    const Cell = this.Bind(Node.Left) as BoundCellReference;
+    this.Scope = new BoundScope(this.Scope) as BoundScope;
     const Expression = this.Bind(Node.Expression);
-    const Dependencies = new Set<string>(this.Scope.Names);
+    const Subjects = this.Scope.References;
+    const Bound = new BoundCellAssignment(BoundKind.CellAssignment, Cell.Name, Expression, Subjects);
     this.Scope = this.Scope.ParentScope as BoundScope;
-    const Data = new BoundCellAssignment(BoundKind.CellAssignment, Left.Name, Expression, Dependencies);
-    this.Scope.DefineCell(Data);
-    return Data;
+    for (const Subject of Bound.Subjects) {
+      if (!this.Scope.GetCell(Subject)) this.Diagnostics.ReportUndefinedCell(Subject);
+    }
+    this.Scope.DeclareCell(Bound);
+    return Bound;
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -113,7 +120,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -134,7 +141,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(DiagnosticPhase.Binder, Kind);
+    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -153,7 +160,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.ReportNotARangeMember(DiagnosticPhase.Binder, Node.Kind);
+    throw this.Diagnostics.ReportNotARangeMember(Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {

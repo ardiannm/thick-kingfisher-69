@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./SyntaxKind";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { SyntaxNode } from "./SyntaxNode";
-import { DiagnosticBag } from "../../DiagnosticBag";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Program extends SyntaxNode {
   constructor(

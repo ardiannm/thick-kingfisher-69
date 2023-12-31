@@ -1,4 +1,4 @@
-import { DiagnosticBag } from "../../DiagnosticBag";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundKind } from "./BoundKind";
 import { BoundStatement } from "./BoundStatement";
 
