@@ -32,8 +32,8 @@ export class Evaluator {
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
-    //   case BoundKind.CellAssignment:
-    //     return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
+      //   case BoundKind.CellAssignment:
+      //     return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       default:
         this.Diagnostics.ReportMissingMethod(DiagnosticPhase.Evaluator, Node.Kind);
         return 0;
@@ -48,14 +48,14 @@ export class Evaluator {
     return this.Value;
   }
 
-//   private EvaluateCellAssignment(Node: BoundCellAssignment) {
-//     const Value = this.Evaluate(Node.Expression);
-//     const Dependents = this.Scope.Assign(Node, Value);
-//     for (const Dep of Dependents) {
-//       this.Scope.SetValueForCell(Dep.Name, this.Evaluate(Dep.Expression));
-//     }
-//     return Value;
-//   }
+  //   private EvaluateCellAssignment(Node: BoundCellAssignment) {
+  //     const Value = this.Evaluate(Node.Expression);
+  //     const Dependents = this.Scope.Assign(Node, Value);
+  //     for (const Dep of Dependents) {
+  //       this.Scope.SetValueForCell(Dep.Name, this.Evaluate(Dep.Expression));
+  //     }
+  //     return Value;
+  //   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression) {
     const LeftValue = this.Evaluate(Node.Left);
