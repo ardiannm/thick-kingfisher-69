@@ -29,5 +29,5 @@ while (true) {
     continue;
   }
 
-  console.log(bound);
+  // console.log(bound);
 }

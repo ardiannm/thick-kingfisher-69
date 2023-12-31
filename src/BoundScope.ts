@@ -27,10 +27,20 @@ export class BoundScope {
     this.EnsureSubjectsExist(Bound.Subjects);
     const Document = this.Documents.get(Bound.Name);
     if (Document) {
+      for (const Subject of Document.Subjects) {
+        this.GetCell(Subject)?.DoNotNotify(Bound.Name);
+      }
+      Document.Subjects = Bound.Subjects;
+      for (const Subject of Document.Subjects) {
+        this.GetCell(Subject)?.Notify(Bound.Name);
+      }
       Document.Expression = Bound.Expression;
       return false;
     }
     this.Documents.set(Bound.Name, new Cell(Bound.Name, 0, Bound.Expression, Bound.Subjects, new Set<string>()));
+    for (const Subject of Bound.Subjects) {
+      this.GetCell(Subject)?.Notify(Bound.Name);
+    }
     return true;
   }
 

@@ -1,5 +1,5 @@
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
-// import { RgbColor } from "./Interpreter/RgbColor";
+import { RgbColor } from "./Text/RgbColor";
 
 export class Cell {
   constructor(
@@ -11,12 +11,12 @@ export class Cell {
   ) {}
 
   public Notify(Name: string): void {
-    // if (!this.Dependencies.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~~~ ${Name}`));
+    if (!this.Subjects.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~~~ ${Name}`));
     this.Observers.add(Name);
   }
 
   public DoNotNotify(Name: string): void {
-    // if (this.Dependents.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~/~ ${Name}`));
+    if (this.Observers.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~/~ ${Name}`));
     this.Observers.delete(Name);
   }
 }
