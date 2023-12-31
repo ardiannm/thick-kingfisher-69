@@ -93,10 +93,9 @@ export class Binder {
     const Subjects = this.Scope.References;
     const Bound = new BoundCellAssignment(BoundKind.CellAssignment, Cell.Name, Expression, Subjects);
     this.Scope = this.Scope.ParentScope as BoundScope;
-    for (const Subject of Bound.Subjects) {
-      if (!this.Scope.GetCell(Subject)) this.Diagnostics.ReportUndefinedCell(Subject);
-    }
     this.Scope.DeclareCell(Bound);
+    this.Diagnostics.Merge(this.Scope.Diagnostics);
+    this.Scope.Diagnostics.ClearDiagnostics();
     return Bound;
   }
 

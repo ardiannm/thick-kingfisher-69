@@ -6,23 +6,29 @@ import { Diagnostic } from "./Diagnostic";
 import { DiagnosticKind } from "./DiagnosticKind";
 
 export class DiagnosticBag {
-  private Bag = new Array<Diagnostic>();
+  private Diagnostics = new Array<Diagnostic>();
 
   constructor(Inherits?: DiagnosticBag) {
-    if (Inherits) for (const Diagnostic of Inherits.Show) this.Bag.push(Diagnostic);
+    if (Inherits) for (const Diagnostic of Inherits.Bag) this.Diagnostics.push(Diagnostic);
   }
 
   private ReportError(Diagnostic: Diagnostic) {
-    this.Bag.push(Diagnostic);
+    this.Diagnostics.push(Diagnostic);
     return Diagnostic;
   }
 
-  get Show() {
-    return this.Bag;
+  get Bag() {
+    return this.Diagnostics;
   }
 
   get Count() {
-    return this.Bag.length;
+    return this.Diagnostics.length;
+  }
+
+  Merge(Diagnostics: DiagnosticBag) {
+    for (const Diagnostic of Diagnostics.Bag) {
+      this.ReportError(Diagnostic);
+    }
   }
 
   Any() {
@@ -30,7 +36,7 @@ export class DiagnosticBag {
   }
 
   ClearDiagnostics() {
-    this.Bag = new Array<Diagnostic>();
+    this.Diagnostics = new Array<Diagnostic>();
   }
 
   ReportBadTokenFound(Text: string) {

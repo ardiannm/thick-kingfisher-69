@@ -1,11 +1,13 @@
 import { Cell } from "./Cell";
 import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class BoundScope {
+  private Documents = new Map<string, Cell>();
   constructor(public ParentScope?: BoundScope) {}
 
   References = new Set<string>();
-  private Documents = new Map<string, Cell>();
+  Diagnostics = new DiagnosticBag();
 
   RegisterCell(Name: string) {
     this.References.add(Name);
@@ -22,6 +24,7 @@ export class BoundScope {
   }
 
   DeclareCell(Bound: BoundCellAssignment) {
+    this.EnsureSubjectsExist(Bound.Subjects);
     const Document = this.Documents.get(Bound.Name);
     if (Document) {
       Document.Expression = Bound.Expression;
@@ -29,5 +32,11 @@ export class BoundScope {
     }
     this.Documents.set(Bound.Name, new Cell(Bound.Name, 0, Bound.Expression, Bound.Subjects, new Set<string>()));
     return true;
+  }
+
+  EnsureSubjectsExist(Subjects: Set<string>) {
+    for (const Subject of Subjects) {
+      if (!this.GetCell(Subject)) this.Diagnostics.ReportUndefinedCell(Subject);
+    }
   }
 }
