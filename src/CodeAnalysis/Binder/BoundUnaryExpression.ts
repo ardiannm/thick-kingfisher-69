@@ -6,7 +6,7 @@ export class BoundUnaryExpression extends BoundExpression {
   constructor(
     public override Kind: BoundKind.UnaryExpression,
     public OperatorKind: BoundUnaryOperatorKind,
-    public Expression: BoundExpression
+    public Right: BoundExpression
   ) {
     super(Kind);
   }

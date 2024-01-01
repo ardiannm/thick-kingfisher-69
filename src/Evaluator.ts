@@ -2,14 +2,17 @@ import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpressi
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
+import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
+import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
+import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { EvaluationResult } from "./EvaluationResult";
 
 export class Evaluator {
   private Result = new EvaluationResult(0, new DiagnosticBag());
 
-  EvalauteProgram(Node: BoundProgram) {
+  EvaluateNode(Node: BoundProgram) {
     if (Node.Diagnostics.Any()) {
       this.Result.Diagnostics.Merge(Node.Diagnostics);
       return this.Result;
@@ -25,6 +28,10 @@ export class Evaluator {
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
+      case BoundKind.UnaryExpression:
+        return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
+      case BoundKind.NumericLiteral:
+        return this.EvaluateNumericLiteral(Node as NodeType<BoundNumber>);
     }
     this.Result.Diagnostics.ReportMissingMethod(Node.Kind);
     return this.Result.Value;
@@ -50,5 +57,19 @@ export class Evaluator {
       case BoundBinaryOperatorKind.Exponentiation:
         return Left ** Right;
     }
+  }
+
+  private EvaluateUnaryExpression(Node: BoundUnaryExpression): number {
+    const Right = this.Evaluate(Node.Right);
+    switch (Node.OperatorKind) {
+      case BoundUnaryOperatorKind.Identity:
+        return Right;
+      case BoundUnaryOperatorKind.Negation:
+        return -Right;
+    }
+  }
+
+  private EvaluateNumericLiteral(Node: BoundNumber) {
+    return Node.Value;
   }
 }
