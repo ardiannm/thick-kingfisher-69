@@ -29,6 +29,7 @@ export class DiagnosticBag {
     for (const Diagnostic of Diagnostics.Bag) {
       this.ReportError(Diagnostic);
     }
+    return this.Diagnostics;
   }
 
   Any() {
