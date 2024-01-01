@@ -1,5 +1,8 @@
+import { BoundScope } from "./BoundScope";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
+import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
+import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
@@ -11,8 +14,10 @@ import { EvaluationResult } from "./EvaluationResult";
 
 export class Evaluator {
   private Result = new EvaluationResult(0, new DiagnosticBag());
+  private Scope = new BoundScope();
 
   EvaluateNode(Node: BoundProgram) {
+    this.Scope = Node.Scope;
     if (Node.Diagnostics.Any()) {
       this.Result.Diagnostics.Merge(Node.Diagnostics);
       return this.Result;
@@ -21,15 +26,19 @@ export class Evaluator {
     return this.Result;
   }
 
-  private Evaluate<Kind extends BoundNode>(Node: Kind) {
+  private Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
+      case BoundKind.CellAssignment:
+        return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
+      case BoundKind.CellReference:
+        return this.EvaluateCellReference(Node as NodeType<BoundCellReference>);
       case BoundKind.NumericLiteral:
         return this.EvaluateNumericLiteral(Node as NodeType<BoundNumber>);
     }
@@ -37,7 +46,7 @@ export class Evaluator {
     return this.Result.Value;
   }
 
-  private EvaluateProgram(Node: BoundProgram) {
+  private EvaluateProgram(Node: BoundProgram): number {
     for (const Root of Node.Root) this.Result.Value = this.Evaluate(Root);
     return this.Result.Value;
   }
@@ -71,5 +80,19 @@ export class Evaluator {
 
   private EvaluateNumericLiteral(Node: BoundNumber) {
     return Node.Value;
+  }
+
+  private EvaluateCellReference(Node: BoundCellReference): number {
+    const Document = this.Scope.GetCell(Node.Name);
+    if (Document === undefined) {
+      this.Result.Diagnostics.ReportUndefinedCell(Node.Name);
+      return this.Result.Value;
+    }
+    return Document.Value;
+  }
+
+  private EvaluateCellAssignment(Node: BoundCellAssignment): number {
+    const Expression = this.Evaluate(Node.Expression);
+    return Expression;
   }
 }

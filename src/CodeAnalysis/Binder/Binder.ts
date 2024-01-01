@@ -77,7 +77,7 @@ export class Binder {
           this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
-    return new BoundProgram(BoundKind.Program, Root, this.Diagnostics);
+    return new BoundProgram(BoundKind.Program, Root, this.Diagnostics, this.Scope);
   }
 
   private BindCellAssignment(Node: CellAssignment) {
@@ -88,7 +88,8 @@ export class Binder {
         this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
     const Cell = this.Bind(Node.Left) as BoundCellReference;
-    this.Scope = new BoundScope(this.Scope) as BoundScope;
+    const AssignmentScope = new BoundScope(this.Scope) as BoundScope;
+    this.Scope = AssignmentScope;
     const Expression = this.Bind(Node.Expression);
     const Subjects = this.Scope.References;
     const Bound = new BoundCellAssignment(BoundKind.CellAssignment, Cell.Name, Expression, Subjects);
