@@ -25,7 +25,7 @@ while (true) {
   const bound = binder.Bind(tree) as BoundProgram;
 
   if (bound.Diagnostics.Any()) {
-    console.log(bound.Diagnostics);
+    bound.Diagnostics.Bag.map((d) => console.log(d.Message));
     continue;
   }
 
