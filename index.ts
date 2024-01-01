@@ -1,48 +1,23 @@
-import { Binder } from "./src/CodeAnalysis/Binder/Binder";
-import { Parser } from "./src/CodeAnalysis/Parser/Parser";
-import { SourceText } from "./src/Text/SourceText";
-import { BoundProgram } from "./src/CodeAnalysis/Binder/BoundProgram";
-import { Program } from "./src/CodeAnalysis/Parser/Program";
-import { Evaluator } from "./src/Evaluator";
-import { RgbColor } from "./src/Text/RgbColor";
-
 import Prompt from "readline-sync";
 
-const binder = new Binder();
-const evaluator = new Evaluator();
+import { Interpreter } from "./src/Interpreter";
+import { RgbColor } from "./src/Text/RgbColor";
+
+const interpreter = new Interpreter();
 
 while (true) {
   const input = Prompt.question("> ");
-  console.clear();
-
-  if (input === "q") break;
-
-  const textinput = SourceText.From(input);
-  const parser = new Parser(textinput);
-  const tree = parser.Parse() as Program;
-
-  if (tree.Diagnostics.Any()) {
-    tree.Diagnostics.Bag.map((d) => console.log(RgbColor.Teal(d.Message)));
-    console.log();
-    continue;
+  if (input === "q") {
+    break;
   }
+  const v = interpreter.Evaluate(input);
 
-  const bound = binder.Bind(tree) as BoundProgram;
-
-  if (bound.Diagnostics.Any()) {
-    bound.Diagnostics.Bag.map((d) => console.log(RgbColor.Teal(d.Message)));
-    console.log();
-    continue;
+  if (v.Diagnostics.Any()) {
+    for (const d of v.Diagnostics.Bag) {
+      console.log(RgbColor.Terracotta(d.Message));
+    }
+  } else {
+    const Ouput = RgbColor.Terracotta(v.Value.toString());
+    console.log(Ouput);
   }
-
-  const result = evaluator.EvaluateNode(bound);
-
-  if (result.Diagnostics.Any()) {
-    result.Diagnostics.Bag.map((d) => console.log(RgbColor.Teal(d.Message)));
-    console.log();
-    continue;
-  }
-
-  console.log(result.Value.toString());
-  console.log();
 }

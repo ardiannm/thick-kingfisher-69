@@ -28,13 +28,8 @@ import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  public Scope: BoundScope;
-  public readonly Diagnostics: DiagnosticBag;
-
-  constructor() {
-    this.Diagnostics = new DiagnosticBag();
-    this.Scope = new BoundScope();
-  }
+  public Diagnostics: DiagnosticBag = new DiagnosticBag();
+  private Scope = new BoundScope();
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;

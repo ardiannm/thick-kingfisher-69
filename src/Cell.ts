@@ -11,12 +11,12 @@ export class Cell {
   ) {}
 
   public Notify(Name: string): void {
-    if (!this.Subjects.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~~~ ${Name}`));
+    // if (!this.Subjects.has(Name)) console.log(RgbColor.Terracotta(`${this.Name} ~~~ ${Name}`));
     this.Observers.add(Name);
   }
 
   public DoNotNotify(Name: string): void {
-    if (this.Observers.has(Name)) console.log(RgbColor.Teal(`${this.Name} ~/~ ${Name}`));
+    // if (this.Observers.has(Name)) console.log(RgbColor.Terracotta(`${this.Name} ~/~ ${Name}`));
     this.Observers.delete(Name);
   }
 }

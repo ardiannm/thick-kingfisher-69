@@ -1,9 +1,13 @@
 import { Cell } from "./Cell";
 import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
+import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class BoundScope {
   private Documents = new Map<string, Cell>();
+  private Default = new Cell("", 0, new BoundNumber(BoundKind.NumericLiteral, 0), new Set<string>(), new Set<string>());
+
   constructor(public ParentScope?: BoundScope) {}
 
   References = new Set<string>();
@@ -13,40 +17,47 @@ export class BoundScope {
     this.References.add(Name);
   }
 
-  GetCell(Name: string): Cell | undefined {
+  private ResolveScopeForCell(Name: string): BoundScope | null {
     if (this.Documents.has(Name)) {
-      return this.Documents.get(Name) as Cell;
+      return this;
     }
     if (this.ParentScope) {
-      return this.ParentScope.GetCell(Name) as Cell;
+      return this.ResolveScopeForCell(Name);
     }
-    return undefined;
+    return null;
+  }
+
+  AssertGetCell(Name: string): Cell {
+    const Scope = this.ResolveScopeForCell(Name);
+    if (Scope) return Scope.Documents.get(Name) as Cell;
+    this.Diagnostics.ReportUndefinedCell(Name);
+    return this.Default;
   }
 
   DeclareCell(Bound: BoundCellAssignment) {
-    this.EnsureSubjectsExist(Bound.Subjects);
-    const Document = this.Documents.get(Bound.Name);
-    if (Document) {
-      for (const Subject of Document.Subjects) {
-        this.GetCell(Subject)?.DoNotNotify(Bound.Name);
-      }
-      Document.Subjects = Bound.Subjects;
-      for (const Subject of Document.Subjects) {
-        this.GetCell(Subject)?.Notify(Bound.Name);
-      }
-      Document.Expression = Bound.Expression;
+    for (const Subject of Bound.Subjects) this.AssertGetCell(Subject);
+    const Scope = this.ResolveScopeForCell(Bound.Name);
+    if (Scope) {
+      this.UpdateCell(Scope, Bound);
       return false;
     }
-    this.Documents.set(Bound.Name, new Cell(Bound.Name, 0, Bound.Expression, Bound.Subjects, new Set<string>()));
-    for (const Subject of Bound.Subjects) {
-      this.GetCell(Subject)?.Notify(Bound.Name);
-    }
+    this.CreateCell(Bound);
     return true;
   }
 
-  EnsureSubjectsExist(Subjects: Set<string>) {
-    for (const Subject of Subjects) {
-      if (!this.GetCell(Subject)) this.Diagnostics.ReportUndefinedCell(Subject);
-    }
+  private UpdateCell(Scope: BoundScope, Bound: BoundCellAssignment) {
+    const Document = Scope.Documents.get(Bound.Name) as Cell;
+    Document.Expression = Bound.Expression;
+    Document.Subjects = Bound.Subjects;
+  }
+
+  private CreateCell(Bound: BoundCellAssignment) {
+    const Observers = new Set<string>();
+    this.Documents.set(Bound.Name, new Cell(Bound.Name, 0, Bound.Expression, Bound.Subjects, Observers));
+  }
+
+  SetValueForCell(Node: BoundCellAssignment, Value: number) {
+    this.AssertGetCell(Node.Name).Value = Value;
+    return Value;
   }
 }
