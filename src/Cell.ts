@@ -2,7 +2,6 @@ import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
-import { RgbColor } from "./Text/RgbColor";
 
 export class Cell extends BoundNode {
   constructor(
@@ -17,13 +16,18 @@ export class Cell extends BoundNode {
     super(Kind);
   }
 
-  public Notify(Cell: Cell): void {
-    if (!this.Subjects.has(Cell.Name)) console.log(RgbColor.Azure(`${this.Name} ~~~ ${Cell.Name}`));
-    this.Observers.set(Cell.Name, Cell);
+  NotifyCell(Cell: Cell) {
+    if (!this.Observers.has(Cell.Name)) {
+      this.Observers.set(Cell.Name, Cell);
+    }
+    return this.Observers.get(Cell.Name) as Cell;
   }
 
-  public DoNotNotify(Cell: Cell): void {
-    if (this.Observers.has(Cell.Name)) console.log(RgbColor.Azure(`${this.Name} ~/~ ${Cell.Name}`));
-    this.Observers.delete(Cell.Name);
+  ObserveCell(Cell: Cell) {
+    if (!this.Subjects.has(Cell.Name)) {
+      this.Subjects.set(Cell.Name, Cell);
+    }
+    Cell.NotifyCell(this);
+    return this.Subjects.get(Cell.Name) as Cell;
   }
 }

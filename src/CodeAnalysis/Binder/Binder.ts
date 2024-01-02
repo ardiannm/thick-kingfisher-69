@@ -89,8 +89,8 @@ export class Binder {
     this.Scope = AssignmentScope as BoundScope;
     Ref.Declared = true;
     Ref.Expression = this.Bind(Node.Expression);
-    for (const [_, Subject] of this.Scope.Documents) {
-      console.log(Subject);
+    for (const Subject of this.Scope.Documents.values()) {
+      Ref.ObserveCell(Subject);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
     return Ref;
