@@ -8,7 +8,7 @@ import { BoundBinaryExpression } from "./BoundBinaryExpression";
 import { BoundCellReference } from "./BoundCellReference";
 import { BoundIdentifier } from "./BoundIdentifier";
 import { BoundKind } from "./BoundKind";
-import { BoundNumber } from "./BoundNumber";
+import { BoundNumericLiteral } from "./BoundNumericLiteral";
 import { BoundBinaryOperatorKind } from "./BoundBinaryOperatorKind";
 import { BoundRangeReference } from "./BoundRangeReference";
 import { UnaryExpression } from "../Parser/UnaryExpression";
@@ -57,6 +57,9 @@ export class Binder {
   }
 
   private BindProgram(Node: Program) {
+    if (Node.Diagnostics.Any()) {
+      return new BoundProgram(BoundKind.Program, [], Node.Diagnostics, this.Scope);
+    }
     const Root = new Array<BoundStatement>();
     for (const Member of Node.Root) {
       switch (Member.Kind) {
@@ -178,6 +181,6 @@ export class Binder {
 
   private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {
     const Value = parseFloat(Node.Text);
-    return new BoundNumber(BoundKind.NumericLiteral, Value);
+    return new BoundNumericLiteral(BoundKind.NumericLiteral, Value);
   }
 }

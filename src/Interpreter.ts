@@ -1,4 +1,3 @@
-import { BoundScope } from "./BoundScope";
 import { Binder } from "./CodeAnalysis/Binder/Binder";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { Parser } from "./CodeAnalysis/Parser/Parser";

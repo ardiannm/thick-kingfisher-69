@@ -1,12 +1,18 @@
 import { Cell } from "./Cell";
 import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
-import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
+import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class BoundScope {
   private Documents = new Map<string, Cell>();
-  private Default = new Cell("", 0, new BoundNumber(BoundKind.NumericLiteral, 0), new Set<string>(), new Set<string>());
+  private Default = new Cell(
+    "",
+    0,
+    new BoundNumericLiteral(BoundKind.NumericLiteral, 0),
+    new Set<string>(),
+    new Set<string>()
+  );
 
   constructor(public ParentScope?: BoundScope) {}
 

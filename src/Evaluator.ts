@@ -5,7 +5,7 @@ import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
-import { BoundNumber } from "./CodeAnalysis/Binder/BoundNumber";
+import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
@@ -39,7 +39,7 @@ export class Evaluator {
       case BoundKind.CellReference:
         return this.EvaluateCellReference(Node as NodeType<BoundCellReference>);
       case BoundKind.NumericLiteral:
-        return this.EvaluateNumericLiteral(Node as NodeType<BoundNumber>);
+        return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
     }
     this.Program.Diagnostics.ReportMissingMethod(Node.Kind);
     return this.Program.Value;
@@ -77,7 +77,7 @@ export class Evaluator {
     }
   }
 
-  private EvaluateNumericLiteral(Node: BoundNumber) {
+  private EvaluateNumericLiteral(Node: BoundNumericLiteral) {
     return Node.Value;
   }
 
