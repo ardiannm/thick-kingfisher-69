@@ -10,22 +10,24 @@ console.clear();
 
 while (true) {
   const input = Prompt.question("> ");
-  console.log();
 
   if (input === "q") {
     break;
   }
 
-  const v = interpreter.Bind(input);
+  if (input === "a") {
+    console.clear();
+    continue;
+  }
 
-  if (v.Diagnostics.Any()) {
-    for (const d of v.Diagnostics.Bag) {
+  const b = interpreter.Bind(input);
+
+  if (b.Diagnostics.Any()) {
+    for (const d of b.Diagnostics.Bag) {
       console.log(RgbColor.Teal(d.Message));
     }
-    v.Diagnostics.ClearDiagnostics();
   } else {
-    const Ouput = SyntaxTree.Print(v);
-    console.log(Ouput);
+    console.log(SyntaxTree.Print(b));
   }
 
   // const v = interpreter.Evaluate(input);
@@ -34,11 +36,12 @@ while (true) {
   //   for (const d of v.Diagnostics.Bag) {
   //     console.log(RgbColor.Teal(d.Message));
   //   }
-  //   v.Diagnostics.ClearDiagnostics();
   // } else {
-  //   const Ouput = RgbColor.Teal(v.Value.toString());
-  //   console.log(Ouput);
+  //   console.log(RgbColor.Teal(v.Value.toString()));
   // }
+
+  b.Diagnostics.ClearDiagnostics();
+  // v.Diagnostics.ClearDiagnostics();
 
   console.log();
 }
