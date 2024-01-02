@@ -72,7 +72,7 @@ export class DiagnosticBag {
   }
 
   ReportCircularDependency(ForName: string, InName: string) {
-    const Message = `Circular dependency for '${ForName}' found in '${InName}'`;
+    const Message = `Circular dependency '${ForName}' in '${InName}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CircularDependency, Message));
   }
 

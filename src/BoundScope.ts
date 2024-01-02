@@ -41,7 +41,9 @@ export class BoundScope {
   }
 
   DeclareCell(Bound: BoundCellAssignment) {
-    for (const Subject of Bound.Subjects) this.AssertGetCell(Subject);
+    if (this.MissingSubjects(Bound)) {
+      return false;
+    }
     const Scope = this.ResolveScopeForCell(Bound.Name);
     if (Scope) {
       this.UpdateCell(Scope, Bound);
@@ -49,6 +51,17 @@ export class BoundScope {
     }
     this.CreateCell(Bound);
     return true;
+  }
+
+  private MissingSubjects(Bound: BoundCellAssignment) {
+    var SubjectsDefined = true;
+    for (const Subject of Bound.Subjects) {
+      if (!this.ResolveScopeForCell(Subject)) {
+        this.Diagnostics.ReportUndefinedCell(Subject);
+        SubjectsDefined = false;
+      }
+    }
+    return !SubjectsDefined;
   }
 
   private UpdateCell(Scope: BoundScope, Bound: BoundCellAssignment) {
