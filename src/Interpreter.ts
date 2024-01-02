@@ -2,6 +2,7 @@ import { Binder } from "./CodeAnalysis/Binder/Binder";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { Parser } from "./CodeAnalysis/Parser/Parser";
 import { Program } from "./CodeAnalysis/Parser/Program";
+import { EvaluatedProgram } from "./EvaluatedProgram";
 import { Evaluator } from "./Evaluator";
 import { SourceText } from "./Text/SourceText";
 
@@ -18,7 +19,7 @@ export class Interpreter {
     return this.binder.Bind(this.Parse(text)) as BoundProgram;
   }
 
-  Evaluate(text: string) {
+  Evaluate(text: string): EvaluatedProgram {
     return this.evaluator.Evaluate(this.Bind(text));
   }
 }
