@@ -5,14 +5,13 @@ import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Lexer {
-  constructor(public readonly Input: SourceText) {
-    this.Diagnostics = new DiagnosticBag();
-  }
+  constructor(public readonly Input: SourceText) {}
 
   private Index = 0;
   private Start = this.Index;
   private Kind = SyntaxKind.EndOfFileToken;
-  public readonly Diagnostics: DiagnosticBag;
+
+  Diagnostics = new DiagnosticBag();
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;

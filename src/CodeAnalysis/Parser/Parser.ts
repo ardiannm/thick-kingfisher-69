@@ -18,7 +18,7 @@ export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
 
-  public readonly Diagnostics: DiagnosticBag;
+  Diagnostics = new DiagnosticBag();
 
   constructor(public readonly Input: SourceText) {
     const Tokenizer = new Lexer(Input);
@@ -35,7 +35,7 @@ export class Parser {
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
 
-    this.Diagnostics = new DiagnosticBag(Tokenizer.Diagnostics);
+    this.Diagnostics.Merge(Tokenizer.Diagnostics);
   }
 
   public Parse() {

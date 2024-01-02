@@ -8,10 +8,6 @@ import { DiagnosticKind } from "./DiagnosticKind";
 export class DiagnosticBag {
   private Diagnostics = new Array<Diagnostic>();
 
-  constructor(Inherits?: DiagnosticBag) {
-    if (Inherits) for (const Diagnostic of Inherits.Bag) this.Diagnostics.push(Diagnostic);
-  }
-
   private ReportError(Diagnostic: Diagnostic) {
     this.Diagnostics.push(Diagnostic);
     return Diagnostic;

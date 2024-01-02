@@ -28,8 +28,8 @@ import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  public Diagnostics: DiagnosticBag = new DiagnosticBag();
   private Scope = new BoundScope();
+  Diagnostics = new DiagnosticBag();
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
