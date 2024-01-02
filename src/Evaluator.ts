@@ -1,8 +1,6 @@
 import { BoundScope } from "./BoundScope";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
-import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
-import { BoundCellReference } from "./CodeAnalysis/Binder/BoundCellReference";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
@@ -30,14 +28,10 @@ export class Evaluator {
     switch (Node.Kind) {
       case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
-      case BoundKind.CellAssignment:
-        return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
-      case BoundKind.CellReference:
-        return this.EvaluateCellReference(Node as NodeType<BoundCellReference>);
       case BoundKind.NumericLiteral:
         return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
     }
@@ -79,18 +73,5 @@ export class Evaluator {
 
   private EvaluateNumericLiteral(Node: BoundNumericLiteral) {
     return Node.Value;
-  }
-
-  private EvaluateCellReference(Node: BoundCellReference): number {
-    const Document = this.Scope.AssertGetCell(Node.Name);
-    if (Document) return Document.Value;
-    this.Program.Diagnostics.ReportUndefinedCell(Node.Name);
-    return this.Program.Value;
-  }
-
-  private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    const Value = this.EvaluateBound(Node.Expression);
-    this.Scope.SetValueForCell(Node, Value);
-    return Value;
   }
 }

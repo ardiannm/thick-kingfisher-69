@@ -1,6 +1,6 @@
 export enum BoundKind {
   Program = "Program",
-  CellAssignment = "CellAssignment",
+  Cell = "Cell",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   RowReference = "RowReference",

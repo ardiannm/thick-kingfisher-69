@@ -5,7 +5,6 @@ import { RangeReference } from "../Parser/RangeReference";
 import { CellReference } from "../Parser/CellReference";
 import { SyntaxToken } from "../Parser/SyntaxToken";
 import { BoundBinaryExpression } from "./BoundBinaryExpression";
-import { BoundCellReference } from "./BoundCellReference";
 import { BoundIdentifier } from "./BoundIdentifier";
 import { BoundKind } from "./BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
@@ -25,7 +24,7 @@ import { BoundColumnReference } from "./BoundColumnReference";
 import { IsReferable } from "./IsReferable";
 import { CellAssignment } from "../Parser/CellAssignment";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
-import { BoundCellAssignment } from "./BoundCellAssignment";
+import { Cell } from "../../Cell";
 
 export class Binder {
   private Scope = new BoundScope();
@@ -85,17 +84,16 @@ export class Binder {
       default:
         this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
-    const Cell = this.Bind(Node.Left) as BoundCellReference;
-    const AssignmentScope = new BoundScope(this.Scope) as BoundScope;
-    this.Scope = AssignmentScope;
-    const Expression = this.Bind(Node.Expression);
-    const Subjects = this.Scope.References;
-    const Bound = new BoundCellAssignment(BoundKind.CellAssignment, Cell.Name, Expression, Subjects);
+    const Ref = this.Bind(Node.Left) as Cell;
+    const AssignmentScope = new BoundScope(this.Scope);
+    this.Scope = AssignmentScope as BoundScope;
+    Ref.Declared = true;
+    Ref.Expression = this.Bind(Node.Expression);
+    for (const [_, Subject] of this.Scope.Documents) {
+      console.log(Subject);
+    }
     this.Scope = this.Scope.ParentScope as BoundScope;
-    this.Scope.DeclareCell(Bound);
-    this.Diagnostics.Merge(this.Scope.Diagnostics);
-    this.Scope.Diagnostics.ClearDiagnostics();
-    return Bound;
+    return Ref;
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -171,8 +169,7 @@ export class Binder {
     const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    this.Scope.RegisterCell(Name);
-    return new BoundCellReference(BoundKind.CellReference, Name);
+    return this.Scope.StoreCell(Name);
   }
 
   private BindIdentifier(Node: SyntaxToken<SyntaxKind.IdentifierToken>) {
