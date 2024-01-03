@@ -9,4 +9,5 @@ export enum BoundKind {
   CellReference = "CellReference",
   Identifier = "Identifier",
   NumericLiteral = "NumericLiteral",
+  CellAssignment = "CellAssignment",
 }

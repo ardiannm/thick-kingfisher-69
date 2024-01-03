@@ -25,6 +25,7 @@ import { IsReferable } from "./IsReferable";
 import { CellAssignment } from "../Parser/CellAssignment";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Cell } from "../../Cell";
+import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
   private Scope = new BoundScope();
@@ -93,7 +94,7 @@ export class Binder {
       Ref.ObserveCell(Subject);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
-    return Ref;
+    return new BoundCellAssignment(BoundKind.CellAssignment, Ref);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
