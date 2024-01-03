@@ -1,6 +1,8 @@
 import { BoundScope } from "./BoundScope";
+import { Cell } from "./Cell";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
+import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
@@ -8,6 +10,7 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { EvaluatedProgram } from "./EvaluatedProgram";
+import { RgbColor } from "./Text/RgbColor";
 
 export class Evaluator {
   private Scope = new BoundScope();
@@ -28,10 +31,14 @@ export class Evaluator {
     switch (Node.Kind) {
       case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
+      case BoundKind.CellAssignment:
+        return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       case BoundKind.BinaryExpression:
         return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
         return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
+      case BoundKind.Cell:
+        return this.EvaluateCell(Node as NodeType<Cell>);
       case BoundKind.NumericLiteral:
         return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
     }
@@ -42,6 +49,14 @@ export class Evaluator {
   private EvaluateProgram(Node: BoundProgram): number {
     for (const Root of Node.Root) this.Program.Value = this.EvaluateBound(Root);
     return this.Program.Value;
+  }
+
+  private EvaluateCellAssignment(Node: BoundCellAssignment): number {
+    return this.EvaluateBound(Node.Cell.Expression);
+  }
+
+  private EvaluateCell(Node: Cell) {
+    return Node.Value;
   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression): number {
