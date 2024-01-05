@@ -88,12 +88,13 @@ export class Binder {
     const Ref = this.Bind(Node.Left) as Cell;
     const AssignmentScope = new BoundScope(this.Scope);
     this.Scope = AssignmentScope as BoundScope;
-    Ref.Declared = true;
     Ref.Expression = this.Bind(Node.Expression);
-    for (const Subject of this.Scope.Documents.values()) {
+    for (const Subject of this.Scope.GetDeclaredCells()) {
       Ref.ObserveCell(Subject);
+      if (!Subject.Declared) this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
+    Ref.Declared = true;
     return new BoundCellAssignment(BoundKind.CellAssignment, Ref);
   }
 

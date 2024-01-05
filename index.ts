@@ -30,18 +30,18 @@ while (true) {
     console.log(SyntaxTree.Print(b));
   }
 
-  const v = interpreter.Evaluate(input);
+  // const v = interpreter.Evaluate(input);
 
-  if (v.Diagnostics.Any()) {
-    for (const d of v.Diagnostics.Bag) {
-      console.log(RgbColor.Teal(d.Message));
-    }
-  } else {
-    console.log(RgbColor.Teal(v.Value.toString()));
-  }
+  // if (v.Diagnostics.Any()) {
+  //   for (const d of v.Diagnostics.Bag) {
+  //     console.log(RgbColor.Teal(d.Message));
+  //   }
+  // } else {
+  //   console.log(RgbColor.Teal(v.Value.toString()));
+  // }
 
   b.Diagnostics.ClearDiagnostics();
-  v.Diagnostics.ClearDiagnostics();
+  // v.Diagnostics.ClearDiagnostics();
 
   console.log();
 }

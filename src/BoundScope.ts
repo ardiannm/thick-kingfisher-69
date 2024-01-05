@@ -9,10 +9,17 @@ export class BoundScope {
   constructor(public ParentScope?: BoundScope) {}
 
   StoreCell(Name: string) {
-    if (this.Documents.has(Name)) {
-      return this.Documents.get(Name) as Cell;
+    // see if name exists in this or any other parent scope
+    const Scope = this.ResolveScopeForCell(Name);
+    let Document: Cell;
+    if (Scope) {
+      // if there is a scope with such a name get the document
+      Document = Scope.Documents.get(Name) as Cell;
+    } else {
+      // if not create new cell document
+      Document = new Cell(BoundKind.Cell, Name);
     }
-    const Document = new Cell(BoundKind.Cell, Name);
+    // and store it in the current scope
     this.Documents.set(Name, Document);
     return Document;
   }
@@ -22,8 +29,12 @@ export class BoundScope {
       return this;
     }
     if (this.ParentScope) {
-      return this.ResolveScopeForCell(Name);
+      return this.ParentScope.ResolveScopeForCell(Name);
     }
     return null;
+  }
+
+  GetDeclaredCells() {
+    return this.Documents.values();
   }
 }
