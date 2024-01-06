@@ -93,7 +93,10 @@ export class Binder {
       Cell.ObserveCell(Subject);
       if (!Subject.Declared) this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
-    console.log(Cell.CircularDependency(Cell.Name, this.Diagnostics));
+    const Circular = Cell.CircularDependency(Cell.Name);
+    if (Circular) {
+      this.Diagnostics.ReportCircularDependency(Cell.Name, Circular.Name);
+    }
     this.Scope = this.Scope.ParentScope as BoundScope;
     Cell.Declared = true;
     return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
