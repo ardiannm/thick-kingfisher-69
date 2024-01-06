@@ -1,8 +1,9 @@
-import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
+import { Evaluator } from "./Evaluator";
+import { RgbColor } from "./Text/RgbColor";
 
 export class Cell extends BoundNode {
   constructor(
@@ -49,5 +50,11 @@ export class Cell extends BoundNode {
     const Check = HasCircularDependency(this);
     Visited.clear();
     return Check;
+  }
+
+  Evaluate(EvaluatorFactory: Evaluator) {
+    this.Value = EvaluatorFactory.EvaluateBoundNode(this.Expression);
+    for (const Observer of this.Observers.values()) Observer.Evaluate(EvaluatorFactory);
+    return this.Value;
   }
 }

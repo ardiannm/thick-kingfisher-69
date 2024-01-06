@@ -9,7 +9,6 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { EvaluatedProgram } from "./EvaluatedProgram";
-import { RgbColor } from "./Text/RgbColor";
 
 export class Evaluator {
   private Program = new EvaluatedProgram();
@@ -23,7 +22,7 @@ export class Evaluator {
     return this.Program;
   }
 
-  private EvaluateBoundNode<Kind extends BoundNode>(Node: Kind): number {
+  EvaluateBoundNode<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case BoundKind.Program:
@@ -49,9 +48,7 @@ export class Evaluator {
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    const Value = this.EvaluateBoundNode(Node.Cell.Expression);
-    Node.Cell.Value = Value;
-    return Value;
+    return Node.Cell.Evaluate(this);
   }
 
   private EvaluateCell(Node: Cell) {
