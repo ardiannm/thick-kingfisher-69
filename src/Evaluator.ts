@@ -18,11 +18,11 @@ export class Evaluator {
       this.Program.Diagnostics.Consume(Node.Diagnostics);
       return this.Program;
     }
-    this.EvaluateBoundNode(Node);
+    this.EvaluateNode(Node);
     return this.Program;
   }
 
-  EvaluateBoundNode<Kind extends BoundNode>(Node: Kind): number {
+  EvaluateNode<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case BoundKind.Program:
@@ -43,7 +43,7 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    for (const Root of Node.Root) this.Program.Value = this.EvaluateBoundNode(Root);
+    for (const Root of Node.Root) this.Program.Value = this.EvaluateNode(Root);
     return this.Program.Value;
   }
 
@@ -56,8 +56,8 @@ export class Evaluator {
   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression): number {
-    const Left = this.EvaluateBoundNode(Node.Left);
-    const Right = this.EvaluateBoundNode(Node.Right);
+    const Left = this.EvaluateNode(Node.Left);
+    const Right = this.EvaluateNode(Node.Right);
     switch (Node.OperatorKind) {
       case BoundBinaryOperatorKind.Addition:
         return Left + Right;
@@ -73,7 +73,7 @@ export class Evaluator {
   }
 
   private EvaluateUnaryExpression(Node: BoundUnaryExpression): number {
-    const Right = this.EvaluateBoundNode(Node.Right);
+    const Right = this.EvaluateNode(Node.Right);
     switch (Node.OperatorKind) {
       case BoundUnaryOperatorKind.Identity:
         return Right;

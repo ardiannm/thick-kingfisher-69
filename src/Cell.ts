@@ -53,8 +53,16 @@ export class Cell extends BoundNode {
   }
 
   Evaluate(EvaluatorFactory: Evaluator) {
-    this.Value = EvaluatorFactory.EvaluateBoundNode(this.Expression);
-    for (const Observer of this.Observers.values()) Observer.Evaluate(EvaluatorFactory);
+    const Value = EvaluatorFactory.EvaluateNode(this.Expression);
+    if (Value === this.Value) {
+      return Value;
+    }
+    this.Value = Value;
+    for (const Observer of this.Observers.values()) {
+      Observer.Evaluate(EvaluatorFactory);
+      const Message = "'" + this.Name + "' auto updating '" + Observer.Name + " -> " + Observer.Value + "'";
+      console.log(RgbColor.Gray(Message));
+    }
     return this.Value;
   }
 }

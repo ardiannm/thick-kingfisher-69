@@ -24,7 +24,7 @@ while (true) {
 
   // if (b.Diagnostics.Any()) {
   //   for (const d of b.Diagnostics.Bag) {
-  //     console.log(RgbColor.Teal(d.Message));
+  //     console.log(RgbColor.Azure(d.Message));
   //   }
   // } else {
   //   console.log(SyntaxTree.Print(b));
@@ -34,10 +34,10 @@ while (true) {
 
   if (v.Diagnostics.Any()) {
     for (const d of v.Diagnostics.Bag) {
-      console.log(RgbColor.Teal(d.Message));
+      console.log(RgbColor.Azure(d.Message));
     }
   } else {
-    console.log(RgbColor.Teal(v.Value.toString()));
+    console.log(RgbColor.Azure(v.Value.toString()));
   }
 
   // b.Diagnostics.ClearDiagnostics();
