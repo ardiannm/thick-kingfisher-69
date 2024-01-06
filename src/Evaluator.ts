@@ -10,7 +10,6 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { EvaluatedProgram } from "./EvaluatedProgram";
-import { RgbColor } from "./Text/RgbColor";
 
 export class Evaluator {
   private Scope = new BoundScope();
@@ -19,7 +18,7 @@ export class Evaluator {
   Evaluate(Node: BoundProgram) {
     this.Scope = Node.Scope;
     if (Node.Diagnostics.Any()) {
-      this.Program.Diagnostics.Merge(Node.Diagnostics);
+      this.Program.Diagnostics.Consume(Node.Diagnostics);
       return this.Program;
     }
     this.EvaluateBound(Node);

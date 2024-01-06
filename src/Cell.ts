@@ -2,6 +2,7 @@ import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class Cell extends BoundNode {
   constructor(
@@ -29,5 +30,29 @@ export class Cell extends BoundNode {
     }
     Cell.NotifyCell(this);
     return this.Subjects.get(Cell.Name) as Cell;
+  }
+
+  CircularDependency(Name: string, Diagnostics: DiagnosticBag) {
+    const Visited = new Set<string>();
+
+    const HasCircularDependency = (Cell: Cell) => {
+      for (const Subject of Cell.Subjects.values()) {
+        if (Visited.has(Subject.Name)) continue;
+        Visited.add(Subject.Name);
+        if (Subject.Name === Name) {
+          Diagnostics.ReportCircularDependency(Name, Subject.Name);
+          return true;
+        }
+        if (HasCircularDependency(Subject)) return true;
+      }
+      return false;
+    };
+
+    const Check = HasCircularDependency(this);
+    Visited.clear();
+    if (Check) {
+      return true;
+    }
+    return false;
   }
 }

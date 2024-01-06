@@ -21,10 +21,11 @@ export class DiagnosticBag {
     return this.Diagnostics.length;
   }
 
-  Merge(Diagnostics: DiagnosticBag) {
-    for (const Diagnostic of Diagnostics.Bag) {
+  Consume(DiagnosticsBag: DiagnosticBag) {
+    for (const Diagnostic of DiagnosticsBag.Bag) {
       this.ReportError(Diagnostic);
     }
+    DiagnosticsBag.ClearDiagnostics();
     return this.Diagnostics;
   }
 
@@ -72,7 +73,7 @@ export class DiagnosticBag {
   }
 
   ReportCircularDependency(ForName: string, InName: string) {
-    const Message = `Circular dependency '${ForName}' in '${InName}'`;
+    const Message = `Circular dependency for '${ForName}' in '${InName}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CircularDependency, Message));
   }
 

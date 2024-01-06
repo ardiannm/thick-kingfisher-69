@@ -35,7 +35,7 @@ export class Parser {
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
 
-    this.Diagnostics.Merge(Tokenizer.Diagnostics);
+    this.Diagnostics.Consume(Tokenizer.Diagnostics);
   }
 
   public Parse() {
