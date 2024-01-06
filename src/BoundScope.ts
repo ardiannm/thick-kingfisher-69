@@ -1,14 +1,12 @@
 import { Cell } from "./Cell";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class BoundScope {
-  Documents = new Map<string, Cell>();
-  Diagnostics = new DiagnosticBag();
+  private Documents = new Map<string, Cell>();
 
   constructor(public ParentScope?: BoundScope) {}
 
-  StoreCell(Name: string) {
+  CreateCell(Name: string) {
     // see if name exists in this or any other parent scope
     const Scope = this.ResolveScopeForCell(Name);
     let Document: Cell;

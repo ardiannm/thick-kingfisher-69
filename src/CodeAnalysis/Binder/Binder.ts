@@ -171,7 +171,7 @@ export class Binder {
     const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    return this.Scope.StoreCell(Name);
+    return this.Scope.CreateCell(Name);
   }
 
   private BindIdentifier(Node: SyntaxToken<SyntaxKind.IdentifierToken>) {
