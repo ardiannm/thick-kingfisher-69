@@ -85,17 +85,17 @@ export class Binder {
       default:
         this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     }
-    const Ref = this.Bind(Node.Left) as Cell;
+    const Cell = this.Bind(Node.Left) as Cell;
     const AssignmentScope = new BoundScope(this.Scope);
     this.Scope = AssignmentScope as BoundScope;
-    Ref.Expression = this.Bind(Node.Expression);
-    for (const Subject of this.Scope.GetDeclaredCells()) {
-      Ref.ObserveCell(Subject);
+    Cell.Expression = this.Bind(Node.Expression);
+    for (const Subject of this.Scope.GetCreatedCells()) {
+      Cell.ObserveCell(Subject);
       if (!Subject.Declared) this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
-    Ref.Declared = true;
-    return new BoundCellAssignment(BoundKind.CellAssignment, Ref);
+    Cell.Declared = true;
+    return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {

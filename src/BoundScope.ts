@@ -32,7 +32,7 @@ export class BoundScope {
     return null;
   }
 
-  GetDeclaredCells() {
+  GetCreatedCells() {
     return this.Documents.values();
   }
 }
