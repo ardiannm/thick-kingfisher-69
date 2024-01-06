@@ -9,6 +9,7 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { EvaluatedProgram } from "./EvaluatedProgram";
+import { RgbColor } from "./Text/RgbColor";
 
 export class Evaluator {
   private Program = new EvaluatedProgram();
@@ -18,11 +19,11 @@ export class Evaluator {
       this.Program.Diagnostics.Consume(Node.Diagnostics);
       return this.Program;
     }
-    this.EvaluateBound(Node);
+    this.EvaluateBoundNode(Node);
     return this.Program;
   }
 
-  private EvaluateBound<Kind extends BoundNode>(Node: Kind): number {
+  private EvaluateBoundNode<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
       case BoundKind.Program:
@@ -43,12 +44,14 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    for (const Root of Node.Root) this.Program.Value = this.EvaluateBound(Root);
+    for (const Root of Node.Root) this.Program.Value = this.EvaluateBoundNode(Root);
     return this.Program.Value;
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    return this.EvaluateBound(Node.Cell.Expression);
+    const Value = this.EvaluateBoundNode(Node.Cell.Expression);
+    Node.Cell.Value = Value;
+    return Value;
   }
 
   private EvaluateCell(Node: Cell) {
@@ -56,8 +59,8 @@ export class Evaluator {
   }
 
   private EvaluateBinaryExpression(Node: BoundBinaryExpression): number {
-    const Left = this.EvaluateBound(Node.Left);
-    const Right = this.EvaluateBound(Node.Right);
+    const Left = this.EvaluateBoundNode(Node.Left);
+    const Right = this.EvaluateBoundNode(Node.Right);
     switch (Node.OperatorKind) {
       case BoundBinaryOperatorKind.Addition:
         return Left + Right;
@@ -73,7 +76,7 @@ export class Evaluator {
   }
 
   private EvaluateUnaryExpression(Node: BoundUnaryExpression): number {
-    const Right = this.EvaluateBound(Node.Right);
+    const Right = this.EvaluateBoundNode(Node.Right);
     switch (Node.OperatorKind) {
       case BoundUnaryOperatorKind.Identity:
         return Right;

@@ -1,3 +1,4 @@
+import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
