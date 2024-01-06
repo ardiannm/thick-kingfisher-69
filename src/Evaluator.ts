@@ -1,4 +1,3 @@
-import { BoundScope } from "./BoundScope";
 import { Cell } from "./Cell";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
@@ -12,11 +11,9 @@ import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperator
 import { EvaluatedProgram } from "./EvaluatedProgram";
 
 export class Evaluator {
-  private Scope = new BoundScope();
   private Program = new EvaluatedProgram();
 
   Evaluate(Node: BoundProgram) {
-    this.Scope = Node.Scope;
     if (Node.Diagnostics.Any()) {
       this.Program.Diagnostics.Consume(Node.Diagnostics);
       return this.Program;
