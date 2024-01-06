@@ -93,7 +93,7 @@ export class Binder {
       Cell.ObserveCell(Subject);
       if (!Subject.Declared) this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
-    const Circular = Cell.CircularDependency(Cell.Name);
+    const Circular = Cell.CircularDependency();
     if (Circular) {
       this.Diagnostics.ReportCircularDependency(Cell.Name, Circular.Name);
     }

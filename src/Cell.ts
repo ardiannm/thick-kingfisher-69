@@ -31,17 +31,16 @@ export class Cell extends BoundNode {
     return this.Subjects.get(Cell.Name) as Cell;
   }
 
-  CircularDependency(Name: string) {
+  CircularDependency() {
     const Visited = new Set<string>();
-
-    const HasCircularDependency = (Cell: Cell) => {
+    const HasCircularDependency = (Cell: Cell): null | Cell => {
+      if (Cell.Subjects.has(this.Name)) {
+        return Cell;
+      }
       for (const Subject of Cell.Subjects.values()) {
         if (Visited.has(Subject.Name)) continue;
-        Visited.add(Subject.Name);
-        if (Subject.Name === Name) {
-          return Subject;
-        }
-        if (HasCircularDependency(Subject)) return Subject;
+        const CircularSubject = HasCircularDependency(Subject);
+        if (HasCircularDependency(Subject)) return CircularSubject;
       }
       return null;
     };
