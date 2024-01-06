@@ -20,28 +20,28 @@ while (true) {
     continue;
   }
 
-  const b = interpreter.Bind(input);
+  // const b = interpreter.Bind(input);
 
-  if (b.Diagnostics.Any()) {
-    for (const d of b.Diagnostics.Bag) {
-      console.log(RgbColor.Teal(d.Message));
-    }
-  } else {
-    console.log(SyntaxTree.Print(b));
-  }
-
-  // const v = interpreter.Evaluate(input);
-
-  // if (v.Diagnostics.Any()) {
-  //   for (const d of v.Diagnostics.Bag) {
+  // if (b.Diagnostics.Any()) {
+  //   for (const d of b.Diagnostics.Bag) {
   //     console.log(RgbColor.Teal(d.Message));
   //   }
   // } else {
-  //   console.log(RgbColor.Teal(v.Value.toString()));
+  //   console.log(SyntaxTree.Print(b));
   // }
 
-  b.Diagnostics.ClearDiagnostics();
-  // v.Diagnostics.ClearDiagnostics();
+  const v = interpreter.Evaluate(input);
+
+  if (v.Diagnostics.Any()) {
+    for (const d of v.Diagnostics.Bag) {
+      console.log(RgbColor.Teal(d.Message));
+    }
+  } else {
+    console.log(RgbColor.Teal(v.Value.toString()));
+  }
+
+  // b.Diagnostics.ClearDiagnostics();
+  v.Diagnostics.ClearDiagnostics();
 
   console.log();
 }
