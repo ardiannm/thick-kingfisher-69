@@ -89,15 +89,17 @@ export class Binder {
     const AssignmentScope = new BoundScope(this.Scope);
     this.Scope = AssignmentScope as BoundScope;
     Cell.Expression = this.Bind(Node.Expression);
+    Cell.ClearSubjects();
     for (const Subject of this.Scope.GetCreatedCells()) {
-      Cell.ObserveCell(Subject);
-      if (!Subject.Declared) this.Diagnostics.ReportUndefinedCell(Subject.Name);
+      Cell.Watch(Subject);
+      if (Subject.Declared) continue;
+      this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
-    const Circular = Cell.CircularDependency();
+    this.Scope = this.Scope.ParentScope as BoundScope;
+    const Circular = Cell.CircularCheck();
     if (Circular) {
       this.Diagnostics.ReportCircularDependency(Cell.Name, Circular.Name);
     }
-    this.Scope = this.Scope.ParentScope as BoundScope;
     Cell.Declared = true;
     return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
   }
