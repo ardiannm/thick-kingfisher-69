@@ -22,4 +22,19 @@ export class Interpreter {
   Evaluate(text: string): EvaluatedProgram {
     return this.evaluator.Evaluate(this.Bind(text));
   }
+
+  ParseName(row: number, column: number) {
+    return this.getLetter(column) + row;
+  }
+
+  // Create a utility function to convert column number to letter
+  private getLetter(column: number): string {
+    let name = "";
+    while (column > 0) {
+      const remainder = (column - 1) % 26;
+      name = String.fromCharCode(65 + remainder) + name;
+      column = Math.floor((column - 1) / 26);
+    }
+    return name;
+  }
 }
