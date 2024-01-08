@@ -5,12 +5,21 @@ import { SourceText } from "../../Text/SourceText";
 import { Parser } from "./Parser";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Binder } from "../Binder/Binder";
+import { SyntaxKind } from "./SyntaxKind";
+import { BoundNode } from "../Binder/BoundNode";
+import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
+import { BoundKind } from "../Binder/BoundKind";
 
 export class SyntaxTree {
-  private constructor(private input: SourceText, private diagnostics: DiagnosticBag) {}
+  private constructor(
+    private input: SourceText,
+    public diagnostics: DiagnosticBag,
+    public program: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, ""),
+    public bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0)
+  ) {}
   private binder = new Binder(this.diagnostics);
 
-  static Print(Node: SyntaxNode, Indent = "") {
+  private static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
     Text += RgbColor.Teal(Node.Kind);
     if (Node instanceof SyntaxToken) {
@@ -53,8 +62,17 @@ export class SyntaxTree {
 
   Parse() {
     const parser = new Parser(this.input, this.diagnostics);
-    const tree = parser.Parse();
-    if (this.diagnostics.Any()) for (const d of this.diagnostics.Bag) console.log(d);
-    return tree;
+    this.program = parser.Parse();
+    return this;
+  }
+
+  Bind() {
+    this.bound = this.binder.Bind(this.program);
+    return this;
+  }
+
+  Print() {
+    console.log(SyntaxTree.Print(this.program));
+    return this;
   }
 }

@@ -17,7 +17,13 @@ while (true) {
   }
 
   const tree = SyntaxTree.Compile(input);
-  console.log(SyntaxTree.Print(tree.Parse()));
+
+  tree.Parse().Print().Bind().program;
+
+  if (tree.diagnostics.Any()) {
+    console.log();
+    for (const d of tree.diagnostics.Bag) console.log(d);
+  }
 
   console.log();
 }
