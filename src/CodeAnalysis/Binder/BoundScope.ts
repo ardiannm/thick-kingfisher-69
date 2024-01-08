@@ -1,23 +1,21 @@
-import { Cell } from "./Cell";
-import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { Cell } from "../../Cell";
+import { BoundKind } from "./BoundKind";
+import { BoundNumericLiteral } from "./BoundNumericLiteral";
 
 export class BoundScope {
   private Documents = new Map<string, Cell>();
 
-  constructor(public ParentScope?: BoundScope) {}
+  constructor(public ParentScope: BoundScope | null) {}
 
   DeclareCell(Name: string) {
-    // see if name exists in this or any other parent scope
     const Scope = this.ResolveScopeForCell(Name);
     let Document: Cell;
     if (Scope) {
-      // if there is a scope with such a name get the document
       Document = Scope.Documents.get(Name) as Cell;
     } else {
-      // if not create new cell document
-      Document = new Cell(BoundKind.Cell, Name);
+      const Expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+      Document = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>());
     }
-    // and store it in the current scope
     this.Documents.set(Name, Document);
     return Document;
   }

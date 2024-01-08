@@ -11,11 +11,24 @@ import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
 
 export class SyntaxTree {
-  private binder = new Binder(this.diagnostics);
-  private constructor(public diagnostics: DiagnosticBag) {}
+  private binder: Binder;
 
-  public tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
-  public bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+  tree: SyntaxNode;
+  bound: BoundNode;
+
+  private constructor(public diagnostics: DiagnosticBag) {
+    this.binder = new Binder(this.diagnostics);
+    this.tree = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
+    this.bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+  }
+
+  ParseName(row: number, column: number) {
+    return this.ColumnIndexToLetter(column) + row;
+  }
+
+  GetCell(Name: string) {
+    return this.binder.Scope.GetCell(Name);
+  }
 
   private static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
@@ -42,14 +55,6 @@ export class SyntaxTree {
       column = Math.floor((column - 1) / 26);
     }
     return name;
-  }
-
-  ParseName(row: number, column: number) {
-    return this.ColumnIndexToLetter(column) + row;
-  }
-
-  GetCell(Name: string) {
-    return this.binder.Scope.GetCell(Name);
   }
 
   static Init() {

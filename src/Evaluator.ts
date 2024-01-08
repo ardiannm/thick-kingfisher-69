@@ -1,4 +1,3 @@
-import { Cell } from "./Cell";
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
 import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
 import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
@@ -8,6 +7,7 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
+import { Cell } from "./Cell";
 
 export class Evaluator {
   private Value = 0;

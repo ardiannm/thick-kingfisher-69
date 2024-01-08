@@ -18,7 +18,7 @@ import { BoundNode } from "./BoundNode";
 import { Program } from "../Parser/Program";
 import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
-import { BoundScope } from "../../BoundScope";
+import { BoundScope } from "./BoundScope";
 import { BoundRowReference } from "./BoundRowReference";
 import { BoundColumnReference } from "./BoundColumnReference";
 import { IsReferable } from "./IsReferable";
@@ -28,7 +28,7 @@ import { Cell } from "../../Cell";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  Scope = new BoundScope();
+  public Scope = new BoundScope(null);
   constructor(private Diagnostics: DiagnosticBag) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
