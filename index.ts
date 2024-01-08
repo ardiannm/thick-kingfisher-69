@@ -4,27 +4,27 @@ import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
 
 console.clear();
 
-while (true) {
-  const input = Prompt.question("> ");
+const source = SyntaxTree.Init();
 
-  if (input === "q") {
+while (true) {
+  const text = Prompt.question("> ");
+
+  if (text === "q") {
     break;
   }
 
-  if (input === "a") {
+  if (text === "a") {
     console.clear();
     continue;
   }
 
-  const tree = SyntaxTree.Compile(input);
-
   console.log();
+  source.Parse(text).Print().Bind().tree;
 
-  tree.Parse().Print().Bind().program;
-
-  if (tree.diagnostics.Any()) {
+  if (source.diagnostics.Any()) {
     console.log();
-    for (const d of tree.diagnostics.Bag) console.log(d);
+    for (const d of source.diagnostics.Bag) console.log(d);
+    source.diagnostics.Clear();
   }
 
   console.log();

@@ -11,13 +11,11 @@ import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
 
 export class SyntaxTree {
-  private constructor(
-    private input: SourceText,
-    public diagnostics: DiagnosticBag,
-    public program: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, ""),
-    public bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0)
-  ) {}
   private binder = new Binder(this.diagnostics);
+  private constructor(public diagnostics: DiagnosticBag) {}
+
+  public tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
+  public bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
 
   private static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
@@ -54,15 +52,15 @@ export class SyntaxTree {
     return this.binder.Scope.GetCell(Name);
   }
 
-  static Compile(text: string) {
+  static Init() {
     const diagnostics = new DiagnosticBag();
-    const input = SourceText.From(text);
-    return new SyntaxTree(input, diagnostics);
+    return new SyntaxTree(diagnostics);
   }
 
-  Parse() {
-    const parser = new Parser(this.input, this.diagnostics);
-    this.program = parser.Parse();
+  Parse(text: string) {
+    const input = SourceText.From(text);
+    const parser = new Parser(input, this.diagnostics);
+    this.tree = parser.Parse();
     return this;
   }
 
@@ -70,13 +68,13 @@ export class SyntaxTree {
     if (this.diagnostics.Any()) {
       this.diagnostics.ParserErrors();
     } else {
-      this.bound = this.binder.Bind(this.program);
+      this.bound = this.binder.Bind(this.tree);
     }
     return this;
   }
 
   Print() {
-    console.log(SyntaxTree.Print(this.program));
+    console.log(SyntaxTree.Print(this.tree));
     return this;
   }
 }

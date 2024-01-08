@@ -21,6 +21,10 @@ export class DiagnosticBag {
     return this.Diagnostics.length;
   }
 
+  Clear() {
+    this.Diagnostics.length = 0;
+  }
+
   Any() {
     return this.Count > 0;
   }
