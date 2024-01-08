@@ -23,7 +23,6 @@ export class Parser {
   constructor(public readonly Input: SourceText) {
     const Tokenizer = new Lexer(Input);
     var Token: SyntaxToken<SyntaxKind>;
-
     do {
       Token = Tokenizer.Lex();
       switch (Token.Kind) {
@@ -34,7 +33,6 @@ export class Parser {
       }
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
-
     this.Diagnostics.Consume(Tokenizer.Diagnostics);
   }
 
