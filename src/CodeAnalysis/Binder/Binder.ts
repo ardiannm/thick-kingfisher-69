@@ -28,7 +28,7 @@ import { Cell } from "../../Cell";
 import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
-  private Scope = new BoundScope();
+  Scope = new BoundScope();
   Diagnostics = new DiagnosticBag();
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {

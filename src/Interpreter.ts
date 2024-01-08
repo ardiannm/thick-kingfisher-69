@@ -1,3 +1,4 @@
+import { Cell } from "./Cell";
 import { Binder } from "./CodeAnalysis/Binder/Binder";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { Parser } from "./CodeAnalysis/Parser/Parser";
@@ -9,6 +10,16 @@ import { SourceText } from "./Text/SourceText";
 export class Interpreter {
   private binder = new Binder();
   private evaluator = new Evaluator();
+
+  private GetLetter(column: number): string {
+    let name = "";
+    while (column > 0) {
+      const remainder = (column - 1) % 26;
+      name = String.fromCharCode(65 + remainder) + name;
+      column = Math.floor((column - 1) / 26);
+    }
+    return name;
+  }
 
   Parse(text: string): Program {
     const parser = new Parser(SourceText.From(text));
@@ -24,17 +35,10 @@ export class Interpreter {
   }
 
   ParseName(row: number, column: number) {
-    return this.getLetter(column) + row;
+    return this.GetLetter(column) + row;
   }
 
-  // Create a utility function to convert column number to letter
-  private getLetter(column: number): string {
-    let name = "";
-    while (column > 0) {
-      const remainder = (column - 1) % 26;
-      name = String.fromCharCode(65 + remainder) + name;
-      column = Math.floor((column - 1) / 26);
-    }
-    return name;
+  GetCell(Name: string) {
+    return this.binder.Scope.GetCell(Name);
   }
 }

@@ -35,4 +35,10 @@ export class BoundScope {
   GetCreatedCells() {
     return this.Documents.values();
   }
+
+  GetCell(Name: string) {
+    const Scope = this.ResolveScopeForCell(Name);
+    if (Scope) return Scope.Documents.get(Name) as Cell;
+    return null;
+  }
 }
