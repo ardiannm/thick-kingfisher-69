@@ -8,7 +8,7 @@ const interpreter = new Interpreter();
 console.clear();
 
 while (true) {
-  const input = Prompt.question("> ") || interpreter.ReadFile("./src/Testing/.bin");
+  const input = Prompt.question("> ");
 
   if (input === "q") {
     break;

@@ -6,8 +6,6 @@ import { EvaluatedProgram } from "./EvaluatedProgram";
 import { Evaluator } from "./Evaluator";
 import { SourceText } from "./Text/SourceText";
 
-import * as fs from "fs";
-
 export class Interpreter {
   private binder = new Binder();
   private evaluator = new Evaluator();
@@ -41,16 +39,5 @@ export class Interpreter {
 
   GetCell(Name: string) {
     return this.binder.Scope.GetCell(Name);
-  }
-
-  ReadFile(filePath: string): string {
-    try {
-      // Use 'fs.readFileSync' to read the file synchronously
-      return fs.readFileSync(filePath, "utf8");
-    } catch (error) {
-      // Handle any errors that might occur during file reading
-      console.error("Error reading the file:", error);
-      return "";
-    }
   }
 }
