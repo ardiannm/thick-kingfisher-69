@@ -1,9 +1,6 @@
 import Prompt from "readline-sync";
 
-import { Interpreter } from "./src/Interpreter";
 import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
-
-const interpreter = new Interpreter();
 
 console.clear();
 
@@ -19,9 +16,8 @@ while (true) {
     continue;
   }
 
-  const b = interpreter.Parse(input);
-
-  console.log(SyntaxTree.Print(b));
+  const tree = SyntaxTree.Compile(input);
+  console.log(SyntaxTree.Print(tree.Parse()));
 
   console.log();
 }

@@ -28,4 +28,5 @@ export enum SyntaxKind {
   EndOfFileToken = "EndOfFileToken",
   HatToken = "HatToken",
   GreaterGreaterToken = "GreaterGreaterToken",
+  Expression = "Expression",
 }

@@ -21,14 +21,6 @@ export class DiagnosticBag {
     return this.Diagnostics.length;
   }
 
-  Consume(DiagnosticsBag: DiagnosticBag) {
-    for (const Diagnostic of DiagnosticsBag.Bag) {
-      this.ReportError(Diagnostic);
-    }
-    DiagnosticsBag.ClearDiagnostics();
-    return this.Diagnostics;
-  }
-
   Any() {
     return this.Count > 0;
   }
@@ -43,7 +35,7 @@ export class DiagnosticBag {
   }
 
   ReportTokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Unexpected '${Matched}' found when expecting '${ExpectedKind}'`;
+    const Message = `Unexpected '${Matched}' found; expecting '${ExpectedKind}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.TokenNotAMatch, Message));
   }
 

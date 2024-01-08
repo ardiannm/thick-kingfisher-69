@@ -54,7 +54,7 @@ export class Cell extends BoundNode {
   }
 
   Evaluate(Class: Evaluator) {
-    const Value = Class.EvaluateNode(this.Expression);
+    const Value = Class.Evaluate(this.Expression);
     if (Value === this.Value) {
       return Value;
     }

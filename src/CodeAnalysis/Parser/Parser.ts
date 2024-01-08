@@ -18,10 +18,8 @@ export class Parser {
   private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
 
-  Diagnostics = new DiagnosticBag();
-
-  constructor(public readonly Input: SourceText) {
-    const Tokenizer = new Lexer(Input);
+  constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
+    const Tokenizer = new Lexer(Input, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {
       Token = Tokenizer.Lex();
@@ -33,27 +31,34 @@ export class Parser {
       }
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
-    this.Diagnostics.Consume(Tokenizer.Diagnostics);
   }
 
   public Parse() {
-    if (!this.MoreTokens()) {
+    if (this.None()) {
       this.Diagnostics.ReportEmptyProgram();
     }
-    const Members = new Array<StatementSyntax>();
-    while (this.MoreTokens()) {
+    return this.ParseProgram();
+  }
+
+  public ParseProgram() {
+    const Members = new Array<StatementSyntax>(this.ParseMember());
+    if (this.None()) {
+      this.ExpectToken(SyntaxKind.EndOfFileToken);
+      return Members[0];
+    }
+    while (this.Any()) {
       const Token = this.Token;
       const Member = this.ParseMember();
       Members.push(Member);
       if (this.Token === Token) this.NextToken();
     }
     this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members, this.Diagnostics);
+    return new Program(SyntaxKind.Program, Members);
   }
 
   private ParseMember() {
     const Left = this.ParseStatement();
-    if (this.MoreTokens()) this.ParseNewLineTokens();
+    if (this.Any()) this.ParseNewLineTokens();
     return Left;
   }
 
@@ -90,10 +95,10 @@ export class Parser {
       const Right = this.ParseUnaryExpression();
       return new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Right);
     }
-    return this.ParseParentheses();
+    return this.ParseParenthesis();
   }
 
-  private ParseParentheses() {
+  private ParseParenthesis() {
     if (this.MatchToken(SyntaxKind.OpenParenthesisToken)) {
       const Left = this.NextToken();
       const Expression = this.ParseBinaryExpression();
@@ -131,7 +136,7 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.NumberToken);
+        return this.ExpectToken(SyntaxKind.Expression);
     }
   }
 
@@ -174,7 +179,11 @@ export class Parser {
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 
-  private MoreTokens() {
+  private Any() {
     return !this.MatchToken(SyntaxKind.EndOfFileToken);
+  }
+
+  private None() {
+    return !this.Any();
   }
 }

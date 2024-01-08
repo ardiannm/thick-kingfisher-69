@@ -29,7 +29,7 @@ import { BoundCellAssignment } from "./BoundCellAssignment";
 
 export class Binder {
   Scope = new BoundScope();
-  Diagnostics = new DiagnosticBag();
+  constructor(private Diagnostics: DiagnosticBag) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -57,9 +57,6 @@ export class Binder {
   }
 
   private BindProgram(Node: Program) {
-    if (Node.Diagnostics.Any()) {
-      return new BoundProgram(BoundKind.Program, [], Node.Diagnostics, this.Scope);
-    }
     const Root = new Array<BoundStatement>();
     for (const Member of Node.Root) {
       switch (Member.Kind) {
@@ -75,7 +72,7 @@ export class Binder {
           this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
       }
     }
-    return new BoundProgram(BoundKind.Program, Root, this.Diagnostics, this.Scope);
+    return new BoundProgram(BoundKind.Program, Root);
   }
 
   private BindCellAssignment(Node: CellAssignment) {

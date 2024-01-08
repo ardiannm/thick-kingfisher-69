@@ -1,10 +1,14 @@
 import { SyntaxToken } from "./SyntaxToken";
-import { BoundNode } from "../Binder/BoundNode";
 import { RgbColor } from "../../Text/RgbColor";
 import { SyntaxNode } from "./SyntaxNode";
+import { SourceText } from "../../Text/SourceText";
+import { Parser } from "./Parser";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
+import { Binder } from "../Binder/Binder";
 
 export class SyntaxTree {
-  private constructor(public Root: BoundNode) {}
+  private constructor(private input: SourceText, private diagnostics: DiagnosticBag) {}
+  private binder = new Binder(this.diagnostics);
 
   static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
@@ -21,5 +25,36 @@ export class SyntaxTree {
       }
     }
     return Text;
+  }
+
+  private ColumnIndexToLetter(column: number): string {
+    let name = "";
+    while (column > 0) {
+      const remainder = (column - 1) % 26;
+      name = String.fromCharCode(65 + remainder) + name;
+      column = Math.floor((column - 1) / 26);
+    }
+    return name;
+  }
+
+  ParseName(row: number, column: number) {
+    return this.ColumnIndexToLetter(column) + row;
+  }
+
+  GetCell(Name: string) {
+    return this.binder.Scope.GetCell(Name);
+  }
+
+  static Compile(text: string) {
+    const diagnostics = new DiagnosticBag();
+    const input = SourceText.From(text);
+    return new SyntaxTree(input, diagnostics);
+  }
+
+  Parse() {
+    const parser = new Parser(this.input, this.diagnostics);
+    const tree = parser.Parse();
+    if (this.diagnostics.Any()) for (const d of this.diagnostics.Bag) console.log(d);
+    return tree;
   }
 }
