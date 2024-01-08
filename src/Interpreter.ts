@@ -1,4 +1,3 @@
-import { Cell } from "./Cell";
 import { Binder } from "./CodeAnalysis/Binder/Binder";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { Parser } from "./CodeAnalysis/Parser/Parser";
@@ -6,6 +5,8 @@ import { Program } from "./CodeAnalysis/Parser/Program";
 import { EvaluatedProgram } from "./EvaluatedProgram";
 import { Evaluator } from "./Evaluator";
 import { SourceText } from "./Text/SourceText";
+
+import * as fs from "fs";
 
 export class Interpreter {
   private binder = new Binder();
@@ -40,5 +41,16 @@ export class Interpreter {
 
   GetCell(Name: string) {
     return this.binder.Scope.GetCell(Name);
+  }
+
+  ReadFile(filePath: string): string {
+    try {
+      // Use 'fs.readFileSync' to read the file synchronously
+      return fs.readFileSync(filePath, "utf8");
+    } catch (error) {
+      // Handle any errors that might occur during file reading
+      console.error("Error reading the file:", error);
+      return "";
+    }
   }
 }
