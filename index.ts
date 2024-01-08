@@ -2,7 +2,6 @@ import Prompt from "readline-sync";
 
 import { Interpreter } from "./src/Interpreter";
 import { RgbColor } from "./src/Text/RgbColor";
-import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
 
 const interpreter = new Interpreter();
 
