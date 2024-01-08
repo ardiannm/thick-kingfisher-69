@@ -93,9 +93,4 @@ export class DiagnosticBag {
     const Message = `'${Kind}' is not a range member and it can't be bound`;
     return this.ReportError(new Diagnostic(DiagnosticKind.NotARangeMember, Message));
   }
-
-  ReportGloballyNotAllowed(Kind: SyntaxKind) {
-    const Message = `'${Kind}' can't be written directly outside in the global scope`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.GloballyNotAllowed, Message));
-  }
 }

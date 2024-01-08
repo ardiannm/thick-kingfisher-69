@@ -58,20 +58,7 @@ export class Binder {
 
   private BindProgram(Node: Program) {
     const Root = new Array<BoundStatement>();
-    for (const Member of Node.Root) {
-      switch (Member.Kind) {
-        case SyntaxKind.NumberToken:
-        case SyntaxKind.CellReference:
-        case SyntaxKind.ParenthesizedExpression:
-        case SyntaxKind.UnaryExpression:
-        case SyntaxKind.BinaryExpression:
-        case SyntaxKind.CellAssignment:
-          Root.push(this.Bind(Member));
-          continue;
-        default:
-          this.Diagnostics.ReportGloballyNotAllowed(Member.Kind);
-      }
-    }
+    for (const Member of Node.Root) Root.push(this.Bind(Member));
     return new BoundProgram(BoundKind.Program, Root);
   }
 
@@ -93,7 +80,7 @@ export class Binder {
       this.Diagnostics.ReportUndefinedCell(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
-    const Circular = Cell.CircularCheck();
+    const Circular = Cell.CheckCircularity();
     if (Circular) {
       this.Diagnostics.ReportCircularDependency(Cell.Name, Circular.Name);
     }

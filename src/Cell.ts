@@ -31,7 +31,7 @@ export class Cell extends BoundNode {
     this.Observers.set(Observer.Name, Observer);
   }
 
-  CircularCheck() {
+  CheckCircularity() {
     const Visited = new Set<string>();
     const HasCircularDependency = (Dependency: Cell): null | Cell => {
       if (Dependency.Subjects.has(this.Name)) {
@@ -55,9 +55,7 @@ export class Cell extends BoundNode {
 
   Evaluate(Class: Evaluator) {
     const Value = Class.Evaluate(this.Expression);
-    if (Value === this.Value) {
-      return Value;
-    }
+    if (Value === this.Value) return Value;
     this.SetValue(Value);
     this.Observers.forEach((Observer) => {
       Observer.Evaluate(Class);

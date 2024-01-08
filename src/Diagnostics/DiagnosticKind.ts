@@ -10,7 +10,6 @@ export enum DiagnosticKind {
   ReportUndefinedCell = "ReportUndefinedCell",
   BadFloatingPointNumber = "BadFloatingPointNumber",
   NotARangeMember = "NotARangeMember",
-  GloballyNotAllowed = "GloballyNotAllowed",
   SwitchOperatorMethod = "SwitchOperatorMethod",
   CantCopy = "ReportCantCopy",
 }
