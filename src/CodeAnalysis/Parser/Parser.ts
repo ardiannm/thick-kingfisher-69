@@ -35,7 +35,7 @@ export class Parser {
 
   public Parse() {
     if (this.None()) {
-      this.Diagnostics.ReportEmptyProgram();
+      this.Diagnostics.EmptyProgram();
     }
     return this.ParseProgram();
   }
@@ -175,7 +175,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.ReportTokenMissmatch(this.Token.Kind, Kind);
+    this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
   }
 

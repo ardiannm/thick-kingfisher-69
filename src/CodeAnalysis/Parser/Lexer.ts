@@ -5,11 +5,11 @@ import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Lexer {
-  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {}
-
   private Index = 0;
   private Start = this.Index;
   private Kind = SyntaxKind.EndOfFileToken;
+
+  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {}
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.Index;
@@ -29,7 +29,7 @@ export class Lexer {
         }
 
         // if all else fails then report a bad token error
-        this.Diagnostics.ReportBadTokenFound(this.Char);
+        this.Diagnostics.BadTokenFound(this.Char);
         break;
 
       case SyntaxKind.HashToken:
@@ -94,7 +94,7 @@ export class Lexer {
     if (this.Match(SyntaxKind.DotToken)) {
       this.Index += 1;
       if (!this.IsDigit(this.Char)) {
-        this.Diagnostics.ReportBadFloatingPointNumber();
+        this.Diagnostics.BadFloatingPointNumber();
       }
     }
     while (this.IsDigit(this.Char)) {

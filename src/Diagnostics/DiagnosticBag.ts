@@ -25,46 +25,32 @@ export class DiagnosticBag {
     return this.Count > 0;
   }
 
-  ClearDiagnostics() {
-    this.Diagnostics = new Array<Diagnostic>();
-  }
-
-  ReportBadTokenFound(Text: string) {
+  BadTokenFound(Text: string) {
     const Message = `Bad character '${Text}' found`;
     return this.ReportError(new Diagnostic(DiagnosticKind.BadTokenFound, Message));
   }
 
-  ReportTokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
+  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
     const Message = `Unexpected '${Matched}' found; expecting '${ExpectedKind}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.TokenNotAMatch, Message));
   }
 
-  ReportEmptyProgram() {
+  EmptyProgram() {
     const Message = `Program contains no code`;
     return this.ReportError(new Diagnostic(DiagnosticKind.EmptyProgram, Message));
   }
 
-  ReportMissingMethod(Kind: SyntaxKind | BoundKind) {
-    const Message = `Method for '${Kind}' is not implemented`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.MissingMethod, Message));
-  }
-
-  ReportSwitchOperatorMethod(Kind: SyntaxKind) {
-    const Message = `Method for switching operators for '${Kind}' is not implemented`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.SwitchOperatorMethod, Message));
-  }
-
-  ReportCantDivideByZero() {
+  CantDivideByZero() {
     const Message = `Can't divide by zero`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CantDivideByZero, Message));
   }
 
-  ReportMissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
+  MissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
     const Message = `Unexpected operator kind '${Kind}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.MissingOperatorKind, Message));
   }
 
-  ReportCircularDependency(ForName: string, InName: string) {
+  CircularDependency(ForName: string, InName: string) {
     const Message = `Circular dependency for '${ForName}' in '${InName}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CircularDependency, Message));
   }
@@ -74,22 +60,17 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.CantUseAsAReference, Message));
   }
 
-  ReportCantCopy(Kind: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Can't copy '${Kind}' to '${ExpectedKind}'`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.CantCopy, Message));
-  }
-
-  ReportUndefinedCell(Name: string) {
+  UndefinedCell(Name: string) {
     const Message = `Cell reference '${Name}' is undefined`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.ReportUndefinedCell, Message));
+    return this.ReportError(new Diagnostic(DiagnosticKind.UndefinedCell, Message));
   }
 
-  ReportBadFloatingPointNumber() {
+  BadFloatingPointNumber() {
     const Message = `Wrong floating number format`;
     return this.ReportError(new Diagnostic(DiagnosticKind.BadFloatingPointNumber, Message));
   }
 
-  ReportNotARangeMember(Kind: SyntaxKind) {
+  NotARangeMember(Kind: SyntaxKind) {
     const Message = `'${Kind}' is not a range member and it can't be bound`;
     return this.ReportError(new Diagnostic(DiagnosticKind.NotARangeMember, Message));
   }

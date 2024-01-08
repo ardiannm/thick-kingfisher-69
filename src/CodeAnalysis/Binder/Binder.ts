@@ -53,7 +53,7 @@ export class Binder {
       case SyntaxKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
-    throw this.Diagnostics.ReportMissingMethod(Node.Kind);
+    throw `Method for '${Node.Kind}' is not implemented`
   }
 
   private BindProgram(Node: Program) {
@@ -77,12 +77,12 @@ export class Binder {
     for (const Subject of this.Scope.GetCreatedCells()) {
       Cell.Watch(Subject);
       if (Subject.Declared) continue;
-      this.Diagnostics.ReportUndefinedCell(Subject.Name);
+      this.Diagnostics.UndefinedCell(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
     const Circular = Cell.CheckCircularity();
     if (Circular) {
-      this.Diagnostics.ReportCircularDependency(Cell.Name, Circular.Name);
+      this.Diagnostics.CircularDependency(Cell.Name, Circular.Name);
     }
     Cell.Declared = true;
     return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
@@ -108,7 +108,7 @@ export class Binder {
       case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
@@ -129,7 +129,7 @@ export class Binder {
       case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.ReportMissingOperatorKind(Kind);
+    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -148,7 +148,7 @@ export class Binder {
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
     }
-    throw this.Diagnostics.ReportNotARangeMember(Node.Kind);
+    throw this.Diagnostics.NotARangeMember(Node.Kind);
   }
 
   private BindRangeReference(Node: RangeReference) {
