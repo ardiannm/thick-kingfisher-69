@@ -60,9 +60,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.CantUseAsAReference, Message));
   }
 
-  UndefinedCell(Name: string) {
-    const Message = `Cell reference '${Name}' is undefined`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.UndefinedCell, Message));
+  NameNotFound(Name: string) {
+    const Message = `Cell reference '${Name}' is undeclared`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.NameNotFound, Message));
   }
 
   BadFloatingPointNumber() {
@@ -73,5 +73,10 @@ export class DiagnosticBag {
   NotARangeMember(Kind: SyntaxKind) {
     const Message = `'${Kind}' is not a range member and it can't be bound`;
     return this.ReportError(new Diagnostic(DiagnosticKind.NotARangeMember, Message));
+  }
+
+  ParserErrors() {
+    const Message = `Errors found while parsing; cannot proceed with binding`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.ParserErrors, Message));
   }
 }

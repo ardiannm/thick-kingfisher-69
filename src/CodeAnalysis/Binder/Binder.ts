@@ -53,7 +53,7 @@ export class Binder {
       case SyntaxKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
-    throw `Method for '${Node.Kind}' is not implemented`
+    throw `Method for '${Node.Kind}' is not implemented`;
   }
 
   private BindProgram(Node: Program) {
@@ -74,10 +74,10 @@ export class Binder {
     this.Scope = AssignmentScope as BoundScope;
     Cell.Expression = this.Bind(Node.Expression);
     Cell.ClearSubjects();
-    for (const Subject of this.Scope.GetCreatedCells()) {
+    for (const Subject of this.Scope.GetDeclaredCells()) {
       Cell.Watch(Subject);
       if (Subject.Declared) continue;
-      this.Diagnostics.UndefinedCell(Subject.Name);
+      this.Diagnostics.NameNotFound(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
     const Circular = Cell.CheckCircularity();
@@ -161,7 +161,7 @@ export class Binder {
     const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
     const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
     const Name = BoundLeft.Name + BoundRight.Name;
-    return this.Scope.CreateCell(Name);
+    return this.Scope.DeclareCell(Name);
   }
 
   private BindIdentifier(Node: SyntaxToken<SyntaxKind.IdentifierToken>) {

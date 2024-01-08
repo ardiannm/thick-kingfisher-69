@@ -6,7 +6,8 @@ export enum DiagnosticKind {
   MissingOperatorKind = "MissingOperatorKind",
   CircularDependency = "CircularDependency",
   CantUseAsAReference = "CantUseAsAReference",
-  UndefinedCell = "UndefinedCell",
+  NameNotFound = "NameNotFound",
   BadFloatingPointNumber = "BadFloatingPointNumber",
   NotARangeMember = "NotARangeMember",
+  ParserErrors = "ParserErrors",
 }

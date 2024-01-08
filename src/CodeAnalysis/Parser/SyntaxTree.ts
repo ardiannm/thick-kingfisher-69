@@ -67,7 +67,11 @@ export class SyntaxTree {
   }
 
   Bind() {
-    this.bound = this.binder.Bind(this.program);
+    if (this.diagnostics.Any()) {
+      this.diagnostics.ParserErrors();
+    } else {
+      this.bound = this.binder.Bind(this.program);
+    }
     return this;
   }
 

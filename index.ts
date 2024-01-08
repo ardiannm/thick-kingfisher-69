@@ -18,6 +18,8 @@ while (true) {
 
   const tree = SyntaxTree.Compile(input);
 
+  console.log();
+
   tree.Parse().Print().Bind().program;
 
   if (tree.diagnostics.Any()) {

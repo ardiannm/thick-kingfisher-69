@@ -6,7 +6,7 @@ export class BoundScope {
 
   constructor(public ParentScope?: BoundScope) {}
 
-  CreateCell(Name: string) {
+  DeclareCell(Name: string) {
     // see if name exists in this or any other parent scope
     const Scope = this.ResolveScopeForCell(Name);
     let Document: Cell;
@@ -32,7 +32,7 @@ export class BoundScope {
     return null;
   }
 
-  GetCreatedCells() {
+  GetDeclaredCells() {
     return this.Documents.values();
   }
 
