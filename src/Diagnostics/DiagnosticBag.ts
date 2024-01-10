@@ -74,13 +74,13 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.BadFloatingPointNumber, Message));
   }
 
-  NotARangeMember(Kind: SyntaxKind) {
-    const Message = `'${Kind}' is not a range member and it can't be bound`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.NotARangeMember, Message));
-  }
-
   ParserErrors() {
     const Message = `Errors found while parsing; cannot proceed with binding`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.ParserErrors, Message));
+  }
+
+  BinderErrors() {
+    const Message = `Errors found after binding; cannot proceed with evalution`;
     return this.ReportError(new Diagnostic(DiagnosticKind.ParserErrors, Message));
   }
 }

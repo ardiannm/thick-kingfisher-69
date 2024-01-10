@@ -10,19 +10,24 @@ import { BoundNode } from "../Binder/BoundNode";
 import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
 import { Lowerer } from "../Lowerer/Lowerer";
+import { Evaluator } from "../../Evaluator";
 
 export class SyntaxTree {
   private binder: Binder;
   private lowerer: Lowerer;
+  private evaluator: Evaluator;
 
   tree: SyntaxNode;
   bound: BoundNode;
+  value: number;
 
   private constructor(public diagnostics: DiagnosticBag) {
     this.binder = new Binder(this.diagnostics);
     this.lowerer = new Lowerer();
+    this.evaluator = new Evaluator();
     this.tree = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
     this.bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+    this.value = 0;
   }
 
   ParseName(row: number, column: number) {
@@ -90,8 +95,29 @@ export class SyntaxTree {
     return this;
   }
 
+  Evaluate() {
+    if (this.diagnostics.Any()) {
+      this.diagnostics.BinderErrors();
+    } else {
+      this.value = this.evaluator.Evaluate(this.bound);
+    }
+    return this;
+  }
+
   Print() {
     console.log(SyntaxTree.Print(this.tree));
+    return this;
+  }
+
+  Log() {
+    if (this.diagnostics.Any()) {
+      console.log(this.diagnostics.Bag);
+    }
+    return this;
+  }
+
+  Clear() {
+    this.diagnostics.Clear();
     return this;
   }
 }

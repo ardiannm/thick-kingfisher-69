@@ -1,15 +1,12 @@
 import { SyntaxKind } from "../Parser/SyntaxKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
 import { BinaryExpression } from "../Parser/BinaryExpression";
-import { RangeReference } from "../Parser/RangeReference";
 import { CellReference } from "../Parser/CellReference";
 import { SyntaxToken } from "../Parser/SyntaxToken";
 import { BoundBinaryExpression } from "./BoundBinaryExpression";
-import { BoundIdentifier } from "./BoundIdentifier";
 import { BoundKind } from "./BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 import { BoundBinaryOperatorKind } from "./BoundBinaryOperatorKind";
-import { BoundRangeReference } from "./BoundRangeReference";
 import { UnaryExpression } from "../Parser/UnaryExpression";
 import { BoundUnaryExpression } from "./BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./BoundUnaryOperatorKind";
@@ -19,9 +16,6 @@ import { Program } from "../Parser/Program";
 import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
 import { BoundScope } from "./BoundScope";
-import { BoundRowReference } from "./BoundRowReference";
-import { BoundColumnReference } from "./BoundColumnReference";
-import { IsReferable } from "./IsReferable";
 import { CellAssignment } from "../Parser/CellAssignment";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Cell } from "../../Cell";
@@ -36,14 +30,10 @@ export class Binder {
     switch (Node.Kind) {
       case SyntaxKind.Program:
         return this.BindProgram(Node as NodeType<Program>);
-      case SyntaxKind.IdentifierToken:
-        return this.BindIdentifier(Node as NodeType<SyntaxToken<SyntaxKind.IdentifierToken>>);
       case SyntaxKind.NumberToken:
         return this.BindNumber(Node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>);
       case SyntaxKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
-      case SyntaxKind.RangeReference:
-        return this.BindRangeReference(Node as NodeType<RangeReference>);
       case SyntaxKind.ParenthesizedExpression:
         return this.BindParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
       case SyntaxKind.UnaryExpression:
@@ -53,7 +43,7 @@ export class Binder {
       case SyntaxKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
-    throw `Method for '${Node.Kind}' is not implemented`;
+    throw new Error(`Binder: Method for '${Node.Kind}' is not implemented`);
   }
 
   private BindProgram(Node: Program) {
@@ -136,36 +126,9 @@ export class Binder {
     return this.Bind(Node.Expression);
   }
 
-  private BindRangeBranch<Kind extends SyntaxNode>(Node: Kind) {
-    type NodeType<T> = Kind & T;
-    switch (Node.Kind) {
-      case SyntaxKind.NumberToken:
-        const Row = Node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>;
-        return new BoundRowReference(BoundKind.RowReference, Row.Text);
-      case SyntaxKind.IdentifierToken:
-        const Column = Node as NodeType<SyntaxToken<SyntaxKind.IdentifierToken>>;
-        return new BoundColumnReference(BoundKind.ColumnReference, Column.Text);
-      case SyntaxKind.CellReference:
-        return this.BindCellReference(Node as NodeType<CellReference>);
-    }
-    throw this.Diagnostics.NotARangeMember(Node.Kind);
-  }
-
-  private BindRangeReference(Node: RangeReference) {
-    const BoundLeft = this.BindRangeBranch(Node.Left);
-    const BoundRight = this.BindRangeBranch(Node.Right);
-    return new BoundRangeReference(BoundKind.RangeReference, BoundLeft.Name + ":" + BoundRight.Name);
-  }
-
   private BindCellReference(Node: CellReference) {
-    const BoundLeft = this.BindRangeBranch(Node.Left) as IsReferable;
-    const BoundRight = this.BindRangeBranch(Node.Right) as IsReferable;
-    const Name = BoundLeft.Name + BoundRight.Name;
+    const Name = Node.Left.Text + Node.Right.Text;
     return this.Scope.DeclareCell(Name);
-  }
-
-  private BindIdentifier(Node: SyntaxToken<SyntaxKind.IdentifierToken>) {
-    return new BoundIdentifier(BoundKind.Identifier, Node.Text);
   }
 
   private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {

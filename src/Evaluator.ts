@@ -28,7 +28,7 @@ export class Evaluator {
       case BoundKind.NumericLiteral:
         return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
     }
-    throw `Method for '${Node.Kind}' is not implemented`;
+    throw new Error(`Evaluator: Method for '${Node.Kind}' is not implemented`);
   }
 
   private EvaluateProgram(Node: BoundProgram): number {

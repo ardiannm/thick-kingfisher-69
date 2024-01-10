@@ -5,9 +5,7 @@ export enum BoundKind {
   UnaryExpression = "UnaryExpression",
   RowReference = "RowReference",
   ColumnReference = "ColumnReference",
-  RangeReference = "RangeReference",
   CellReference = "CellReference",
-  Identifier = "Identifier",
   NumericLiteral = "NumericLiteral",
   CellAssignment = "CellAssignment",
 }
