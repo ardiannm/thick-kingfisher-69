@@ -78,27 +78,21 @@ export class SyntaxTree {
   }
 
   Lower() {
-    if (this.diagnostics.Any()) {
-      this.diagnostics.ParserErrors();
-    } else {
+    if (this.diagnostics.None()) {
       this.tree = this.lowerer.Lower(this.tree);
     }
     return this;
   }
 
   Bind() {
-    if (this.diagnostics.Any()) {
-      this.diagnostics.ParserErrors();
-    } else {
+    if (this.diagnostics.None()) {
       this.bound = this.binder.Bind(this.tree);
     }
     return this;
   }
 
   Evaluate() {
-    if (this.diagnostics.Any()) {
-      this.diagnostics.BinderErrors();
-    } else {
+    if (this.diagnostics.None()) {
       this.value = this.evaluator.Evaluate(this.bound);
     }
     return this;
@@ -106,13 +100,6 @@ export class SyntaxTree {
 
   Print() {
     console.log(SyntaxTree.Print(this.tree));
-    return this;
-  }
-
-  Log() {
-    if (this.diagnostics.Any()) {
-      console.log(this.diagnostics.Bag);
-    }
     return this;
   }
 

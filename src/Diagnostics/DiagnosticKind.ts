@@ -8,5 +8,4 @@ export enum DiagnosticKind {
   CantUseAsAReference = "CantUseAsAReference",
   NameNotFound = "NameNotFound",
   BadFloatingPointNumber = "BadFloatingPointNumber",
-  ParserErrors = "ParserErrors",
 }
