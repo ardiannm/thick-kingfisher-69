@@ -19,7 +19,7 @@ while (true) {
   }
 
   console.log();
-  source.Parse(text).Print().Bind();
+  source.Parse(text).Lower().Print().Bind();
 
   if (source.diagnostics.Any()) {
     console.log();

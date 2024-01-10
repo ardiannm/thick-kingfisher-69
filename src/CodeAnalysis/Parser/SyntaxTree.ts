@@ -9,15 +9,18 @@ import { SyntaxKind } from "./SyntaxKind";
 import { BoundNode } from "../Binder/BoundNode";
 import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
+import { Lowerer } from "../Lowerer/Lowerer";
 
 export class SyntaxTree {
   private binder: Binder;
+  private lowerer: Lowerer;
 
   tree: SyntaxNode;
   bound: BoundNode;
 
   private constructor(public diagnostics: DiagnosticBag) {
     this.binder = new Binder(this.diagnostics);
+    this.lowerer = new Lowerer();
     this.tree = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
     this.bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
   }
@@ -66,6 +69,15 @@ export class SyntaxTree {
     const input = SourceText.From(text);
     const parser = new Parser(input, this.diagnostics);
     this.tree = parser.Parse();
+    return this;
+  }
+
+  Lower() {
+    if (this.diagnostics.Any()) {
+      this.diagnostics.ParserErrors();
+    } else {
+      this.tree = this.lowerer.Lower(this.tree);
+    }
     return this;
   }
 
