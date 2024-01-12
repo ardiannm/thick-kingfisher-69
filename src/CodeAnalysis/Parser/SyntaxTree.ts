@@ -17,17 +17,14 @@ export class SyntaxTree {
   private lowerer: Lowerer;
   private evaluator: Evaluator;
 
-  tree: SyntaxNode;
-  bound: BoundNode;
-  value: number;
+  tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
+  bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+  value = 0;
 
   private constructor(public diagnostics: DiagnosticBag) {
     this.binder = new Binder(this.diagnostics);
     this.lowerer = new Lowerer();
     this.evaluator = new Evaluator();
-    this.tree = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
-    this.bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-    this.value = 0;
   }
 
   ParseName(row: number, column: number) {

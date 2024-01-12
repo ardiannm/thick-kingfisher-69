@@ -6,8 +6,10 @@ console.clear();
 
 const source = SyntaxTree.Init();
 
+const src = new Array<string>();
+
 while (true) {
-  const text = Prompt.question("> ");
+  var text = Prompt.question();
 
   if (text === "q") {
     break;
@@ -18,7 +20,16 @@ while (true) {
     continue;
   }
 
+  if (text !== "") {
+    src.push(text);
+    continue;
+  }
+
+  text = src.join("\n");
+  src.length = 0;
+
   console.log();
+
   source.Parse(text).Lower().Print().Bind();
 
   if (source.diagnostics.Any()) {
