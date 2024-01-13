@@ -34,7 +34,7 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
 
   EatTrivia(Trivias: Array<SyntaxToken<SyntaxKind>>): SyntaxToken<SyntaxKind> {
     while (Trivias.length > 0) {
-      this.Trivia.push(Trivias.pop() as SyntaxToken<SyntaxKind>);
+      this.Trivia.push(Trivias.shift() as SyntaxToken<SyntaxKind>);
     }
     return this;
   }

@@ -30,7 +30,6 @@ export class Parser {
         this.Tokens.push(Token.EatTrivia(this.Trivias));
       }
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
-    console.log(this.Tokens);
   }
 
   public Parse() {
@@ -41,25 +40,14 @@ export class Parser {
   }
 
   public ParseProgram() {
-    const Members = new Array<StatementSyntax>(this.ParseMember());
-    if (this.None()) {
-      this.ExpectToken(SyntaxKind.EndOfFileToken);
-      return Members[0];
-    }
+    const Members = new Array<StatementSyntax>(this.ParseStatement());
     while (this.Any()) {
       const Token = this.Token;
-      const Member = this.ParseMember();
+      const Member = this.ParseStatement();
       Members.push(Member);
       if (this.Token === Token) this.NextToken();
     }
-    this.ExpectToken(SyntaxKind.EndOfFileToken);
-    return new Program(SyntaxKind.Program, Members);
-  }
-
-  private ParseMember() {
-    const Left = this.ParseStatement();
-    if (this.Any()) this.ParseNewLineTokens();
-    return Left;
+    return new Program(SyntaxKind.Program, Members, this.ExpectToken(SyntaxKind.EndOfFileToken));
   }
 
   private ParseStatement() {

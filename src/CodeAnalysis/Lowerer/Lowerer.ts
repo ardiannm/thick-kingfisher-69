@@ -28,7 +28,7 @@ export class Lowerer {
 
   private LowerProgram(Node: Program) {
     const Root = Node.Root.map((Statement) => this.Lower(Statement));
-    return new Program(SyntaxKind.Program, Root);
+    return new Program(SyntaxKind.Program, Root, Node.EOF);
   }
 
   private LowerCellAssignment(Node: CellAssignment) {

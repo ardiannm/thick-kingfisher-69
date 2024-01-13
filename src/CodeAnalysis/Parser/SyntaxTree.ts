@@ -11,6 +11,7 @@ import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
 import { Lowerer } from "../Lowerer/Lowerer";
 import { Evaluator } from "../../Evaluator";
+import { Facts } from "./Facts";
 
 export class SyntaxTree {
   private tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
@@ -36,13 +37,16 @@ export class SyntaxTree {
   private static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
     if (Node instanceof SyntaxToken) {
-      // for (const Trivia of Node.Trivia) Text += Trivia.Kind + " " + Trivia.Text + "\n";
-      Text += RgbColor.Teal(Node.Kind) + " " + Node.Text;
+      if (Facts.IsTrivia(Node.Kind)) {
+        Text += RgbColor.Azure("[" + Node.Kind + "]");
+      } else {
+        Text += RgbColor.Teal(Node.Kind) + " " + Node.Text;
+      }
       return Text;
     }
     if (Node instanceof SyntaxNode) {
       Text += RgbColor.Teal(Node.Kind);
-      const Branches = Array.from(Node.GetBranches());
+      const Branches = Array.from(Node.GetChildren());
       Branches.forEach((Branch, Index) => {
         const LastBranch = Index + 1 === Branches.length;
         const Lead = LastBranch ? "└── " : "├── ";
