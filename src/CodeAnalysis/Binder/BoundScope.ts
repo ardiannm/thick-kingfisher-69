@@ -7,7 +7,7 @@ export class BoundScope {
 
   constructor(public ParentScope: BoundScope | null) {}
 
-  DeclareCell(Name: string) {
+  StoreCell(Name: string) {
     const Scope = this.ResolveScopeForCell(Name);
     let Document: Cell;
     if (Scope) {
@@ -30,7 +30,7 @@ export class BoundScope {
     return null;
   }
 
-  GetSavedCells() {
+  GetStoredCells() {
     return this.Documents.values();
   }
 

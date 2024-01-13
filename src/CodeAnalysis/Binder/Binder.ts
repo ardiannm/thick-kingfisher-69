@@ -64,7 +64,7 @@ export class Binder {
     this.Scope = AssignmentScope as BoundScope;
     Cell.Expression = this.Bind(Node.Expression);
     Cell.ClearSubjects();
-    for (const Subject of this.Scope.GetSavedCells()) {
+    for (const Subject of this.Scope.GetStoredCells()) {
       Cell.Watch(Subject);
       if (Subject.Declared) continue;
       this.Diagnostics.NameNotFound(Subject.Name);
@@ -128,7 +128,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.Left.Text + Node.Right.Text;
-    return this.Scope.DeclareCell(Name);
+    return this.Scope.StoreCell(Name);
   }
 
   private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {
