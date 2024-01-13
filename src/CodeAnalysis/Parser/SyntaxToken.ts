@@ -17,11 +17,11 @@ export type TokenMap = {
   [SyntaxKind.TrueKeyword]: "true";
   [SyntaxKind.FalseKeyword]: "false";
   [SyntaxKind.PointerToken]: "->";
-  [SyntaxKind.NewLineToken]: "\n";
+  [SyntaxKind.LineBreakTrivia]: "\n";
   [SyntaxKind.IdentifierToken]: string;
   [SyntaxKind.NumberToken]: `${number}`;
-  [SyntaxKind.SpaceToken]: string;
-  [SyntaxKind.CommentToken]: string;
+  [SyntaxKind.SpaceTrivia]: string;
+  [SyntaxKind.CommentTrivia]: string;
   [SyntaxKind.BadToken]: string;
 };
 

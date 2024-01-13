@@ -1,19 +1,7 @@
 export enum SyntaxKind {
-  Program = "Program",
-  CellAssignment = "CellAssignment",
-  BinaryExpression = "BinaryExpression",
-  UnaryExpression = "UnaryExpression",
-  ParenthesizedExpression = "ParenthesizedExpression",
-  RangeReference = "RangeReference",
-  CellReference = "CellReference",
-  CommentToken = "CommentToken",
-  IdentifierToken = "IdentifierToken",
+  // tokens
+
   NumberToken = "NumberToken",
-  NewLineToken = "NewLineToken",
-  TrueKeyword = "TrueKeyword",
-  FalseKeyword = "FalseKeyword",
-  PointerToken = "PointerToken",
-  SpaceToken = "SpaceToken",
   PlusToken = "PlusToken",
   MinusToken = "MinusToken",
   SlashToken = "SlashToken",
@@ -24,9 +12,38 @@ export enum SyntaxKind {
   DotToken = "DotToken",
   GreaterToken = "GreaterToken",
   HashToken = "HashToken",
-  BadToken = "BadToken",
-  EndOfFileToken = "EndOfFileToken",
   HatToken = "HatToken",
+
+  // composite tokens
+
   GreaterGreaterToken = "GreaterGreaterToken",
+  PointerToken = "PointerToken",
+
+  // keywords
+
+  TrueKeyword = "TrueKeyword",
+  FalseKeyword = "FalseKeyword",
+
+  // trivias
+
+  CommentTrivia = "CommentTrivia",
+  SpaceTrivia = "SpaceTrivia",
+  LineBreakTrivia = "LineBreakTrivia",
+
+  // syntax nodes
+
+  Program = "Program",
+  CellAssignment = "CellAssignment",
+  BinaryExpression = "BinaryExpression",
+  UnaryExpression = "UnaryExpression",
+  ParenthesizedExpression = "ParenthesizedExpression",
+  RangeReference = "RangeReference",
+  CellReference = "CellReference",
+  IdentifierToken = "IdentifierToken",
+
+  // helper tokens
+
   Expression = "Expression",
+  EndOfFileToken = "EndOfFileToken",
+  BadToken = "BadToken",
 }

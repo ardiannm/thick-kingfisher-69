@@ -72,10 +72,10 @@ export class Lexer {
   private ParseCommentToken() {
     while (true) {
       this.Index += 1;
-      if (this.Match(SyntaxKind.NewLineToken)) break;
+      if (this.Match(SyntaxKind.LineBreakTrivia)) break;
       if (this.Match(SyntaxKind.EndOfFileToken)) break;
     }
-    return new SyntaxToken(SyntaxKind.CommentToken, this.Text);
+    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text);
   }
 
   // parse space tokens
@@ -83,7 +83,7 @@ export class Lexer {
     while (this.IsSpace(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(SyntaxKind.SpaceToken, this.Text);
+    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text);
   }
 
   // parse number tokens

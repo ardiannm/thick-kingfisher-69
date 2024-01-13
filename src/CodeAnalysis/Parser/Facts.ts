@@ -51,7 +51,7 @@ export class Facts {
       case ">":
         return SyntaxKind.GreaterToken;
       case "\n":
-        return SyntaxKind.NewLineToken;
+        return SyntaxKind.LineBreakTrivia;
       case "":
         return SyntaxKind.EndOfFileToken;
       default:

@@ -25,8 +25,8 @@ export class Parser {
       Token = Tokenizer.Lex();
       switch (Token.Kind) {
         case SyntaxKind.BadToken:
-        case SyntaxKind.SpaceToken:
-        case SyntaxKind.CommentToken:
+        case SyntaxKind.SpaceTrivia:
+        case SyntaxKind.CommentTrivia:
           continue;
       }
       this.Tokens.push(Token);
@@ -141,8 +141,8 @@ export class Parser {
   }
 
   private ParseNewLineTokens() {
-    this.ExpectToken(SyntaxKind.NewLineToken);
-    while (this.MatchToken(SyntaxKind.NewLineToken)) this.NextToken();
+    this.ExpectToken(SyntaxKind.LineBreakTrivia);
+    while (this.MatchToken(SyntaxKind.LineBreakTrivia)) this.NextToken();
   }
 
   private PeekToken(Offset: number) {
