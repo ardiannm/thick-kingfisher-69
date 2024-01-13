@@ -13,18 +13,16 @@ import { Lowerer } from "../Lowerer/Lowerer";
 import { Evaluator } from "../../Evaluator";
 
 export class SyntaxTree {
-  private binder: Binder;
-  private lowerer: Lowerer;
-  private evaluator: Evaluator;
+  private tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
+  private bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
 
-  tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
-  bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-  value = 0;
+  private lowerer = new Lowerer();
+  private evaluator = new Evaluator();
+
+  private binder: Binder;
 
   private constructor(public diagnostics: DiagnosticBag) {
     this.binder = new Binder(this.diagnostics);
-    this.lowerer = new Lowerer();
-    this.evaluator = new Evaluator();
   }
 
   ParseName(row: number, column: number) {
@@ -90,7 +88,7 @@ export class SyntaxTree {
 
   Evaluate() {
     if (this.diagnostics.None()) {
-      this.value = this.evaluator.Evaluate(this.bound);
+      this.evaluator.Evaluate(this.bound);
     }
     return this;
   }
