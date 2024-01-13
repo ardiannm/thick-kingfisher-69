@@ -69,4 +69,15 @@ export class Facts {
         return SyntaxKind.IdentifierToken;
     }
   }
+
+  public static IsTrivia(Kind: SyntaxKind) {
+    switch (Kind) {
+      case SyntaxKind.LineBreakTrivia:
+      case SyntaxKind.SpaceTrivia:
+      case SyntaxKind.CommentTrivia:
+        return true;
+      default:
+        return false;
+    }
+  }
 }

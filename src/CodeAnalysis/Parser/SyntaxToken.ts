@@ -28,7 +28,14 @@ export type TokenMap = {
 export type TokenText<T extends SyntaxKind> = T extends keyof TokenMap ? TokenMap[T] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override Kind: T, public Text: TokenText<T>) {
+  constructor(public override Kind: T, public Text: TokenText<T>, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(Kind);
+  }
+
+  EatTrivia(Trivias: Array<SyntaxToken<SyntaxKind>>): SyntaxToken<SyntaxKind> {
+    while (Trivias.length > 0) {
+      this.Trivia.push(Trivias.pop() as SyntaxToken<SyntaxKind>);
+    }
+    return this;
   }
 }

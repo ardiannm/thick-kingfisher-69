@@ -15,22 +15,22 @@ import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Parser {
-  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
   private Index = 0;
+  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private Trivias = new Array<SyntaxToken<SyntaxKind>>();
 
   constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
     const Tokenizer = new Lexer(Input, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {
       Token = Tokenizer.Lex();
-      switch (Token.Kind) {
-        case SyntaxKind.BadToken:
-        case SyntaxKind.SpaceTrivia:
-        case SyntaxKind.CommentTrivia:
-          continue;
+      if (Facts.IsTrivia(Token.Kind)) {
+        this.Trivias.push(Token);
+      } else {
+        this.Tokens.push(Token.EatTrivia(this.Trivias));
       }
-      this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxKind.EndOfFileToken);
+    console.log(this.Tokens);
   }
 
   public Parse() {

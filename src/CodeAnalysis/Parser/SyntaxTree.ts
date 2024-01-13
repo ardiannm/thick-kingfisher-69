@@ -35,11 +35,13 @@ export class SyntaxTree {
 
   private static Print(Node: SyntaxNode, Indent = "") {
     let Text = "";
-    Text += RgbColor.Teal(Node.Kind);
     if (Node instanceof SyntaxToken) {
-      return Text + " " + Node.Text;
+      // for (const Trivia of Node.Trivia) Text += Trivia.Kind + " " + Trivia.Text + "\n";
+      Text += RgbColor.Teal(Node.Kind) + " " + Node.Text;
+      return Text;
     }
     if (Node instanceof SyntaxNode) {
+      Text += RgbColor.Teal(Node.Kind);
       const Branches = Array.from(Node.GetBranches());
       Branches.forEach((Branch, Index) => {
         const LastBranch = Index + 1 === Branches.length;
