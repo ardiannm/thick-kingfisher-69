@@ -41,12 +41,13 @@ export class SyntaxTree {
     }
     if (Node instanceof SyntaxNode) {
       const Branches = Array.from(Node.GetBranches());
-      for (const [Index, Branch] of Branches.entries()) {
-        const LastBranch = Index + 1 == Branches.length;
+      Branches.forEach((Branch, Index) => {
+        const LastBranch = Index + 1 === Branches.length;
         const Lead = LastBranch ? "└── " : "├── ";
         Text += "\n" + Indent + Lead + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
-      }
+      });
     }
+
     return Text;
   }
 
