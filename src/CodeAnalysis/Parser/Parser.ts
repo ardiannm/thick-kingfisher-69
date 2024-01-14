@@ -15,9 +15,10 @@ import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Parser {
-  private Index = 0;
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
   private Trivias = new Array<SyntaxToken<SyntaxKind>>();
+
+  private Index = 0;
 
   constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
     const Tokenizer = new Lexer(Input, Diagnostics);

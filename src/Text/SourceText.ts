@@ -44,7 +44,7 @@ export class SourceText {
     return new SourceText(Text);
   }
 
-  CreateSpan(Start: number, End: number) {
+  CreateTextSpan(Start: number, End: number) {
     return new TextSpan(this, Start, End);
   }
 }

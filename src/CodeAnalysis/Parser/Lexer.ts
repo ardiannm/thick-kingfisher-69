@@ -5,14 +5,14 @@ import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 
 export class Lexer {
-  private Index = 0;
-  private Start = this.Index;
+  private End = 0;
+  private Start = this.End;
   private Kind = SyntaxKind.EndOfFileToken;
 
   constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {}
 
   public Lex(): SyntaxToken<SyntaxKind> {
-    this.Start = this.Index;
+    this.Start = this.End;
     this.Kind = Facts.Kind(this.Char) as keyof TokenMap;
 
     switch (this.Kind) {
@@ -40,7 +40,7 @@ export class Lexer {
         // special case for minus token
         if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
           // increment one more to account for the next token
-          this.Index += 1;
+          this.End += 1;
           this.Kind = SyntaxKind.PointerToken;
         }
         break;
@@ -49,63 +49,63 @@ export class Lexer {
         // special case for greater token
         if (this.Match(SyntaxKind.GreaterToken, SyntaxKind.GreaterToken)) {
           // increment one more to account for the next token
-          this.Index += 1;
+          this.End += 1;
           this.Kind = SyntaxKind.GreaterGreaterToken;
         }
     }
 
     // else by default increment index position by one for all cases
-    this.Index += 1;
+    this.End += 1;
 
-    return new SyntaxToken(this.Kind, this.Text, this.Input.CreateSpan(this.Start, this.Index));
+    return new SyntaxToken(this.Kind, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   // parse identifier tokens
   private ParseIdentifier() {
     while (this.IsLetter(this.Char)) {
-      this.Index += 1;
+      this.End += 1;
     }
     return new SyntaxToken(
       Facts.KeywordOrIdentiferTokenKind(this.Text),
       this.Text,
-      this.Input.CreateSpan(this.Start, this.Index)
+      this.Input.CreateTextSpan(this.Start, this.End)
     );
   }
 
   // parse comment tokens
   private ParseCommentToken() {
     while (true) {
-      this.Index += 1;
+      this.End += 1;
       if (this.Match(SyntaxKind.LineBreakTrivia)) break;
       if (this.Match(SyntaxKind.EndOfFileToken)) break;
     }
-    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text, this.Input.CreateSpan(this.Start, this.Index));
+    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   // parse space tokens
   private ParseSpaceToken() {
     while (this.IsSpace(this.Char)) {
-      this.Index += 1;
+      this.End += 1;
     }
-    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text, this.Input.CreateSpan(this.Start, this.Index));
+    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   // parse number tokens
   private ParseNumberToken() {
     while (this.IsDigit(this.Char)) {
-      this.Index += 1;
+      this.End += 1;
     }
     if (this.Match(SyntaxKind.DotToken)) {
-      this.Index += 1;
+      this.End += 1;
       if (!this.IsDigit(this.Char)) {
         this.Diagnostics.BadFloatingPointNumber();
       }
     }
     while (this.IsDigit(this.Char)) {
-      this.Index += 1;
+      this.End += 1;
     }
     const NumberText = this.Text as TokenMap[SyntaxKind.NumberToken];
-    return new SyntaxToken(SyntaxKind.NumberToken, NumberText, this.Input.CreateSpan(this.Start, this.Index));
+    return new SyntaxToken(SyntaxKind.NumberToken, NumberText, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   private IsSpace(Char: string): boolean {
@@ -123,7 +123,7 @@ export class Lexer {
   }
 
   private Peek(Offset: number): string {
-    return this.Input.Text.charAt(this.Index + Offset);
+    return this.Input.Text.charAt(this.End + Offset);
   }
 
   private get Char() {
@@ -131,7 +131,7 @@ export class Lexer {
   }
 
   private get Text() {
-    return this.Input.Text.substring(this.Start, this.Index);
+    return this.Input.Text.substring(this.Start, this.End);
   }
 
   private Match(...Kinds: Array<SyntaxKind>) {

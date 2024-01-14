@@ -28,6 +28,6 @@ export class SyntaxNode {
 
   TextSpan(): TextSpan {
     const FirstSpan = this.First().TextSpan();
-    return FirstSpan.Input.CreateSpan(FirstSpan.Start, this.Last().TextSpan().End);
+    return FirstSpan.Input.CreateTextSpan(FirstSpan.Start, this.Last().TextSpan().End);
   }
 }

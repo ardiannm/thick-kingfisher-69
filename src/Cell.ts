@@ -2,7 +2,6 @@ import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { Evaluator } from "./Evaluator";
-import { RgbColor } from "./Text/RgbColor";
 
 export class Cell extends BoundNode {
   constructor(
