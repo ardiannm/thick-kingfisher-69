@@ -57,7 +57,7 @@ export class Lexer {
     // else by default increment index position by one for all cases
     this.Index += 1;
 
-    return new SyntaxToken(this.Kind, this.Text);
+    return new SyntaxToken(this.Kind, this.Text, this.Input.CreateSpan(this.Start, this.Index));
   }
 
   // parse identifier tokens
@@ -65,7 +65,11 @@ export class Lexer {
     while (this.IsLetter(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(Facts.KeywordOrIdentiferTokenKind(this.Text), this.Text);
+    return new SyntaxToken(
+      Facts.KeywordOrIdentiferTokenKind(this.Text),
+      this.Text,
+      this.Input.CreateSpan(this.Start, this.Index)
+    );
   }
 
   // parse comment tokens
@@ -75,7 +79,7 @@ export class Lexer {
       if (this.Match(SyntaxKind.LineBreakTrivia)) break;
       if (this.Match(SyntaxKind.EndOfFileToken)) break;
     }
-    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text);
+    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text, this.Input.CreateSpan(this.Start, this.Index));
   }
 
   // parse space tokens
@@ -83,7 +87,7 @@ export class Lexer {
     while (this.IsSpace(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text);
+    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text, this.Input.CreateSpan(this.Start, this.Index));
   }
 
   // parse number tokens
@@ -100,7 +104,8 @@ export class Lexer {
     while (this.IsDigit(this.Char)) {
       this.Index += 1;
     }
-    return new SyntaxToken(SyntaxKind.NumberToken, this.Text as TokenMap[SyntaxKind.NumberToken]);
+    const NumberText = this.Text as TokenMap[SyntaxKind.NumberToken];
+    return new SyntaxToken(SyntaxKind.NumberToken, NumberText, this.Input.CreateSpan(this.Start, this.Index));
   }
 
   private IsSpace(Char: string): boolean {

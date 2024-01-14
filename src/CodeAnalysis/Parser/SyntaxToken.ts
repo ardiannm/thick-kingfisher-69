@@ -1,3 +1,4 @@
+import { TextSpan } from "../../Text/TextSpan";
 import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
 
@@ -28,7 +29,12 @@ export type TokenMap = {
 export type TokenText<T extends SyntaxKind> = T extends keyof TokenMap ? TokenMap[T] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override Kind: T, public Text: TokenText<T>, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+  constructor(
+    public override Kind: T,
+    public Text: TokenText<T>,
+    private Span: TextSpan,
+    public Trivia = new Array<SyntaxToken<SyntaxKind>>()
+  ) {
     super(Kind);
   }
 
@@ -36,6 +42,18 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     while (Trivias.length > 0) {
       this.Trivia.push(Trivias.shift() as SyntaxToken<SyntaxKind>);
     }
+    return this;
+  }
+
+  public override TextSpan() {
+    return this.Span;
+  }
+
+  public override First(): SyntaxNode {
+    return this;
+  }
+
+  public override Last(): SyntaxNode {
     return this;
   }
 }

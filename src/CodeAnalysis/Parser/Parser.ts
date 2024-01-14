@@ -40,7 +40,7 @@ export class Parser {
   }
 
   public ParseProgram() {
-    const Members = new Array<StatementSyntax>(this.ParseStatement());
+    const Members = new Array<StatementSyntax>();
     while (this.Any()) {
       const Token = this.Token;
       const Member = this.ParseStatement();
@@ -164,7 +164,7 @@ export class Parser {
       return this.NextToken() as SyntaxToken<Kind>;
     }
     this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind);
-    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>);
+    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>, this.Token.TextSpan());
   }
 
   private Any() {

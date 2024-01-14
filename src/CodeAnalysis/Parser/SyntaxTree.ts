@@ -9,15 +9,12 @@ import { SyntaxKind } from "./SyntaxKind";
 import { BoundNode } from "../Binder/BoundNode";
 import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/BoundKind";
-import { Lowerer } from "../Lowerer/Lowerer";
 import { Evaluator } from "../../Evaluator";
-import { Facts } from "./Facts";
 
 export class SyntaxTree {
-  private tree: SyntaxNode = new SyntaxToken(SyntaxKind.EndOfFileToken, "");
+  private tree: SyntaxNode = new SyntaxNode(SyntaxKind.BadToken);
   private bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
 
-  private lowerer = new Lowerer();
   private evaluator = new Evaluator();
 
   private binder: Binder;
@@ -36,25 +33,26 @@ export class SyntaxTree {
   }
 
   private static Print(Node: SyntaxNode, Indent = "") {
-    let Text = "";
+    var Text = "";
     if (Node instanceof SyntaxToken) {
-      if (Facts.IsTrivia(Node.Kind)) {
-        Text += RgbColor.Azure("[" + Node.Kind + "]");
-      } else {
-        Text += RgbColor.Teal(Node.Kind) + " " + Node.Text;
+      for (const Trivia of Node.Trivia) {
+        Text += RgbColor.Gray("[" + Trivia.Kind + "]") + " ";
       }
+      Text += RgbColor.Terracotta(Node.Kind) + " " + Node.Text;
       return Text;
     }
     if (Node instanceof SyntaxNode) {
-      Text += RgbColor.Teal(Node.Kind);
-      const Branches = Array.from(Node.GetChildren());
-      Branches.forEach((Branch, Index) => {
-        const LastBranch = Index + 1 === Branches.length;
-        const Lead = LastBranch ? "└── " : "├── ";
-        Text += "\n" + Indent + Lead + this.Print(Branch, Indent + (LastBranch ? "   " : "│  "));
-      });
+      Text += RgbColor.Azure(Node.Kind);
+      for (const Child of Node.Children()) {
+        Text += "\n" + Indent;
+        const Last = Child === Node.Last();
+        if (Last) {
+          Text += "└── " + this.Print(Child, Indent + "   ");
+        } else {
+          Text += "├── " + this.Print(Child, Indent + "│  ");
+        }
+      }
     }
-
     return Text;
   }
 
@@ -77,13 +75,6 @@ export class SyntaxTree {
     const input = SourceText.From(text);
     const parser = new Parser(input, this.diagnostics);
     this.tree = parser.Parse();
-    return this;
-  }
-
-  Lower() {
-    if (this.diagnostics.None()) {
-      this.tree = this.lowerer.Lower(this.tree);
-    }
     return this;
   }
 
@@ -113,5 +104,16 @@ export class SyntaxTree {
 
   get Count() {
     return this.binder.Scope.Count;
+  }
+
+  LogTextSpan() {
+    if (this.diagnostics.None()) {
+      for (const Node of this.tree.Children()) {
+        console.log(Node.First().TextSpan().Get() + " ... " + Node.Last().TextSpan().Get());
+      }
+      const TreeText = this.tree.TextSpan().Get();
+      console.log(TreeText);
+    }
+    return this;
   }
 }
