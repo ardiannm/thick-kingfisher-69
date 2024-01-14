@@ -23,7 +23,7 @@ const Fn = () => {
     } else {
       text = src.join("\n");
       src.length = 0;
-      source.Parse(text).LogTextSpan().Print();
+      source.Parse(text).Print().Bind();
       if (source.diagnostics.Any()) {
         console.log();
         for (const d of source.diagnostics.Bag) console.log(d);

@@ -122,7 +122,8 @@ export class Binder {
   }
 
   private BindCellReference(Node: CellReference) {
-    const Name = Node.Left.Text + Node.Right.Text;
+    const Name = Node.TextSpan().Get();
+    console.log(Name);
     return this.Scope.ConstructCell(Name);
   }
 

@@ -105,15 +105,4 @@ export class SyntaxTree {
   get Count() {
     return this.binder.Scope.Count;
   }
-
-  LogTextSpan() {
-    if (this.diagnostics.None()) {
-      for (const Node of this.tree.Children()) {
-        console.log(Node.First().TextSpan().Get() + " ... " + Node.Last().TextSpan().Get());
-      }
-      const TreeText = this.tree.TextSpan().Get();
-      console.log(TreeText);
-    }
-    return this;
-  }
 }
