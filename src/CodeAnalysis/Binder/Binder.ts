@@ -49,6 +49,7 @@ export class Binder {
   private BindProgram(Node: Program) {
     const Root = new Array<BoundStatement>();
     for (const Member of Node.Root) Root.push(this.Bind(Member));
+    this.Scope.CheckDeclarations(this.Diagnostics);
     return new BoundProgram(BoundKind.Program, Root);
   }
 
@@ -64,16 +65,10 @@ export class Binder {
     this.Scope = AssignmentScope as BoundScope;
     Cell.Expression = this.Bind(Node.Expression);
     Cell.ClearSubjects();
-    for (const Subject of this.Scope.GetStoredCells()) {
+    for (const Subject of this.Scope.GetCells()) {
       Cell.Watch(Subject);
-      if (Subject.Declared) continue;
-      this.Diagnostics.NameNotFound(Subject.Name);
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
-    const Circular = Cell.CheckCircularity();
-    if (Circular) {
-      this.Diagnostics.CircularDependency(Cell.Name, Circular.Name);
-    }
     Cell.Declared = true;
     return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
   }
@@ -128,7 +123,7 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.Left.Text + Node.Right.Text;
-    return this.Scope.StoreCell(Name);
+    return this.Scope.ConstructCell(Name);
   }
 
   private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {

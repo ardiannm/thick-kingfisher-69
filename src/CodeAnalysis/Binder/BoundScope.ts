@@ -1,4 +1,5 @@
 import { Cell } from "../../Cell";
+import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundKind } from "./BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 
@@ -7,7 +8,7 @@ export class BoundScope {
 
   constructor(public ParentScope: BoundScope | null) {}
 
-  StoreCell(Name: string) {
+  ConstructCell(Name: string) {
     const Scope = this.ResolveScopeForCell(Name);
     let Document: Cell;
     if (Scope) {
@@ -30,7 +31,7 @@ export class BoundScope {
     return null;
   }
 
-  GetStoredCells() {
+  GetCells() {
     return this.Documents.values();
   }
 
@@ -38,5 +39,18 @@ export class BoundScope {
     const Scope = this.ResolveScopeForCell(Name);
     if (Scope) return Scope.Documents.get(Name) as Cell;
     return null;
+  }
+
+  CheckDeclarations(Diagnostics: DiagnosticBag) {
+    for (const Cell of this.GetCells()) {
+      if (!Cell.Declared) {
+        Diagnostics.NameNotFound(Cell.Name);
+      }
+      Cell.Subjects.forEach((Subject) => {
+        if (!Subject.Declared) Diagnostics.NameNotFound(Subject.Name);
+      });
+      const Circular = Cell.CheckCircularity();
+      if (Circular) Diagnostics.CircularDependency(Cell.Name, Circular.Name);
+    }
   }
 }
