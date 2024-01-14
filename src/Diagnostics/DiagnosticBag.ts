@@ -1,5 +1,4 @@
 import { BoundBinaryOperatorKind } from "../CodeAnalysis/Binder/BoundBinaryOperatorKind";
-import { BoundKind } from "../CodeAnalysis/Binder/BoundKind";
 import { BoundUnaryOperatorKind } from "../CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { SyntaxKind } from "../CodeAnalysis/Parser/SyntaxKind";
 import { Diagnostic } from "./Diagnostic";
@@ -59,7 +58,7 @@ export class DiagnosticBag {
   }
 
   CircularDependency(ForName: string, InName: string) {
-    const Message = `Circular dependency for '${ForName}' in '${InName}'`;
+    const Message = `'${InName}' is circularly dependent to '${ForName}'`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CircularDependency, Message));
   }
 
