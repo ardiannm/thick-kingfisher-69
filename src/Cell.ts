@@ -4,8 +4,6 @@ import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { Evaluator } from "./Evaluator";
 import { RgbColor } from "./Text/RgbColor";
 
-type Event = (Value: number) => void;
-
 export class Cell extends BoundNode {
   constructor(
     public override Kind: BoundKind.Cell,
@@ -51,14 +49,10 @@ export class Cell extends BoundNode {
   }
 
   Evaluate(Class: Evaluator) {
-    const Value = Class.Evaluate(this.Expression);
-    if (Value === this.Value) return Value;
-    this.Value = Value;
-    this.Observers.forEach((Observer) => {
-      Observer.Evaluate(Class);
-      const Message = "'" + this.Name + "'  '" + Observer.Name + " -> " + Observer.Value + "'";
-      console.log(RgbColor.Teal(Message));
-    });
+    this.Value = Class.Evaluate(this.Expression);
+    const Change = RgbColor.Azure(`${this.Name} -> ${this.Value}`);
+    console.log(Change);
+    for (const Observer of this.Observers.values()) Observer.Evaluate(Class);
     return this.Value;
   }
 

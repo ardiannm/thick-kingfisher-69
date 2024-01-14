@@ -1,6 +1,7 @@
 import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
 
 import readline from "readline";
+import { RgbColor } from "./src/Text/RgbColor";
 
 const prompt = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -22,12 +23,14 @@ const Fn = () => {
     } else {
       text = src.join("\n");
       src.length = 0;
-      console.log();
-      source.Parse(text).Lower().Print().Bind();
+      source.Parse(text).Lower().Print().Bind().Evaluate();
       if (source.diagnostics.Any()) {
         console.log();
         for (const d of source.diagnostics.Bag) console.log(d);
         source.diagnostics.Clear();
+      } else {
+        console.log();
+        console.log(RgbColor.Azure(source.value.toString()));
       }
       console.log();
       Fn();

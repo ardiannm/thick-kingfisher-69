@@ -8,6 +8,7 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
 import { Cell } from "./Cell";
+import { RgbColor } from "./Text/RgbColor";
 
 export class Evaluator {
   private Value = 0;
@@ -37,6 +38,8 @@ export class Evaluator {
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
+    console.log(RgbColor.Azure("//"));
+
     return Node.Cell.Evaluate(this);
   }
 

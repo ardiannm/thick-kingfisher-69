@@ -21,6 +21,7 @@ export class SyntaxTree {
   private evaluator = new Evaluator();
 
   private binder: Binder;
+  value: number = 0;
 
   private constructor(public diagnostics: DiagnosticBag) {
     this.binder = new Binder(this.diagnostics);
@@ -95,7 +96,7 @@ export class SyntaxTree {
 
   Evaluate() {
     if (this.diagnostics.None()) {
-      this.evaluator.Evaluate(this.bound);
+      this.value = this.evaluator.Evaluate(this.bound);
     }
     return this;
   }
