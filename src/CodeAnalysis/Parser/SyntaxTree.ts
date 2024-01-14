@@ -110,4 +110,8 @@ export class SyntaxTree {
     this.diagnostics.Clear();
     return this;
   }
+
+  get Count() {
+    return this.binder.Scope.Count;
+  }
 }

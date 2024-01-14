@@ -53,4 +53,8 @@ export class BoundScope {
       if (Circular) Diagnostics.CircularDependency(Cell.Name, Circular.Name);
     }
   }
+
+  get Count() {
+    return this.Documents.size;
+  }
 }
