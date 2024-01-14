@@ -7,8 +7,6 @@ import { RgbColor } from "./Text/RgbColor";
 type Event = (Value: number) => void;
 
 export class Cell extends BoundNode {
-  private Subscriptions = new Set<Event>();
-
   constructor(
     public override Kind: BoundKind.Cell,
     public Name: string,
@@ -55,7 +53,7 @@ export class Cell extends BoundNode {
   Evaluate(Class: Evaluator) {
     const Value = Class.Evaluate(this.Expression);
     if (Value === this.Value) return Value;
-    this.SetValue(Value);
+    this.Value = Value;
     this.Observers.forEach((Observer) => {
       Observer.Evaluate(Class);
       const Message = "'" + this.Name + "'  '" + Observer.Name + " -> " + Observer.Value + "'";
@@ -71,14 +69,5 @@ export class Cell extends BoundNode {
   ClearSubjects() {
     this.Subjects.forEach((Subject) => Subject.ClearObserver(this));
     this.Subjects.clear();
-  }
-
-  SetValue(Value: number) {
-    this.Value = Value;
-    for (const Sub of this.Subscriptions) Sub(Value);
-  }
-
-  Subscribe(Fn: Event) {
-    this.Subscriptions.add(Fn);
   }
 }
