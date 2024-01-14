@@ -50,9 +50,7 @@ export class Cell extends BoundNode {
 
   Evaluate(Class: Evaluator) {
     this.Value = Class.Evaluate(this.Expression);
-    const Change = RgbColor.Azure(`${this.Name} -> ${this.Value}`);
-    console.log(Change);
-    for (const Observer of this.Observers.values()) Observer.Evaluate(Class);
+    this.Observers.forEach((Observer) => Observer.Evaluate(Class));
     return this.Value;
   }
 

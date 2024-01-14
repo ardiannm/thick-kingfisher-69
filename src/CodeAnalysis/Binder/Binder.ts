@@ -123,7 +123,6 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.TextSpan().Get();
-    console.log(Name);
     return this.Scope.ConstructCell(Name);
   }
 

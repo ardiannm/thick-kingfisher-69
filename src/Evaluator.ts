@@ -38,7 +38,6 @@ export class Evaluator {
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    console.log(RgbColor.Azure("//"));
     return Node.Cell.Evaluate(this);
   }
 
