@@ -69,4 +69,14 @@ export class DiagnosticBag {
     const Message = `Wrong floating number format`;
     return this.ReportError(new Diagnostic(DiagnosticKind.BadFloatingPointNumber, Message));
   }
+
+  BinderMethod(Kind: SyntaxKind) {
+    const Message = `Binder: Method for '${Kind}' is not implemented`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.BinderMethod, Message));
+  }
+
+  EvaluatorMethod(Kind: SyntaxKind) {
+    const Message = `Evaluator: Method for '${Kind}' is not implemented`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.EvaluatorMethod, Message));
+  }
 }

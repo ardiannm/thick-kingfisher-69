@@ -5,9 +5,10 @@ import { RgbColor } from "./src/Text/RgbColor";
 
 const prompt = readline.createInterface({ input: process.stdin, output: process.stdout });
 
+const source = SyntaxTree.Init();
+
 console.clear();
 
-const source = SyntaxTree.Init();
 const src = new Array<string>();
 
 const Fn = () => {
@@ -23,7 +24,7 @@ const Fn = () => {
     } else {
       text = src.join("\n");
       src.length = 0;
-      source.Parse(text).Print().Bind().Evaluate();
+      source.Parse(text).PrintTree().Bind().Evaluate().PrintBound();
       if (source.diagnostics.Any()) {
         console.log();
         for (const d of source.diagnostics.Bag) console.log(d);

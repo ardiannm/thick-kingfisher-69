@@ -8,4 +8,5 @@ export enum BoundKind {
   CellReference = "CellReference",
   NumericLiteral = "NumericLiteral",
   CellAssignment = "CellAssignment",
+  Error = "Error",
 }

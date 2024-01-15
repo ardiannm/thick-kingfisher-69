@@ -7,4 +7,6 @@ export enum DiagnosticKind {
   CantUseAsAReference = "CantUseAsAReference",
   NameNotFound = "NameNotFound",
   BadFloatingPointNumber = "BadFloatingPointNumber",
+  BinderMethod = "BinderMethod",
+  EvaluatorMethod = "EvaluatorMethod",
 }

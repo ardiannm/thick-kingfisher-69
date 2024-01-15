@@ -71,6 +71,13 @@ export class SyntaxTree {
     return new SyntaxTree(diagnostics);
   }
 
+  TextSpan() {
+    if (this.diagnostics.None()) {
+      console.log(RgbColor.Azure(this.tree.TextSpan().Get()));
+    }
+    return this;
+  }
+
   Parse(text: string) {
     const input = SourceText.From(text);
     const parser = new Parser(input, this.diagnostics);
@@ -92,11 +99,6 @@ export class SyntaxTree {
     return this;
   }
 
-  Print() {
-    console.log(SyntaxTree.Print(this.tree));
-    return this;
-  }
-
   Clear() {
     this.diagnostics.Clear();
     return this;
@@ -106,10 +108,13 @@ export class SyntaxTree {
     return this.binder.Scope.Count;
   }
 
-  TextSpan() {
-    if (this.diagnostics.None()) {
-      console.log(RgbColor.Azure(this.tree.TextSpan().Get()));
-    }
+  PrintTree() {
+    console.log(SyntaxTree.Print(this.tree));
+    return this;
+  }
+
+  PrintBound() {
+    console.log(JSON.stringify(this.bound, undefined, 3));
     return this;
   }
 }

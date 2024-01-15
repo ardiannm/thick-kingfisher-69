@@ -14,6 +14,7 @@ import { BoundUnaryExpression } from "./BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./Kind/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { BoundNode } from "./BoundNode";
+import { BoundError } from "./BoundError";
 import { Program } from "../Parser/Program";
 import { BoundStatement } from "./BoundStatement";
 import { BoundProgram } from "./BoundProgram";
@@ -45,7 +46,8 @@ export class Binder {
       case SyntaxNodeKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
-    throw new Error(`Binder: Method for '${Node.Kind}' is not implemented`);
+    this.Diagnostics.BinderMethod(Node.Kind);
+    return new BoundError(BoundKind.Error, Node);
   }
 
   private BindProgram(Node: Program) {
