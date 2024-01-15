@@ -105,4 +105,11 @@ export class SyntaxTree {
   get Count() {
     return this.binder.Scope.Count;
   }
+
+  TextSpan() {
+    if (this.diagnostics.None()) {
+      console.log(RgbColor.Azure(this.tree.TextSpan().Get()));
+    }
+    return this;
+  }
 }

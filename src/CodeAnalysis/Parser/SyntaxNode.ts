@@ -17,12 +17,12 @@ export class SyntaxNode {
   }
 
   First(): SyntaxNode {
-    return (this.Children().next().value as SyntaxNode).First();
+    return this.Children().next().value as SyntaxNode;
   }
 
   Last() {
     var LastNode: SyntaxNode = this.First();
-    for (const Node of this.Children()) LastNode = Node.Last();
+    for (const Node of this.Children()) LastNode = Node;
     return LastNode;
   }
 
