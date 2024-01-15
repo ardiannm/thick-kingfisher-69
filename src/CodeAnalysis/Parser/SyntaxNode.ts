@@ -1,3 +1,4 @@
+import { RgbColor } from "../../Text/RgbColor";
 import { TextSpan } from "../../Text/TextSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 
@@ -29,5 +30,18 @@ export class SyntaxNode {
   TextSpan(): TextSpan {
     const FirstSpan = this.First().TextSpan();
     return FirstSpan.Input.CreateTextSpan(FirstSpan.Start, this.Last().TextSpan().End);
+  }
+
+  Print(Indent = "") {
+    var Text: string = RgbColor.Azure(this.Kind) + "";
+    for (const Child of this.Children()) {
+      Text += "\n" + Indent;
+      if (Child === this.Last()) {
+        Text += RgbColor.Azure("└── ") + Child.Print(Indent + "   ");
+      } else {
+        Text += RgbColor.Azure("├── ") + Child.Print(Indent + RgbColor.Azure("│  "));
+      }
+    }
+    return Text;
   }
 }

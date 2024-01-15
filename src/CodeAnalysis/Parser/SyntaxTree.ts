@@ -32,30 +32,6 @@ export class SyntaxTree {
     return this.binder.Scope.GetCell(Name);
   }
 
-  private static Print(Node: SyntaxNode, Indent = "") {
-    var Text = "";
-    if (Node instanceof SyntaxToken) {
-      for (const Trivia of Node.Trivia) {
-        Text += RgbColor.Lavender("[" + Trivia.Kind + "]") + " ";
-      }
-      Text += RgbColor.Turquoise(Node.Kind) + " " + RgbColor.Lavender('"' + Node.Text + '"');
-      return Text;
-    }
-    if (Node instanceof SyntaxNode) {
-      Text += RgbColor.Azure(Node.Kind);
-      for (const Child of Node.Children()) {
-        Text += "\n" + Indent;
-        const Last = Child === Node.Last();
-        if (Last) {
-          Text += RgbColor.Azure("└── ") + this.Print(Child, Indent + "   ");
-        } else {
-          Text += RgbColor.Azure("├── ") + this.Print(Child, Indent + RgbColor.Azure("│  "));
-        }
-      }
-    }
-    return Text;
-  }
-
   private ColumnIndexToLetter(column: number): string {
     let name = "";
     while (column > 0) {
@@ -109,12 +85,12 @@ export class SyntaxTree {
   }
 
   PrintTree() {
-    console.log(SyntaxTree.Print(this.tree));
+    console.log(this.tree.Print());
     return this;
   }
 
-  PrintBound() {
-    console.log(JSON.stringify(this.bound, undefined, 3));
+  Log() {
+    console.log(this.tree.Print());
     return this;
   }
 }

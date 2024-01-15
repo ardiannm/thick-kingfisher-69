@@ -6,6 +6,7 @@ import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
 import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
 import { SyntaxKeywordKind } from "./Kind/SyntaxKeywordKind";
+import { RgbColor } from "../../Text/RgbColor";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
@@ -50,8 +51,8 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this;
   }
 
-  public override TextSpan() {
-    return this.Span;
+  public override *Children(): Generator<SyntaxNode, any, unknown> {
+    yield this;
   }
 
   public override First(): SyntaxNode {
@@ -60,5 +61,23 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
 
   public override Last(): SyntaxNode {
     return this;
+  }
+
+  public override TextSpan() {
+    return this.Span;
+  }
+
+  public override Print() {
+    var Text = "";
+    if (this.Trivia.length) {
+      var TextTrivia = "";
+      for (const Trivia of this.Trivia) {
+        TextTrivia += RgbColor.Sandstone(Trivia.Kind) + " ";
+      }
+      Text += TextTrivia;
+    }
+    Text += RgbColor.Azure(this.Kind);
+    Text += RgbColor.Sandstone(" " + '"' + this.Text + '"');
+    return Text;
   }
 }
