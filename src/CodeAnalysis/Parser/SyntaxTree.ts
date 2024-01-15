@@ -5,14 +5,14 @@ import { SourceText } from "../../Text/SourceText";
 import { Parser } from "./Parser";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Binder } from "../Binder/Binder";
-import { SyntaxKind } from "./SyntaxKind";
 import { BoundNode } from "../Binder/BoundNode";
 import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
-import { BoundKind } from "../Binder/BoundKind";
+import { BoundKind } from "../Binder/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 
 export class SyntaxTree {
-  private tree: SyntaxNode = new SyntaxNode(SyntaxKind.BadToken);
+  private tree: SyntaxNode = new SyntaxNode(SyntaxNodeKind.BadToken);
   private bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
 
   private evaluator = new Evaluator();
@@ -36,9 +36,9 @@ export class SyntaxTree {
     var Text = "";
     if (Node instanceof SyntaxToken) {
       for (const Trivia of Node.Trivia) {
-        Text += RgbColor.Gray("[" + Trivia.Kind + "]") + " ";
+        Text += RgbColor.Lavender("[" + Trivia.Kind + "]") + " ";
       }
-      Text += RgbColor.Terracotta(Node.Kind) + " " + Node.Text;
+      Text += RgbColor.Turquoise(Node.Kind) + " " + RgbColor.Lavender('"' + Node.Text + '"');
       return Text;
     }
     if (Node instanceof SyntaxNode) {
@@ -47,9 +47,9 @@ export class SyntaxTree {
         Text += "\n" + Indent;
         const Last = Child === Node.Last();
         if (Last) {
-          Text += "└── " + this.Print(Child, Indent + "   ");
+          Text += RgbColor.Azure("└── ") + this.Print(Child, Indent + "   ");
         } else {
-          Text += "├── " + this.Print(Child, Indent + "│  ");
+          Text += RgbColor.Azure("├── ") + this.Print(Child, Indent + RgbColor.Azure("│  "));
         }
       }
     }

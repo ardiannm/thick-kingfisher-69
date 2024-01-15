@@ -1,5 +1,5 @@
 import { TextSpan } from "../../Text/TextSpan";
-import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxKind } from "./Kind/SyntaxKind";
 
 export class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}

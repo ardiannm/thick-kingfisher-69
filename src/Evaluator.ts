@@ -1,12 +1,12 @@
 import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
-import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/BoundBinaryOperatorKind";
+import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundBinaryOperatorKind";
 import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
-import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
-import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/BoundUnaryOperatorKind";
+import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundUnaryOperatorKind";
 import { Cell } from "./Cell";
 import { RgbColor } from "./Text/RgbColor";
 

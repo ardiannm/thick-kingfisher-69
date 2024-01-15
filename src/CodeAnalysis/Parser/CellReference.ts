@@ -1,12 +1,12 @@
-import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { SyntaxToken } from "./SyntaxToken";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 
 export class CellReference extends ExpressionSyntax {
   constructor(
-    public override Kind: SyntaxKind.CellReference,
-    public Left: SyntaxToken<SyntaxKind.IdentifierToken>,
-    public Right: SyntaxToken<SyntaxKind.NumberToken>
+    public override Kind: SyntaxNodeKind.CellReference,
+    public Left: SyntaxToken<SyntaxNodeKind.IdentifierToken>,
+    public Right: SyntaxToken<SyntaxNodeKind.NumberToken>
   ) {
     super(Kind);
   }

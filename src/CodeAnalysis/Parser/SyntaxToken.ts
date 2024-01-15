@@ -1,32 +1,37 @@
-import { TextSpan } from "../../Text/TextSpan";
-import { SyntaxKind } from "./SyntaxKind";
 import { SyntaxNode } from "./SyntaxNode";
+import { TextSpan } from "../../Text/TextSpan";
+import { SyntaxKind } from "./Kind/SyntaxKind";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
+import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
+import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
+import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
+import { SyntaxKeywordKind } from "./Kind/SyntaxKeywordKind";
 
-export type TokenMap = {
-  [SyntaxKind.PlusToken]: "+";
-  [SyntaxKind.MinusToken]: "-";
-  [SyntaxKind.StarToken]: "*";
-  [SyntaxKind.SlashToken]: "/";
-  [SyntaxKind.OpenParenthesisToken]: "(";
-  [SyntaxKind.CloseParenthesisToken]: ")";
-  [SyntaxKind.HatToken]: "^";
-  [SyntaxKind.DotToken]: ".";
-  [SyntaxKind.HashToken]: "#";
-  [SyntaxKind.GreaterToken]: ">";
-  [SyntaxKind.GreaterGreaterToken]: ">>";
-  [SyntaxKind.EndOfFileToken]: "";
-  [SyntaxKind.TrueKeyword]: "true";
-  [SyntaxKind.FalseKeyword]: "false";
-  [SyntaxKind.PointerToken]: "->";
-  [SyntaxKind.LineBreakTrivia]: "\n";
-  [SyntaxKind.IdentifierToken]: string;
-  [SyntaxKind.NumberToken]: `${number}`;
-  [SyntaxKind.SpaceTrivia]: string;
-  [SyntaxKind.CommentTrivia]: string;
-  [SyntaxKind.BadToken]: string;
+export type TokenTextMapper = {
+  [BinaryOperatorKind.PlusToken]: "+";
+  [BinaryOperatorKind.MinusToken]: "-";
+  [BinaryOperatorKind.StarToken]: "*";
+  [BinaryOperatorKind.SlashToken]: "/";
+  [BinaryOperatorKind.HatToken]: "^";
+  [SyntaxNodeKind.OpenParenthesisToken]: "(";
+  [SyntaxNodeKind.CloseParenthesisToken]: ")";
+  [SyntaxNodeKind.DotToken]: ".";
+  [SyntaxNodeKind.HashToken]: "#";
+  [SyntaxNodeKind.GreaterToken]: ">";
+  [CompositeTokenKind.GreaterGreaterToken]: ">>";
+  [CompositeTokenKind.PointerToken]: "->";
+  [SyntaxKeywordKind.TrueKeyword]: "true";
+  [SyntaxKeywordKind.FalseKeyword]: "false";
+  [SyntaxNodeKind.EndOfFileToken]: "";
+  [SyntaxNodeKind.IdentifierToken]: string;
+  [SyntaxNodeKind.NumberToken]: `${number}`;
+  [SyntaxNodeKind.BadToken]: string;
+  [SyntaxTriviaKind.LineBreakTrivia]: "\n";
+  [SyntaxTriviaKind.SpaceTrivia]: string;
+  [SyntaxTriviaKind.CommentTrivia]: string;
 };
 
-export type TokenText<T extends SyntaxKind> = T extends keyof TokenMap ? TokenMap[T] : never;
+export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   constructor(

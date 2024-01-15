@@ -1,4 +1,8 @@
-import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxKind } from "./Kind/SyntaxKind";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
+import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
+import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
+import { UnaryOperatorKind } from "./Kind/UnaryOperatorKind";
 import { SyntaxToken, TokenText } from "./SyntaxToken";
 import { BinaryExpression } from "./BinaryExpression";
 import { UnaryExpression } from "./UnaryExpression";
@@ -30,7 +34,7 @@ export class Parser {
       } else {
         this.Tokens.push(Token.EatTrivia(this.Trivias));
       }
-    } while (Token.Kind !== SyntaxKind.EndOfFileToken);
+    } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
   public Parse() {
@@ -48,17 +52,17 @@ export class Parser {
       Members.push(Member);
       if (this.Token === Token) this.NextToken();
     }
-    return new Program(SyntaxKind.Program, Members, this.ExpectToken(SyntaxKind.EndOfFileToken));
+    return new Program(SyntaxNodeKind.Program, Members, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
   }
 
   private ParseStatement() {
     const Left = this.ParseBinaryExpression();
     switch (this.Token.Kind) {
-      case SyntaxKind.PointerToken:
-        const Keyword = this.NextToken() as SyntaxToken<SyntaxKind.GreaterGreaterToken>;
-        return new CellAssignment(SyntaxKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
-      // case SyntaxKind.GreaterGreaterToken:
-      //   return new DeclarationStatement(SyntaxKind.CloneCell, Left, this.NextToken(), this.ParseBinaryExpression());
+      case CompositeTokenKind.PointerToken:
+        const Keyword = this.NextToken() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
+        return new CellAssignment(SyntaxNodeKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
+      // case TokenKind.GreaterGreaterToken:
+      //   return new DeclarationStatement(TokenKind.CloneCell, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }
@@ -70,9 +74,9 @@ export class Parser {
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
-      const Operator = this.NextToken();
+      const Operator = this.NextToken() as SyntaxToken<BinaryOperatorKind>;
       const Right = this.ParseBinaryExpression(BinaryPrecedence);
-      Left = new BinaryExpression(SyntaxKind.BinaryExpression, Left, Operator, Right);
+      Left = new BinaryExpression(SyntaxNodeKind.BinaryExpression, Left, Operator, Right);
     }
     return Left;
   }
@@ -80,38 +84,38 @@ export class Parser {
   private ParseUnaryExpression(): ExpressionSyntax {
     const BinaryPrecedence = Facts.UnaryPrecedence(this.Token.Kind);
     if (BinaryPrecedence !== 0) {
-      const Operator = this.NextToken();
+      const Operator = this.NextToken() as SyntaxToken<UnaryOperatorKind>;
       const Right = this.ParseUnaryExpression();
-      return new UnaryExpression(SyntaxKind.UnaryExpression, Operator, Right);
+      return new UnaryExpression(SyntaxNodeKind.UnaryExpression, Operator, Right);
     }
     return this.ParseParenthesis();
   }
 
   private ParseParenthesis() {
-    if (this.MatchToken(SyntaxKind.OpenParenthesisToken)) {
+    if (this.MatchToken(SyntaxNodeKind.OpenParenthesisToken)) {
       const Left = this.NextToken();
       const Expression = this.ParseBinaryExpression();
-      const Right = this.ExpectToken(SyntaxKind.CloseParenthesisToken);
-      return new ParenthesizedExpression(SyntaxKind.ParenthesizedExpression, Left, Expression, Right);
+      const Right = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
+      return new ParenthesizedExpression(SyntaxNodeKind.ParenthesizedExpression, Left, Expression, Right);
     }
     return this.ParseRangeReference();
   }
 
   private ParseRangeReference() {
     const Left = this.ParseCellReference();
-    if (this.MatchToken(SyntaxKind.ColonToken)) {
+    if (this.MatchToken(SyntaxNodeKind.ColonToken)) {
       this.NextToken();
       const Right = this.ParseCellReference();
-      return new RangeReference(SyntaxKind.RangeReference, Left, Right);
+      return new RangeReference(SyntaxNodeKind.RangeReference, Left, Right);
     }
     return Left;
   }
 
   private ParseCellReference() {
-    if (this.MatchToken(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
-      const Left = this.NextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
-      const Right = this.NextToken() as SyntaxToken<SyntaxKind.NumberToken>;
-      return new CellReference(SyntaxKind.CellReference, Left, Right);
+    if (this.MatchToken(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
+      const Left = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
+      const Right = this.NextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
+      return new CellReference(SyntaxNodeKind.CellReference, Left, Right);
     }
     return this.ParseLiteral();
   }
@@ -119,19 +123,14 @@ export class Parser {
   private ParseLiteral() {
     const Kind = this.Token.Kind;
     switch (Kind) {
-      // case SyntaxKind.TrueToken:
-      // case SyntaxKind.FalseToken:
-      case SyntaxKind.IdentifierToken:
-      case SyntaxKind.NumberToken:
+      // case TokenKind.TrueToken:
+      // case TokenKind.FalseToken:
+      case SyntaxNodeKind.IdentifierToken:
+      case SyntaxNodeKind.NumberToken:
         return this.NextToken();
       default:
-        return this.ExpectToken(SyntaxKind.Expression);
+        return this.ExpectToken(SyntaxNodeKind.Expression);
     }
-  }
-
-  private ParseNewLineTokens() {
-    this.ExpectToken(SyntaxKind.LineBreakTrivia);
-    while (this.MatchToken(SyntaxKind.LineBreakTrivia)) this.NextToken();
   }
 
   private PeekToken(Offset: number) {
@@ -169,7 +168,7 @@ export class Parser {
   }
 
   private Any() {
-    return !this.MatchToken(SyntaxKind.EndOfFileToken);
+    return !this.MatchToken(SyntaxNodeKind.EndOfFileToken);
   }
 
   private None() {

@@ -3,7 +3,6 @@ export enum DiagnosticKind {
   BadTokenFound = "BadTokenFound",
   TokenNotAMatch = "TokenNotAMatch",
   CantDivideByZero = "CantDivideByZero",
-  MissingOperatorKind = "MissingOperatorKind",
   CircularDependency = "CircularDependency",
   CantUseAsAReference = "CantUseAsAReference",
   NameNotFound = "NameNotFound",

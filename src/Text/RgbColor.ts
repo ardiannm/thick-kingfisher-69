@@ -9,6 +9,7 @@ enum Color {
   Cerulean = "#9cdcfe",
   Sandstone = "#d7ba7d",
   Gray = "#202020",
+  Lavender = "#c586c0",
 }
 
 export class RgbColor {
@@ -65,5 +66,9 @@ export class RgbColor {
 
   static Gray(Text: string) {
     return this.Color(Text, Color.Gray);
+  }
+
+  static Lavender(Text: string) {
+    return this.Color(Text, Color.Lavender);
   }
 }

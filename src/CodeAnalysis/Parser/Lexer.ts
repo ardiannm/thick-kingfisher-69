@@ -1,22 +1,26 @@
-import { SyntaxKind } from "./SyntaxKind";
-import { SyntaxToken, TokenMap } from "./SyntaxToken";
+import { SyntaxKind } from "./Kind/SyntaxKind";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
+import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
+import { SyntaxToken, TokenTextMapper } from "./SyntaxToken";
 import { Facts } from "./Facts";
 import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
+import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
+import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 
 export class Lexer {
   private End = 0;
   private Start = this.End;
-  private Kind = SyntaxKind.EndOfFileToken;
+  private Kind = SyntaxNodeKind.EndOfFileToken as SyntaxKind;
 
   constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {}
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.End;
-    this.Kind = Facts.Kind(this.Char) as keyof TokenMap;
+    this.Kind = Facts.Kind(this.Char) as keyof TokenTextMapper;
 
     switch (this.Kind) {
-      case SyntaxKind.BadToken:
+      case SyntaxNodeKind.BadToken:
         // if no token matched from the syntax facts this may still be either a letter, number or space token
         if (this.IsLetter(this.Char)) {
           return this.ParseIdentifier();
@@ -32,25 +36,25 @@ export class Lexer {
         this.Diagnostics.BadTokenFound(this.Char);
         break;
 
-      case SyntaxKind.HashToken:
+      case SyntaxNodeKind.HashToken:
         // special case for hash token when it comes to comments
         return this.ParseCommentToken();
 
-      case SyntaxKind.MinusToken:
+      case BinaryOperatorKind.MinusToken:
         // special case for minus token
-        if (this.Match(SyntaxKind.MinusToken, SyntaxKind.GreaterToken)) {
+        if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
           // increment one more to account for the next token
           this.End += 1;
-          this.Kind = SyntaxKind.PointerToken;
+          this.Kind = CompositeTokenKind.PointerToken;
         }
         break;
 
-      case SyntaxKind.GreaterToken:
+      case SyntaxNodeKind.GreaterToken:
         // special case for greater token
-        if (this.Match(SyntaxKind.GreaterToken, SyntaxKind.GreaterToken)) {
+        if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
           // increment one more to account for the next token
           this.End += 1;
-          this.Kind = SyntaxKind.GreaterGreaterToken;
+          this.Kind = CompositeTokenKind.GreaterGreaterToken;
         }
     }
 
@@ -76,10 +80,10 @@ export class Lexer {
   private ParseCommentToken() {
     while (true) {
       this.End += 1;
-      if (this.Match(SyntaxKind.LineBreakTrivia)) break;
-      if (this.Match(SyntaxKind.EndOfFileToken)) break;
+      if (this.Match(SyntaxTriviaKind.LineBreakTrivia)) break;
+      if (this.Match(SyntaxNodeKind.EndOfFileToken)) break;
     }
-    return new SyntaxToken(SyntaxKind.CommentTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
+    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   // parse space tokens
@@ -87,7 +91,7 @@ export class Lexer {
     while (this.IsSpace(this.Char)) {
       this.End += 1;
     }
-    return new SyntaxToken(SyntaxKind.SpaceTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
+    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   // parse number tokens
@@ -95,7 +99,7 @@ export class Lexer {
     while (this.IsDigit(this.Char)) {
       this.End += 1;
     }
-    if (this.Match(SyntaxKind.DotToken)) {
+    if (this.Match(SyntaxNodeKind.DotToken)) {
       this.End += 1;
       if (!this.IsDigit(this.Char)) {
         this.Diagnostics.BadFloatingPointNumber();
@@ -104,8 +108,8 @@ export class Lexer {
     while (this.IsDigit(this.Char)) {
       this.End += 1;
     }
-    const NumberText = this.Text as TokenMap[SyntaxKind.NumberToken];
-    return new SyntaxToken(SyntaxKind.NumberToken, NumberText, this.Input.CreateTextSpan(this.Start, this.End));
+    const NumberText = this.Text as TokenTextMapper[SyntaxNodeKind.NumberToken];
+    return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.Input.CreateTextSpan(this.Start, this.End));
   }
 
   private IsSpace(Char: string): boolean {

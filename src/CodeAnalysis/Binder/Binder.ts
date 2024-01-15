@@ -1,15 +1,17 @@
-import { SyntaxKind } from "../Parser/SyntaxKind";
+import { SyntaxNodeKind } from "../Parser/Kind/SyntaxNodeKind";
+import { BinaryOperatorKind } from "../Parser/Kind/BinaryOperatorKind";
+import { UnaryOperatorKind } from "../Parser/Kind/UnaryOperatorKind";
 import { SyntaxNode } from "../Parser/SyntaxNode";
 import { BinaryExpression } from "../Parser/BinaryExpression";
 import { CellReference } from "../Parser/CellReference";
 import { SyntaxToken } from "../Parser/SyntaxToken";
 import { BoundBinaryExpression } from "./BoundBinaryExpression";
-import { BoundKind } from "./BoundKind";
+import { BoundKind } from "./Kind/BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
-import { BoundBinaryOperatorKind } from "./BoundBinaryOperatorKind";
+import { BoundBinaryOperatorKind } from "./Kind/BoundBinaryOperatorKind";
 import { UnaryExpression } from "../Parser/UnaryExpression";
 import { BoundUnaryExpression } from "./BoundUnaryExpression";
-import { BoundUnaryOperatorKind } from "./BoundUnaryOperatorKind";
+import { BoundUnaryOperatorKind } from "./Kind/BoundUnaryOperatorKind";
 import { ParenthesizedExpression } from "../Parser/ParenthesizedExpression";
 import { BoundNode } from "./BoundNode";
 import { Program } from "../Parser/Program";
@@ -28,19 +30,19 @@ export class Binder {
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (Node.Kind) {
-      case SyntaxKind.Program:
+      case SyntaxNodeKind.Program:
         return this.BindProgram(Node as NodeType<Program>);
-      case SyntaxKind.NumberToken:
-        return this.BindNumber(Node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>);
-      case SyntaxKind.CellReference:
+      case SyntaxNodeKind.NumberToken:
+        return this.BindNumber(Node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
+      case SyntaxNodeKind.CellReference:
         return this.BindCellReference(Node as NodeType<CellReference>);
-      case SyntaxKind.ParenthesizedExpression:
+      case SyntaxNodeKind.ParenthesizedExpression:
         return this.BindParenthesizedExpression(Node as NodeType<ParenthesizedExpression>);
-      case SyntaxKind.UnaryExpression:
+      case SyntaxNodeKind.UnaryExpression:
         return this.BindUnaryExpression(Node as NodeType<UnaryExpression>);
-      case SyntaxKind.BinaryExpression:
+      case SyntaxNodeKind.BinaryExpression:
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
-      case SyntaxKind.CellAssignment:
+      case SyntaxNodeKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
     throw new Error(`Binder: Method for '${Node.Kind}' is not implemented`);
@@ -55,7 +57,7 @@ export class Binder {
 
   private BindCellAssignment(Node: CellAssignment) {
     switch (Node.Left.Kind) {
-      case SyntaxKind.CellReference:
+      case SyntaxNodeKind.CellReference:
         break;
       default:
         this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
@@ -81,41 +83,39 @@ export class Binder {
     return new BoundBinaryExpression(BoundKind.BinaryExpression, Left, Operator, Right);
   }
 
-  private BindBinaryOperatorKind(Kind: SyntaxKind): BoundBinaryOperatorKind {
+  private BindBinaryOperatorKind(Kind: BinaryOperatorKind): BoundBinaryOperatorKind {
     switch (Kind) {
-      case SyntaxKind.PlusToken:
+      case BinaryOperatorKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;
-      case SyntaxKind.MinusToken:
+      case BinaryOperatorKind.MinusToken:
         return BoundBinaryOperatorKind.Subtraction;
-      case SyntaxKind.StarToken:
+      case BinaryOperatorKind.StarToken:
         return BoundBinaryOperatorKind.Multiplication;
-      case SyntaxKind.SlashToken:
+      case BinaryOperatorKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
-      case SyntaxKind.HatToken:
+      case BinaryOperatorKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
-    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindUnaryExpression(Node: UnaryExpression) {
     const Right = this.Bind(Node.Right);
     switch (Node.Operator.Kind) {
-      case SyntaxKind.MinusToken:
-      case SyntaxKind.PlusToken:
+      case UnaryOperatorKind.MinusToken:
+      case UnaryOperatorKind.PlusToken:
         const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
         return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
     }
     return Right;
   }
 
-  private BindUnaryOperatorKind(Kind: SyntaxKind): BoundUnaryOperatorKind {
+  private BindUnaryOperatorKind(Kind: UnaryOperatorKind): BoundUnaryOperatorKind {
     switch (Kind) {
-      case SyntaxKind.PlusToken:
+      case UnaryOperatorKind.PlusToken:
         return BoundUnaryOperatorKind.Identity;
-      case SyntaxKind.MinusToken:
+      case UnaryOperatorKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
-    throw this.Diagnostics.MissingOperatorKind(Kind);
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
@@ -127,7 +127,7 @@ export class Binder {
     return this.Scope.ConstructCell(Name);
   }
 
-  private BindNumber(Node: SyntaxToken<SyntaxKind.NumberToken>) {
+  private BindNumber(Node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
     const Value = parseFloat(Node.Text);
     return new BoundNumericLiteral(BoundKind.NumericLiteral, Value);
   }

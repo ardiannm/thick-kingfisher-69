@@ -1,5 +1,5 @@
 import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
-import { BoundKind } from "./CodeAnalysis/Binder/BoundKind";
+import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { Evaluator } from "./Evaluator";
 

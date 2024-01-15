@@ -1,6 +1,6 @@
-import { BoundKind } from "./BoundKind";
+import { BoundKind } from "./Kind/BoundKind";
 import { BoundExpression } from "./BoundExpression";
-import { BoundUnaryOperatorKind } from "./BoundUnaryOperatorKind";
+import { BoundUnaryOperatorKind } from "./Kind/BoundUnaryOperatorKind";
 
 export class BoundUnaryExpression extends BoundExpression {
   constructor(

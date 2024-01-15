@@ -1,6 +1,4 @@
-import { BoundBinaryOperatorKind } from "../CodeAnalysis/Binder/BoundBinaryOperatorKind";
-import { BoundUnaryOperatorKind } from "../CodeAnalysis/Binder/BoundUnaryOperatorKind";
-import { SyntaxKind } from "../CodeAnalysis/Parser/SyntaxKind";
+import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
 import { Diagnostic } from "./Diagnostic";
 import { DiagnosticKind } from "./DiagnosticKind";
 
@@ -50,11 +48,6 @@ export class DiagnosticBag {
   CantDivideByZero() {
     const Message = `Can't divide by zero`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CantDivideByZero, Message));
-  }
-
-  MissingOperatorKind(Kind: BoundBinaryOperatorKind | BoundUnaryOperatorKind | SyntaxKind) {
-    const Message = `Unexpected operator kind '${Kind}'`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.MissingOperatorKind, Message));
   }
 
   CircularDependency(ForName: string, InName: string) {

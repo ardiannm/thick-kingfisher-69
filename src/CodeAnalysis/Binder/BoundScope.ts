@@ -1,6 +1,6 @@
 import { Cell } from "../../Cell";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
-import { BoundKind } from "./BoundKind";
+import { BoundKind } from "./Kind/BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 
 export class BoundScope {

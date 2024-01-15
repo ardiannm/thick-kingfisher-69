@@ -1,10 +1,15 @@
-import { SyntaxKind } from "./SyntaxKind";
+import { SyntaxKind } from "./Kind/SyntaxKind";
+import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
+import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
+import { UnaryOperatorKind } from "./Kind/UnaryOperatorKind";
+import { SyntaxKeywordKind } from "./Kind/SyntaxKeywordKind";
+import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 
 export class Facts {
   public static UnaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
-      case SyntaxKind.PlusToken:
-      case SyntaxKind.MinusToken:
+      case UnaryOperatorKind.PlusToken:
+      case UnaryOperatorKind.MinusToken:
         return 3;
       default:
         return 0;
@@ -13,13 +18,13 @@ export class Facts {
 
   public static BinaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
-      case SyntaxKind.HatToken:
+      case BinaryOperatorKind.HatToken:
         return 3;
-      case SyntaxKind.StarToken:
-      case SyntaxKind.SlashToken:
+      case BinaryOperatorKind.StarToken:
+      case BinaryOperatorKind.SlashToken:
         return 2;
-      case SyntaxKind.PlusToken:
-      case SyntaxKind.MinusToken:
+      case BinaryOperatorKind.PlusToken:
+      case BinaryOperatorKind.MinusToken:
         return 1;
       default:
         return 0;
@@ -29,52 +34,52 @@ export class Facts {
   public static Kind(text: string): SyntaxKind {
     switch (text) {
       case "+":
-        return SyntaxKind.PlusToken;
+        return BinaryOperatorKind.PlusToken;
       case "-":
-        return SyntaxKind.MinusToken;
+        return BinaryOperatorKind.MinusToken;
       case "*":
-        return SyntaxKind.StarToken;
+        return BinaryOperatorKind.StarToken;
       case "/":
-        return SyntaxKind.SlashToken;
+        return BinaryOperatorKind.SlashToken;
       case "^":
-        return SyntaxKind.HatToken;
+        return BinaryOperatorKind.HatToken;
       case ":":
-        return SyntaxKind.ColonToken;
+        return SyntaxNodeKind.ColonToken;
       case "(":
-        return SyntaxKind.OpenParenthesisToken;
+        return SyntaxNodeKind.OpenParenthesisToken;
       case ")":
-        return SyntaxKind.CloseParenthesisToken;
+        return SyntaxNodeKind.CloseParenthesisToken;
       case ".":
-        return SyntaxKind.DotToken;
+        return SyntaxNodeKind.DotToken;
       case "#":
-        return SyntaxKind.HashToken;
+        return SyntaxNodeKind.HashToken;
       case ">":
-        return SyntaxKind.GreaterToken;
+        return SyntaxNodeKind.GreaterToken;
       case "\n":
-        return SyntaxKind.LineBreakTrivia;
+        return SyntaxTriviaKind.LineBreakTrivia;
       case "":
-        return SyntaxKind.EndOfFileToken;
+        return SyntaxNodeKind.EndOfFileToken;
       default:
-        return SyntaxKind.BadToken;
+        return SyntaxNodeKind.BadToken;
     }
   }
 
   public static KeywordOrIdentiferTokenKind(text: string): SyntaxKind {
     switch (text) {
       case "true":
-        return SyntaxKind.TrueKeyword;
+        return SyntaxKeywordKind.TrueKeyword;
       case "false":
-        return SyntaxKind.FalseKeyword;
+        return SyntaxKeywordKind.FalseKeyword;
       default:
-        return SyntaxKind.IdentifierToken;
+        return SyntaxNodeKind.IdentifierToken;
     }
   }
 
   public static IsTrivia(Kind: SyntaxKind) {
     switch (Kind) {
-      case SyntaxKind.LineBreakTrivia:
-      case SyntaxKind.SpaceTrivia:
-      case SyntaxKind.CommentTrivia:
+      case SyntaxTriviaKind.LineBreakTrivia:
+      case SyntaxTriviaKind.SpaceTrivia:
+      case SyntaxTriviaKind.CommentTrivia:
         return true;
       default:
         return false;

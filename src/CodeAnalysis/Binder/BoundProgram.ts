@@ -1,4 +1,4 @@
-import { BoundKind } from "./BoundKind";
+import { BoundKind } from "./Kind/BoundKind";
 import { BoundStatement } from "./BoundStatement";
 
 export class BoundProgram extends BoundStatement {
