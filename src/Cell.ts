@@ -11,7 +11,8 @@ export class Cell extends BoundNode {
     public Value: number,
     public Expression: BoundExpression,
     public Subjects: Map<string, Cell>,
-    public Observers: Map<string, Cell>
+    public Observers: Map<string, Cell>,
+    public Input: string
   ) {
     super(Kind);
   }

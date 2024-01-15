@@ -70,6 +70,7 @@ export class Binder {
     }
     this.Scope = this.Scope.ParentScope as BoundScope;
     Cell.Declared = true;
+    Cell.Input = Node.Expression.TextSpan().Get();
     return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
   }
 
