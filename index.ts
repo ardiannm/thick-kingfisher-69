@@ -23,13 +23,14 @@ const Fn = () => {
     } else {
       text = src.join("\n");
       src.length = 0;
-      source.Parse(text).Print().TextSpan().Bind().Evaluate();
+      source.Parse(text).Print().Bind().Evaluate();
       if (source.diagnostics.Any()) {
         console.log();
         for (const d of source.diagnostics.Bag) console.log(d);
         source.diagnostics.Clear();
       } else {
         console.log();
+        source.TextSpan();
         console.log(RgbColor.Azure(source.value.toString()));
       }
       console.log();

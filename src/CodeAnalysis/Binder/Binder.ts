@@ -58,22 +58,21 @@ export class Binder {
   private BindCellAssignment(Node: CellAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxNodeKind.CellReference:
-        break;
-      default:
-        this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+        const Cell = this.Bind(Node.Left) as Cell;
+        const AssignmentScope = new BoundScope(this.Scope);
+        this.Scope = AssignmentScope as BoundScope;
+        Cell.Expression = this.Bind(Node.Expression);
+        Cell.ClearSubjects();
+        for (const Subject of this.Scope.GetCells()) {
+          Cell.Watch(Subject);
+        }
+        this.Scope = this.Scope.ParentScope as BoundScope;
+        Cell.Declared = true;
+        Cell.Formula = Node.Expression.TextSpan().Get();
+        return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
     }
-    const Cell = this.Bind(Node.Left) as Cell;
-    const AssignmentScope = new BoundScope(this.Scope);
-    this.Scope = AssignmentScope as BoundScope;
-    Cell.Expression = this.Bind(Node.Expression);
-    Cell.ClearSubjects();
-    for (const Subject of this.Scope.GetCells()) {
-      Cell.Watch(Subject);
-    }
-    this.Scope = this.Scope.ParentScope as BoundScope;
-    Cell.Declared = true;
-    Cell.Input = Node.Expression.TextSpan().Get();
-    return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
+    this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
+    return new BoundNode(BoundKind.CellAssignment);
   }
 
   private BindBinaryExpression(Node: BinaryExpression) {
@@ -106,7 +105,6 @@ export class Binder {
         const Operator = this.BindUnaryOperatorKind(Node.Operator.Kind);
         return new BoundUnaryExpression(BoundKind.UnaryExpression, Operator, Right);
     }
-    return Right;
   }
 
   private BindUnaryOperatorKind(Kind: UnaryOperatorKind): BoundUnaryOperatorKind {

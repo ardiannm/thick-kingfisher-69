@@ -55,8 +55,8 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.CircularDependency, Message));
   }
 
-  CantUseAsAReference(Unexpected: string) {
-    const Message = `'${Unexpected}' can't be used as a reference`;
+  CantUseAsAReference(Unexpected: SyntaxKind) {
+    const Message = `'${Unexpected}' is not assignable to a cell reference`;
     return this.ReportError(new Diagnostic(DiagnosticKind.CantUseAsAReference, Message));
   }
 
