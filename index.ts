@@ -1,6 +1,6 @@
-import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
-
 import readline from "readline";
+
+import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
 import { RgbColor } from "./src/Text/RgbColor";
 
 const prompt = readline.createInterface({ input: process.stdin, output: process.stdout });
