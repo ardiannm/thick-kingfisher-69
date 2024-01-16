@@ -8,23 +8,23 @@ enum Color {
   Teal = "#19c37d",
   Cerulean = "#9cdcfe",
   Sandstone = "#d7ba7d",
-  Gray = "#202020",
+  Gray = "#404040",
   Lavender = "#c586c0",
 }
 
-export class RgbColor {
+export class Painter {
   constructor(public r: number, public g: number, public b: number) {}
 
   private static Color(Text: string, Hex: string): string {
     return this.HexToColorCode(Hex) + Text + "\x1b[0m";
   }
 
-  private static HexToRgb(Hex: string): RgbColor {
+  private static HexToRgb(Hex: string): Painter {
     const BingInt = parseInt(Hex.substring(1), 16);
     const r = (BingInt >> 16) & 255;
     const g = (BingInt >> 8) & 255;
     const b = BingInt & 255;
-    return new RgbColor(r, g, b);
+    return new Painter(r, g, b);
   }
 
   private static HexToColorCode(Hex: string) {
@@ -70,5 +70,13 @@ export class RgbColor {
 
   static Lavender(Text: string) {
     return this.Color(Text, Color.Lavender);
+  }
+
+  static Buff(Text: string) {
+    return this.Color(Text, Color.Buff);
+  }
+
+  static Default(Text: string) {
+    return Text;
   }
 }

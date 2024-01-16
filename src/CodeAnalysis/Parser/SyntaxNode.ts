@@ -1,4 +1,4 @@
-import { RgbColor } from "../../Text/RgbColor";
+import { Painter } from "../../Text/Painter";
 import { TextSpan } from "../../Text/TextSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 
@@ -6,14 +6,9 @@ export class SyntaxNode {
   constructor(public Kind: SyntaxKind) {}
 
   *Children(): Generator<SyntaxNode> {
-    for (const Node of Object.values(this)) {
-      if (Array.isArray(Node)) {
-        for (const InnerNode of Node) {
-          yield InnerNode;
-        }
-      } else if (Node instanceof SyntaxNode) {
-        yield Node;
-      }
+    for (const Data of Object.values(this)) {
+      if (Array.isArray(Data)) for (const Iteration of Data) yield Iteration;
+      if (Data instanceof SyntaxNode) yield Data;
     }
   }
 
@@ -33,13 +28,13 @@ export class SyntaxNode {
   }
 
   Print(Indent = "") {
-    var Text: string = RgbColor.Azure(this.Kind) + "";
+    var Text = Painter.Sandstone(this.Kind);
     for (const Child of this.Children()) {
       Text += "\n" + Indent;
       if (Child === this.Last()) {
-        Text += RgbColor.Azure("└── ") + Child.Print(Indent + "   ");
+        Text += Painter.Gray("└── ") + Child.Print(Indent + "   ");
       } else {
-        Text += RgbColor.Azure("├── ") + Child.Print(Indent + RgbColor.Azure("│  "));
+        Text += Painter.Gray("├── ") + Child.Print(Indent + Painter.Gray("│  "));
       }
     }
     return Text;

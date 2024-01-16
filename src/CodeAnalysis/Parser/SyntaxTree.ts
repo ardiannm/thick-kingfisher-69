@@ -1,5 +1,3 @@
-import { SyntaxToken } from "./SyntaxToken";
-import { RgbColor } from "../../Text/RgbColor";
 import { SyntaxNode } from "./SyntaxNode";
 import { SourceText } from "../../Text/SourceText";
 import { Parser } from "./Parser";
@@ -47,13 +45,6 @@ export class SyntaxTree {
     return new SyntaxTree(diagnostics);
   }
 
-  TextSpan() {
-    if (this.diagnostics.None()) {
-      console.log(RgbColor.Azure(this.tree.TextSpan().Get()));
-    }
-    return this;
-  }
-
   Parse(text: string) {
     const input = SourceText.From(text);
     const parser = new Parser(input, this.diagnostics);
@@ -82,11 +73,6 @@ export class SyntaxTree {
 
   get Count() {
     return this.binder.Scope.Count;
-  }
-
-  PrintTree() {
-    console.log(this.tree.Print());
-    return this;
   }
 
   Log() {

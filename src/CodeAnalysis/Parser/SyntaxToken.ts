@@ -6,7 +6,7 @@ import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
 import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
 import { SyntaxKeywordKind } from "./Kind/SyntaxKeywordKind";
-import { RgbColor } from "../../Text/RgbColor";
+import { Painter } from "../../Text/Painter";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
@@ -69,15 +69,22 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
 
   public override Print() {
     var Text = "";
-    if (this.Trivia.length) {
-      var TextTrivia = "";
-      for (const Trivia of this.Trivia) {
-        TextTrivia += RgbColor.Sandstone(Trivia.Kind) + " ";
-      }
-      Text += TextTrivia;
+    Text += Painter.Gray("'");
+    Text += Painter.Moss(this.Kind);
+    Text += Painter.Gray("'");
+    Text += " ";
+    Text += Painter.Gray("'");
+    Text += Painter.Terracotta(this.Text);
+    Text += Painter.Gray("'");
+    Text += " ";
+    var TextTrivia = "";
+    for (const Trivia of this.Trivia) {
+      TextTrivia += Painter.Gray("'");
+      TextTrivia += Painter.Sage(Trivia.Kind);
+      TextTrivia += Painter.Gray("'");
+      TextTrivia += " ";
     }
-    Text += RgbColor.Azure(this.Kind);
-    Text += RgbColor.Sandstone(" " + '"' + this.Text + '"');
+    Text += TextTrivia;
     return Text;
   }
 }

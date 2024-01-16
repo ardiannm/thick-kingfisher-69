@@ -8,7 +8,7 @@ import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundUnaryOperatorKind";
 import { Cell } from "./Cell";
-import { RgbColor } from "./Text/RgbColor";
+import { Painter } from "./Text/Painter";
 
 export class Evaluator {
   private Value = 0;
