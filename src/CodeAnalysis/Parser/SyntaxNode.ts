@@ -28,7 +28,7 @@ export class SyntaxNode {
   }
 
   Print(Indent = "") {
-    var Text = Painter.Sandstone(this.Kind);
+    var Text = Painter.Default(this.Kind);
     for (const Child of this.Children()) {
       Text += "\n" + Indent;
       if (Child === this.Last()) {

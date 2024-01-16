@@ -70,18 +70,17 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   public override Print() {
     var Text = "";
     Text += Painter.Gray("'");
-    Text += Painter.Moss(this.Kind);
+    Text += Painter.Teal(this.Kind);
     Text += Painter.Gray("'");
+    Text += Painter.Gray(":");
     Text += " ";
     Text += Painter.Gray("'");
-    Text += Painter.Terracotta(this.Text);
+    Text += Painter.Teal(this.Text);
     Text += Painter.Gray("'");
     Text += " ";
     var TextTrivia = "";
     for (const Trivia of this.Trivia) {
-      TextTrivia += Painter.Gray("'");
-      TextTrivia += Painter.Sage(Trivia.Kind);
-      TextTrivia += Painter.Gray("'");
+      TextTrivia += Painter.Default(Trivia.Kind);
       TextTrivia += " ";
     }
     Text += TextTrivia;
