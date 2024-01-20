@@ -11,6 +11,9 @@ console.clear();
 const src = new Array<string>();
 
 const Fn = () => {
+  // there is an error with this test case:
+  // A1 -> A1
+  // A2 -> A1
   prompt.question("", function (text) {
     if (text === "q") {
       prompt.close();
