@@ -47,8 +47,7 @@ export class BoundScope {
       Cell.Subjects.forEach((Subject) => {
         if (!Subject.Declared) Diagnostics.UndeclaredCell(Subject.Name);
       });
-      const Circular = Cell.IsCircular(Diagnostics);
-      if (Circular) Diagnostics.CircularDependency(Cell.Name, Circular.Name);
+      Cell.IsCircular(Cell, Diagnostics);
     }
   }
 

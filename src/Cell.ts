@@ -27,31 +27,20 @@ export class Cell extends BoundNode {
     this.Observers.set(Observer.Name, Observer);
   }
 
-  IsCircular(Diagnostics: DiagnosticBag) {
-    const Visited = new Set<string>();
-    const HasCircularDependency = (Dependency: Cell): null | Cell => {
-      if (Dependency.Subjects.has(this.Name)) {
-        return Dependency;
+  IsCircular(Subject: Cell, Diagnostics: DiagnosticBag) {
+    if (this.Subjects.has(Subject.Name)) {
+      Diagnostics.CircularDependency(Subject.Name, Subject.Name);
+      return true;
+    }
+    for (const Sub of this.Subjects.values()) {
+      if (Sub.IsCircular(Sub, Diagnostics)) continue;
+      if (Sub.Subjects.has(Subject.Name)) {
+        Diagnostics.CircularDependency(Subject.Name, Sub.Name);
+        return true;
       }
-      for (const Subject of Dependency.Subjects.values()) {
-        const Circular = Subject.IsCircular(Diagnostics);
-        if (Circular) {
-          Diagnostics.InvalidSubjectState(Circular.Name);
-          continue;
-        }
-        if (Visited.has(Subject.Name)) {
-          continue;
-        }
-        const CircularSubject = HasCircularDependency(Subject);
-        if (HasCircularDependency(Subject)) {
-          return CircularSubject;
-        }
-      }
-      return null;
-    };
-    const Check = HasCircularDependency(this);
-    Visited.clear();
-    return Check;
+      if (Sub.IsCircular(Subject, Diagnostics)) return true;
+    }
+    return false;
   }
 
   Evaluate(Class: Evaluator) {
