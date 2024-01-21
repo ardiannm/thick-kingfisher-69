@@ -37,9 +37,6 @@ export class Cell extends BoundNode {
   }
 
   Contains(Subject: Cell) {
-    if (this.Observers.has(this.Name)) {
-      return this;
-    }
     if (this.Subjects.has(Subject.Name)) {
       return this;
     }
