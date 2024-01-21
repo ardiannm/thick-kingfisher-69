@@ -66,7 +66,7 @@ export class Binder {
         Cell.Expression = this.Bind(Node.Expression);
         Cell.ClearSubjects();
         for (const Subject of this.Scope.GetCells()) {
-          Cell.Watch(Subject, this.Diagnostics);
+          Cell.Watch(Subject);
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
         Cell.Declared = true;

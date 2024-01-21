@@ -2,7 +2,6 @@ import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { Evaluator } from "./Evaluator";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class Cell extends BoundNode {
   constructor(
@@ -18,11 +17,7 @@ export class Cell extends BoundNode {
     super(Kind);
   }
 
-  Watch(Subject: Cell, Diagnostics: DiagnosticBag) {
-    if (Subject.Contains(Subject)) {
-      Diagnostics.CantWatchSubject(Subject.Name);
-      return;
-    }
+  Watch(Subject: Cell) {
     this.Subjects.set(Subject.Name, Subject);
     Subject.Notify(this);
   }
