@@ -51,8 +51,7 @@ export class BoundScope {
           Diagnostics.UndeclaredCell(Subject.Name);
         }
       });
-      const Subject = Cell.Contains(Cell);
-      if (Subject) Diagnostics.CircularDependency(Cell.Name, Subject.Name);
+      Cell.Contains(Cell, Diagnostics);
     });
   }
 

@@ -9,5 +9,5 @@ export enum DiagnosticKind {
   BadFloatingPointNumber = "BadFloatingPointNumber",
   BinderMethod = "BinderMethod",
   EvaluatorMethod = "EvaluatorMethod",
-  CantWatchSubject = "CantWatchSubject",
+  InvalidCellState = "InvalidCellState",
 }
