@@ -5,8 +5,9 @@ export enum DiagnosticKind {
   CantDivideByZero = "CantDivideByZero",
   CircularDependency = "CircularDependency",
   CantUseAsAReference = "CantUseAsAReference",
-  NameNotFound = "NameNotFound",
+  UndeclaredCell = "UndeclaredCell",
   BadFloatingPointNumber = "BadFloatingPointNumber",
   BinderMethod = "BinderMethod",
   EvaluatorMethod = "EvaluatorMethod",
+  InvalidSubjectState = "InvalidSubjectState",
 }

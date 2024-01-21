@@ -43,13 +43,11 @@ export class BoundScope {
 
   CheckDeclarations(Diagnostics: DiagnosticBag) {
     for (const Cell of this.GetCells()) {
-      if (!Cell.Declared) {
-        Diagnostics.NameNotFound(Cell.Name);
-      }
+      if (!Cell.Declared) Diagnostics.UndeclaredCell(Cell.Name);
       Cell.Subjects.forEach((Subject) => {
-        if (!Subject.Declared) Diagnostics.NameNotFound(Subject.Name);
+        if (!Subject.Declared) Diagnostics.UndeclaredCell(Subject.Name);
       });
-      const Circular = Cell.CheckCircularity();
+      const Circular = Cell.IsCircular(Diagnostics);
       if (Circular) Diagnostics.CircularDependency(Cell.Name, Circular.Name);
     }
   }

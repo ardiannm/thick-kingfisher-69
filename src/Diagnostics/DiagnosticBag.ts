@@ -18,6 +18,10 @@ export class DiagnosticBag {
     return this.Diagnostics.length;
   }
 
+  Add(Diagnostic: Diagnostic) {
+    this.Diagnostics.push(Diagnostic);
+  }
+
   Clear() {
     this.Diagnostics.length = 0;
   }
@@ -60,14 +64,19 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.CantUseAsAReference, Message));
   }
 
-  NameNotFound(Name: string) {
-    const Message = `Cell reference '${Name}' is undeclared`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.NameNotFound, Message));
+  UndeclaredCell(CellName: string) {
+    const Message = `Cell reference '${CellName}' is undeclared`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.UndeclaredCell, Message));
   }
 
   BadFloatingPointNumber() {
     const Message = `Wrong floating number format`;
     return this.ReportError(new Diagnostic(DiagnosticKind.BadFloatingPointNumber, Message));
+  }
+
+  InvalidSubjectState(CellName: string) {
+    const Message = `Invalid state for subject '${CellName}'`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.InvalidSubjectState, Message));
   }
 
   BinderMethod(Kind: SyntaxKind) {

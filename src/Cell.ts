@@ -2,6 +2,7 @@ import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
 import { Evaluator } from "./Evaluator";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 
 export class Cell extends BoundNode {
   constructor(
@@ -26,13 +27,18 @@ export class Cell extends BoundNode {
     this.Observers.set(Observer.Name, Observer);
   }
 
-  CheckCircularity() {
+  IsCircular(Diagnostics: DiagnosticBag) {
     const Visited = new Set<string>();
     const HasCircularDependency = (Dependency: Cell): null | Cell => {
       if (Dependency.Subjects.has(this.Name)) {
         return Dependency;
       }
       for (const Subject of Dependency.Subjects.values()) {
+        const Circular = Subject.IsCircular(Diagnostics);
+        if (Circular) {
+          Diagnostics.InvalidSubjectState(Circular.Name);
+          continue;
+        }
         if (Visited.has(Subject.Name)) {
           continue;
         }
