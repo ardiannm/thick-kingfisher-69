@@ -64,10 +64,9 @@ export class Binder {
         const AssignmentScope = new BoundScope(this.Scope);
         this.Scope = AssignmentScope as BoundScope;
         Cell.Expression = this.Bind(Node.Expression);
-        console.log(Cell);
         Cell.ClearSubjects();
         for (const Subject of this.Scope.GetCells()) {
-          Cell.Watch(Subject);
+          Cell.Watch(Subject, this.Diagnostics);
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
         Cell.Declared = true;

@@ -18,29 +18,18 @@ export class Cell extends BoundNode {
     super(Kind);
   }
 
-  Watch(Subject: Cell) {
+  Watch(Subject: Cell, Diagnostics: DiagnosticBag) {
+    if (Subject.Contains(Subject)) {
+      Diagnostics.CantWatchSubject(Subject.Name);
+      return;
+    }
     this.Subjects.set(Subject.Name, Subject);
     Subject.Notify(this);
+    return;
   }
 
   Notify(Observer: Cell) {
     this.Observers.set(Observer.Name, Observer);
-  }
-
-  IsCircular(Subject: Cell, Diagnostics: DiagnosticBag) {
-    if (this.Subjects.has(Subject.Name)) {
-      Diagnostics.CircularDependency(Subject.Name, Subject.Name);
-      return true;
-    }
-    for (const Sub of this.Subjects.values()) {
-      if (Sub.IsCircular(Sub, Diagnostics)) continue;
-      if (Sub.Subjects.has(Subject.Name)) {
-        Diagnostics.CircularDependency(Subject.Name, Sub.Name);
-        return true;
-      }
-      if (Sub.IsCircular(Subject, Diagnostics)) return true;
-    }
-    return false;
   }
 
   Evaluate(Class: Evaluator) {
@@ -51,6 +40,12 @@ export class Cell extends BoundNode {
 
   private ClearObserver(Observer: Cell) {
     this.Observers.delete(Observer.Name);
+  }
+
+  Contains(Subject: Cell) {
+    if (this.Subjects.has(Subject.Name)) return this;
+    for (const Sub of this.Subjects.values()) if (Sub.Contains(Subject)) return Sub;
+    return null;
   }
 
   ClearSubjects() {

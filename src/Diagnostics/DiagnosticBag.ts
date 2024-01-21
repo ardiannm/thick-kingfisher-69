@@ -74,9 +74,9 @@ export class DiagnosticBag {
     return this.ReportError(new Diagnostic(DiagnosticKind.BadFloatingPointNumber, Message));
   }
 
-  InvalidSubjectState(CellName: string) {
-    const Message = `Invalid state for subject '${CellName}'`;
-    return this.ReportError(new Diagnostic(DiagnosticKind.InvalidSubjectState, Message));
+  CantWatchSubject(SubjectName: string) {
+    const Message = `Subject '${SubjectName}' is in an invalid state`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.CantWatchSubject, Message));
   }
 
   BinderMethod(Kind: SyntaxKind) {
