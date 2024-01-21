@@ -21,10 +21,10 @@ export class Cell extends BoundNode {
   Watch(Subject: Cell, Diagnostics: DiagnosticBag) {
     if (Subject.Contains(Subject)) {
       Diagnostics.CantWatchSubject(Subject.Name);
-    } else {
-      this.Subjects.set(Subject.Name, Subject);
-      Subject.Notify(this);
+      return;
     }
+    this.Subjects.set(Subject.Name, Subject);
+    Subject.Notify(this);
   }
 
   Notify(Observer: Cell) {
