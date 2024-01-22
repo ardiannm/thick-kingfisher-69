@@ -1,0 +1,45 @@
+%%{
+  init: {
+    'theme': 'base',
+    'flowchart': { 'curve': 'linear' },
+    'themeVariables': {
+      'darkMode': false,
+      'primaryColor': '#ffaacc',
+      'fontSize': '15px',
+      'lineColor': '#000',
+      'edgeLabelBackground': 'whitesmoke'
+    }
+  }
+}%%
+
+flowchart TD
+    provideInput[A3->B3+B7]
+    tokenize
+    parseTokens[generate parse tree using tokens]
+    binder[bind the syntax tree in the binder]
+    createObject[create object A3 automatically]
+    createSubjects[create subjects B3 and B7<br/>automatically]
+    define[define subjects automatically]
+    error[report compiler error <br/> for undefined references]
+    move[move subjects from A3 <br/> to parent scope]
+    type[forach subject: <br/> add `declaration:auto` prop]
+    notify[notify diagnostics warning <br/> for auto defined subjects]
+    declarationFalse[forach subject: <br/> add `declaration:false` prop]
+    tree[tree]
+
+    provideInput --> tokenize
+    tokenize --> parseTokens
+    parseTokens --> binder
+    binder -->|when binding A3| createObject
+    createObject --> createSubjects
+    createSubjects --> define
+    define -->|Yes| move
+    move --> type
+    type --> notify
+    notify -->|return| tree
+    define -->|No| declarationFalse 
+    declarationFalse --> error 
+    error -->|return| tree
+
+    classDef default fill:transparent,stroke:#000
+
