@@ -48,7 +48,7 @@ export class Binder {
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
     }
     this.Diagnostics.BinderMethod(Node.Kind);
-    return new BoundError(BoundKind.Error);
+    return new BoundError(BoundKind.Error, Node.Kind);
   }
 
   private BindProgram(Node: Program) {

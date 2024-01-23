@@ -7,11 +7,12 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
 import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundUnaryOperatorKind";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { Cell } from "./Cell";
-import { Painter } from "./Text/Painter";
 
 export class Evaluator {
   private Value = 0;
+  constructor(private Diagnostics: DiagnosticBag) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -29,7 +30,8 @@ export class Evaluator {
       case BoundKind.NumericLiteral:
         return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
     }
-    throw new Error(`Evaluator: Method for '${Node.Kind}' is not implemented`);
+    this.Diagnostics.EvaluatorMethod(Node.Kind);
+    return 0;
   }
 
   private EvaluateProgram(Node: BoundProgram): number {

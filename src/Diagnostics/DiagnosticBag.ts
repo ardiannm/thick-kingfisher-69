@@ -1,4 +1,5 @@
 import { Cell } from "../Cell";
+import { BoundKind } from "../CodeAnalysis/Binder/Kind/BoundKind";
 import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
 import { Diagnostic } from "./Diagnostic";
 import { DiagnosticSeverity } from "./DiagnosticSeverity";
@@ -23,7 +24,7 @@ export class DiagnosticBag {
   }
 
   Any() {
-    return this.Filter(DiagnosticSeverity.Error).length > 0;
+    return this.Filter(DiagnosticSeverity.Error, DiagnosticSeverity.Dev).length > 0;
   }
 
   None() {
@@ -75,7 +76,7 @@ export class DiagnosticBag {
   }
 
   InvalidCellState(Subject: Cell) {
-    const Message = `Reference '${Subject}' is in an invalid state`;
+    const Message = `Reference '${Subject.Name}' is in an invalid state`;
     return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
@@ -86,11 +87,11 @@ export class DiagnosticBag {
 
   BinderMethod(Kind: SyntaxKind) {
     const Message = `Binder: Method for '${Kind}' is not implemented`;
-    return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Feedback, Message));
+    return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Dev, Message));
   }
 
-  EvaluatorMethod(Kind: SyntaxKind) {
+  EvaluatorMethod(Kind: BoundKind) {
     const Message = `Evaluator: Method for '${Kind}' is not implemented`;
-    return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Feedback, Message));
+    return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Dev, Message));
   }
 }

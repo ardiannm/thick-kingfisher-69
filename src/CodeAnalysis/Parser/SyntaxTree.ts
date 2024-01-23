@@ -13,13 +13,15 @@ import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
 export class SyntaxTree {
   private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
   private bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
-  private evaluator = new Evaluator();
 
   private binder: Binder;
+  private evaluator: Evaluator;
+
   value: number = 0;
 
   private constructor(public diagnostics: DiagnosticBag, private compilerOptions: CompilerOptions) {
     this.binder = new Binder(this.diagnostics, this.compilerOptions);
+    this.evaluator = new Evaluator(this.diagnostics);
   }
 
   ParseName(row: number, column: number) {
