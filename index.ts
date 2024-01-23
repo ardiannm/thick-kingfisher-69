@@ -1,6 +1,7 @@
 import readline from "readline";
 
 import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
+import { DiagnosticSeverity } from "./src/Diagnostics/DiagnosticSeverity";
 
 const prompt = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -26,7 +27,7 @@ const Fn = () => {
       source.Parse(text).Log().Bind().Evaluate();
       if (source.diagnostics.Any()) {
         console.log();
-        for (const d of source.diagnostics.Bag()) console.log(d);
+        for (const d of source.diagnostics.Filter(DiagnosticSeverity.Informative)) console.log(d);
         source.diagnostics.Clear();
       } else {
         console.log();

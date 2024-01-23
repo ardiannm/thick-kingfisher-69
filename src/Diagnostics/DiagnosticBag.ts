@@ -4,34 +4,14 @@ import { Diagnostic } from "./Diagnostic";
 import { DiagnosticSeverity } from "./DiagnosticSeverity";
 
 export class DiagnosticBag {
-  private Errors = new Array<Diagnostic>();
-  private Informations = new Array<Diagnostic>();
-  private Warnings = new Array<Diagnostic>();
-  private Feedbacks = new Array<Diagnostic>();
+  private Diagnostics = new Array<Diagnostic>();
 
   private AddToSeverityList(Diagnostic: Diagnostic) {
-    switch (Diagnostic.Severity) {
-      case DiagnosticSeverity.Error:
-        this.Errors.push(Diagnostic);
-        break;
-      case DiagnosticSeverity.Informative:
-        this.Informations.push(Diagnostic);
-        break;
-      case DiagnosticSeverity.Warning:
-        this.Warnings.push(Diagnostic);
-        break;
-      case DiagnosticSeverity.Feedback:
-        this.Feedbacks.push(Diagnostic);
-        break;
-    }
-    return Diagnostic;
+    this.Diagnostics.push(Diagnostic);
   }
 
-  *Bag() {
-    for (const d of this.Errors) yield d;
-    for (const d of this.Informations) yield d;
-    for (const d of this.Warnings) yield d;
-    for (const d of this.Feedbacks) yield d;
+  Bag() {
+    return this.Diagnostics;
   }
 
   Add(Diagnostic: Diagnostic) {
@@ -39,19 +19,19 @@ export class DiagnosticBag {
   }
 
   Clear() {
-    this.Errors.length = 0;
-    this.Warnings.length = 0;
-    this.Informations.length = 0;
-    this.Warnings.length = 0;
-    this.Feedbacks.length = 0;
+    this.Diagnostics.length = 0;
   }
 
   Any() {
-    return this.Errors.length + this.Feedbacks.length > 0;
+    return this.Filter(DiagnosticSeverity.Error).length > 0;
   }
 
   None() {
     return !this.Any();
+  }
+
+  Filter(...Severity: Array<DiagnosticSeverity>) {
+    return this.Diagnostics.filter((d) => Severity.includes(d.Severity));
   }
 
   BadTokenFound(Text: string) {
