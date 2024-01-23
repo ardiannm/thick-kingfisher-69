@@ -4,12 +4,9 @@ import { BoundKind } from "./Kind/BoundKind";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 
 export class BoundScope {
-  Id = 0;
   private Cells = new Map<string, Cell>();
 
-  constructor(public ParentScope: BoundScope | null) {
-    if (ParentScope) this.Id++;
-  }
+  constructor(public ParentScope: BoundScope | null) {}
 
   ConstructCell(Name: string) {
     const Scope = this.ResolveScopeForCell(Name);

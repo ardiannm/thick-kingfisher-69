@@ -1,5 +1,5 @@
-import { DiagnosticKind } from "./DiagnosticKind";
+import { DiagnosticSeverity } from "./DiagnosticSeverity";
 
 export class Diagnostic {
-  constructor(public Kind: DiagnosticKind, public Message: string) {}
+  constructor(public Severity: DiagnosticSeverity, public Message: string) {}
 }

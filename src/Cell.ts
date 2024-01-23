@@ -39,7 +39,7 @@ export class Cell extends BoundNode {
 
   Contains(Subject: Cell, Diagnostics: DiagnosticBag, CheckingCells: Set<Cell> = new Set()): null | Cell {
     if (CheckingCells.has(this)) {
-      Diagnostics.InvalidCellState(this.Name);
+      Diagnostics.InvalidCellState(this);
       return this;
     }
     if (this.Subjects.has(Subject.Name)) {

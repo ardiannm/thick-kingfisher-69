@@ -26,7 +26,7 @@ const Fn = () => {
       source.Parse(text).Log().Bind().Evaluate();
       if (source.diagnostics.Any()) {
         console.log();
-        for (const d of source.diagnostics.Bag) console.log(d);
+        for (const d of source.diagnostics.Bag()) console.log(d);
         source.diagnostics.Clear();
       } else {
         console.log();
