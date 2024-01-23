@@ -14,12 +14,11 @@ export class SyntaxTree {
   private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
   private bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   private evaluator = new Evaluator();
-  private compilerOptions = new CompilerOptions(true);
 
   private binder: Binder;
   value: number = 0;
 
-  private constructor(public diagnostics: DiagnosticBag) {
+  private constructor(public diagnostics: DiagnosticBag, private compilerOptions: CompilerOptions) {
     this.binder = new Binder(this.diagnostics, this.compilerOptions);
   }
 
@@ -41,9 +40,9 @@ export class SyntaxTree {
     return name;
   }
 
-  static Init() {
+  static Init(compilerOptions: CompilerOptions) {
     const diagnostics = new DiagnosticBag();
-    return new SyntaxTree(diagnostics);
+    return new SyntaxTree(diagnostics, compilerOptions);
   }
 
   Parse(text: string) {
