@@ -67,11 +67,12 @@ export class Binder {
         Cell.Expression = this.Bind(Node.Expression);
         Cell.ClearSubjects();
         for (const Subject of this.Scope.GetCells()) {
-          if (this.compilerOptions.autoDeclaration) {
-            Subject.Declared = true;
-            this.Diagnostics.AutoDeclaredCell(Subject, Cell);
-          }
           Cell.Watch(Subject);
+          if (Subject.Declared) continue;
+          if (this.compilerOptions.autoDeclaration) {
+            this.Diagnostics.AutoDeclaredCell(Subject, Cell);
+            Subject.Declared = true;
+          }
         }
         if (this.compilerOptions.autoDeclaration) this.Scope.MoveCellsToParent();
         this.Scope = this.Scope.ParentScope as BoundScope;
