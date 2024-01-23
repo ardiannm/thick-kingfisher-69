@@ -10,4 +10,5 @@ export enum DiagnosticKind {
   BinderMethod = "BinderMethod",
   EvaluatorMethod = "EvaluatorMethod",
   InvalidCellState = "InvalidCellState",
+  AutoDeclaredCell = "AutoDeclaredCell",
 }

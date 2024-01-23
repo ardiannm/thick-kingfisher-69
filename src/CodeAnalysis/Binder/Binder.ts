@@ -23,10 +23,11 @@ import { CellAssignment } from "../Parser/CellAssignment";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Cell } from "../../Cell";
 import { BoundCellAssignment } from "./BoundCellAssignment";
+import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
 
 export class Binder {
   public Scope = new BoundScope(null);
-  constructor(private Diagnostics: DiagnosticBag) {}
+  constructor(private Diagnostics: DiagnosticBag, public compilerOptions: CompilerOptions) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -66,8 +67,13 @@ export class Binder {
         Cell.Expression = this.Bind(Node.Expression);
         Cell.ClearSubjects();
         for (const Subject of this.Scope.GetCells()) {
+          if (this.compilerOptions.autoDeclaration) {
+            Subject.Declared = true;
+            this.Diagnostics.AutoDeclaredCell(Subject, Cell);
+          }
           Cell.Watch(Subject);
         }
+        if (this.compilerOptions.autoDeclaration) this.Scope.MoveCellsToParent();
         this.Scope = this.Scope.ParentScope as BoundScope;
         Cell.Declared = true;
         Cell.Formula = Node.Expression.TextSpan().Get();

@@ -8,18 +8,19 @@ import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
 import { BoundKind } from "../Binder/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
+import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
 
 export class SyntaxTree {
-  private tree: SyntaxNode = new SyntaxNode(SyntaxNodeKind.BadToken);
-  private bound: BoundNode = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-
+  private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
+  private bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   private evaluator = new Evaluator();
+  private compilerOptions = new CompilerOptions(true);
 
   private binder: Binder;
   value: number = 0;
 
   private constructor(public diagnostics: DiagnosticBag) {
-    this.binder = new Binder(this.diagnostics);
+    this.binder = new Binder(this.diagnostics, this.compilerOptions);
   }
 
   ParseName(row: number, column: number) {

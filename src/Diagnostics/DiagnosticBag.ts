@@ -1,3 +1,4 @@
+import { Cell } from "../Cell";
 import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
 import { Diagnostic } from "./Diagnostic";
 import { DiagnosticKind } from "./DiagnosticKind";
@@ -77,6 +78,11 @@ export class DiagnosticBag {
   InvalidCellState(SubjectName: string) {
     const Message = `Subject '${SubjectName}' is in an invalid state`;
     return this.ReportError(new Diagnostic(DiagnosticKind.InvalidCellState, Message));
+  }
+
+  AutoDeclaredCell(Subject: Cell, Cell: Cell) {
+    const Message = `Subject '${Subject.Name}' has been declared automatically after being referenced by '${Cell.Name}'`;
+    return this.ReportError(new Diagnostic(DiagnosticKind.AutoDeclaredCell, Message));
   }
 
   BinderMethod(Kind: SyntaxKind) {
