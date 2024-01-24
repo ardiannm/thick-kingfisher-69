@@ -1,11 +1,8 @@
-import readline from "readline";
-
 import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
-import { DiagnosticSeverity } from "./src/Diagnostics/DiagnosticSeverity";
 import { CompilerOptions } from "./src/CompilerOptions/CompilerOptions";
+import { createInterface } from "readline";
 
-const prompt = readline.createInterface({ input: process.stdin, output: process.stdout });
-
+const prompt = createInterface({ input: process.stdin, output: process.stdout });
 const source = SyntaxTree.Init(new CompilerOptions(true));
 
 console.clear();

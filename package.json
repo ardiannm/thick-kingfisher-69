@@ -6,20 +6,15 @@
     "url": "https://github.com/ardiannm/Parser.git"
   },
   "scripts": {
-    "dev": "npm start",
-    "test": "npm run build && node obj/test.js",
-    "start": "node obj/index.js",
-    "prestart": "npm run build",
-    "build": "tsc"
+    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" index.ts"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.6.0",
     "@types/readline-sync": "^1.4.7",
     "fs": "^0.0.1-security",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.3.3"
-  },
-  "dependencies": {
-    "readline-sync": "^1.4.10"
   }
 }
