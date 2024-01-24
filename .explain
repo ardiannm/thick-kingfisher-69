@@ -1,0 +1,51 @@
+in case that the given input is `A1->A2+A3`
+
+tokenize input and return a list of tokens
+parse tokens in and return the tree
+
+bind the tree
+    
+    if tree is a cell reference node
+        generate name for the node using the parse tree
+    
+        if name already exists in the scope
+            simply get the bound cell found in the scope and return it
+        else
+            store a new bound cell structure in the scope for the node with that name
+            state that it is not declared since by default they are not referenced by any other cell in this context
+            and return this bound cell
+    
+    if tree is a cell reference assignment node
+        if reference in the assignment is not a cell reference
+            report diagnostics that reference cannot of this reference kind
+            return a default bound node
+        else
+            bind the cell reference of this assignment node
+            
+            build a new scope environment to store other cells that will be used as dependecies
+                set current scope to be the parent of this new scope
+                set this new scope to be the current scope temporarily
+                bind the expression in the node
+                
+                get any cells that are store in this new scope during expression binding
+                    for each as dependency let the reference in this tree watch these dependecies for any changes in value by storing them within the cell reference
+
+                        decide if you want to automatically declare undeclared cells
+                            if yes
+                                check if dependency is already declared
+                                and if it is not then report an erorr diagnostic that informs the user that a referenced dependency is not declared
+                            if not
+                                mark dependency automatically as declared and move this dependency from this scope to the parent scope
+                                so that it can be found while checking declarations at the final stage of binding the program
+                                and report an informative diagnostic that shows that this dependency has been automatically added
+                                after being referenced by the reference
+
+                set the parent of this new scope back to being the current scope
+                mark the cell reference as declared
+                and then return new bound node for the assignment
+                
+
+
+        
+
+
