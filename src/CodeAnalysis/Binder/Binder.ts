@@ -72,9 +72,9 @@ export class Binder {
           if (this.compilerOptions.autoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Subject, Cell);
             Subject.Declared = true;
+            this.Scope.Move(Subject);
           }
         }
-        if (this.compilerOptions.autoDeclaration) this.Scope.MoveCellsToParent();
         this.Scope = this.Scope.ParentScope as BoundScope;
         Cell.Declared = true;
         Cell.Formula = Node.Expression.TextSpan().Get();

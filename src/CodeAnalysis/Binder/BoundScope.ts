@@ -59,12 +59,12 @@ export class BoundScope {
     return this.Cells.size;
   }
 
-  MoveCellsToParent() {
+  Move(Subject: Cell) {
     if (this.ParentScope) {
-      for (const Cell of this.GetCells()) {
-        this.ParentScope.Cells.set(Cell.Name, Cell);
-      }
+      this.ParentScope.Cells.set(Subject.Name, Subject);
+      this.Cells.delete(Subject.Name);
+      return true;
     }
-    this.Cells.clear();
+    return false;
   }
 }
