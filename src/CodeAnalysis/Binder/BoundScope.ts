@@ -10,15 +10,15 @@ export class BoundScope {
 
   ConstructCell(Name: string) {
     const Scope = this.ResolveScopeForCell(Name);
-    let Document: Cell;
+    let Data: Cell;
     if (Scope) {
-      Document = Scope.Cells.get(Name) as Cell;
+      Data = Scope.Cells.get(Name) as Cell;
     } else {
       const Expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-      Document = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0");
+      Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0");
     }
-    this.Cells.set(Name, Document);
-    return Document;
+    this.Cells.set(Name, Data);
+    return Data;
   }
 
   private ResolveScopeForCell(Name: string): BoundScope | null {
@@ -51,7 +51,7 @@ export class BoundScope {
           Diagnostics.UndeclaredCell(Subject.Name);
         }
       });
-      Cell.Contains(Cell, Diagnostics);
+      Cell.HasSubject(Cell, Diagnostics);
     });
   }
 

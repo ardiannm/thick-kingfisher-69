@@ -1,3 +1,3 @@
 export class CompilerOptions {
-  constructor(public autoDeclaration: boolean) {}
+  constructor(public AutoDeclaration: boolean) {}
 }

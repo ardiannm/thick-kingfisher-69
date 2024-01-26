@@ -37,7 +37,7 @@ export class Cell extends BoundNode {
     this.Observers.delete(Observer.Name);
   }
 
-  Contains(Subject: Cell, Diagnostics: DiagnosticBag, CheckingCells: Set<Cell> = new Set()): null | Cell {
+  HasSubject(Subject: Cell, Diagnostics: DiagnosticBag, CheckingCells: Set<Cell> = new Set()): null | Cell {
     if (CheckingCells.has(this)) {
       Diagnostics.InvalidCellState(this);
       return this;
@@ -48,7 +48,7 @@ export class Cell extends BoundNode {
     }
     CheckingCells.add(this);
     for (const Sub of this.Subjects.values()) {
-      const Result = Sub.Contains(Subject, Diagnostics, CheckingCells);
+      const Result = Sub.HasSubject(Subject, Diagnostics, CheckingCells);
       if (Result !== null) {
         CheckingCells.delete(this);
         return Result;

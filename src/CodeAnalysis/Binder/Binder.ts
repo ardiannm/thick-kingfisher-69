@@ -27,7 +27,7 @@ import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
 
 export class Binder {
   public Scope = new BoundScope(null);
-  constructor(private Diagnostics: DiagnosticBag, public compilerOptions: CompilerOptions) {}
+  constructor(private Diagnostics: DiagnosticBag, public CompilerOptions: CompilerOptions) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -69,7 +69,7 @@ export class Binder {
         for (const Subject of this.Scope.GetCells()) {
           Cell.Watch(Subject);
           if (Subject.Declared) continue;
-          if (this.compilerOptions.autoDeclaration) {
+          if (this.CompilerOptions.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Subject, Cell);
             Subject.Declared = true;
             this.Scope.Move(Subject);
