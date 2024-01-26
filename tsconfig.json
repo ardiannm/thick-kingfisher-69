@@ -21,7 +21,7 @@
   },
   "include": [
     "index.ts",
-    "src/**/*.ts", // adjust this path based on your project structure
-    "types/**/*.d.ts" // adjust this path based on your project structure
+    "src/**/*.ts",
+    "types/**/*.d.ts"
   ]
 }
