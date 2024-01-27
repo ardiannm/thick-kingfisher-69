@@ -32,7 +32,7 @@ export class SyntaxTree {
     return this.binder.Scope.GetCell(Name);
   }
 
-  private ColumnIndexToLetter(column: number): string {
+  ColumnIndexToLetter(column: number): string {
     let name = "";
     while (column > 0) {
       const remainder = (column - 1) % 26;
