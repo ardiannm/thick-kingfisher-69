@@ -85,6 +85,11 @@ export class DiagnosticBag {
     return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Informative, Message));
   }
 
+  WrongCellNameFormat(DidYouMean: string) {
+    const Message = `Did you mean '${DidYouMean}'?`;
+    return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Error, Message));
+  }
+
   BinderMethod(Kind: SyntaxKind) {
     const Message = `Binder: Method for '${Kind}' is not implemented`;
     return this.AddToSeverityList(new Diagnostic(DiagnosticSeverity.Dev, Message));

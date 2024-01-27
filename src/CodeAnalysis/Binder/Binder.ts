@@ -131,6 +131,10 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.TextSpan().Get();
+    if (this.CompilerOptions.CompactCellNames && Node.Right.Trivia.length) {
+      this.Diagnostics.WrongCellNameFormat(Node.Left.TextSpan().Get() + Node.Right.TextSpan().Get());
+      return new BoundError(BoundKind.Error, Node.Kind);
+    }
     return this.Scope.ConstructCell(Name);
   }
 

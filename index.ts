@@ -3,7 +3,7 @@ import { CompilerOptions } from "./src/CompilerOptions/CompilerOptions";
 import { createInterface } from "readline";
 
 const prompt = createInterface({ input: process.stdin, output: process.stdout });
-const source = SyntaxTree.Init(new CompilerOptions(true));
+const source = SyntaxTree.Init(new CompilerOptions(true, false));
 
 console.clear();
 
