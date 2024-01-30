@@ -9,6 +9,11 @@ import { BoundKind } from "../Binder/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
+import { Lexer } from "./Lexer";
+import { SyntaxToken } from "./SyntaxToken";
+import { SyntaxKind } from "./Kind/SyntaxKind";
+import { Facts } from "./Facts";
+import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 
 export class SyntaxTree {
   private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
@@ -45,6 +50,18 @@ export class SyntaxTree {
   static Init(compilerOptions: CompilerOptions) {
     const diagnostics = new DiagnosticBag();
     return new SyntaxTree(diagnostics, compilerOptions);
+  }
+
+  static Lex(text: string, diagnostics: DiagnosticBag) {
+    const tokens = new Array<SyntaxToken<SyntaxKind>>();
+    const input = SourceText.From(text);
+    const tokenizer = new Lexer(input, diagnostics);
+    var token: SyntaxToken<SyntaxKind>;
+    do {
+      token = tokenizer.Lex();
+      tokens.push(token);
+    } while (token.Kind !== SyntaxNodeKind.EndOfFileToken);
+    return tokens;
   }
 
   Parse(text: string) {
