@@ -14,7 +14,6 @@ export class Submission {
 
   constructor(public Text: string) {
     this.SetLineSpans();
-    console.log(this.LineSpans);
   }
 
   static From(Text: string) {

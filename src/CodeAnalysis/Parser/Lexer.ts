@@ -18,10 +18,8 @@ export class Lexer {
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.End;
     this.Kind = SyntaxFacts.Kind(this.Char) as keyof TokenTextMapper;
-
     switch (this.Kind) {
       case SyntaxNodeKind.BadToken:
-        // if no token matched from the syntax facts this may still be either a letter, number or space token
         if (this.IsLetter(this.Char)) {
           return this.ParseIdentifier();
         }
@@ -31,34 +29,26 @@ export class Lexer {
         if (this.IsSpace(this.Char)) {
           return this.ParseSpaceToken();
         }
-        // if all else fails then report a bad token error
         this.Diagnostics.BadTokenFound(this.Char);
         break;
       case SyntaxNodeKind.HashToken:
-        // special case for hash token when it comes to comments
         return this.ParseCommentToken();
       case BinaryOperatorKind.MinusToken:
-        // special case for minus token
         if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
-          // increment one more to account for the next token
           this.End += 1;
           this.Kind = CompositeTokenKind.PointerToken;
         }
         break;
       case SyntaxNodeKind.GreaterToken:
-        // special case for greater token
         if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
-          // increment one more to account for the next token
           this.End += 1;
           this.Kind = CompositeTokenKind.GreaterGreaterToken;
         }
     }
-    // else by default increment index position by one for all cases
     this.End += 1;
     return new SyntaxToken(this.Kind, this.Text, this.Input.SetTextSpan(this.Start, this.End));
   }
 
-  // parse identifier tokens
   private ParseIdentifier() {
     while (this.IsLetter(this.Char)) {
       this.End += 1;
@@ -66,7 +56,6 @@ export class Lexer {
     return new SyntaxToken(SyntaxFacts.KeywordOrIdentiferTokenKind(this.Text), this.Text, this.Input.SetTextSpan(this.Start, this.End));
   }
 
-  // parse comment tokens
   private ParseCommentToken() {
     while (true) {
       this.End += 1;
@@ -76,7 +65,6 @@ export class Lexer {
     return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.Input.SetTextSpan(this.Start, this.End));
   }
 
-  // parse space tokens
   private ParseSpaceToken() {
     while (this.IsSpace(this.Char)) {
       this.End += 1;
@@ -84,7 +72,6 @@ export class Lexer {
     return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.Input.SetTextSpan(this.Start, this.End));
   }
 
-  // parse number tokens
   private ParseNumberToken() {
     while (this.IsDigit(this.Char)) {
       this.End += 1;
