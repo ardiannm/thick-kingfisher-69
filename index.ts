@@ -1,5 +1,5 @@
 import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
-import { CompilerOptions } from "./src/CompilerOptions/CompilerOptions";
+import { CompilerOptions } from "./src/CompilerOptions";
 import { createInterface } from "readline";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });

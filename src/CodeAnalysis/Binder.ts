@@ -23,7 +23,7 @@ import { CellAssignment } from "./Parsing/CellAssignment";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { Cell } from "../Cell";
 import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
-import { CompilerOptions } from "../CompilerOptions/CompilerOptions";
+import { CompilerOptions } from "../CompilerOptions";
 
 export class Binder {
   public Scope = new BoundScope(null);

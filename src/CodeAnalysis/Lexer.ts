@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./Parsing/Kind/SyntaxKind";
 import { SyntaxNodeKind } from "./Parsing/Kind/SyntaxNodeKind";
 import { BinaryOperatorKind } from "./Parsing/Kind/BinaryOperatorKind";
-import { SyntaxToken, TokenTextMapper } from "./Parsing/SyntaxToken";
+import { SyntaxToken, TokenText, TokenTextMapper } from "./Parsing/SyntaxToken";
 import { SyntaxFacts } from "./Parsing/SyntaxFacts";
 import { Submission } from "../Input/Submission";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
@@ -47,8 +47,8 @@ export class Lexer {
     if (this.IsSpace) {
       return this.LexSpaceToken();
     }
-    this.Next();
     this.Diagnostics.BadTokenFound(this.Char);
+    this.Next();
     return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
@@ -60,20 +60,23 @@ export class Lexer {
   }
 
   private LexMinusToken(): SyntaxToken<SyntaxKind> {
-    if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
+    this.Next();
+    this.Kind = BinaryOperatorKind.MinusToken;
+    if (this.Match(SyntaxNodeKind.GreaterToken)) {
       this.Next();
       this.Kind = CompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTextSpan());
   }
 
   private LexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
-    if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
-      this.Next();
+    this.Next();
+    this.Kind = SyntaxNodeKind.GreaterToken;
+    if (this.Match(SyntaxNodeKind.GreaterToken)) {
       this.Next();
       this.Kind = CompositeTokenKind.GreaterGreaterToken;
     }
-    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTextSpan());
   }
 
   private LexIdentifier(): SyntaxToken<SyntaxKind> {
@@ -95,7 +98,7 @@ export class Lexer {
       }
     }
     while (this.IsDigit) this.Next();
-    const NumberText = this.Text as TokenTextMapper[SyntaxNodeKind.NumberToken];
+    const NumberText = this.Text as TokenText<SyntaxNodeKind.NumberToken>;
     return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.SetTextSpan());
   }
 

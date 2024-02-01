@@ -8,7 +8,7 @@ import { BoundNumericLiteral } from "../Binding/BoundNumericLiteral";
 import { BoundKind } from "../Binding/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
-import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
+import { CompilerOptions } from "../../CompilerOptions";
 
 export class SyntaxTree {
   private BinderService: Binder;
