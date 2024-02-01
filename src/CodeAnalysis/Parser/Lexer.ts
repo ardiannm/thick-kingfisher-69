@@ -33,37 +33,35 @@ export class Lexer {
       case SyntaxNodeKind.GreaterToken:
         return this.LexGreaterGreaterToken();
     }
-    this.Consume();
+    this.Next();
     return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
   private LexBadToken(): SyntaxToken<SyntaxKind> {
-    if (this.IsLetter(this.Char)) {
+    if (this.IsLetter) {
       return this.LexIdentifier();
     }
-    if (this.IsDigit(this.Char)) {
+    if (this.IsDigit) {
       return this.LexNumberToken();
     }
-    if (this.IsSpace(this.Char)) {
+    if (this.IsSpace) {
       return this.LexSpaceToken();
     }
+    this.Next();
     this.Diagnostics.BadTokenFound(this.Char);
-    this.Consume();
     return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
   private LexCommentToken(): SyntaxToken<SyntaxKind> {
-    while (true) {
-      this.Consume();
-      if (this.Match(SyntaxTriviaKind.LineBreakTrivia)) break;
-      if (this.Match(SyntaxNodeKind.EndOfFileToken)) break;
-    }
+    do {
+      this.Next();
+    } while (!(this.Match(SyntaxTriviaKind.LineBreakTrivia) || this.Match(SyntaxNodeKind.EndOfFileToken)));
     return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.SetTextSpan());
   }
 
   private LexMinusToken(): SyntaxToken<SyntaxKind> {
     if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
-      this.Consume();
+      this.Next();
       this.Kind = CompositeTokenKind.PointerToken;
     }
     return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
@@ -71,59 +69,56 @@ export class Lexer {
 
   private LexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
     if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
-      this.Consume();
-      this.Consume();
+      this.Next();
+      this.Next();
       this.Kind = CompositeTokenKind.GreaterGreaterToken;
     }
     return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
   private LexIdentifier(): SyntaxToken<SyntaxKind> {
-    while (this.IsLetter(this.Char)) {
-      this.Consume();
-    }
+    while (this.IsLetter) this.Next();
     return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.SetTextSpan());
   }
 
   private LexSpaceToken(): SyntaxToken<SyntaxKind> {
-    while (this.IsSpace(this.Char)) {
-      this.Consume();
-    }
+    while (this.IsSpace) this.Next();
     return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.SetTextSpan());
   }
 
   private LexNumberToken(): SyntaxToken<SyntaxKind> {
-    while (this.IsDigit(this.Char)) {
-      this.Consume();
-    }
+    while (this.IsDigit) this.Next();
     if (this.Match(SyntaxNodeKind.DotToken)) {
-      this.Consume();
-      if (!this.IsDigit(this.Char)) {
+      this.Next();
+      if (!this.IsDigit) {
         this.Diagnostics.BadFloatingPointNumber();
       }
     }
-    while (this.IsDigit(this.Char)) {
-      this.Consume();
-    }
+    while (this.IsDigit) this.Next();
     const NumberText = this.Text as TokenTextMapper[SyntaxNodeKind.NumberToken];
     return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.SetTextSpan());
+  }
+
+  private get Text() {
+    return this.Input.Text.substring(this.Start, this.End);
   }
 
   private SetTextSpan(): TextSpan {
     return this.Input.SetTextSpan(this.Start, this.End);
   }
 
-  private IsSpace(Char: string): boolean {
+  private get IsSpace(): boolean {
+    const Char = this.Char;
     return Char === " " || Char === "\t" || Char === "\r";
   }
 
-  private IsDigit(Char: string): boolean {
-    const charCode = Char.charCodeAt(0);
+  private get IsDigit(): boolean {
+    const charCode = this.Char.charCodeAt(0);
     return charCode >= 48 && charCode <= 57;
   }
 
-  private IsLetter(Char: string): boolean {
-    const CharCode = Char.charCodeAt(0);
+  private get IsLetter(): boolean {
+    const CharCode = this.Char.charCodeAt(0);
     return (CharCode >= 65 && CharCode <= 90) || (CharCode >= 97 && CharCode <= 122);
   }
 
@@ -135,12 +130,8 @@ export class Lexer {
     return this.Peek(0);
   }
 
-  private Consume() {
+  private Next() {
     this.End = this.End + 1;
-  }
-
-  private get Text() {
-    return this.Input.Text.substring(this.Start, this.End);
   }
 
   private Match(...Kinds: Array<SyntaxKind>) {
