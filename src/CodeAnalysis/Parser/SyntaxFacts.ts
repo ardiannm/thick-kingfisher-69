@@ -31,7 +31,7 @@ export class SyntaxFacts {
     }
   }
 
-  static Kind(text: string): SyntaxKind {
+  static SyntaxKind(text: string): SyntaxKind {
     switch (text) {
       case "+":
         return BinaryOperatorKind.PlusToken;
@@ -66,7 +66,7 @@ export class SyntaxFacts {
     }
   }
 
-  static KeywordOrIdentiferTokenKind(text: string): SyntaxKind {
+  static KeywordOrIdentifer(text: string): SyntaxKind {
     switch (text) {
       case "true":
         return SyntaxKeywordKind.TrueKeyword;

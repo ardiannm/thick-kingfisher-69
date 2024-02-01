@@ -10,7 +10,6 @@ import { TextSpan } from "./TextSpan";
 export class Submission {
   private Index = 0;
   private LineSpans = new Array<LineSpan>();
-  private LineIndex = 1;
 
   constructor(public Text: string) {
     this.SetLineSpans();
@@ -42,32 +41,35 @@ export class Submission {
 
   private SetLineSpans() {
     let Start = this.Index;
-    while (this.Index < this.Text.length) {
+    while (this.Index <= this.Text.length) {
       const Char = this.Text.charAt(this.Index);
       if (Char === "\n") {
-        const Span = new LineSpan(this.LineIndex, Start, this.Index);
+        const Span = new LineSpan(Start, this.Index);
         this.LineSpans.push(Span);
-        this.LineIndex++;
         Start = this.Index;
       }
       this.Index++;
     }
-    const Span = new LineSpan(this.LineIndex, Start, this.Index + 1); // add +1 to account for EOF token;
+    const Span = new LineSpan(Start, this.Index);
     this.LineSpans.push(Span);
     return this.LineSpans;
   }
 
-  GetLineIndex(TextSpan: TextSpan): LineSpan {
+  GetLineIndex(TextSpan: TextSpan) {
     let Left = 0;
     let Right = this.LineSpans.length - 1;
     while (true) {
       const Index = Left + Math.floor((Right - Left) / 2);
       const LineSpan = this.LineSpans[Index];
       if (TextSpan.Start >= LineSpan.Start && TextSpan.Start < LineSpan.End) {
-        return LineSpan;
+        return Index + 1;
       }
       if (TextSpan.Start < LineSpan.Start) Right = Index - 1;
       else Left = Index + 1;
     }
+  }
+
+  GetLineSpanAtIndex(Index: number) {
+    return this.LineSpans[Index - 1];
   }
 }

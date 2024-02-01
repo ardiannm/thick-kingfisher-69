@@ -17,7 +17,7 @@ export class Lexer {
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.End;
-    this.Kind = SyntaxFacts.Kind(this.Char) as keyof TokenTextMapper;
+    this.Kind = SyntaxFacts.SyntaxKind(this.Char) as keyof TokenTextMapper;
     switch (this.Kind) {
       case SyntaxNodeKind.BadToken:
         if (this.IsLetter(this.Char)) {
@@ -53,7 +53,7 @@ export class Lexer {
     while (this.IsLetter(this.Char)) {
       this.End += 1;
     }
-    return new SyntaxToken(SyntaxFacts.KeywordOrIdentiferTokenKind(this.Text), this.Text, this.Input.SetTextSpan(this.Start, this.End));
+    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.Input.SetTextSpan(this.Start, this.End));
   }
 
   private ParseCommentToken() {
@@ -118,7 +118,7 @@ export class Lexer {
   private Match(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      if (Kind !== SyntaxFacts.Kind(this.Peek(Offset))) return false;
+      if (Kind !== SyntaxFacts.SyntaxKind(this.Peek(Offset))) return false;
       Offset++;
     }
     return true;

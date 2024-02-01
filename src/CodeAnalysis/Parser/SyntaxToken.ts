@@ -62,6 +62,14 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this.Span;
   }
 
+  get Line() {
+    return this.Span.Input.GetLineIndex(this.Span);
+  }
+
+  get Column() {
+    return this.Span.Start - this.Span.Input.GetLineSpanAtIndex(this.Line).Start + 1;
+  }
+
   override Print() {
     var Text = "";
     Text += ColorPalette.Teal("'");
