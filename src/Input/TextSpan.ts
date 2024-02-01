@@ -6,4 +6,8 @@ export class TextSpan {
   Get() {
     return this.Input.Text.substring(this.Start, this.End);
   }
+
+  Line() {
+    return this.Input.GetLineIndex(this.Start);
+  }
 }

@@ -149,7 +149,7 @@ export class Parser {
     if (this.MatchToken(Kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind);
+    this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind, this.Token.TextSpan().Line().Number);
     return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>, this.Token.TextSpan());
   }
 

@@ -46,23 +46,23 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this;
   }
 
-  public override *Children(): Generator<SyntaxNode, any, unknown> {
+  override *Children(): Generator<SyntaxNode, any, unknown> {
     yield this;
   }
 
-  public override First(): SyntaxNode {
+  override First(): SyntaxNode {
     return this;
   }
 
-  public override Last(): SyntaxNode {
+  override Last(): SyntaxNode {
     return this;
   }
 
-  public override TextSpan() {
+  override TextSpan() {
     return this.Span;
   }
 
-  public override Print() {
+  override Print() {
     var Text = "";
     Text += ColorPalette.Teal("'");
     Text += ColorPalette.Teal(this.Kind);

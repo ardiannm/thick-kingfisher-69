@@ -1,6 +1,7 @@
 import { Cell } from "../Cell";
 import { BoundKind } from "../CodeAnalysis/Binder/Kind/BoundKind";
 import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
+import { SyntaxToken } from "../CodeAnalysis/Parser/SyntaxToken";
 import { Diagnostic } from "./Diagnostic";
 import { DiagnosticSeverity } from "./DiagnosticSeverity";
 
@@ -32,9 +33,9 @@ export class DiagnosticBag {
     return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
-  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
+  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind, Line: number) {
     const Message = `Unexpected '${Matched}' found; expecting '${ExpectedKind}'`;
-    return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message));
+    return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message, Line));
   }
 
   EmptyProgram() {

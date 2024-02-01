@@ -37,12 +37,14 @@ export class Submission {
     return this.LineSpans;
   }
 
-  GetLineText(Position: number): LineSpan {
+  GetLineIndex(Position: number): LineSpan {
     let Left = 0;
     let Right = this.LineSpans.length - 1;
     while (true) {
       const Index = Left + Math.floor((Right - Left) / 2);
       const LineSpan = this.LineSpans[Index];
+      console.log("// here is a bug try 'A1=1+' it never stops");
+
       if (Position >= LineSpan.Start && Position < LineSpan.End) {
         return LineSpan;
       }
