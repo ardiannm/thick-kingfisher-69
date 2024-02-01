@@ -7,86 +7,110 @@ import { Submission } from "../../Input/Submission";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
 import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
+import { TextSpan } from "../../Input/TextSpan";
 
 export class Lexer {
-  private End = 0;
-  private Start = this.End;
-  private Kind = SyntaxNodeKind.EndOfFileToken as SyntaxKind;
+  private Kind: SyntaxKind;
+  private End: number;
+  private Start: number;
 
-  constructor(public readonly Input: Submission, private Diagnostics: DiagnosticBag) {}
+  constructor(public readonly Input: Submission, private Diagnostics: DiagnosticBag) {
+    this.Kind = SyntaxNodeKind.EndOfFileToken;
+    this.End = 0;
+    this.Start = this.End;
+  }
 
   public Lex(): SyntaxToken<SyntaxKind> {
     this.Start = this.End;
     this.Kind = SyntaxFacts.SyntaxKind(this.Char) as keyof TokenTextMapper;
     switch (this.Kind) {
       case SyntaxNodeKind.BadToken:
-        if (this.IsLetter(this.Char)) {
-          return this.ParseIdentifier();
-        }
-        if (this.IsDigit(this.Char)) {
-          return this.ParseNumberToken();
-        }
-        if (this.IsSpace(this.Char)) {
-          return this.ParseSpaceToken();
-        }
-        this.Diagnostics.BadTokenFound(this.Char);
-        break;
+        return this.LexBadToken();
       case SyntaxNodeKind.HashToken:
-        return this.ParseCommentToken();
+        return this.LexCommentToken();
       case BinaryOperatorKind.MinusToken:
-        if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
-          this.End += 1;
-          this.Kind = CompositeTokenKind.PointerToken;
-        }
-        break;
+        return this.LexMinusToken();
       case SyntaxNodeKind.GreaterToken:
-        if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
-          this.End += 1;
-          this.Kind = CompositeTokenKind.GreaterGreaterToken;
-        }
+        return this.LexGreaterGreaterToken();
     }
-    this.End += 1;
-    return new SyntaxToken(this.Kind, this.Text, this.Input.SetTextSpan(this.Start, this.End));
+    this.Consume();
+    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
-  private ParseIdentifier() {
-    while (this.IsLetter(this.Char)) {
-      this.End += 1;
+  private LexBadToken(): SyntaxToken<SyntaxKind> {
+    if (this.IsLetter(this.Char)) {
+      return this.LexIdentifier();
     }
-    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.Input.SetTextSpan(this.Start, this.End));
+    if (this.IsDigit(this.Char)) {
+      return this.LexNumberToken();
+    }
+    if (this.IsSpace(this.Char)) {
+      return this.LexSpaceToken();
+    }
+    this.Diagnostics.BadTokenFound(this.Char);
+    this.Consume();
+    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
-  private ParseCommentToken() {
+  private LexCommentToken(): SyntaxToken<SyntaxKind> {
     while (true) {
-      this.End += 1;
+      this.Consume();
       if (this.Match(SyntaxTriviaKind.LineBreakTrivia)) break;
       if (this.Match(SyntaxNodeKind.EndOfFileToken)) break;
     }
-    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.Input.SetTextSpan(this.Start, this.End));
+    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.SetTextSpan());
   }
 
-  private ParseSpaceToken() {
-    while (this.IsSpace(this.Char)) {
-      this.End += 1;
+  private LexMinusToken(): SyntaxToken<SyntaxKind> {
+    if (this.Match(BinaryOperatorKind.MinusToken, SyntaxNodeKind.GreaterToken)) {
+      this.Consume();
+      this.Kind = CompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.Input.SetTextSpan(this.Start, this.End));
+    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
   }
 
-  private ParseNumberToken() {
+  private LexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
+    if (this.Match(SyntaxNodeKind.GreaterToken, SyntaxNodeKind.GreaterToken)) {
+      this.Consume();
+      this.Consume();
+      this.Kind = CompositeTokenKind.GreaterGreaterToken;
+    }
+    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
+  }
+
+  private LexIdentifier(): SyntaxToken<SyntaxKind> {
+    while (this.IsLetter(this.Char)) {
+      this.Consume();
+    }
+    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.SetTextSpan());
+  }
+
+  private LexSpaceToken(): SyntaxToken<SyntaxKind> {
+    while (this.IsSpace(this.Char)) {
+      this.Consume();
+    }
+    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.SetTextSpan());
+  }
+
+  private LexNumberToken(): SyntaxToken<SyntaxKind> {
     while (this.IsDigit(this.Char)) {
-      this.End += 1;
+      this.Consume();
     }
     if (this.Match(SyntaxNodeKind.DotToken)) {
-      this.End += 1;
+      this.Consume();
       if (!this.IsDigit(this.Char)) {
         this.Diagnostics.BadFloatingPointNumber();
       }
     }
     while (this.IsDigit(this.Char)) {
-      this.End += 1;
+      this.Consume();
     }
     const NumberText = this.Text as TokenTextMapper[SyntaxNodeKind.NumberToken];
-    return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.Input.SetTextSpan(this.Start, this.End));
+    return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.SetTextSpan());
+  }
+
+  private SetTextSpan(): TextSpan {
+    return this.Input.SetTextSpan(this.Start, this.End);
   }
 
   private IsSpace(Char: string): boolean {
@@ -94,8 +118,8 @@ export class Lexer {
   }
 
   private IsDigit(Char: string): boolean {
-    const CharCode = Char.charCodeAt(0);
-    return CharCode >= 48 && CharCode <= 57;
+    const charCode = Char.charCodeAt(0);
+    return charCode >= 48 && charCode <= 57;
   }
 
   private IsLetter(Char: string): boolean {
@@ -109,6 +133,10 @@ export class Lexer {
 
   private get Char() {
     return this.Peek(0);
+  }
+
+  private Consume() {
+    this.End = this.End + 1;
   }
 
   private get Text() {
