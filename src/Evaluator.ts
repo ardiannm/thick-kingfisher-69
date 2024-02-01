@@ -1,12 +1,12 @@
-import { BoundBinaryExpression } from "./CodeAnalysis/Binder/BoundBinaryExpression";
-import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundBinaryOperatorKind";
-import { BoundCellAssignment } from "./CodeAnalysis/Binder/BoundCellAssignment";
-import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
-import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
-import { BoundNumericLiteral } from "./CodeAnalysis/Binder/BoundNumericLiteral";
-import { BoundProgram } from "./CodeAnalysis/Binder/BoundProgram";
-import { BoundUnaryExpression } from "./CodeAnalysis/Binder/BoundUnaryExpression";
-import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binder/Kind/BoundUnaryOperatorKind";
+import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
+import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundBinaryOperatorKind";
+import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
+import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
+import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral";
+import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
+import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
+import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundUnaryOperatorKind";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { Cell } from "./Cell";
 

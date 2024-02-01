@@ -1,20 +1,11 @@
-import { BoundExpression } from "./CodeAnalysis/Binder/BoundExpression";
-import { BoundKind } from "./CodeAnalysis/Binder/Kind/BoundKind";
-import { BoundNode } from "./CodeAnalysis/Binder/BoundNode";
-import { Evaluator } from "./Evaluator";
+import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
+import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
+import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
+import { Evaluator } from "./Evaluator";
 
 export class Cell extends BoundNode {
-  constructor(
-    public override Kind: BoundKind.Cell,
-    public Name: string,
-    public Declared: boolean,
-    public Value: number,
-    public Expression: BoundExpression,
-    public Subjects: Map<string, Cell>,
-    public Observers: Map<string, Cell>,
-    public Formula: string
-  ) {
+  constructor(public override Kind: BoundKind.Cell, public Name: string, public Declared: boolean, public Value: number, public Expression: BoundExpression, public Subjects: Map<string, Cell>, public Observers: Map<string, Cell>, public Formula: string) {
     super(Kind);
   }
 

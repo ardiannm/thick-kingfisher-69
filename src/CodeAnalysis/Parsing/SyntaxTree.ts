@@ -1,11 +1,11 @@
 import { SyntaxNode } from "./SyntaxNode";
 import { Submission } from "../../Input/Submission";
-import { Parser } from "./Parser";
+import { Parser } from "../Parser";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
-import { Binder } from "../Binder/Binder";
-import { BoundNode } from "../Binder/BoundNode";
-import { BoundNumericLiteral } from "../Binder/BoundNumericLiteral";
-import { BoundKind } from "../Binder/Kind/BoundKind";
+import { Binder } from "../Binder";
+import { BoundNode } from "../Binding/BoundNode";
+import { BoundNumericLiteral } from "../Binding/BoundNumericLiteral";
+import { BoundKind } from "../Binding/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";

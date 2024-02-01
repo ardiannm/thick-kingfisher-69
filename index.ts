@@ -1,4 +1,4 @@
-import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
+import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
 import { CompilerOptions } from "./src/CompilerOptions/CompilerOptions";
 import { createInterface } from "readline";
 

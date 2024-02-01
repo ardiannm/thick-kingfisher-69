@@ -1,7 +1,6 @@
 import { Cell } from "../Cell";
-import { BoundKind } from "../CodeAnalysis/Binder/Kind/BoundKind";
-import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
-import { SyntaxToken } from "../CodeAnalysis/Parser/SyntaxToken";
+import { BoundKind } from "../CodeAnalysis/Binding/Kind/BoundKind";
+import { SyntaxKind } from "../CodeAnalysis/Parsing/Kind/SyntaxKind";
 import { Diagnostic } from "./Diagnostic";
 import { DiagnosticSeverity } from "./DiagnosticSeverity";
 

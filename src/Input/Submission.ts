@@ -1,8 +1,8 @@
-import { SyntaxFacts } from "../CodeAnalysis/Parser/SyntaxFacts";
-import { SyntaxKind } from "../CodeAnalysis/Parser/Kind/SyntaxKind";
-import { SyntaxNodeKind } from "../CodeAnalysis/Parser/Kind/SyntaxNodeKind";
-import { Lexer } from "../CodeAnalysis/Parser/Lexer";
-import { SyntaxToken } from "../CodeAnalysis/Parser/SyntaxToken";
+import { SyntaxFacts } from "../CodeAnalysis/Parsing/SyntaxFacts";
+import { SyntaxKind } from "../CodeAnalysis/Parsing/Kind/SyntaxKind";
+import { SyntaxNodeKind } from "../CodeAnalysis/Parsing/Kind/SyntaxNodeKind";
+import { Lexer } from "../CodeAnalysis/Lexer";
+import { SyntaxToken } from "../CodeAnalysis/Parsing/SyntaxToken";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { LineSpan } from "./LineSpan";
 import { TextSpan } from "./TextSpan";

@@ -1,13 +1,13 @@
-import { SyntaxKind } from "./Kind/SyntaxKind";
-import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
-import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
-import { SyntaxToken, TokenTextMapper } from "./SyntaxToken";
-import { SyntaxFacts } from "./SyntaxFacts";
-import { Submission } from "../../Input/Submission";
-import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
-import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
-import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
-import { TextSpan } from "../../Input/TextSpan";
+import { SyntaxKind } from "./Parsing/Kind/SyntaxKind";
+import { SyntaxNodeKind } from "./Parsing/Kind/SyntaxNodeKind";
+import { BinaryOperatorKind } from "./Parsing/Kind/BinaryOperatorKind";
+import { SyntaxToken, TokenTextMapper } from "./Parsing/SyntaxToken";
+import { SyntaxFacts } from "./Parsing/SyntaxFacts";
+import { Submission } from "../Input/Submission";
+import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
+import { CompositeTokenKind } from "./Parsing/Kind/CompositeTokenKind";
+import { SyntaxTriviaKind } from "./Parsing/Kind/SyntaxTriviaKind";
+import { TextSpan } from "../Input/TextSpan";
 
 export class Lexer {
   private Kind: SyntaxKind;
