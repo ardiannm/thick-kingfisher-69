@@ -33,9 +33,9 @@ export class DiagnosticBag {
     return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
-  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind, Line: number) {
+  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
     const Message = `Unexpected '${Matched}' found; expecting '${ExpectedKind}'`;
-    return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message, Line));
+    return this.Diagnostics.push(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
   EmptyProgram() {

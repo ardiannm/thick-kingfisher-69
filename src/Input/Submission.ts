@@ -13,48 +13,12 @@ export class Submission {
   private LineIndex = 1;
 
   constructor(public Text: string) {
-    this.ParseLines();
+    this.SetLineSpans();
+    console.log(this.LineSpans);
   }
 
   static From(Text: string) {
     return new Submission(Text);
-  }
-
-  private ParseLines() {
-    let Start = this.Index;
-    while (this.Index < this.Text.length) {
-      const Char = this.Text.charAt(this.Index);
-      if (Char === "\n") {
-        const Span = new LineSpan(this.LineIndex, Start, this.Index);
-        this.LineSpans.push(Span);
-        this.LineIndex++;
-        Start = this.Index;
-      }
-      this.Index++;
-    }
-    const Span = new LineSpan(this.LineIndex, Start, this.Index);
-    this.LineSpans.push(Span);
-    return this.LineSpans;
-  }
-
-  GetLineIndex(Position: number): LineSpan {
-    let Left = 0;
-    let Right = this.LineSpans.length - 1;
-    while (true) {
-      const Index = Left + Math.floor((Right - Left) / 2);
-      const LineSpan = this.LineSpans[Index];
-      console.log("// here is a bug try 'A1=1+' it never stops");
-
-      if (Position >= LineSpan.Start && Position < LineSpan.End) {
-        return LineSpan;
-      }
-      if (Position < LineSpan.Start) Right = Index - 1;
-      else Left = Index + 1;
-    }
-  }
-
-  SetTextSpan(Start: number, End: number) {
-    return new TextSpan(this, Start, End);
   }
 
   Lex(Diagnostics: DiagnosticBag) {
@@ -71,5 +35,40 @@ export class Submission {
       }
     } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
     return Tokens;
+  }
+
+  SetTextSpan(Start: number, End: number) {
+    return new TextSpan(this, Start, End);
+  }
+
+  private SetLineSpans() {
+    let Start = this.Index;
+    while (this.Index < this.Text.length) {
+      const Char = this.Text.charAt(this.Index);
+      if (Char === "\n") {
+        const Span = new LineSpan(this.LineIndex, Start, this.Index);
+        this.LineSpans.push(Span);
+        this.LineIndex++;
+        Start = this.Index;
+      }
+      this.Index++;
+    }
+    const Span = new LineSpan(this.LineIndex, Start, this.Index + 1); // add +1 to account for EOF token;
+    this.LineSpans.push(Span);
+    return this.LineSpans;
+  }
+
+  GetLineIndex(TextSpan: TextSpan): LineSpan {
+    let Left = 0;
+    let Right = this.LineSpans.length - 1;
+    while (true) {
+      const Index = Left + Math.floor((Right - Left) / 2);
+      const LineSpan = this.LineSpans[Index];
+      if (TextSpan.Start >= LineSpan.Start && TextSpan.Start < LineSpan.End) {
+        return LineSpan;
+      }
+      if (TextSpan.Start < LineSpan.Start) Right = Index - 1;
+      else Left = Index + 1;
+    }
   }
 }

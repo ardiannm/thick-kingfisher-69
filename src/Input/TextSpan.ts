@@ -8,6 +8,6 @@ export class TextSpan {
   }
 
   Line() {
-    return this.Input.GetLineIndex(this.Start);
+    return this.Input.GetLineIndex(this);
   }
 }
