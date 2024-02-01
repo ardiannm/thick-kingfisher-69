@@ -12,8 +12,6 @@ import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
 import { Lexer } from "./Lexer";
 import { SyntaxToken } from "./SyntaxToken";
 import { SyntaxKind } from "./Kind/SyntaxKind";
-import { Facts } from "./Facts";
-import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 
 export class SyntaxTree {
   private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
