@@ -1,12 +1,12 @@
 import { SyntaxNode } from "./SyntaxNode";
-import { TextSpan } from "../../Text/TextSpan";
+import { TextSpan } from "../../Input/TextSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
 import { BinaryOperatorKind } from "./Kind/BinaryOperatorKind";
 import { CompositeTokenKind } from "./Kind/CompositeTokenKind";
 import { SyntaxKeywordKind } from "./Kind/SyntaxKeywordKind";
-import { Painter } from "../../Text/Painter";
+import { ColorPalette } from "../../View/ColorPalette";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
@@ -35,12 +35,7 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(
-    public override Kind: T,
-    public Text: TokenText<T>,
-    private Span: TextSpan,
-    public Trivia = new Array<SyntaxToken<SyntaxKind>>()
-  ) {
+  constructor(public override Kind: T, public Text: TokenText<T>, private Span: TextSpan, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(Kind);
   }
 
@@ -69,18 +64,18 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
 
   public override Print() {
     var Text = "";
-    Text += Painter.Teal("'");
-    Text += Painter.Teal(this.Kind);
-    Text += Painter.Teal("'");
-    Text += Painter.Default(":");
+    Text += ColorPalette.Teal("'");
+    Text += ColorPalette.Teal(this.Kind);
+    Text += ColorPalette.Teal("'");
+    Text += ColorPalette.Default(":");
     Text += " ";
-    Text += Painter.Teal("'");
-    Text += Painter.Teal(this.Text);
-    Text += Painter.Teal("'");
+    Text += ColorPalette.Teal("'");
+    Text += ColorPalette.Teal(this.Text);
+    Text += ColorPalette.Teal("'");
     Text += " ";
     var TextTrivia = "";
     for (const Trivia of this.Trivia) {
-      TextTrivia += Painter.Default(Trivia.Kind);
+      TextTrivia += ColorPalette.Default(Trivia.Kind);
       TextTrivia += " ";
     }
     Text += TextTrivia;

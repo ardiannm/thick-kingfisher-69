@@ -2,34 +2,34 @@ import { SyntaxTree } from "./src/CodeAnalysis/Parser/SyntaxTree";
 import { CompilerOptions } from "./src/CompilerOptions/CompilerOptions";
 import { createInterface } from "readline";
 
-const prompt = createInterface({ input: process.stdin, output: process.stdout });
-const source = SyntaxTree.Init(new CompilerOptions(true, false));
+const Prompt = createInterface({ input: process.stdin, output: process.stdout });
+const Submission = SyntaxTree.Init(new CompilerOptions(true, false));
 
 console.clear();
 
-const src = new Array<string>();
+const Submissions = new Array<string>();
 
 const Fn = () => {
-  prompt.question("", function (text) {
-    if (text === "q") {
-      prompt.close();
-    } else if (text === "a") {
+  Prompt.question("", function (Input) {
+    if (Input === "q") {
+      Prompt.close();
+    } else if (Input === "a") {
       console.clear();
       Fn();
-    } else if (text !== "") {
-      src.push(text);
+    } else if (Input !== "") {
+      Submissions.push(Input);
       Fn();
     } else {
-      text = src.join("\n");
-      src.length = 0;
-      source.Parse(text).Log().Bind().Evaluate();
-      if (source.diagnostics.Any()) {
+      Input = Submissions.join("\n");
+      Submissions.length = 0;
+      Submission.Parse(Input).Print().Bind().Evaluate();
+      if (Submission.Diagnostics.Any()) {
         console.log();
-        for (const d of source.diagnostics.Bag()) console.log(d);
-        source.diagnostics.Clear();
+        for (const d of Submission.Diagnostics.Get()) console.log(d);
+        Submission.Diagnostics.Clear();
       } else {
         console.log();
-        console.log(source.value.toString());
+        console.log(Submission.Value.toString());
       }
       console.log();
       Fn();

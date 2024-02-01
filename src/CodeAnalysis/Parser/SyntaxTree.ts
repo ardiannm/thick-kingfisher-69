@@ -1,5 +1,5 @@
 import { SyntaxNode } from "./SyntaxNode";
-import { SourceText } from "../../Text/SourceText";
+import { Submission } from "../../Input/Submission";
 import { Parser } from "./Parser";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { Binder } from "../Binder/Binder";
@@ -9,91 +9,54 @@ import { BoundKind } from "../Binder/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { CompilerOptions } from "../../CompilerOptions/CompilerOptions";
-import { Lexer } from "./Lexer";
-import { SyntaxToken } from "./SyntaxToken";
-import { SyntaxKind } from "./Kind/SyntaxKind";
 
 export class SyntaxTree {
-  private tree = new SyntaxNode(SyntaxNodeKind.BadToken);
-  private bound = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
+  private BinderService: Binder;
+  private EvaluatorService: Evaluator;
+  private Tree: SyntaxNode;
+  private BoundTree: BoundNode;
 
-  private binder: Binder;
-  private evaluator: Evaluator;
+  Value = 0;
 
-  value: number = 0;
-
-  private constructor(public diagnostics: DiagnosticBag, private compilerOptions: CompilerOptions) {
-    this.binder = new Binder(this.diagnostics, this.compilerOptions);
-    this.evaluator = new Evaluator(this.diagnostics);
+  private constructor(public Diagnostics: DiagnosticBag, private Options: CompilerOptions) {
+    this.BinderService = new Binder(this.Diagnostics, this.Options);
+    this.EvaluatorService = new Evaluator(this.Diagnostics);
+    this.Tree = new SyntaxNode(SyntaxNodeKind.BadToken);
+    this.BoundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }
 
-  ParseName(row: number, column: number) {
-    return this.ColumnIndexToLetter(column) + row;
+  static Init(Options: CompilerOptions) {
+    const Diagnostics = new DiagnosticBag();
+    return new SyntaxTree(Diagnostics, Options);
   }
 
-  GetCell(Name: string) {
-    return this.binder.Scope.GetCell(Name);
-  }
-
-  ColumnIndexToLetter(column: number): string {
-    let name = "";
-    while (column > 0) {
-      const remainder = (column - 1) % 26;
-      name = String.fromCharCode(65 + remainder) + name;
-      column = Math.floor((column - 1) / 26);
-    }
-    return name;
-  }
-
-  static Init(compilerOptions: CompilerOptions) {
-    const diagnostics = new DiagnosticBag();
-    return new SyntaxTree(diagnostics, compilerOptions);
-  }
-
-  static Lex(text: string, diagnostics: DiagnosticBag) {
-    const tokens = new Array<SyntaxToken<SyntaxKind>>();
-    const input = SourceText.From(text);
-    const tokenizer = new Lexer(input, diagnostics);
-    var token: SyntaxToken<SyntaxKind>;
-    do {
-      token = tokenizer.Lex();
-      tokens.push(token);
-    } while (token.Kind !== SyntaxNodeKind.EndOfFileToken);
-    return tokens;
-  }
-
-  Parse(text: string) {
-    const input = SourceText.From(text);
-    const parser = new Parser(input, this.diagnostics);
-    this.tree = parser.Parse();
+  Parse(Text: string) {
+    const Input = Submission.From(Text);
+    const ParserService = new Parser(Input, this.Diagnostics);
+    this.Tree = ParserService.Parse();
     return this;
   }
 
   Bind() {
-    if (this.diagnostics.None()) {
-      this.bound = this.binder.Bind(this.tree);
+    if (this.Diagnostics.None()) {
+      this.BoundTree = this.BinderService.Bind(this.Tree);
     }
     return this;
   }
 
   Evaluate() {
-    if (this.diagnostics.None()) {
-      this.value = this.evaluator.Evaluate(this.bound);
+    if (this.Diagnostics.None()) {
+      this.Value = this.EvaluatorService.Evaluate(this.BoundTree);
     }
     return this;
   }
 
+  Print() {
+    console.log(this.Tree.Print());
+    return this;
+  }
+
   Clear() {
-    this.diagnostics.Clear();
-    return this;
-  }
-
-  get Count() {
-    return this.binder.Scope.Count;
-  }
-
-  Log() {
-    console.log(this.tree.Print());
-    return this;
+    this.Diagnostics.Clear();
   }
 }

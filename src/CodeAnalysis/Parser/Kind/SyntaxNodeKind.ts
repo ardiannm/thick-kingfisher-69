@@ -17,4 +17,5 @@ export enum SyntaxNodeKind {
   Expression = "Expression",
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
+  EqualsToken = "EqualsToken",
 }

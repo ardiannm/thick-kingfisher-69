@@ -9,32 +9,20 @@ import { UnaryExpression } from "./UnaryExpression";
 import { ParenthesizedExpression } from "./ParenthesizedExpression";
 import { RangeReference } from "./RangeReference";
 import { CellReference } from "./CellReference";
-import { Facts } from "./Facts";
+import { SyntaxFacts } from "./SyntaxFacts";
 import { ExpressionSyntax } from "./ExpressionSyntax";
 import { Program } from "./Program";
 import { StatementSyntax } from "./StatementSyntax";
-import { Lexer } from "./Lexer";
 import { CellAssignment } from "./CellAssignment";
-import { SourceText } from "../../Text/SourceText";
 import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
+import { Submission } from "../../Input/Submission";
 
 export class Parser {
-  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
-  private Trivias = new Array<SyntaxToken<SyntaxKind>>();
-
   private Index = 0;
+  private Tokens: Array<SyntaxToken<SyntaxKind>>;
 
-  constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
-    const Tokenizer = new Lexer(Input, Diagnostics);
-    var Token: SyntaxToken<SyntaxKind>;
-    do {
-      Token = Tokenizer.Lex();
-      if (Facts.IsTrivia(Token.Kind)) {
-        this.Trivias.push(Token);
-      } else {
-        this.Tokens.push(Token.EatTrivia(this.Trivias));
-      }
-    } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
+  constructor(public readonly Input: Submission, public Diagnostics: DiagnosticBag) {
+    this.Tokens = Input.Lex(Diagnostics);
   }
 
   public Parse() {
@@ -58,11 +46,9 @@ export class Parser {
   private ParseStatement() {
     const Left = this.ParseBinaryExpression();
     switch (this.Token.Kind) {
-      case CompositeTokenKind.PointerToken:
+      case SyntaxNodeKind.EqualsToken:
         const Keyword = this.NextToken() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
         return new CellAssignment(SyntaxNodeKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
-      // case TokenKind.GreaterGreaterToken:
-      //   return new DeclarationStatement(TokenKind.CloneCell, Left, this.NextToken(), this.ParseBinaryExpression());
     }
     return Left;
   }
@@ -70,7 +56,7 @@ export class Parser {
   private ParseBinaryExpression(ParentPrecedence = 0): ExpressionSyntax {
     let Left = this.ParseUnaryExpression();
     while (true) {
-      const BinaryPrecedence = Facts.BinaryPrecedence(this.Token.Kind);
+      const BinaryPrecedence = SyntaxFacts.BinaryPrecedence(this.Token.Kind);
       if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
         break;
       }
@@ -82,7 +68,7 @@ export class Parser {
   }
 
   private ParseUnaryExpression(): ExpressionSyntax {
-    const BinaryPrecedence = Facts.UnaryPrecedence(this.Token.Kind);
+    const BinaryPrecedence = SyntaxFacts.UnaryPrecedence(this.Token.Kind);
     if (BinaryPrecedence !== 0) {
       const Operator = this.NextToken() as SyntaxToken<UnaryOperatorKind>;
       const Right = this.ParseUnaryExpression();

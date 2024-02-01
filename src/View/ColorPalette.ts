@@ -1,30 +1,18 @@
-enum Color {
-  Turquoise = "#4ec9b0",
-  Terracotta = "#ce9178",
-  Moss = "#6a9955",
-  Buff = "#dcdcaa",
-  Azure = "#569cd6",
-  Sage = "#b5cea8",
-  Teal = "#19c37d",
-  Cerulean = "#9cdcfe",
-  Sandstone = "#d7ba7d",
-  Gray = "#404040",
-  Lavender = "#c586c0",
-}
+import { Colors } from "./Colors";
 
-export class Painter {
+export class ColorPalette {
   constructor(public r: number, public g: number, public b: number) {}
 
   private static Color(Text: string, Hex: string): string {
     return this.HexToColorCode(Hex) + Text + "\x1b[0m";
   }
 
-  private static HexToRgb(Hex: string): Painter {
+  private static HexToRgb(Hex: string): ColorPalette {
     const BingInt = parseInt(Hex.substring(1), 16);
     const r = (BingInt >> 16) & 255;
     const g = (BingInt >> 8) & 255;
     const b = BingInt & 255;
-    return new Painter(r, g, b);
+    return new ColorPalette(r, g, b);
   }
 
   private static HexToColorCode(Hex: string) {
@@ -33,47 +21,47 @@ export class Painter {
   }
 
   static Sage(Text: string) {
-    return this.Color(Text, Color.Sage);
+    return this.Color(Text, Colors.Sage);
   }
 
   static Azure(Text: string) {
-    return this.Color(Text, Color.Azure);
+    return this.Color(Text, Colors.Azure);
   }
 
   static Moss(Text: string) {
-    return this.Color(Text, Color.Moss);
+    return this.Color(Text, Colors.Moss);
   }
 
   static Turquoise(Text: string) {
-    return this.Color(Text, Color.Turquoise);
+    return this.Color(Text, Colors.Turquoise);
   }
 
   static Terracotta(Text: string) {
-    return this.Color(Text, Color.Terracotta);
+    return this.Color(Text, Colors.Terracotta);
   }
 
   static Cerulean(Text: string) {
-    return this.Color(Text, Color.Cerulean);
+    return this.Color(Text, Colors.Cerulean);
   }
 
   static Sandstone(Text: string) {
-    return this.Color(Text, Color.Sandstone);
+    return this.Color(Text, Colors.Sandstone);
   }
 
   static Teal(Text: string) {
-    return this.Color(Text, Color.Teal);
+    return this.Color(Text, Colors.Teal);
   }
 
   static Gray(Text: string) {
-    return this.Color(Text, Color.Gray);
+    return this.Color(Text, Colors.Gray);
   }
 
   static Lavender(Text: string) {
-    return this.Color(Text, Color.Lavender);
+    return this.Color(Text, Colors.Lavender);
   }
 
   static Buff(Text: string) {
-    return this.Color(Text, Color.Buff);
+    return this.Color(Text, Colors.Buff);
   }
 
   static Default(Text: string) {

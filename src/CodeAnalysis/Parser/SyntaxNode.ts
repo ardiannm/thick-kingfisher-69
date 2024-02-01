@@ -1,5 +1,5 @@
-import { Painter } from "../../Text/Painter";
-import { TextSpan } from "../../Text/TextSpan";
+import { ColorPalette } from "../../View/ColorPalette";
+import { TextSpan } from "../../Input/TextSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 
 export class SyntaxNode {
@@ -24,17 +24,17 @@ export class SyntaxNode {
 
   TextSpan(): TextSpan {
     const FirstSpan = this.First().TextSpan();
-    return FirstSpan.Input.CreateTextSpan(FirstSpan.Start, this.Last().TextSpan().End);
+    return FirstSpan.Input.SetTextSpan(FirstSpan.Start, this.Last().TextSpan().End);
   }
 
   Print(Indent = "") {
-    var Text = Painter.Default(this.Kind);
+    var Text = ColorPalette.Default(this.Kind);
     for (const Child of this.Children()) {
       Text += "\n" + Indent;
       if (Child === this.Last()) {
-        Text += Painter.Gray("└── ") + Child.Print(Indent + "   ");
+        Text += ColorPalette.Gray("└── ") + Child.Print(Indent + "   ");
       } else {
-        Text += Painter.Gray("├── ") + Child.Print(Indent + Painter.Gray("│  "));
+        Text += ColorPalette.Gray("├── ") + Child.Print(Indent + ColorPalette.Gray("│  "));
       }
     }
     return Text;
