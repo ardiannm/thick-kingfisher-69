@@ -26,7 +26,7 @@ import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
 import { CompilerOptions } from "../CompilerOptions";
 
 export class Binder {
-  public Scope = new BoundScope(null);
+  Scope = new BoundScope(null);
   constructor(private Diagnostics: DiagnosticBag, public CompilerOptions: CompilerOptions) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {

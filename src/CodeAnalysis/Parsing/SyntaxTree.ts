@@ -48,6 +48,7 @@ export class SyntaxTree {
     if (this.Diagnostics.None()) {
       this.Value = this.EvaluatorService.Evaluate(this.BoundTree);
     }
+
     return this;
   }
 
@@ -58,5 +59,9 @@ export class SyntaxTree {
 
   Clear() {
     this.Diagnostics.Clear();
+  }
+
+  GetCell(cellName: string) {
+    return this.BinderService.Scope.GetCell(cellName);
   }
 }

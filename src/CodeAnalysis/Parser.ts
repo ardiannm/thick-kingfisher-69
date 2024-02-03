@@ -19,10 +19,18 @@ import { Submission } from "../Input/Submission";
 
 export class Parser {
   private Index = 0;
-  private Tokens: Array<SyntaxToken<SyntaxKind>>;
+  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private Trivia = new Array<SyntaxToken<SyntaxKind>>();
 
   constructor(public readonly Input: Submission, public Diagnostics: DiagnosticBag) {
-    this.Tokens = Input.Lex(Diagnostics);
+    const Tokens = Input.Lex(Diagnostics);
+    for (const Token of Tokens) {
+      if (SyntaxFacts.IsTrivia(Token.Kind)) {
+        this.Trivia.push(Token);
+      } else {
+        this.Tokens.push(Token.EatTrivia(this.Trivia));
+      }
+    }
   }
 
   public Parse() {

@@ -8,4 +8,8 @@ export class Services {
     }
     return name;
   }
+
+  static ParseName(row: number, column: number) {
+    return this.ColumnIndexToLetter(column) + row;
+  }
 }

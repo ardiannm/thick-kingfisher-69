@@ -21,16 +21,11 @@ export class Submission {
 
   Lex(Diagnostics: DiagnosticBag) {
     const Tokens = new Array<SyntaxToken<SyntaxKind>>();
-    const Trivias = new Array<SyntaxToken<SyntaxKind>>();
     const Tokenizer = new Lexer(this, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {
       Token = Tokenizer.Lex();
-      if (SyntaxFacts.IsTrivia(Token.Kind)) {
-        Trivias.push(Token);
-      } else {
-        Tokens.push(Token.EatTrivia(Trivias));
-      }
+      Tokens.push(Token);
     } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
     return Tokens;
   }
