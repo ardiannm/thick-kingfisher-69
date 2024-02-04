@@ -50,7 +50,7 @@ export class Submission {
     return this.LineSpans;
   }
 
-  GetLineIndex(TextSpan: TokenSpan) {
+  GetLinePosition(TextSpan: TokenSpan) {
     let Left = 0;
     let Right = this.LineSpans.length - 1;
     var Index: number;
@@ -65,11 +65,11 @@ export class Submission {
     }
   }
 
-  GetLineSpanAtIndex(Index: number) {
-    return this.LineSpans[Index - 1];
+  GetLineSpan(Line: number) {
+    return this.LineSpans[Line - 1];
   }
 
-  GetTokenSpanAtIndex(Position: number) {
+  GetTokenSpanAtPosition(Position: number) {
     var Left = 0;
     var Right = this.Tokens.length - 1;
     var Index: number;
