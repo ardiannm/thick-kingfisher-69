@@ -1,5 +1,5 @@
 import { ColorPalette } from "../../View/ColorPalette";
-import { TextSpan } from "../../Input/TextSpan";
+import { TokenSpan } from "../../Input/TokenSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 
 export class SyntaxNode {
@@ -22,9 +22,9 @@ export class SyntaxNode {
     return LastNode;
   }
 
-  TextSpan(): TextSpan {
-    const FirstSpan = this.First().TextSpan();
-    return FirstSpan.Input.SetTextSpan(FirstSpan.Start, this.Last().TextSpan().End);
+  get Span(): TokenSpan {
+    const FirstSpan = this.First().Span;
+    return FirstSpan.Input.SetTextSpan(FirstSpan.Start, this.Last().Span.End);
   }
 
   Print(Indent = "") {

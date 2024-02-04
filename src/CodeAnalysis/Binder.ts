@@ -77,7 +77,7 @@ export class Binder {
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
         Cell.Declared = true;
-        Cell.Formula = Node.Expression.TextSpan().Get();
+        Cell.Formula = Node.Expression.Span.GetText();
         return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
     }
     this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
@@ -130,9 +130,9 @@ export class Binder {
   }
 
   private BindCellReference(Node: CellReference) {
-    const Name = Node.TextSpan().Get();
+    const Name = Node.Span.GetText();
     if (this.CompilerOptions.CompactCellNames && Node.Right.Trivia.length) {
-      this.Diagnostics.WrongCellNameFormat(Node.Left.TextSpan().Get() + Node.Right.TextSpan().Get());
+      this.Diagnostics.WrongCellNameFormat(Node.Left.Span.GetText() + Node.Right.Span.GetText());
       return new BoundError(BoundKind.Error, Node.Kind);
     }
     return this.Scope.ConstructCell(Name);

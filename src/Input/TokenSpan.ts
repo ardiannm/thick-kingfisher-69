@@ -1,9 +1,9 @@
 import { Submission } from "./Submission";
 
-export class TextSpan {
+export class TokenSpan {
   constructor(public Input: Submission, public Start: number, public End: number) {}
 
-  Get() {
+  GetText() {
     return this.Input.Text.substring(this.Start, this.End);
   }
 }

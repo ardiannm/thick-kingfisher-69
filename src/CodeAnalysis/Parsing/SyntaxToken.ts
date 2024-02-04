@@ -1,5 +1,5 @@
 import { SyntaxNode } from "./SyntaxNode";
-import { TextSpan } from "../../Input/TextSpan";
+import { TokenSpan } from "../../Input/TokenSpan";
 import { SyntaxKind } from "./Kind/SyntaxKind";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { SyntaxTriviaKind } from "./Kind/SyntaxTriviaKind";
@@ -35,7 +35,7 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override Kind: T, public Text: TokenText<T>, private Span: TextSpan, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+  constructor(public override Kind: T, public Text: TokenText<T>, private TokenSpan: TokenSpan, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(Kind);
   }
 
@@ -58,16 +58,16 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this;
   }
 
-  override TextSpan() {
-    return this.Span;
+  override get Span() {
+    return this.TokenSpan;
   }
 
   get Line() {
-    return this.Span.Input.GetLineIndex(this.Span);
+    return this.TokenSpan.Input.GetLineIndex(this.TokenSpan);
   }
 
   get Column() {
-    return this.Span.Start - this.Span.Input.GetLineSpanAtIndex(this.Line).Start + 1;
+    return this.TokenSpan.Start - this.TokenSpan.Input.GetLineSpanAtIndex(this.Line).Start + 1;
   }
 
   override Print() {

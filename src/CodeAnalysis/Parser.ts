@@ -158,7 +158,7 @@ export class Parser {
       return this.NextToken() as SyntaxToken<Kind>;
     }
     this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind);
-    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>, this.Token.TextSpan());
+    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>, this.Token.Span);
   }
 
   private Any() {
