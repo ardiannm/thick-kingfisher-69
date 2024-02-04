@@ -24,7 +24,7 @@ export class SyntaxNode {
 
   get Span(): TokenSpan {
     const FirstSpan = this.First().Span;
-    return FirstSpan.Input.SetTextSpan(FirstSpan.Start, this.Last().Span.End);
+    return FirstSpan.Input.SetTokenSpan(FirstSpan.Start, this.Last().Span.End);
   }
 
   Print(Indent = "") {

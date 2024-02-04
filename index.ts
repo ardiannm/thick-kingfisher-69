@@ -3,11 +3,11 @@ import { CompilerOptions } from "./src/CompilerOptions";
 import { createInterface } from "readline";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
-const Submission = SyntaxTree.Init(new CompilerOptions(true, false));
+const Program = SyntaxTree.Init(new CompilerOptions(true, false));
 
 console.clear();
 
-const Submissions = new Array<string>();
+const Inputs = new Array<string>();
 
 const Fn = () => {
   Prompt.question("", function (Input) {
@@ -17,19 +17,19 @@ const Fn = () => {
       console.clear();
       Fn();
     } else if (Input !== "") {
-      Submissions.push(Input);
+      Inputs.push(Input);
       Fn();
     } else {
-      Input = Submissions.join("\n");
-      Submissions.length = 0;
-      Submission.Parse(Input).Print().Bind().Evaluate();
-      if (Submission.Diagnostics.Any()) {
+      Input = Inputs.join("\n");
+      Inputs.length = 0;
+      Program.Parse(Input).Print().Bind().Evaluate();
+      if (Program.Diagnostics.Any()) {
         console.log();
-        for (const d of Submission.Diagnostics.Get()) console.log(d);
-        Submission.Diagnostics.Clear();
+        for (const d of Program.Diagnostics.Get()) console.log(d);
+        Program.Diagnostics.Clear();
       } else {
         console.log();
-        console.log(Submission.Value.toString());
+        console.log(Program.Value.toString());
       }
       console.log();
       Fn();

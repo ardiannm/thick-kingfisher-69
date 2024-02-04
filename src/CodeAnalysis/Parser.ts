@@ -19,6 +19,7 @@ import { Submission } from "../Input/Submission";
 
 export class Parser {
   private Index = 0;
+
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
   private Trivia = new Array<SyntaxToken<SyntaxKind>>();
 
@@ -128,10 +129,10 @@ export class Parser {
   }
 
   private PeekToken(Offset: number) {
-    const Index = this.Index + Offset;
-    const LastIndex = this.Tokens.length - 1;
-    if (Index > LastIndex) return this.Tokens[LastIndex];
-    return this.Tokens[Index];
+    const ThisIndex = this.Index + Offset;
+    const PrevIndex = this.Tokens.length - 1;
+    if (ThisIndex > PrevIndex) return this.Tokens[PrevIndex];
+    return this.Tokens[ThisIndex];
   }
 
   private get Token() {

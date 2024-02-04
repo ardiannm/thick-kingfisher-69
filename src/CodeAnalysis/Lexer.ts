@@ -34,7 +34,7 @@ export class Lexer {
         return this.LexGreaterGreaterToken();
     }
     this.Next();
-    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text, this.SetTokenSpan());
   }
 
   private LexBadToken(): SyntaxToken<SyntaxKind> {
@@ -49,14 +49,14 @@ export class Lexer {
     }
     this.Diagnostics.BadTokenFound(this.Char);
     this.Next();
-    return new SyntaxToken(this.Kind, this.Text, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text, this.SetTokenSpan());
   }
 
   private LexCommentToken(): SyntaxToken<SyntaxKind> {
     do {
       this.Next();
     } while (!(this.Match(SyntaxTriviaKind.LineBreakTrivia) || this.Match(SyntaxNodeKind.EndOfFileToken)));
-    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.SetTextSpan());
+    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text, this.SetTokenSpan());
   }
 
   private LexMinusToken(): SyntaxToken<SyntaxKind> {
@@ -66,7 +66,7 @@ export class Lexer {
       this.Next();
       this.Kind = CompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTokenSpan());
   }
 
   private LexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
@@ -76,17 +76,17 @@ export class Lexer {
       this.Next();
       this.Kind = CompositeTokenKind.GreaterGreaterToken;
     }
-    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTextSpan());
+    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTokenSpan());
   }
 
   private LexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.IsLetter) this.Next();
-    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.SetTextSpan());
+    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(this.Text), this.Text, this.SetTokenSpan());
   }
 
   private LexSpaceToken(): SyntaxToken<SyntaxKind> {
     while (this.IsSpace) this.Next();
-    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.SetTextSpan());
+    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text, this.SetTokenSpan());
   }
 
   private LexNumberToken(): SyntaxToken<SyntaxKind> {
@@ -99,15 +99,15 @@ export class Lexer {
     }
     while (this.IsDigit) this.Next();
     const NumberText = this.Text as TokenText<SyntaxNodeKind.NumberToken>;
-    return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.SetTextSpan());
+    return new SyntaxToken(SyntaxNodeKind.NumberToken, NumberText, this.SetTokenSpan());
   }
 
   private get Text() {
     return this.Input.Text.substring(this.Start, this.End);
   }
 
-  private SetTextSpan(): TokenSpan {
-    return this.Input.SetTextSpan(this.Start, this.End);
+  private SetTokenSpan(): TokenSpan {
+    return this.Input.SetTokenSpan(this.Start, this.End);
   }
 
   private get IsSpace(): boolean {

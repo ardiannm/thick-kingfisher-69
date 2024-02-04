@@ -63,11 +63,7 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   }
 
   get Line() {
-    return this.TokenSpan.Input.GetLinePosition(this.TokenSpan);
-  }
-
-  get Column() {
-    return this.TokenSpan.Start - this.TokenSpan.Input.GetLineSpan(this.Line).Start + 1;
+    return this.TokenSpan.Input.GetLine(this.TokenSpan.Start);
   }
 
   override Print() {

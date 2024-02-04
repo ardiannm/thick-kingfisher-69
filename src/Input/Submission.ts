@@ -7,20 +7,22 @@ import { LineSpan } from "./LineSpan";
 import { TokenSpan } from "./TokenSpan";
 
 export class Submission {
-  private Index = 0;
+  private Start = 0;
+  private End = 0;
+  private Line = 0;
   private LineSpans = new Array<LineSpan>();
 
   Tokens = Array<SyntaxToken<SyntaxKind>>();
 
   constructor(public Text: string) {
-    this.SetLineSpans();
+    this.SetLines();
   }
 
-  static From(Text: string) {
+  static From(Text: string): Submission {
     return new Submission(Text);
   }
 
-  Lex(Diagnostics: DiagnosticBag) {
+  Lex(Diagnostics: DiagnosticBag): Array<SyntaxToken<SyntaxKind>> {
     const Tokenizer = new Lexer(this, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {
@@ -30,46 +32,43 @@ export class Submission {
     return this.Tokens;
   }
 
-  SetTextSpan(Start: number, End: number) {
+  SetTokenSpan(Start: number, End: number): TokenSpan {
     return new TokenSpan(this, Start, End);
   }
 
-  private SetLineSpans() {
-    let Start = this.Index;
-    while (this.Index <= this.Text.length) {
-      const Char = this.Text.charAt(this.Index);
+  private SetLines(): Array<LineSpan> {
+    this.Start = this.End;
+    while (this.End <= this.Text.length) {
+      const Char = this.Text.charAt(this.End);
       if (Char === "\n") {
-        const Span = new LineSpan(Start, this.Index);
+        this.Line += 1;
+        const Span = new LineSpan(this.Start, this.End, this.Line);
         this.LineSpans.push(Span);
-        Start = this.Index;
+        this.Start = this.End;
       }
-      this.Index++;
+      this.End++;
     }
-    const Span = new LineSpan(Start, this.Index);
+    const Span = new LineSpan(this.Start, this.End, this.Line);
     this.LineSpans.push(Span);
     return this.LineSpans;
   }
 
-  GetLinePosition(TextSpan: TokenSpan) {
+  GetLine(Position: number): LineSpan {
     let Left = 0;
     let Right = this.LineSpans.length - 1;
     var Index: number;
     while (true) {
       Index = Left + Math.floor((Right - Left) / 2);
       const LineSpan = this.LineSpans[Index];
-      if (TextSpan.Start >= LineSpan.Start && TextSpan.Start < LineSpan.End) {
-        return Index + 1;
+      if (Position >= LineSpan.Start && Position < LineSpan.End) {
+        return LineSpan;
       }
-      if (TextSpan.Start < LineSpan.Start) Right = Index - 1;
+      if (Position < LineSpan.Start) Right = Index - 1;
       else Left = Index + 1;
     }
   }
 
-  GetLineSpan(Line: number) {
-    return this.LineSpans[Line - 1];
-  }
-
-  GetTokenSpanAtPosition(Position: number) {
+  GetToken(Position: number): SyntaxToken<SyntaxKind> {
     var Left = 0;
     var Right = this.Tokens.length - 1;
     var Index: number;
