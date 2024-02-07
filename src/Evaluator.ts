@@ -40,10 +40,24 @@ export class Evaluator {
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    return Node.Cell.Evaluate(this);
+    Node.Cell.Evaluated = false;
+    console.log();
+    console.log(Node.Cell.Name);
+    console.log();
+    return this.Evaluate(Node.Cell);
   }
 
   private EvaluateCell(Node: Cell) {
+    if (Node.Evaluated) {
+      return Node.Value;
+    }
+    Node.Value = this.Evaluate(Node.Expression);
+    Node.Evaluated = true;
+    console.log("// " + Node.Name + " " + Node.Value);
+    for (const Observer of Node.Observers.values()) {
+      Observer.Evaluated = false;
+      this.EvaluateCell(Observer);
+    }
     return Node.Value;
   }
 

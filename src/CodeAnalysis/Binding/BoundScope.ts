@@ -15,7 +15,7 @@ export class BoundScope {
       Data = Scope.Cells.get(Name) as Cell;
     } else {
       const Expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-      Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0");
+      Data = new Cell(BoundKind.Cell, Name, false, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0");
     }
     this.Cells.set(Name, Data);
     return Data;

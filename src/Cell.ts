@@ -3,10 +3,19 @@ import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { Evaluator } from "./Evaluator";
-import { Logger } from "./Logger";
 
 export class Cell extends BoundNode {
-  constructor(public override Kind: BoundKind.Cell, public Name: string, public Declared: boolean, public Value: number, public Expression: BoundExpression, public Subjects: Map<string, Cell>, public Observers: Map<string, Cell>, public Formula: string) {
+  constructor(
+    public override Kind: BoundKind.Cell,
+    public Name: string,
+    public Declared: boolean,
+    public Evaluated: boolean,
+    public Value: number,
+    public Expression: BoundExpression,
+    public Subjects: Map<string, Cell>,
+    public Observers: Map<string, Cell>,
+    public Formula: string
+  ) {
     super(Kind);
   }
 
@@ -17,13 +26,6 @@ export class Cell extends BoundNode {
 
   Notify(Observer: Cell) {
     this.Observers.set(Observer.Name, Observer);
-  }
-
-  @Logger.Count()
-  Evaluate(Class: Evaluator) {
-    this.Value = Class.Evaluate(this.Expression);
-    this.Observers.forEach((Observer) => Observer.Evaluate(Class));
-    return this.Value;
   }
 
   private ClearObserver(Observer: Cell) {

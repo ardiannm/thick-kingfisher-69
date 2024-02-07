@@ -30,7 +30,6 @@ const Fn = () => {
       } else {
         console.log(Program.Value.toString());
         console.log();
-        console.log(Logger.Map);
       }
       Fn();
     }
