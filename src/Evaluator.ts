@@ -41,9 +41,6 @@ export class Evaluator {
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
     Node.Cell.Evaluated = false;
-    console.log();
-    console.log(Node.Cell.Name);
-    console.log();
     return this.Evaluate(Node.Cell);
   }
 
@@ -53,7 +50,6 @@ export class Evaluator {
     }
     Node.Value = this.Evaluate(Node.Expression);
     Node.Evaluated = true;
-    console.log("// " + Node.Name + " " + Node.Value);
     for (const Observer of Node.Observers.values()) {
       Observer.Evaluated = false;
       this.EvaluateCell(Observer);
