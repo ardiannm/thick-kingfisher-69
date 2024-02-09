@@ -8,13 +8,12 @@ import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpress
 import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral";
 import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
-import { CompilerOptions } from "./CompilerOptions";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
-import { Spreadsheet } from "./Spreadsheet";
+import { Services } from "./Services";
 
 export class Evaluator {
   private Value = 0;
-  constructor(private Diagnostics: DiagnosticBag, private Options: CompilerOptions) {}
+  constructor(private Diagnostics: DiagnosticBag) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -37,7 +36,7 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    Spreadsheet.Cache.clear();
+    Services.Cache.clear();
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;
   }
@@ -47,7 +46,7 @@ export class Evaluator {
     return this.ReEvaluateCell(Node.Cell);
   }
 
-  @Spreadsheet.Memoize()
+  @Services.Memoize()
   private ReEvaluateCell(Node: Cell) {
     Node.Observers.forEach((o) => (o.Value = this.Evaluate(o.Expression)));
     Node.Observers.forEach((o) => this.ReEvaluateCell(o));

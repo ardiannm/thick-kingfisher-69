@@ -2,7 +2,7 @@ import { ColorPalette } from "./View/ColorPalette";
 import { Evaluator } from "./Evaluator";
 import { Cell } from "./Cell";
 
-export class Spreadsheet {
+export class Services {
   static Cache = new Set<string>();
   private constructor() {}
 
@@ -25,13 +25,13 @@ export class Spreadsheet {
     return function (Target: Evaluator, _PropertyKey: string, Descriptor: PropertyDescriptor) {
       const Method = Descriptor.value;
       Descriptor.value = function (this: typeof Target, Node: Cell) {
-        if (Spreadsheet.Cache.has(Node.Name)) {
+        if (Services.Cache.has(Node.Name)) {
           console.log(ColorPalette.Gray(Node.Name + " [" + Node.Value + "] memoized "));
           return Node.Value;
         }
         console.log(ColorPalette.Azure(Node.Name + " [" + Node.Value + "] computed "));
         const Result = Method.apply(this, [Node]) as number;
-        Spreadsheet.Cache.add(Node.Name);
+        Services.Cache.add(Node.Name);
         return Result;
       };
       return Descriptor;
