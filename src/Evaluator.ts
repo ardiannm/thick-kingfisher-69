@@ -11,10 +11,10 @@ import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { Cell } from "./Cell";
 import { ColorPalette } from "./View/ColorPalette";
 import { CompilerOptions } from "./CompilerOptions";
+import { ClearMemo, Memoize, Services } from "./Services";
 
 export class Evaluator {
   private Value = 0;
-  private Processing: string = "";
   constructor(private Diagnostics: DiagnosticBag, private Options: CompilerOptions) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -37,19 +37,19 @@ export class Evaluator {
     return 0;
   }
 
+  @ClearMemo()
   private EvaluateProgram(Node: BoundProgram): number {
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    this.Processing = Node.Cell.Name;
     Node.Cell.Value = this.Evaluate(Node.Cell.Expression);
     return this.ReEvaluateCell(Node.Cell);
   }
 
+  @Memoize()
   private ReEvaluateCell(Node: Cell) {
-    if (this.Options.DevMode) console.log(ColorPalette.Teal(this.Processing + " -> computing " + Node.Name + " to " + Node.Value));
     Node.Observers.forEach((o) => (o.Value = this.Evaluate(o.Expression)));
     Node.Observers.forEach((o) => this.ReEvaluateCell(o));
     return Node.Value;
