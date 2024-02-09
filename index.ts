@@ -1,10 +1,9 @@
 import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
 import { CompilerOptions } from "./src/CompilerOptions";
 import { createInterface } from "readline";
-import { Logger } from "./src/Logger";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
-const Program = SyntaxTree.Init(new CompilerOptions(true, false));
+const Program = SyntaxTree.Init(new CompilerOptions(true, false, true));
 
 console.clear();
 
@@ -28,8 +27,8 @@ const Fn = () => {
         for (const d of Program.Diagnostics.Get()) console.log(d);
         Program.Diagnostics.Clear();
       } else {
-        console.log(Program.Value.toString());
         console.log();
+        console.log(Program.Value.toString());
       }
       Fn();
     }

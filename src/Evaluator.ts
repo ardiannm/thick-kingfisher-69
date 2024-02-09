@@ -9,10 +9,13 @@ import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpressio
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundUnaryOperatorKind";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
 import { Cell } from "./Cell";
+import { ColorPalette } from "./View/ColorPalette";
+import { CompilerOptions } from "./CompilerOptions";
 
 export class Evaluator {
   private Value = 0;
-  constructor(private Diagnostics: DiagnosticBag) {}
+  private static Stack = new Set<string>();
+  constructor(private Diagnostics: DiagnosticBag, private Options: CompilerOptions) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -36,24 +39,32 @@ export class Evaluator {
 
   private EvaluateProgram(Node: BoundProgram): number {
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
+    Evaluator.Stack.clear();
     return this.Value;
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    Node.Cell.Evaluated = false;
-    return this.Evaluate(Node.Cell);
+    this.ComputeCell(Node.Cell);
+    return Node.Cell.Value;
+  }
+
+  private ComputeCell(Node: Cell) {
+    if (Node.Observers.size) {
+      Node.Observers.forEach((o) => this.ComputeCell(o));
+    } else {
+      this.Evaluate(Node);
+    }
+    return Node.Value;
   }
 
   private EvaluateCell(Node: Cell) {
-    if (Node.Evaluated) {
+    if (!Evaluator.Stack.has(Node.Name)) {
+      Node.Value = this.Evaluate(Node.Expression);
+      Evaluator.Stack.add(Node.Name);
+      if (this.Options.DevMode) console.log(ColorPalette.Lavender("// computing " + Node.Name + " to " + Node.Value));
       return Node.Value;
     }
-    Node.Value = this.Evaluate(Node.Expression);
-    Node.Evaluated = true;
-    for (const Observer of Node.Observers.values()) {
-      Observer.Evaluated = false;
-      this.EvaluateCell(Observer);
-    }
+    if (this.Options.DevMode) console.log(ColorPalette.Turquoise("// already done " + Node.Name + " to " + Node.Value));
     return Node.Value;
   }
 

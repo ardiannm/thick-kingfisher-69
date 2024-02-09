@@ -2,14 +2,12 @@ import { BoundExpression } from "./CodeAnalysis/Binding/BoundExpression";
 import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { Evaluator } from "./Evaluator";
 
 export class Cell extends BoundNode {
   constructor(
     public override Kind: BoundKind.Cell,
     public Name: string,
     public Declared: boolean,
-    public Evaluated: boolean,
     public Value: number,
     public Expression: BoundExpression,
     public Subjects: Map<string, Cell>,
