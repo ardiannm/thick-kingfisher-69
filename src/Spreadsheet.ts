@@ -3,7 +3,7 @@ import { Evaluator } from "./Evaluator";
 import { Cell } from "./Cell";
 
 export class Spreadsheet {
-  private static Cache = new Set<string>();
+  static Cache = new Set<string>();
   private constructor() {}
 
   static ColumnIndexToLetter(Column: number): string {

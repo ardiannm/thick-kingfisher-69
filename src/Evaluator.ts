@@ -37,6 +37,7 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
+    Spreadsheet.Cache.clear();
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;
   }
