@@ -1,16 +1,16 @@
-import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
-import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundBinaryOperatorKind";
-import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
-import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
-import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
-import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral";
-import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
-import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
-import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundUnaryOperatorKind";
-import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { CompilerOptions } from "./CompilerOptions";
-import { Memoize } from "./Services";
 import { Cell } from "./Cell";
+import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
+import { BoundKind } from "./CodeAnalysis/Binding/Kind/BoundKind";
+import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
+import { BoundBinaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundBinaryOperatorKind";
+import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundUnaryOperatorKind";
+import { BoundBinaryExpression } from "./CodeAnalysis/Binding/BoundBinaryExpression";
+import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral";
+import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
+import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
+import { CompilerOptions } from "./CompilerOptions";
+import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { Spreadsheet } from "./Spreadsheet";
 
 export class Evaluator {
   private Value = 0;
@@ -46,7 +46,7 @@ export class Evaluator {
     return this.ReEvaluateCell(Node.Cell);
   }
 
-  @Memoize()
+  @Spreadsheet.Memoize()
   private ReEvaluateCell(Node: Cell) {
     Node.Observers.forEach((o) => (o.Value = this.Evaluate(o.Expression)));
     Node.Observers.forEach((o) => this.ReEvaluateCell(o));
