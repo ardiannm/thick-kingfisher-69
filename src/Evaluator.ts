@@ -44,13 +44,18 @@ export class Evaluator {
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
     this.Processing = Node.Cell.Name;
-    this.EvaluateCell(Node.Cell);
-    return Node.Cell.Value;
+    Node.Cell.Value = this.Evaluate(Node.Cell.Expression);
+    return this.ReEvaluateCell(Node.Cell);
+  }
+
+  private ReEvaluateCell(Node: Cell) {
+    if (this.Options.DevMode) console.log(ColorPalette.Teal(this.Processing + " -> computing " + Node.Name + " to " + Node.Value));
+    Node.Observers.forEach((o) => (o.Value = this.Evaluate(o.Expression)));
+    Node.Observers.forEach((o) => this.ReEvaluateCell(o));
+    return Node.Value;
   }
 
   private EvaluateCell(Node: Cell) {
-    Node.Value = this.Evaluate(Node.Expression);
-    if (this.Options.DevMode) console.log(ColorPalette.Terracotta(this.Processing + " -> computing " + Node.Name + " to " + Node.Value));
     return Node.Value;
   }
 
