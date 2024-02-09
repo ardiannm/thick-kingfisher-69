@@ -8,10 +8,9 @@ import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundUnaryOperatorKind } from "./CodeAnalysis/Binding/Kind/BoundUnaryOperatorKind";
 import { DiagnosticBag } from "./Diagnostics/DiagnosticBag";
-import { Cell } from "./Cell";
-import { ColorPalette } from "./View/ColorPalette";
 import { CompilerOptions } from "./CompilerOptions";
-import { ClearMemo, Memoize, Services } from "./Services";
+import { Memoize } from "./Services";
+import { Cell } from "./Cell";
 
 export class Evaluator {
   private Value = 0;
@@ -37,7 +36,6 @@ export class Evaluator {
     return 0;
   }
 
-  @ClearMemo()
   private EvaluateProgram(Node: BoundProgram): number {
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;

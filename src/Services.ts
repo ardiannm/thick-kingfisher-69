@@ -21,6 +21,7 @@ export class Services {
   }
 }
 
+/** @deprecated keeps memoizing even when a cell node is re assigned, and that has to go this will have to be deprecated */
 export function Memoize() {
   return function (Target: Evaluator, _PropertyKey: string, Descriptor: PropertyDescriptor) {
     const Method = Descriptor.value;
@@ -32,23 +33,6 @@ export function Memoize() {
       console.log(ColorPalette.Azure(Node.Name + " [" + Node.Value + "] computed "));
       const Result = Method.apply(this, [Node]) as number;
       Services.Cache.add(Node.Name);
-      return Result;
-    };
-    return Descriptor;
-  };
-}
-
-export function ClearMemo() {
-  return function (Target: Evaluator, _PropertyKey: string, Descriptor: PropertyDescriptor) {
-    const Method = Descriptor.value;
-    Descriptor.value = function (this: typeof Target, Node: BoundProgram) {
-      const Result = Method.apply(this, [Node]);
-      if (Services.Cache.size) {
-        console.log();
-        console.log(ColorPalette.Gray("// clearing memo"));
-        console.log();
-        Services.Cache.clear();
-      }
       return Result;
     };
     return Descriptor;
