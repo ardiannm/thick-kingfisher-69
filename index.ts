@@ -1,6 +1,7 @@
 import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
 import { CompilerOptions } from "./src/CompilerOptions";
 import { createInterface } from "readline";
+import { ColorPalette } from "./src/View/ColorPalette";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
 const Program = SyntaxTree.Init(new CompilerOptions(true, false));
@@ -28,7 +29,8 @@ const Fn = () => {
         Program.Diagnostics.Clear();
       } else {
         console.log();
-        console.log(Program.Value.toString());
+        console.log(ColorPalette.Terracotta(Program.Value.toString()));
+        console.log();
       }
       Fn();
     }

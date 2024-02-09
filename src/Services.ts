@@ -4,7 +4,7 @@ import { Cell } from "./Cell";
 import { BoundProgram } from "./CodeAnalysis/Binding/BoundProgram";
 
 export class Services {
-  static Cache = new Map<string, number>();
+  static Cache = new Set<string>();
 
   static ColumnIndexToLetter(column: number): string {
     let name = "";
@@ -27,11 +27,11 @@ export function Memoize() {
     Descriptor.value = function (this: typeof Target, Node: Cell) {
       if (Services.Cache.has(Node.Name)) {
         console.log(ColorPalette.Gray(Node.Name + " [" + Node.Value + "] memoized "));
-        return Services.Cache.get(Node.Name) as number;
+        return Node.Value;
       }
       console.log(ColorPalette.Azure(Node.Name + " [" + Node.Value + "] computed "));
-      const Result = Method.apply(this, [Node]);
-      Services.Cache.set(Node.Name, Result);
+      const Result = Method.apply(this, [Node]) as number;
+      Services.Cache.add(Node.Name);
       return Result;
     };
     return Descriptor;
@@ -44,7 +44,9 @@ export function ClearMemo() {
     Descriptor.value = function (this: typeof Target, Node: BoundProgram) {
       const Result = Method.apply(this, [Node]);
       if (Services.Cache.size) {
-        console.log(ColorPalette.Gray("\n" + "... clearing memo ..." + "\n"));
+        console.log();
+        console.log(ColorPalette.Gray("// clearing memo"));
+        console.log();
         Services.Cache.clear();
       }
       return Result;
