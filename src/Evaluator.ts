@@ -9,12 +9,10 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral"
 import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
-import { Services } from "./Services";
 import { ColorPalette } from "./View/ColorPalette";
 
 export class Evaluator {
   private Value = 0;
-  private Cache = new Set<string>();
   constructor(private Diagnostics: DiagnosticBag) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -38,29 +36,17 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    this.Cache.clear();
+    console.log(ColorPalette.Azure("// Program"));
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    Node.Cell.Value = this.Evaluate(Node.Cell.Expression);
-    return this.ReEvaluateCell(Node.Cell);
-  }
-
-  private ReEvaluateCell(Node: Cell) {
-    if (this.Cache.has(Node.Name)) {
-      console.log(ColorPalette.Gray(Node.Name + " [" + Node.Value + "] memoized "));
-      return Node.Value;
-    }
-    console.log(ColorPalette.Azure(Node.Name + " [" + Node.Value + "] computed "));
-    Node.Observers.forEach((o) => (o.Value = this.Evaluate(o.Expression)));
-    Node.Observers.forEach((o) => this.ReEvaluateCell(o));
-    this.Cache.add(Node.Name);
-    return Node.Value;
+    return this.EvaluateCell(Node.Cell);
   }
 
   private EvaluateCell(Node: Cell) {
+    Node.Value = this.Evaluate(Node.Expression);
     return Node.Value;
   }
 
