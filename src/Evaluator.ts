@@ -49,8 +49,7 @@ export class Evaluator {
       Node.Cell.Value = Value;
       this.Edges.clear();
       this.Notified.clear();
-      this.NotifyForChange(Node.Cell);
-      this.Evaluated.add(Node.Cell.Name); // make sure to add back this name before executing edges because we have already evaluated this node manually
+      Node.Cell.Subscribers.forEach((Sub) => this.NotifyForChange(Sub));
       this.Edges.forEach((Edge) => this.EvaluateCell(Edge));
     }
     return Node.Cell.Value;
@@ -70,7 +69,6 @@ export class Evaluator {
       console.log(ColorPalette.Terracotta(Node.Name + " processed"));
       Node.Value = this.Evaluate(Node.Expression);
       this.Evaluated.add(Node.Name);
-      this.Edges.delete(Node);
     }
     return Node.Value;
   }
