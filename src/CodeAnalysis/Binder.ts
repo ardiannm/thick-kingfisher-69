@@ -61,24 +61,23 @@ export class Binder {
   private BindCellAssignment(Node: CellAssignment) {
     switch (Node.Left.Kind) {
       case SyntaxNodeKind.CellReference:
-        const Cell = this.Bind(Node.Left) as Cell;
+        const Subject = this.Bind(Node.Left) as Cell;
         const AssignmentScope = new BoundScope(this.Scope);
         this.Scope = AssignmentScope as BoundScope;
-        Cell.Expression = this.Bind(Node.Expression);
-        Cell.ClearSubjects();
-        for (const Subject of this.Scope.GetCells()) {
-          Cell.Watch(Subject);
-          if (Subject.Declared) continue;
+        Subject.Expression = this.Bind(Node.Expression);
+        for (const Dep of this.Scope.GetCells()) {
+          Subject.Tracks(Dep);
+          if (Dep.Declared) continue;
           if (this.CompilerOptions.AutoDeclaration) {
-            this.Diagnostics.AutoDeclaredCell(Subject, Cell);
-            Subject.Declared = true;
-            this.Scope.Move(Subject);
+            this.Diagnostics.AutoDeclaredCell(Dep, Subject);
+            Dep.Declared = true;
+            this.Scope.Move(Dep);
           }
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
-        Cell.Declared = true;
-        Cell.Formula = Node.Expression.Span.GetText();
-        return new BoundCellAssignment(BoundKind.CellAssignment, Cell);
+        Subject.Declared = true;
+        Subject.Formula = Node.Expression.Span.GetText();
+        return new BoundCellAssignment(BoundKind.CellAssignment, Subject);
     }
     this.Diagnostics.CantUseAsAReference(Node.Left.Kind);
     return new BoundNode(BoundKind.CellAssignment);

@@ -46,23 +46,19 @@ export class BoundScope {
       if (!Cell.Declared) {
         Diagnostics.UndeclaredCell(Cell.Name);
       }
-      Cell.Subjects.forEach((Subject) => {
-        if (!Subject.Declared) {
-          Diagnostics.UndeclaredCell(Subject.Name);
+      Cell.Dependencies.forEach((Dependency) => {
+        if (!Dependency.Declared) {
+          Diagnostics.UndeclaredCell(Dependency.Name);
         }
       });
-      Cell.HasSubject(Cell, Diagnostics);
+      if (Cell.Contains(Cell)) Diagnostics.CircularDependency(Cell);
     });
   }
 
-  get Count() {
-    return this.Cells.size;
-  }
-
-  Move(Subject: Cell) {
+  Move(Dependency: Cell) {
     if (this.ParentScope) {
-      this.ParentScope.Cells.set(Subject.Name, Subject);
-      this.Cells.delete(Subject.Name);
+      this.ParentScope.Cells.set(Dependency.Name, Dependency);
+      this.Cells.delete(Dependency.Name);
       return true;
     }
     return false;

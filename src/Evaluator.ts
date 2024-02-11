@@ -36,7 +36,6 @@ export class Evaluator {
   }
 
   private EvaluateProgram(Node: BoundProgram): number {
-    console.log(ColorPalette.Azure("// Program"));
     for (const Root of Node.Root) this.Value = this.Evaluate(Root);
     return this.Value;
   }

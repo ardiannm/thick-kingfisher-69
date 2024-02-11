@@ -58,8 +58,8 @@ export class DiagnosticBag {
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
-  CircularDependency(ForName: string, InName: string) {
-    const Message = `'${InName}' is circularly dependent to '${ForName}'`;
+  CircularDependency(Observer: Cell) {
+    const Message = `Circular dependency detected in '${Observer.Name}'`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
