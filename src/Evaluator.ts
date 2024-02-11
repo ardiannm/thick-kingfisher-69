@@ -48,8 +48,8 @@ export class Evaluator {
       Node.Cell.Value = Value;
       this.Subscribers.clear();
       this.NotifyChange(Node.Cell);
+      this.Subscribers.forEach((Sub) => this.EvaluateCell(Sub));
     }
-    this.Subscribers.forEach((Sub) => this.EvaluateCell(Sub));
     return Node.Cell.Value;
   }
 
@@ -61,13 +61,13 @@ export class Evaluator {
 
   private EvaluateCell(Node: Cell) {
     if (this.Evaluated.has(Node.Name)) {
-      console.log(ColorPalette.Moss(Node.Name + " cached "+ Node.Formula));
-      return Node.Value;
+      console.log(ColorPalette.Moss(Node.Name + " cached " + Node.Formula));
+    } else {
+      console.log(ColorPalette.Terracotta(Node.Name + " processed"));
+      Node.Value = this.Evaluate(Node.Expression);
+      this.Evaluated.add(Node.Name);
+      this.Subscribers.delete(Node);
     }
-    console.log(ColorPalette.Terracotta(Node.Name + " processed"));
-    Node.Value = this.Evaluate(Node.Expression);
-    this.Evaluated.add(Node.Name);
-    this.Subscribers.delete(Node);
     return Node.Value;
   }
 
