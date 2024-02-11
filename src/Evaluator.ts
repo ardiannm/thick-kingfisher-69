@@ -14,7 +14,7 @@ import { ColorPalette } from "./View/ColorPalette";
 export class Evaluator {
   private Value = 0;
   private Evaluated = new Set<string>();
-  private Subscribers = new Set<Cell>();
+  private Edges = new Set<Cell>();
   private Notified = new Set<string>();
   constructor(private Diagnostics: DiagnosticBag) {}
 
@@ -47,10 +47,11 @@ export class Evaluator {
     const Value = this.Evaluate(Node.Cell.Expression);
     if (Node.Cell.Value !== Value) {
       Node.Cell.Value = Value;
-      this.Subscribers.clear();
+      this.Edges.clear();
       this.Notified.clear();
       this.NotifyForChange(Node.Cell);
-      this.Subscribers.forEach((Sub) => this.EvaluateCell(Sub));
+      this.Evaluated.add(Node.Cell.Name); // make sure to add back this name before executing edges because we have already evaluated this node manually
+      this.Edges.forEach((Edge) => this.EvaluateCell(Edge));
     }
     return Node.Cell.Value;
   }
@@ -59,7 +60,7 @@ export class Evaluator {
     this.Notified.add(Node.Name);
     this.Evaluated.delete(Node.Name);
     if (Node.Subscribers.size) Node.Subscribers.forEach((Sub) => !this.Notified.has(Sub.Name) && this.NotifyForChange(Sub));
-    else this.Subscribers.add(Node);
+    else this.Edges.add(Node);
   }
 
   private EvaluateCell(Node: Cell) {
@@ -69,7 +70,7 @@ export class Evaluator {
       console.log(ColorPalette.Terracotta(Node.Name + " processed"));
       Node.Value = this.Evaluate(Node.Expression);
       this.Evaluated.add(Node.Name);
-      this.Subscribers.delete(Node);
+      this.Edges.delete(Node);
     }
     return Node.Value;
   }

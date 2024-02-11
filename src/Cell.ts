@@ -27,12 +27,8 @@ export class Cell extends BoundNode {
     return false;
   }
 
-  private ClearSubscriber(Subscriber: Cell) {
-    this.Subscribers.delete(Subscriber.Name);
-  }
-
   ClearDependencies() {
-    this.Dependencies.forEach((Dependency) => Dependency.ClearSubscriber(this));
+    this.Dependencies.forEach((Dependency) => Dependency.Subscribers.delete(this.Name));
     this.Dependencies.clear();
   }
 }
