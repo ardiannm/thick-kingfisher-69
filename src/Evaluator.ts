@@ -9,9 +9,12 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral"
 import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { ColorPalette } from "./View/ColorPalette";
 
 export class Evaluator {
   private Value = 0;
+  private Evaluated = new Set<string>();
+  private Subscribers = new Set<Cell>();
   constructor(private Diagnostics: DiagnosticBag) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -40,11 +43,31 @@ export class Evaluator {
   }
 
   private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    return this.EvaluateCell(Node.Cell);
+    const Value = this.Evaluate(Node.Cell.Expression);
+    if (Node.Cell.Value !== Value) {
+      Node.Cell.Value = Value;
+      this.Subscribers.clear();
+      this.NotifyChange(Node.Cell);
+    }
+    this.Subscribers.forEach((Sub) => this.EvaluateCell(Sub));
+    return Node.Cell.Value;
+  }
+
+  private NotifyChange(Node: Cell) {
+    this.Evaluated.delete(Node.Name);
+    if (Node.Subscribers.size) Node.Subscribers.forEach((Sub) => this.NotifyChange(Sub));
+    else this.Subscribers.add(Node);
   }
 
   private EvaluateCell(Node: Cell) {
+    if (this.Evaluated.has(Node.Name)) {
+      console.log(ColorPalette.Moss(Node.Name + " cached "+ Node.Formula));
+      return Node.Value;
+    }
+    console.log(ColorPalette.Terracotta(Node.Name + " processed"));
     Node.Value = this.Evaluate(Node.Expression);
+    this.Evaluated.add(Node.Name);
+    this.Subscribers.delete(Node);
     return Node.Value;
   }
 
