@@ -15,6 +15,7 @@ export class Evaluator {
   private Value = 0;
   private Evaluated = new Set<string>();
   private Subscribers = new Set<Cell>();
+  private Notified = new Set<string>();
   constructor(private Diagnostics: DiagnosticBag) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
@@ -47,15 +48,17 @@ export class Evaluator {
     if (Node.Cell.Value !== Value) {
       Node.Cell.Value = Value;
       this.Subscribers.clear();
-      this.NotifyChange(Node.Cell);
+      this.Notified.clear();
+      this.NotifyForChange(Node.Cell);
       this.Subscribers.forEach((Sub) => this.EvaluateCell(Sub));
     }
     return Node.Cell.Value;
   }
 
-  private NotifyChange(Node: Cell) {
+  private NotifyForChange(Node: Cell) {
+    this.Notified.add(Node.Name);
     this.Evaluated.delete(Node.Name);
-    if (Node.Subscribers.size) Node.Subscribers.forEach((Sub) => this.NotifyChange(Sub));
+    if (Node.Subscribers.size) Node.Subscribers.forEach((Sub) => !this.Notified.has(Sub.Name) && this.NotifyForChange(Sub));
     else this.Subscribers.add(Node);
   }
 
