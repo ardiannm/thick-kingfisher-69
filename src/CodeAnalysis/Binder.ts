@@ -65,8 +65,9 @@ export class Binder {
         const AssignmentScope = new BoundScope(this.Scope);
         this.Scope = AssignmentScope as BoundScope;
         Subject.Expression = this.Bind(Node.Expression);
-        for (const Dep of this.Scope.GetCells()) {
-          Subject.Tracks(Dep);
+        Subject.ClearDependencies();
+        for (const Dep of this.Scope.Cells.values()) {
+          Subject.Track(Dep);
           if (Dep.Declared) continue;
           if (this.CompilerOptions.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Dep, Subject);

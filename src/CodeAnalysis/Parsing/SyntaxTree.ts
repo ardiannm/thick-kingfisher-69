@@ -60,8 +60,4 @@ export class SyntaxTree {
   Clear() {
     this.Diagnostics.Clear();
   }
-
-  GetCell(cellName: string) {
-    return this.BinderService.Scope.GetCell(cellName);
-  }
 }

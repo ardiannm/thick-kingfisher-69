@@ -16,13 +16,23 @@ export class Cell extends BoundNode {
     super(Kind);
   }
 
-  Tracks(Dependency: Cell) {
+  Track(Dependency: Cell) {
     this.Dependencies.set(Dependency.Name, Dependency);
+    Dependency.Subscribers.set(this.Name, this);
   }
 
   Contains(Dependency: Cell) {
     if (this.Dependencies.has(Dependency.Name)) return true;
     for (const Dep of this.Dependencies.values()) if (Dep.Contains(Dependency)) return true;
     return false;
+  }
+
+  private ClearSubscriber(Subscriber: Cell) {
+    this.Subscribers.delete(Subscriber.Name);
+  }
+
+  ClearDependencies() {
+    this.Dependencies.forEach((Dependency) => Dependency.ClearSubscriber(this));
+    this.Dependencies.clear();
   }
 }

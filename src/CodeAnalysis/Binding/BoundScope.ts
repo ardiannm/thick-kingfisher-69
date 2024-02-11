@@ -4,7 +4,7 @@ import { Cell } from "../../Cell";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 
 export class BoundScope {
-  private Cells = new Map<string, Cell>();
+  Cells = new Map<string, Cell>();
 
   constructor(public ParentScope: BoundScope | null) {}
 
@@ -28,16 +28,6 @@ export class BoundScope {
     if (this.ParentScope) {
       return this.ParentScope.ResolveScopeForCell(Name);
     }
-    return null;
-  }
-
-  GetCells() {
-    return this.Cells.values();
-  }
-
-  GetCell(Name: string) {
-    const Scope = this.ResolveScopeForCell(Name);
-    if (Scope) return Scope.Cells.get(Name) as Cell;
     return null;
   }
 

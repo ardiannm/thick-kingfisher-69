@@ -9,7 +9,6 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral"
 import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
-import { ColorPalette } from "./View/ColorPalette";
 
 export class Evaluator {
   private Value = 0;
