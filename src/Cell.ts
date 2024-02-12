@@ -21,9 +21,11 @@ export class Cell extends BoundNode {
     Dependency.Subscribers.set(this.Name, this);
   }
 
-  Contains(Dependency: Cell) {
+  Contains(Dependency: Cell, visited = new Set()) {
+    if (visited.has(this)) return false;
+    visited.add(this);
     if (this.Dependencies.has(Dependency.Name)) return true;
-    for (const Dep of this.Dependencies.values()) if (Dep.Contains(Dependency)) return true;
+    for (const Dep of this.Dependencies.values()) if (Dep.Contains(Dependency, visited)) return true;
     return false;
   }
 
