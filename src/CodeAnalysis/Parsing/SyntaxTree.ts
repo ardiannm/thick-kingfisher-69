@@ -11,10 +11,11 @@ import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { CompilerOptions } from "../../CompilerOptions";
 
 export class SyntaxTree {
-  private BinderService: Binder;
   private EvaluatorService: Evaluator;
   private Tree: SyntaxNode;
   private BoundTree: BoundNode;
+
+  BinderService: Binder;
 
   Value = 0;
 

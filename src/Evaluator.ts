@@ -47,6 +47,7 @@ export class Evaluator {
     const Value = this.Evaluate(Node.Cell.Expression);
     if (Node.Cell.Value !== Value) {
       Node.Cell.Value = Value;
+      console.log(ColorPalette.Azure(Node.Cell.Name + " assigned to " + Node.Cell.Value));
       this.Edges.clear();
       this.Notified.clear();
       Node.Cell.Subscribers.forEach((Sub) => this.NotifyForChange(Sub));
