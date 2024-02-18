@@ -5,55 +5,52 @@ import { SyntaxToken } from "../CodeAnalysis/Parsing/SyntaxToken";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { LineSpan } from "./LineSpan";
 import { TokenSpan } from "./TokenSpan";
+import { SyntaxTriviaKind } from "../CodeAnalysis/Parsing/Kind/SyntaxTriviaKind";
 
 export class Submission {
-  private Start = 0;
-  private End = 0;
-  private Line = 0;
+  Tokens = Array<SyntaxToken<SyntaxKind>>();
+  Lines = Array<Array<SyntaxToken<SyntaxKind>>>();
+
   private LineSpans = new Array<LineSpan>();
 
-  Tokens = Array<SyntaxToken<SyntaxKind>>();
-
-  constructor(public Text: string) {
-    this.SetLines();
+  constructor(public Text: string, public Diagnostics: DiagnosticBag) {
+    this.Lex(this.Diagnostics).SetTokenLines();
+    let LineNumber = 1;
+    for (const Line of this.Lines) {
+      const Span = new LineSpan(LineNumber, Line[0].Span.Start, Line[Line.length - 1].Span.End);
+      this.LineSpans.push(Span);
+      LineNumber += 1;
+    }
   }
 
-  static From(Text: string): Submission {
-    return new Submission(Text);
+  static From(Text: string, Diagnostics: DiagnosticBag): Submission {
+    return new Submission(Text, Diagnostics);
   }
 
-  Lex(Diagnostics: DiagnosticBag): Array<SyntaxToken<SyntaxKind>> {
+  Lex(Diagnostics: DiagnosticBag): Submission {
     const Tokenizer = new Lexer(this, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {
       Token = Tokenizer.Lex();
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
-    return this.Tokens;
+    console.log(this.Tokens);
+    return this;
+  }
+
+  SetTokenLines() {
+    this.Lines.push(new Array<SyntaxToken<SyntaxKind>>());
+    for (const Token of this.Tokens) {
+      this.Lines[this.Lines.length - 1].push(Token);
+      if (Token.Kind === SyntaxTriviaKind.LineBreakTrivia) this.Lines.push(new Array<SyntaxToken<SyntaxKind>>());
+    }
   }
 
   SetTokenSpan(Start: number, End: number): TokenSpan {
     return new TokenSpan(this, Start, End);
   }
 
-  private SetLines(): Array<LineSpan> {
-    this.Start = this.End;
-    while (this.End <= this.Text.length) {
-      const Char = this.Text.charAt(this.End);
-      if (Char === "\n") {
-        this.Line += 1;
-        const Span = new LineSpan(this.Start, this.End, this.Line);
-        this.LineSpans.push(Span);
-        this.Start = this.End;
-      }
-      this.End++;
-    }
-    const Span = new LineSpan(this.Start, this.End, this.Line);
-    this.LineSpans.push(Span);
-    return this.LineSpans;
-  }
-
-  GetLine(Position: number): LineSpan {
+  GetLineSpan(Position: number): LineSpan {
     let Left = 0;
     let Right = this.LineSpans.length - 1;
     var Index: number;

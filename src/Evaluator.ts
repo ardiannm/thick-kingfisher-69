@@ -47,7 +47,7 @@ export class Evaluator {
     const Value = this.Evaluate(Node.Cell.Expression);
     if (Node.Cell.Value !== Value) {
       Node.Cell.Value = Value;
-      console.log(ColorPalette.Azure(Node.Cell.Name + " assigned to " + Node.Cell.Value));
+      // console.log(ColorPalette.Azure(Node.Cell.Name + " assigned to " + Node.Cell.Value));
       this.Edges.clear();
       this.Notified.clear();
       Node.Cell.Subscribers.forEach((Sub) => this.NotifyForChange(Sub));
@@ -65,9 +65,9 @@ export class Evaluator {
 
   private EvaluateCell(Node: Cell) {
     if (this.Evaluated.has(Node.Name)) {
-      console.log(ColorPalette.Moss(Node.Name + " cached " + Node.Formula));
+      // console.log(ColorPalette.Moss(Node.Name + " cached " + Node.Formula));
     } else {
-      console.log(ColorPalette.Terracotta(Node.Name + " processed"));
+      // console.log(ColorPalette.Terracotta(Node.Name + " processed"));
       Node.Value = this.Evaluate(Node.Expression);
       this.Evaluated.add(Node.Name);
     }

@@ -24,8 +24,7 @@ export class Parser {
   private Trivia = new Array<SyntaxToken<SyntaxKind>>();
 
   constructor(public readonly Input: Submission, public Diagnostics: DiagnosticBag) {
-    const Tokens = Input.Lex(Diagnostics);
-    for (const Token of Tokens) {
+    for (const Token of this.Input.Tokens) {
       if (SyntaxFacts.IsTrivia(Token.Kind)) {
         this.Trivia.push(Token);
       } else {

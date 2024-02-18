@@ -1,3 +1,3 @@
 export class LineSpan {
-  constructor(public Start: number, public End: number, public Number: number) {}
+  constructor(public Number: number, public Start: number, public End: number) {}
 }

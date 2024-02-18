@@ -26,8 +26,8 @@ import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
 import { CompilerOptions } from "../CompilerOptions";
 
 export class Binder {
-  Scope = new BoundScope(null);
-  constructor(private Diagnostics: DiagnosticBag, public CompilerOptions: CompilerOptions) {}
+  Scope = new BoundScope(null, this.Options);
+  constructor(private Diagnostics: DiagnosticBag, public Options: CompilerOptions) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -62,14 +62,14 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxNodeKind.CellReference:
         const Subject = this.Bind(Node.Left) as Cell;
-        const AssignmentScope = new BoundScope(this.Scope);
+        const AssignmentScope = new BoundScope(this.Scope, this.Options);
         this.Scope = AssignmentScope as BoundScope;
         Subject.Expression = this.Bind(Node.Expression);
         Subject.ClearDependencies();
         for (const Dep of this.Scope.Cells.values()) {
           Subject.Track(Dep);
           if (Dep.Declared) continue;
-          if (this.CompilerOptions.AutoDeclaration) {
+          if (this.Options.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Dep, Subject);
             Dep.Declared = true;
             this.Scope.Move(Dep);
@@ -131,11 +131,13 @@ export class Binder {
 
   private BindCellReference(Node: CellReference) {
     const Name = Node.Span.GetText();
-    if (this.CompilerOptions.CompactCellNames && Node.Right.Trivia.length) {
+    const Row = Node.Right.Span.GetText();
+    const Column = Node.Left.Span.GetText();
+    if (this.Options.CompactCellNames && Node.Right.Trivia.length) {
       this.Diagnostics.WrongCellNameFormat(Node.Left.Span.GetText() + Node.Right.Span.GetText());
       return new BoundError(BoundKind.Error, Node.Kind);
     }
-    return this.Scope.ConstructCell(Name);
+    return this.Scope.ConstructCell(Name, Row, Column);
   }
 
   private BindNumber(Node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

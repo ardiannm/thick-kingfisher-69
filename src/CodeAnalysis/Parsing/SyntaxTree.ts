@@ -32,7 +32,9 @@ export class SyntaxTree {
   }
 
   Parse(Text: string) {
-    const Input = Submission.From(Text);
+    this.BinderService.Scope.ClearUndeclared();
+    this.Diagnostics.Clear();
+    const Input = Submission.From(Text, this.Diagnostics);
     const ParserService = new Parser(Input, this.Diagnostics);
     this.Tree = ParserService.Parse();
     return this;

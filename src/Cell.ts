@@ -11,7 +11,9 @@ export class Cell extends BoundNode {
     public Expression: BoundExpression,
     public Dependencies: Map<string, Cell>,
     public Subscribers: Map<string, Cell>,
-    public Formula: string
+    public Formula: string,
+    public Row: number,
+    public Column: number
   ) {
     super(Kind);
   }
@@ -21,11 +23,11 @@ export class Cell extends BoundNode {
     Dependency.Subscribers.set(this.Name, this);
   }
 
-  Contains(Dependency: Cell, visited = new Set()) {
-    if (visited.has(this)) return false;
-    visited.add(this);
+  Contains(Dependency: Cell, Visited = new Set()) {
+    if (Visited.has(this)) return false;
+    Visited.add(this);
     if (this.Dependencies.has(Dependency.Name)) return true;
-    for (const Dep of this.Dependencies.values()) if (Dep.Contains(Dependency, visited)) return true;
+    for (const Dep of this.Dependencies.values()) if (Dep.Contains(Dependency, Visited)) return true;
     return false;
   }
 
