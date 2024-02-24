@@ -34,7 +34,6 @@ export class Submission {
       Token = Tokenizer.Lex();
       this.Tokens.push(Token);
     } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
-    console.log(this.Tokens);
     return this;
   }
 

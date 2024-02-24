@@ -2,14 +2,16 @@ import { DiagnosticBag } from "../../Diagnostics/DiagnosticBag";
 import { BoundKind } from "./Kind/BoundKind";
 import { Cell } from "../../Cell";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
-import { CompilerOptions } from "app/parser^3.9.4/CompilerOptions";
-import { Services } from "app/parser^3.9.4/Services";
+import { CompilerOptions } from "../../CompilerOptions";
+import { Services } from "../../Services";
+import { ColorPalette } from "../../View/ColorPalette";
 
 export class BoundScope {
   Cells = new Map<string, Cell>();
-  Subscribers = new Set<(Cell: Cell) => void>();
+  DeclarationSubscribers = new Set<(Cell: Cell) => void>();
+  EvaluationSubscribers = new Set<(Cell: Cell) => void>();
 
-  constructor(public ParentScope: BoundScope | null, public Options: CompilerOptions) {}
+  constructor(public ParentScope: BoundScope | null, public Configuration: CompilerOptions) {}
 
   ConstructCell(Name: string, Row: string, Column: string) {
     const Scope = this.ResolveScopeForCell(Name);
@@ -21,7 +23,6 @@ export class BoundScope {
       Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(Row), Services.LetterToColumnIndex(Column));
     }
     this.Cells.set(Name, Data);
-    if (this.Options.EmitDeclarationEvent) for (const Sub of this.Subscribers) Sub(Data);
     return Data;
   }
 
@@ -71,7 +72,21 @@ export class BoundScope {
     });
   }
 
-  DeclarationEvent(Fn: (Cell: Cell) => void) {
-    this.Subscribers.add(Fn);
+  SubscribeToDeclarationEvent(Fn: (Cell: Cell) => void) {
+    this.DeclarationSubscribers.add(Fn);
+  }
+
+  SubscribeToEvaluationEvent(Fn: (cell: Cell) => void) {
+    this.EvaluationSubscribers.add(Fn);
+  }
+
+  EmitDeclarationEventForCell(Node: Cell) {
+    if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Teal(`Configuration.Settings.EmitDeclarationEvent "${Node.Name}"`));
+    for (const Sub of this.EvaluationSubscribers) Sub(Node);
+  }
+
+  EmitEvaluationEventForCell(Node: Cell) {
+    if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Teal(`Configuration.Settings.EmitEvaluationEvent "${Node.Name}=${Node.Value}"`));
+    for (const Sub of this.EvaluationSubscribers) Sub(Node);
   }
 }

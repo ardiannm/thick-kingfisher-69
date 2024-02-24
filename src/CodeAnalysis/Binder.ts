@@ -24,10 +24,11 @@ import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { Cell } from "../Cell";
 import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
 import { CompilerOptions } from "../CompilerOptions";
+import { ColorPalette } from "../View/ColorPalette";
 
 export class Binder {
-  Scope = new BoundScope(null, this.Options);
-  constructor(private Diagnostics: DiagnosticBag, public Options: CompilerOptions) {}
+  Scope = new BoundScope(null, this.Configuration);
+  constructor(private Diagnostics: DiagnosticBag, public Configuration: CompilerOptions) {}
 
   public Bind<Kind extends SyntaxNode>(Node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -62,21 +63,23 @@ export class Binder {
     switch (Node.Left.Kind) {
       case SyntaxNodeKind.CellReference:
         const Subject = this.Bind(Node.Left) as Cell;
-        const AssignmentScope = new BoundScope(this.Scope, this.Options);
+        const AssignmentScope = new BoundScope(this.Scope, this.Configuration);
         this.Scope = AssignmentScope as BoundScope;
         Subject.Expression = this.Bind(Node.Expression);
         Subject.ClearDependencies();
         for (const Dep of this.Scope.Cells.values()) {
           Subject.Track(Dep);
           if (Dep.Declared) continue;
-          if (this.Options.AutoDeclaration) {
+          if (this.Configuration.Settings.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Dep, Subject);
             Dep.Declared = true;
+            if (this.Configuration.Settings.EmitDeclarationEvent) this.Scope.EmitDeclarationEventForCell(Dep);
             this.Scope.Move(Dep);
           }
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
         Subject.Declared = true;
+        if (this.Configuration.Settings.EmitDeclarationEvent) this.Scope.EmitDeclarationEventForCell(Subject);
         Subject.Formula = Node.Expression.Span.GetText();
         return new BoundCellAssignment(BoundKind.CellAssignment, Subject);
     }
@@ -133,7 +136,8 @@ export class Binder {
     const Name = Node.Span.GetText();
     const Row = Node.Right.Span.GetText();
     const Column = Node.Left.Span.GetText();
-    if (this.Options.CompactCellNames && Node.Right.Trivia.length) {
+    if (this.Configuration.Settings.CompactCellNames && Node.Right.Trivia.length) {
+      if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Moss(`Configuration.Settings.CompactCellNames "${Name}"`));
       this.Diagnostics.WrongCellNameFormat(Node.Left.Span.GetText() + Node.Right.Span.GetText());
       return new BoundError(BoundKind.Error, Node.Kind);
     }

@@ -9,6 +9,7 @@ import { BoundKind } from "../Binding/Kind/BoundKind";
 import { Evaluator } from "../../Evaluator";
 import { SyntaxNodeKind } from "./Kind/SyntaxNodeKind";
 import { CompilerOptions } from "../../CompilerOptions";
+import { CompilerConfig } from "../../CompilerConfig";
 
 export class SyntaxTree {
   private EvaluatorService: Evaluator;
@@ -19,16 +20,16 @@ export class SyntaxTree {
 
   Value = 0;
 
-  private constructor(public Diagnostics: DiagnosticBag, private Options: CompilerOptions) {
-    this.BinderService = new Binder(this.Diagnostics, this.Options);
-    this.EvaluatorService = new Evaluator(this.Diagnostics);
+  private constructor(public Diagnostics: DiagnosticBag, private Configuration: CompilerOptions) {
+    this.BinderService = new Binder(this.Diagnostics, this.Configuration);
+    this.EvaluatorService = new Evaluator(this.Diagnostics, this.BinderService.Scope, this.Configuration);
     this.Tree = new SyntaxNode(SyntaxNodeKind.BadToken);
     this.BoundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }
 
-  static Init(Options: CompilerOptions) {
+  static Init(Settings: CompilerConfig) {
     const Diagnostics = new DiagnosticBag();
-    return new SyntaxTree(Diagnostics, Options);
+    return new SyntaxTree(Diagnostics, new CompilerOptions(Settings));
   }
 
   Parse(Text: string) {

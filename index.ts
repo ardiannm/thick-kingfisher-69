@@ -1,10 +1,9 @@
 import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
-import { CompilerOptions } from "./src/CompilerOptions";
 import { createInterface } from "readline";
 import { ColorPalette } from "./src/View/ColorPalette";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
-const Program = SyntaxTree.Init(new CompilerOptions(true, false));
+const Program = SyntaxTree.Init({ AutoDeclaration: true, EmitDeclarationEvent: false, EmitEvaluationEvent: true, CompactCellNames: true, DevMode: true });
 
 console.clear();
 

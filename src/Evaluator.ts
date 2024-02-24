@@ -10,13 +10,15 @@ import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment"
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
 import { ColorPalette } from "./View/ColorPalette";
+import { BoundScope } from "./CodeAnalysis/Binding/BoundScope";
+import { CompilerOptions } from "./CompilerOptions";
 
 export class Evaluator {
   private Value = 0;
   private Evaluated = new Set<string>();
   private Edges = new Set<Cell>();
   private Notified = new Set<string>();
-  constructor(private Diagnostics: DiagnosticBag) {}
+  constructor(private Diagnostics: DiagnosticBag, private Scope: BoundScope, private Configuration: CompilerOptions) {}
 
   Evaluate<Kind extends BoundNode>(Node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -47,11 +49,14 @@ export class Evaluator {
     const Value = this.Evaluate(Node.Cell.Expression);
     if (Node.Cell.Value !== Value) {
       Node.Cell.Value = Value;
-      // console.log(ColorPalette.Azure(Node.Cell.Name + " assigned to " + Node.Cell.Value));
+      if (this.Configuration.Settings.EmitEvaluationEvent) this.Scope.EmitEvaluationEventForCell(Node.Cell);
       this.Edges.clear();
       this.Notified.clear();
       Node.Cell.Subscribers.forEach((Sub) => this.NotifyForChange(Sub));
       this.Edges.forEach((Edge) => this.EvaluateCell(Edge));
+    }
+    if (this.Configuration.Settings.DevMode) {
+      console.log(ColorPalette.Azure(`Configuration.Settings.Evaluator.Assigned "${Node.Cell.Name}"`));
     }
     return Node.Cell.Value;
   }
@@ -65,11 +70,12 @@ export class Evaluator {
 
   private EvaluateCell(Node: Cell) {
     if (this.Evaluated.has(Node.Name)) {
-      // console.log(ColorPalette.Moss(Node.Name + " cached " + Node.Formula));
+      if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Moss(`Configuration.Settings.Evaluator.Cached "${Node.Name}" "=${Node.Formula}"`));
     } else {
-      // console.log(ColorPalette.Terracotta(Node.Name + " processed"));
+      if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Lavender(`Configuration.Settings.Evaluator.Processed "${Node.Name}"`));
       Node.Value = this.Evaluate(Node.Expression);
       this.Evaluated.add(Node.Name);
+      if (this.Configuration.Settings.EmitEvaluationEvent) this.Scope.EmitEvaluationEventForCell(Node);
     }
     return Node.Value;
   }
