@@ -3,7 +3,7 @@ import { createInterface } from "readline";
 import { ColorPalette } from "./src/View/ColorPalette";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
-const Program = SyntaxTree.Init({ AutoDeclaration: true, EmitDeclarationEvent: false, EmitEvaluationEvent: true, CompactCellNames: true, DevMode: true });
+const Program = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true });
 
 console.clear();
 

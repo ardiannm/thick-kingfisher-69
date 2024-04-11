@@ -4,7 +4,6 @@ import { Cell } from "../../Cell";
 import { BoundNumericLiteral } from "./BoundNumericLiteral";
 import { CompilerOptions } from "../../CompilerOptions";
 import { Services } from "../../Services";
-import { ColorPalette } from "../../View/ColorPalette";
 
 export class BoundScope {
   Cells = new Map<string, Cell>();
@@ -81,12 +80,10 @@ export class BoundScope {
   }
 
   EmitDeclarationEventForCell(Node: Cell) {
-    if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Teal(`Configuration.Settings.EmitDeclarationEvent "${Node.Name}"`));
     for (const Sub of this.EvaluationSubscribers) Sub(Node);
   }
 
   EmitEvaluationEventForCell(Node: Cell) {
-    if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Teal(`Configuration.Settings.EmitEvaluationEvent "${Node.Name}=${Node.Value}"`));
     for (const Sub of this.EvaluationSubscribers) Sub(Node);
   }
 }

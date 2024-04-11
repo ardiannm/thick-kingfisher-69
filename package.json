@@ -6,7 +6,7 @@
     "url": "https://github.com/ardiannm/Parser.git"
   },
   "scripts": {
-    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" index.ts"
+    "dev": "nodemon"
   },
   "license": "MIT",
   "devDependencies": {

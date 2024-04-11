@@ -22,7 +22,7 @@ export class SyntaxTree {
 
   private constructor(public Diagnostics: DiagnosticBag, private Configuration: CompilerOptions) {
     this.BinderService = new Binder(this.Diagnostics, this.Configuration);
-    this.EvaluatorService = new Evaluator(this.Diagnostics, this.BinderService.Scope, this.Configuration);
+    this.EvaluatorService = new Evaluator(this.Diagnostics);
     this.Tree = new SyntaxNode(SyntaxNodeKind.BadToken);
     this.BoundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }

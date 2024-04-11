@@ -24,7 +24,6 @@ import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { Cell } from "../Cell";
 import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
 import { CompilerOptions } from "../CompilerOptions";
-import { ColorPalette } from "../View/ColorPalette";
 
 export class Binder {
   Scope = new BoundScope(null, this.Configuration);
@@ -73,13 +72,11 @@ export class Binder {
           if (this.Configuration.Settings.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Dep, Subject);
             Dep.Declared = true;
-            if (this.Configuration.Settings.EmitDeclarationEvent) this.Scope.EmitDeclarationEventForCell(Dep);
             this.Scope.Move(Dep);
           }
         }
         this.Scope = this.Scope.ParentScope as BoundScope;
         Subject.Declared = true;
-        if (this.Configuration.Settings.EmitDeclarationEvent) this.Scope.EmitDeclarationEventForCell(Subject);
         Subject.Formula = Node.Expression.Span.GetText();
         return new BoundCellAssignment(BoundKind.CellAssignment, Subject);
     }
@@ -137,7 +134,6 @@ export class Binder {
     const Row = Node.Right.Span.GetText();
     const Column = Node.Left.Span.GetText();
     if (this.Configuration.Settings.CompactCellNames && Node.Right.Trivia.length) {
-      if (this.Configuration.Settings.DevMode) console.log(ColorPalette.Moss(`Configuration.Settings.CompactCellNames "${Name}"`));
       this.Diagnostics.WrongCellNameFormat(Node.Left.Span.GetText() + Node.Right.Span.GetText());
       return new BoundError(BoundKind.Error, Node.Kind);
     }
