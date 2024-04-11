@@ -9,6 +9,7 @@ import { BoundNumericLiteral } from "./CodeAnalysis/Binding/BoundNumericLiteral"
 import { BoundCellAssignment } from "./CodeAnalysis/Binding/BoundCellAssignment";
 import { BoundUnaryExpression } from "./CodeAnalysis/Binding/BoundUnaryExpression";
 import { BoundNode } from "./CodeAnalysis/Binding/BoundNode";
+import { ColorPalette } from "./View/ColorPalette";
 
 export class Evaluator {
   private Value = 0;
@@ -62,10 +63,13 @@ export class Evaluator {
   }
 
   private EvaluateCell(Node: Cell) {
-    if (!this.Evaluated.has(Node.Name)) {
-      Node.Value = this.Evaluate(Node.Expression);
-      this.Evaluated.add(Node.Name);
+    if (this.Evaluated.has(Node.Name)) {
+      console.log(ColorPalette.Terracotta(`cached value ${Node.Name} = ${Node.Value}`));
+      return Node.Value;
     }
+    Node.Value = this.Evaluate(Node.Expression);
+    this.Evaluated.add(Node.Name);
+    console.log(ColorPalette.Teal(`evaluated value ${Node.Name} = ${Node.Value}`));
     return Node.Value;
   }
 

@@ -10,6 +10,7 @@ export class Services {
     }
     return Name;
   }
+
   static LetterToColumnIndex(Letter: string): number {
     let Result = 0;
     for (let Index = 0; Index < Letter.length; Index++) {

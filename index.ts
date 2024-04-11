@@ -28,7 +28,7 @@ const Fn = () => {
         Program.Diagnostics.Clear();
       } else {
         console.log();
-        console.log(ColorPalette.Azure(Program.Value.toString()));
+        console.log(ColorPalette.Teal(Program.Value.toString()));
         console.log();
       }
       Fn();

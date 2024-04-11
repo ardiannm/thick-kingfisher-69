@@ -41,14 +41,13 @@ export class Parser {
   }
 
   public ParseProgram() {
-    const Members = new Array<StatementSyntax>();
+    const Statements = new Array<StatementSyntax>();
     while (this.Any()) {
       const Token = this.Token;
-      const Member = this.ParseStatement();
-      Members.push(Member);
+      Statements.push(this.ParseStatement());
       if (this.Token === Token) this.NextToken();
     }
-    return new Program(SyntaxNodeKind.Program, Members, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
+    return new Program(SyntaxNodeKind.Program, Statements, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
   }
 
   private ParseStatement() {
