@@ -61,7 +61,7 @@ export class Parser {
       while (this.Any()) {
         if (this.MatchToken(SyntaxNodeKind.CloseBraceToken)) break;
         const Token = this.Token;
-        Statements.push(this.ParseStatement());
+        Statements.push(this.ParseFunction());
         if (this.Token === Token) this.NextToken();
       }
       this.ExpectToken(SyntaxNodeKind.CloseBraceToken);

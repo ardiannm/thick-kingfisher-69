@@ -22,7 +22,7 @@ const Fn = () => {
     } else {
       Input = Inputs.join("\n");
       Inputs.length = 0;
-      Program.Parse(Input).Bind().Evaluate();
+      Program.Parse(Input).Bind().Log().Evaluate();
       if (Program.Diagnostics.Any()) {
         for (const d of Program.Diagnostics.Get()) console.log(d);
         Program.Diagnostics.Clear();

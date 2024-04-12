@@ -58,4 +58,9 @@ export class SyntaxTree {
   Clear() {
     this.Diagnostics.Clear();
   }
+
+  Log() {
+    console.log(JSON.stringify(this.BoundTree, undefined, 2));
+    return this;
+  }
 }
