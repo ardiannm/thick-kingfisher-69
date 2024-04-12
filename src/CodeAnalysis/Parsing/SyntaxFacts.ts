@@ -49,6 +49,10 @@ export class SyntaxFacts {
         return SyntaxNodeKind.OpenParenthesisToken;
       case ")":
         return SyntaxNodeKind.CloseParenthesisToken;
+      case "{":
+        return SyntaxNodeKind.OpenBraceToken;
+      case "}":
+        return SyntaxNodeKind.CloseBraceToken;
       case ".":
         return SyntaxNodeKind.DotToken;
       case "#":

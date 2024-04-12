@@ -16,6 +16,7 @@ import { StatementSyntax } from "./Parsing/StatementSyntax";
 import { CellAssignment } from "./Parsing/CellAssignment";
 import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { Submission } from "../Input/Submission";
+import { FunctionExpression } from "./Parsing/FunctionExpression";
 
 export class Parser {
   private Index = 0;
@@ -44,10 +45,27 @@ export class Parser {
     const Statements = new Array<StatementSyntax>();
     while (this.Any()) {
       const Token = this.Token;
-      Statements.push(this.ParseStatement());
+      Statements.push(this.ParseFunction());
       if (this.Token === Token) this.NextToken();
     }
     return new Program(SyntaxNodeKind.Program, Statements, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
+  }
+
+  private ParseFunction() {
+    if (this.MatchToken(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.OpenParenthesisToken)) {
+      const FunctionName = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
+      this.ExpectToken(SyntaxNodeKind.OpenParenthesisToken);
+      this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
+      this.ExpectToken(SyntaxNodeKind.OpenBraceToken);
+      const Statements = new Array<StatementSyntax>();
+      while (this.Any()) {
+        if (this.MatchToken(SyntaxNodeKind.CloseBraceToken)) break;
+        Statements.push(this.ParseStatement());
+      }
+      this.ExpectToken(SyntaxNodeKind.CloseBraceToken);
+      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, FunctionName, Statements);
+    }
+    return this.ParseStatement();
   }
 
   private ParseStatement() {

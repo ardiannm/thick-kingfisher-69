@@ -16,6 +16,8 @@ export type TokenTextMapper = {
   [BinaryOperatorKind.HatToken]: "^";
   [SyntaxNodeKind.OpenParenthesisToken]: "(";
   [SyntaxNodeKind.CloseParenthesisToken]: ")";
+  [SyntaxNodeKind.OpenBraceToken]: "{";
+  [SyntaxNodeKind.CloseBraceToken]: "}";
   [SyntaxNodeKind.DotToken]: ".";
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";

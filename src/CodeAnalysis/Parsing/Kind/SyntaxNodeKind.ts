@@ -18,4 +18,7 @@ export enum SyntaxNodeKind {
   EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
   EqualsToken = "EqualsToken",
+  FunctionExpression = "FunctionExpression",
+  OpenBraceToken = "OpenBraceToken",
+  CloseBraceToken = "CloseBraceToken",
 }

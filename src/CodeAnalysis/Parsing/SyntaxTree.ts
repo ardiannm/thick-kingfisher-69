@@ -52,12 +52,6 @@ export class SyntaxTree {
     if (this.Diagnostics.None()) {
       this.Value = this.EvaluatorService.Evaluate(this.BoundTree);
     }
-
-    return this;
-  }
-
-  Print() {
-    console.log(this.Tree.Print());
     return this;
   }
 
