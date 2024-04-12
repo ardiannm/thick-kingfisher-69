@@ -24,6 +24,8 @@ import { DiagnosticBag } from "../Diagnostics/DiagnosticBag";
 import { Cell } from "../Cell";
 import { BoundCellAssignment } from "./Binding/BoundCellAssignment";
 import { CompilerOptions } from "../CompilerOptions";
+import { FunctionExpression } from "./Parsing/FunctionExpression";
+import { BoundFunctionExpression } from "./Binding/BoundFunctionExpression";
 
 export class Binder {
   Scope = new BoundScope(null, this.Configuration);
@@ -46,14 +48,22 @@ export class Binder {
         return this.BindBinaryExpression(Node as NodeType<BinaryExpression>);
       case SyntaxNodeKind.CellAssignment:
         return this.BindCellAssignment(Node as NodeType<CellAssignment>);
+      case SyntaxNodeKind.FunctionExpression:
+        return this.BindFunctionExpression(Node as NodeType<FunctionExpression>);
     }
     this.Diagnostics.BinderMethod(Node.Kind);
     return new BoundError(BoundKind.Error, Node.Kind);
   }
 
+  private BindFunctionExpression(Node: FunctionExpression): BoundNode {
+    const Statements = new Array<BoundStatement>();
+    for (const Statement of Node.Body) Statements.push(this.Bind(Statement));
+    return new BoundFunctionExpression(BoundKind.FunctionExpression, Node.Name.Text, Statements);
+  }
+
   private BindProgram(Node: Program) {
     const Root = new Array<BoundStatement>();
-    for (const Member of Node.Root) Root.push(this.Bind(Member));
+    for (const Statement of Node.Root) Root.push(this.Bind(Statement));
     this.Scope.CheckDeclarations(this.Diagnostics);
     return new BoundProgram(BoundKind.Program, Root);
   }
