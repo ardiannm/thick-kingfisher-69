@@ -1,9 +1,8 @@
 import styles from "../styles/screen.module.scss";
 
-import { createEffect, createSignal, For, Show, type Component } from "solid-js";
-
 import { SyntaxTree } from "../../../src/analysis/parser/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
+import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
@@ -15,11 +14,7 @@ const interpreter = SyntaxTree.Init({
   CompactCellNames: true,
 });
 
-const code = `main () {
-  1+2 
-}
-
-if true {
+const code = `if true {
    println("Hello world")
 }
 
@@ -30,12 +25,10 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
   const [value, setValue] = createSignal(0);
 
-  createEffect(() => {});
-
   createEffect(() => {
-    const res = interpreter.Parse(text()).Bind().Evaluate();
-    setDiagnostics(res.Diagnostics.Get());
-    setValue(res.Value);
+    const response = interpreter.Parse(text()).Bind().Evaluate();
+    setDiagnostics(response.Diagnostics.Get());
+    setValue(response.Value);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

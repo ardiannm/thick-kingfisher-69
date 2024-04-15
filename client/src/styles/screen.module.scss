@@ -6,32 +6,66 @@
   @include center;
   height: fit-content;
   width: fit-content;
-  margin-top: 3%;
+  margin-top: 5%;
+  border: 5px solid #0a0a0a;
+  border-radius: 40px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  width: 350px;
+  height: 700px;
+  padding: 8px;
+  scale: 1.1;
 }
 
 .textArea {
-  border: 5px solid #0a0a0a;
-  border-radius: 30px;
-  width: 300px;
-  height: 600px;
   outline: none;
-  padding: 40px 20px;
   font-family: inherit;
   resize: none;
-  font-size: inherit;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border: none;
+  width: 100%;
+  height: 100%;
+  padding: 14px;
+  padding-top: 40px;
+  border-radius: 20px;
+  margin-bottom: 11px;
+  z-index: 3;
+  text-shadow: 0px 0px 1px gray;
   &::selection {
-    background-color: gainsboro;
+    background-color: whitesmoke;
   }
 }
 
 .diagnostics {
-  margin-top: 20px;
-  @include center;
   flex-direction: column;
+  min-height: 30%;
+  width: 100%;
+  padding-block: 40px;
+  padding-inline: 15px;
+  border-radius: 30px;
+  height: fit-content;
+  user-select: none;
+  font-family: "Roboto";
+  font-size: 11px;
+  // background-color: #fca66c4d;
+  background-color: whitesmoke;
+}
+
+.diagnostic {
+  display: flex;
+  justify-content: start;
+  width: 100%;
+  text-shadow: 0px 0px 1px gray;
 }
 
 .value {
-  margin-top: 20px;
+  width: 100%;
+  padding-block: 40px;
+  padding-inline: 15px;
+  border-radius: 15px;
+  height: fit-content;
+  font-size: 11px;
+  @include center;
+  background-color: whitesmoke;
+  text-shadow: 0px 0px 1px gray;
 }
