@@ -12,9 +12,9 @@ import { CompilerOptions } from "../../CompilerOptions";
 import { CompilerConfig } from "../../CompilerConfig";
 
 export class SyntaxTree {
-  private EvaluatorService: Evaluator;
-  private Tree: SyntaxNode;
-  private BoundTree: BoundNode;
+  EvaluatorService: Evaluator;
+  Tree: SyntaxNode;
+  BoundTree: BoundNode;
 
   BinderService: Binder;
 
