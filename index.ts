@@ -1,6 +1,6 @@
-import { SyntaxTree } from "./src/CodeAnalysis/Parsing/SyntaxTree";
+import { SyntaxTree } from "./src/analysis/parser/syntax.tree";
 import { createInterface } from "readline";
-import { ColorPalette } from "./src/View/ColorPalette";
+import { ColorPalette } from "./src/dev/color.palette";
 
 const Prompt = createInterface({ input: process.stdin, output: process.stdout });
 const Program = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true });
@@ -22,7 +22,7 @@ const Fn = () => {
     } else {
       Input = Inputs.join("\n");
       Inputs.length = 0;
-      Program.Parse(Input).Bind().Log().Evaluate();
+      Program.Parse(Input).Bind().Evaluate();
       if (Program.Diagnostics.Any()) {
         for (const d of Program.Diagnostics.Get()) console.log(d);
         Program.Diagnostics.Clear();

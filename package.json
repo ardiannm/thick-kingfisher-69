@@ -6,7 +6,7 @@
     "url": "https://github.com/ardiannm/Parser.git"
   },
   "scripts": {
-    "serve": "cd ParserClient && npm run dev",
+    "serve": "cd client && npm run dev",
     "dev": "nodemon"
   },
   "license": "MIT",
