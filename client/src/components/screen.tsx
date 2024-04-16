@@ -9,11 +9,6 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-const interpreter = SyntaxTree.Init({
-  AutoDeclaration: true,
-  CompactCellNames: true,
-});
-
 const code = `if true {
    println("Hello world")
 }
@@ -26,6 +21,7 @@ const Input: Component = () => {
   const [value, setValue] = createSignal(0);
 
   createEffect(() => {
+    const interpreter = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true });
     const response = interpreter.Parse(text()).Bind().Evaluate();
     setDiagnostics(response.Diagnostics.Get());
     setValue(response.Value);
