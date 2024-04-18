@@ -73,7 +73,7 @@ export class Parser {
   private ParseStatement() {
     const Left = this.ParseBinaryExpression();
     switch (this.Token.Kind) {
-      case SyntaxNodeKind.EqualsToken:
+      case CompositeTokenKind.ColonColonToken:
         const Keyword = this.NextToken() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
         return new CellAssignment(SyntaxNodeKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
     }
