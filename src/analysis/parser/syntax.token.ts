@@ -21,7 +21,9 @@ export type TokenTextMapper = {
   [SyntaxNodeKind.DotToken]: ".";
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";
+  [SyntaxNodeKind.ColonToken]: ":";
   [CompositeTokenKind.GreaterGreaterToken]: ">>";
+  [CompositeTokenKind.ColonColonToken]: "::";
   [CompositeTokenKind.PointerToken]: "->";
   [SyntaxKeywordKind.TrueKeyword]: "true";
   [SyntaxKeywordKind.FalseKeyword]: "false";

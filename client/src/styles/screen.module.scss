@@ -14,6 +14,7 @@
   height: 700px;
   padding: 8px;
   scale: 1.1;
+  user-select: none;
 }
 
 .textArea {
@@ -44,7 +45,6 @@
   padding-inline: 15px;
   border-radius: 30px;
   height: fit-content;
-  user-select: none;
   font-family: "Roboto";
   font-size: 11px;
   // background-color: #fca66c4d;

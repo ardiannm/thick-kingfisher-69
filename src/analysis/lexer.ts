@@ -32,6 +32,8 @@ export class Lexer {
         return this.LexMinusToken();
       case SyntaxNodeKind.GreaterToken:
         return this.LexGreaterGreaterToken();
+      case SyntaxNodeKind.ColonToken:
+        return this.LexColonColonToken();
     }
     this.Next();
     return new SyntaxToken(this.Kind, this.Text, this.SetTokenSpan());
@@ -75,6 +77,16 @@ export class Lexer {
     if (this.Match(SyntaxNodeKind.GreaterToken)) {
       this.Next();
       this.Kind = CompositeTokenKind.GreaterGreaterToken;
+    }
+    return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTokenSpan());
+  }
+
+  private LexColonColonToken(): SyntaxToken<SyntaxKind> {
+    this.Next();
+    this.Kind = SyntaxNodeKind.ColonToken;
+    if (this.Match(SyntaxNodeKind.ColonToken)) {
+      this.Next();
+      this.Kind = CompositeTokenKind.ColonColonToken;
     }
     return new SyntaxToken(this.Kind, this.Text as TokenText<typeof this.Kind>, this.SetTokenSpan());
   }
