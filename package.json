@@ -6,8 +6,8 @@
     "url": "https://github.com/ardiannm/Parser.git"
   },
   "scripts": {
-    "dev": "cd client && npm run dev",
-    "build": "cd client && npm run build",
+    "dev": "cd solid && npm run dev",
+    "build": "cd solid && npm run build",
     "serve": "nodemon"
   },
   "license": "MIT",
@@ -18,5 +18,8 @@
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
     "typescript": "~5.3.3"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
   }
 }

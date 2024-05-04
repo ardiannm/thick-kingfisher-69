@@ -5,7 +5,6 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { BinaryOperatorKind } from "./kind/binary.operator.kind";
 import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
-import { ColorPalette } from "../../dev/color.palette";
 import { TokenSpan } from "../input/token.span";
 
 export type TokenTextMapper = {
@@ -68,25 +67,5 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
 
   get Line() {
     return this.TokenSpan.Input.GetLineSpan(this.TokenSpan.Start);
-  }
-
-  override Print() {
-    var Text = "";
-    Text += ColorPalette.Teal("'");
-    Text += ColorPalette.Teal(this.Kind);
-    Text += ColorPalette.Teal("'");
-    Text += ColorPalette.Default(":");
-    Text += " ";
-    Text += ColorPalette.Teal("'");
-    Text += ColorPalette.Teal(this.Text);
-    Text += ColorPalette.Teal("'");
-    Text += " ";
-    var TextTrivia = "";
-    for (const Trivia of this.Trivia) {
-      TextTrivia += ColorPalette.Default(Trivia.Kind);
-      TextTrivia += " ";
-    }
-    Text += TextTrivia;
-    return Text;
   }
 }
