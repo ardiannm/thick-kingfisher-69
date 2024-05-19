@@ -10,10 +10,21 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-const code = `if true {
+var code = `if true {
    println("Hello world")
 }
 
+`;
+
+var code = `#
+
+first() {
+    second() {}
+}
+
+third() {}
+
+#
 `;
 
 const Input: Component = () => {
@@ -22,7 +33,7 @@ const Input: Component = () => {
   const [value, setValue] = createSignal(0);
 
   createEffect(() => {
-    const interpreter = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true });
+    const interpreter = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true, GlobalFunctionOnly: true });
     const response = interpreter.Parse(text()).Bind().Evaluate();
     setDiagnostics(response.Diagnostics.Get());
     setValue(response.Value);

@@ -44,7 +44,7 @@ export class DiagnosticBag {
   }
 
   TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Unexpected '${Matched}' found; expecting '${ExpectedKind}'`;
+    const Message = `Unexpected '${Matched}' found, expecting '${ExpectedKind}'`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
@@ -100,6 +100,16 @@ export class DiagnosticBag {
 
   EvaluatorMethod(Kind: BoundKind) {
     const Message = `Evaluator: Method for '${Kind}' is not implemented`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  }
+
+  FunctionAlreadyDefined(FunctionName: string) {
+    const Message = `Function '${FunctionName}' has already been declared`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  }
+
+  GlobalFunctionDeclarationsOnly(FunctionName: string) {
+    const Message = `Function '${FunctionName}' can only be defined within the global scope`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 }

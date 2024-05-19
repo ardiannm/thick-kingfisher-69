@@ -56,9 +56,20 @@ export class Binder {
   }
 
   private BindFunctionExpression(Node: FunctionExpression): BoundNode {
+    const Name = Node.FunctionName.Text;
+    if (this.Configuration.Settings.GlobalFunctionOnly) if (this.Scope.ParentScope) this.Diagnostics.GlobalFunctionDeclarationsOnly(Name);
+    if (this.Scope.Functions.has(Name)) {
+      this.Diagnostics.FunctionAlreadyDefined(Name);
+      return new BoundError(BoundKind.Error, Node.Kind);
+    }
+    const NewFunctionScope = new BoundScope(this.Scope, this.Configuration);
+    this.Scope = NewFunctionScope;
     const Statements = new Array<BoundStatement>();
-    for (const Statement of Node.Body) Statements.push(this.Bind(Statement));
-    return new BoundFunctionExpression(BoundKind.FunctionExpression, Node.Name.Text, Statements);
+    for (const Statement of Node.Statements) Statements.push(this.Bind(Statement));
+    this.Scope = this.Scope.ParentScope as BoundScope;
+    const BoundNode = new BoundFunctionExpression(BoundKind.FunctionExpression, Node.FunctionName.Text, this.Scope, Statements);
+    this.Scope.Functions.set(Name, BoundNode);
+    return BoundNode;
   }
 
   private BindProgram(Node: Program) {

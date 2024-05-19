@@ -3,11 +3,13 @@ import { Cell } from "../../cell";
 import { BoundNumericLiteral } from "./numeric.literal";
 import { CompilerOptions } from "../../compiler.options";
 import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
+import { BoundFunctionExpression } from "./function.expression";
 
 export class BoundScope {
   Cells = new Map<string, Cell>();
   DeclarationSubscribers = new Set<(Cell: Cell) => void>();
   EvaluationSubscribers = new Set<(Cell: Cell) => void>();
+  Functions = new Map<string, BoundFunctionExpression>();
 
   constructor(public ParentScope: BoundScope | null, public Configuration: CompilerOptions) {}
 

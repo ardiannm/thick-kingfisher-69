@@ -10,6 +10,7 @@ import { BoundUnaryExpression } from "./analysis/binder/unary.expression";
 import { BoundNode } from "./analysis/binder/bound.node";
 import { ColorPalette } from "./dev/color.palette";
 import { DiagnosticBag } from "./analysis/diagnostics/diagnostic.bag";
+import { BoundFunctionExpression } from "./analysis/binder/function.expression";
 
 export class Evaluator {
   private Value = 0;
@@ -23,6 +24,8 @@ export class Evaluator {
     switch (Node.Kind) {
       case BoundKind.Program:
         return this.EvaluateProgram(Node as NodeType<BoundProgram>);
+      case BoundKind.FunctionExpression:
+        return this.EvaluateFunctionExpression(Node as NodeType<BoundFunctionExpression>);
       case BoundKind.CellAssignment:
         return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
       case BoundKind.BinaryExpression:
@@ -38,8 +41,12 @@ export class Evaluator {
     return 0;
   }
 
+  private EvaluateFunctionExpression(Node: BoundFunctionExpression): number {
+    return this.Value;
+  }
+
   private EvaluateProgram(Node: BoundProgram): number {
-    for (const Root of Node.Root) this.Value = this.Evaluate(Root);
+    for (const Statement of Node.Statements) this.Value = this.Evaluate(Statement);
     return this.Value;
   }
 
