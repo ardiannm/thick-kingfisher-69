@@ -54,9 +54,9 @@ export class Parser {
   private ParseFunction() {
     if (this.MatchToken(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.OpenParenthesisToken)) {
       const FunctionName = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
-      this.ExpectToken(SyntaxNodeKind.OpenParenthesisToken);
-      this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
-      this.ExpectToken(SyntaxNodeKind.OpenBraceToken);
+      const OpenParen = this.ExpectToken(SyntaxNodeKind.OpenParenthesisToken);
+      const CloseParen = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
+      const OpenBrace = this.ExpectToken(SyntaxNodeKind.OpenBraceToken);
       const Statements = new Array<StatementSyntax>();
       while (this.Any()) {
         if (this.MatchToken(SyntaxNodeKind.CloseBraceToken)) break;
@@ -64,8 +64,8 @@ export class Parser {
         Statements.push(this.ParseFunction());
         if (this.Token === Token) this.NextToken();
       }
-      this.ExpectToken(SyntaxNodeKind.CloseBraceToken);
-      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, FunctionName, Statements);
+      const CloseBrace = this.ExpectToken(SyntaxNodeKind.CloseBraceToken);
+      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, FunctionName, OpenParen, CloseParen, OpenBrace, Statements, CloseBrace);
     }
     return this.ParseStatement();
   }
