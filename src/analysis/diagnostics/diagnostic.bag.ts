@@ -22,7 +22,7 @@ export class DiagnosticBag {
 
   Add(Diagnostic: Diagnostic) {
     switch (Diagnostic.Severity) {
-      case DiagnosticSeverity.Dev:
+      case DiagnosticSeverity.Error:
       case DiagnosticSeverity.Error:
         this.DiagnosticsError.push(Diagnostic);
         break;
@@ -95,11 +95,11 @@ export class DiagnosticBag {
 
   BinderMethod(Kind: SyntaxKind) {
     const Message = `Binder: Method for '${Kind}' is not implemented`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Dev, Message));
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 
   EvaluatorMethod(Kind: BoundKind) {
     const Message = `Evaluator: Method for '${Kind}' is not implemented`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Dev, Message));
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
   }
 }

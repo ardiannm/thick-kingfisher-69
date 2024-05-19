@@ -2,7 +2,6 @@ import { BoundKind } from "./kind/bound.kind";
 import { Cell } from "../../cell";
 import { BoundNumericLiteral } from "./numeric.literal";
 import { CompilerOptions } from "../../compiler.options";
-import { Services } from "../../services";
 import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 
 export class BoundScope {
@@ -19,7 +18,7 @@ export class BoundScope {
       Data = Scope.Cells.get(Name) as Cell;
     } else {
       const Expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-      Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(Row), Services.LetterToColumnIndex(Column));
+      Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(Row), Cell.LetterToColumnIndex(Column));
     }
     this.Cells.set(Name, Data);
     return Data;

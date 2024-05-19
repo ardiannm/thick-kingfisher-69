@@ -30,12 +30,12 @@ const Input: Component = () => {
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
-  const severeErrors = (a: Diagnostic) => a.Severity === DiagnosticSeverity.Error;
+  const hasErrors = (a: Diagnostic) => a.Severity === DiagnosticSeverity.Error;
 
   return (
     <div class={styles.input}>
       <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
-      <Show when={diagnostics().find(severeErrors)} fallback={<div class={styles.value}>{value()}</div>}>
+      <Show when={diagnostics().find(hasErrors)} fallback={<div class={styles.value}>{value()}</div>}>
         <div class={styles.diagnostics}>
           <For each={diagnostics()}>
             {(diagnostic) => {
