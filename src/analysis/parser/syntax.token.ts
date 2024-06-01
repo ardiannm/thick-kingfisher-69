@@ -66,6 +66,6 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   }
 
   get Line() {
-    return this.TokenSpan.Input.GetLineSpan(this.TokenSpan.Start);
+    return this.TokenSpan.Source.GetLineSpan(this.TokenSpan.Start);
   }
 }

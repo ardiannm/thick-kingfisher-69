@@ -55,7 +55,7 @@ export class Cell extends BoundNode {
     return Result;
   }
 
-  static NotationA1(Row: number, Column: number) {
+  static FromIndex(Row: number, Column: number) {
     return this.ColumnIndexToLetter(Column) + Row;
   }
 }
