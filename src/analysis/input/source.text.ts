@@ -7,7 +7,7 @@ import { Lexer } from "../lexer";
 import { SyntaxTriviaKind } from "../parser/kind/syntax.trivia.kind";
 import { SyntaxNodeKind } from "../parser/kind/syntax.node.kind";
 
-export class Submission {
+export class SourceText {
   Tokens = Array<SyntaxToken<SyntaxKind>>();
   Lines = Array<Array<SyntaxToken<SyntaxKind>>>();
 
@@ -23,11 +23,11 @@ export class Submission {
     }
   }
 
-  static From(Text: string, Diagnostics: DiagnosticBag): Submission {
-    return new Submission(Text, Diagnostics);
+  static From(Text: string, Diagnostics: DiagnosticBag): SourceText {
+    return new SourceText(Text, Diagnostics);
   }
 
-  Lex(Diagnostics: DiagnosticBag): Submission {
+  Lex(Diagnostics: DiagnosticBag): SourceText {
     const Tokenizer = new Lexer(this, Diagnostics);
     var Token: SyntaxToken<SyntaxKind>;
     do {

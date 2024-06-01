@@ -8,7 +8,7 @@ import { Evaluator } from "../../evaluator";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { CompilerOptions } from "../../compiler.options";
 import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
-import { Submission } from "../input/submission";
+import { SourceText } from "../input/source.text";
 
 export class SyntaxTree {
   EvaluatorService: Evaluator;
@@ -34,7 +34,7 @@ export class SyntaxTree {
   Parse(Text: string) {
     this.BinderService.Scope.ClearUndeclared();
     this.Diagnostics.Clear();
-    const Input = Submission.From(Text, this.Diagnostics);
+    const Input = SourceText.From(Text, this.Diagnostics);
     const ParserService = new Parser(Input, this.Diagnostics);
     this.Tree = ParserService.Parse();
     return this;

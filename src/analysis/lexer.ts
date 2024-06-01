@@ -5,7 +5,7 @@ import { SyntaxToken, TokenText, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
-import { Submission } from "./input/submission";
+import { SourceText } from "./input/source.text";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 import { TokenSpan } from "./input/token.span";
 
@@ -14,7 +14,7 @@ export class Lexer {
   private End: number;
   private Start: number;
 
-  constructor(public readonly Input: Submission, private Diagnostics: DiagnosticBag) {
+  constructor(public readonly Input: SourceText, private Diagnostics: DiagnosticBag) {
     this.Kind = SyntaxNodeKind.EndOfFileToken;
     this.End = 0;
     this.Start = this.End;

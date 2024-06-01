@@ -15,7 +15,7 @@ import { Program } from "./parser/program";
 import { StatementSyntax } from "./parser/statement.syntax";
 import { CellAssignment } from "./parser/cell.assignment";
 import { FunctionExpression } from "./parser/function.expression";
-import { Submission } from "./input/submission";
+import { SourceText } from "./input/source.text";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 
 export class Parser {
@@ -24,7 +24,7 @@ export class Parser {
   private Tokens = new Array<SyntaxToken<SyntaxKind>>();
   private Trivia = new Array<SyntaxToken<SyntaxKind>>();
 
-  constructor(public readonly Input: Submission, public Diagnostics: DiagnosticBag) {
+  constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
     for (const Token of this.Input.Tokens) {
       if (SyntaxFacts.IsTrivia(Token.Kind)) {
         this.Trivia.push(Token);
