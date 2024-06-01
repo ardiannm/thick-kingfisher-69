@@ -7,7 +7,6 @@ import { BoundKind } from "../binder/kind/bound.kind";
 import { Evaluator } from "../../evaluator";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { CompilerOptions } from "../../compiler.options";
-import { CompilerConfig } from "../../compiler.config";
 import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 import { Submission } from "../input/submission";
 
@@ -27,9 +26,9 @@ export class SyntaxTree {
     this.BoundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }
 
-  static Init(Settings: CompilerConfig) {
+  static Init(Settings: CompilerOptions) {
     const Diagnostics = new DiagnosticBag();
-    return new SyntaxTree(Diagnostics, new CompilerOptions(Settings));
+    return new SyntaxTree(Diagnostics, Settings);
   }
 
   Parse(Text: string) {

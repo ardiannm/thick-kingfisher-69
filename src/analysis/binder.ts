@@ -57,7 +57,7 @@ export class Binder {
 
   private BindFunctionExpression(Node: FunctionExpression): BoundNode {
     const Name = Node.FunctionName.Text;
-    if (this.Configuration.Settings.GlobalFunctionOnly) if (this.Scope.ParentScope) this.Diagnostics.GlobalFunctionDeclarationsOnly(Name);
+    if (this.Configuration.GlobalFunctionsOnly) if (this.Scope.ParentScope) this.Diagnostics.GlobalFunctionDeclarationsOnly(Name);
     if (this.Scope.Functions.has(Name)) {
       this.Diagnostics.FunctionAlreadyDefined(Name);
       return new BoundError(BoundKind.Error, Node.Kind);
@@ -90,7 +90,7 @@ export class Binder {
         for (const Dep of this.Scope.Cells.values()) {
           Subject.Track(Dep);
           if (Dep.Declared) continue;
-          if (this.Configuration.Settings.AutoDeclaration) {
+          if (this.Configuration.AutoDeclaration) {
             this.Diagnostics.AutoDeclaredCell(Dep, Subject);
             Dep.Declared = true;
             this.Scope.Move(Dep);
@@ -154,7 +154,7 @@ export class Binder {
     const Name = Node.Span.GetText();
     const Row = Node.Right.Span.GetText();
     const Column = Node.Left.Span.GetText();
-    if (this.Configuration.Settings.CompactCellNames && Node.Right.Trivia.length) {
+    if (this.Configuration.CompactCellNames && Node.Right.Trivia.length) {
       this.Diagnostics.WrongCellNameFormat(Node.Left.Span.GetText() + Node.Right.Span.GetText());
       return new BoundError(BoundKind.Error, Node.Kind);
     }

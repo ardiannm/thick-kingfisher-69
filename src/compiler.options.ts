@@ -1,5 +1,3 @@
-import { CompilerConfig } from "./compiler.config";
-
 export class CompilerOptions {
-  constructor(public Settings: CompilerConfig) {}
+  constructor(public AutoDeclaration: boolean, public CompactCellNames: boolean, public GlobalFunctionsOnly: boolean) {}
 }

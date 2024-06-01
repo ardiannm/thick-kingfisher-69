@@ -71,12 +71,12 @@ export class Evaluator {
 
   private EvaluateCell(Node: Cell) {
     if (this.Evaluated.has(Node.Name)) {
-      console.log(ColorPalette.Terracotta(`cached value ${Node.Name} = ${Node.Value}`));
+      console.log(ColorPalette.Terracotta(`cached value ${Node.Name} -> ${Node.Value}`));
       return Node.Value;
     }
     Node.Value = this.Evaluate(Node.Expression);
     this.Evaluated.add(Node.Name);
-    console.log(ColorPalette.Teal(`evaluated value ${Node.Name} = ${Node.Value}`));
+    console.log(ColorPalette.Teal(`evaluated value ${Node.Name} -> ${Node.Value}`));
     return Node.Value;
   }
 

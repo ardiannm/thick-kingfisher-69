@@ -4,6 +4,7 @@ import { SyntaxTree } from "../../../src/analysis/parser/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { DiagnosticSeverity } from "../../../src/analysis/diagnostics/diagnostic.severity";
+import { CompilerOptions } from "../../../src/compiler.options";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
@@ -27,13 +28,21 @@ third() {}
 #
 `;
 
+var code = `A1 :: 1
+A2 :: A1+2
+A3 :: A1+A2+3
+
+A1 :: 8
+
+A3`;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
   const [value, setValue] = createSignal(0);
 
   createEffect(() => {
-    const interpreter = SyntaxTree.Init({ AutoDeclaration: true, CompactCellNames: true, GlobalFunctionOnly: true });
+    const interpreter = SyntaxTree.Init(new CompilerOptions(true, true, true));
     const response = interpreter.Parse(text()).Bind().Evaluate();
     setDiagnostics(response.Diagnostics.Get());
     setValue(response.Value);
