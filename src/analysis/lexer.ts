@@ -7,7 +7,7 @@ import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
 import { SourceText } from "./input/source.text";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
-import { TokenSpan } from "./input/token.span";
+import { Span } from "./input/token.span";
 
 export class Lexer {
   private Kind: SyntaxKind;
@@ -118,7 +118,7 @@ export class Lexer {
     return this.Input.Text.substring(this.Start, this.End);
   }
 
-  private SetTokenSpan(): TokenSpan {
+  private SetTokenSpan(): Span {
     return this.Input.SetTokenSpan(this.Start, this.End);
   }
 

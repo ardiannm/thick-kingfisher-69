@@ -5,7 +5,7 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { BinaryOperatorKind } from "./kind/binary.operator.kind";
 import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
-import { TokenSpan } from "../input/token.span";
+import { Span } from "../input/token.span";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
@@ -38,7 +38,7 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override Kind: T, public Text: TokenText<T>, private TokenSpan: TokenSpan, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+  constructor(public override Kind: T, public Text: TokenText<T>, private TokenSpan: Span, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(Kind);
   }
 
@@ -66,6 +66,6 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   }
 
   get Line() {
-    return this.TokenSpan.Source.GetLineSpan(this.TokenSpan.Start);
+    return this.TokenSpan.Input.GetLineSpan(this.TokenSpan.Start);
   }
 }

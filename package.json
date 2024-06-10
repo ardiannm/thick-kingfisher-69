@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "cd solid && npm run dev",
     "build": "cd solid && npm run build",
-    "serve": "nodemon"
+    "serve": "nodemon",
+    "test": "ts-node ./src/tests/index.ts"
   },
   "license": "MIT",
   "devDependencies": {

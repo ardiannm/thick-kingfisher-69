@@ -1,4 +1,4 @@
-import { TokenSpan } from "../input/token.span";
+import { Span } from "../input/token.span";
 import { SyntaxKind } from "./kind/syntax.kind";
 
 export class SyntaxNode {
@@ -21,8 +21,8 @@ export class SyntaxNode {
     return LastNode;
   }
 
-  get Span(): TokenSpan {
+  get Span(): Span {
     const FirstSpan = this.First().Span;
-    return FirstSpan.Source.SetTokenSpan(FirstSpan.Start, this.Last().Span.End);
+    return FirstSpan.Input.SetTokenSpan(FirstSpan.Start, this.Last().Span.End);
   }
 }

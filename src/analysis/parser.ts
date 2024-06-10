@@ -48,6 +48,12 @@ export class Parser {
       Statements.push(this.ParseFunction());
       if (this.Token === Token) this.NextToken();
     }
+    console.log(Statements);
+
+    if (Statements.length === 1) {
+      this.ExpectToken(SyntaxNodeKind.EndOfFileToken);
+      return Statements[0];
+    }
     return new Program(SyntaxNodeKind.Program, Statements, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
   }
 
