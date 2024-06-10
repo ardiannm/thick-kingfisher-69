@@ -7,61 +7,61 @@ import { Lexer } from "../lexer";
 import { SyntaxNodeKind } from "../parser/kind/syntax.node.kind";
 
 export class SourceText {
-  public Tokens = Array<SyntaxToken<SyntaxKind>>();
-  private LineSpans = new Array<LineSpan>();
+  public tokens = Array<SyntaxToken<SyntaxKind>>();
+  private lineSpans = new Array<LineSpan>();
 
-  constructor(public Text: string, public Diagnostics: DiagnosticBag) {
+  constructor(public text: string, public diagnostics: DiagnosticBag) {
     this.Lex();
   }
 
-  static From(Text: string, Diagnostics: DiagnosticBag): SourceText {
-    return new SourceText(Text, Diagnostics);
+  static From(text: string, diagnostics: DiagnosticBag): SourceText {
+    return new SourceText(text, diagnostics);
   }
 
   Lex(): SourceText {
-    const Tokenizer = new Lexer(this, this.Diagnostics);
-    var Token: SyntaxToken<SyntaxKind>;
+    const tokenizer = new Lexer(this, this.diagnostics);
+    var token: SyntaxToken<SyntaxKind>;
     do {
-      Token = Tokenizer.Lex();
-      this.Tokens.push(Token);
-    } while (Token.Kind !== SyntaxNodeKind.EndOfFileToken);
+      token = tokenizer.Lex();
+      this.tokens.push(token);
+    } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
     return this;
   }
 
-  SetTokenSpan(Start: number, End: number): Span {
-    return new Span(this, Start, End);
+  SetTokenSpan(start: number, end: number): Span {
+    return new Span(this, start, end);
   }
 
-  GetLineSpan(Index: number): LineSpan {
-    let Left = 0;
-    let Right = this.LineSpans.length - 1;
-    var Position: number;
+  GetLineSpan(index: number): LineSpan {
+    let left = 0;
+    let right = this.lineSpans.length - 1;
+    var pos: number;
     while (true) {
-      Position = Left + Math.floor((Right - Left) / 2);
-      const LineSpan = this.LineSpans[Position];
-      if (Index >= LineSpan.Start && Index < LineSpan.End) {
-        return LineSpan;
+      pos = left + Math.floor((right - left) / 2);
+      const lineSpan = this.lineSpans[pos];
+      if (index >= lineSpan.start && index < lineSpan.end) {
+        return lineSpan;
       }
-      if (Index < LineSpan.Start) Right = Position - 1;
-      else Left = Position + 1;
+      if (index < lineSpan.start) right = pos - 1;
+      else left = pos + 1;
     }
   }
 
-  GetToken(Index: number): SyntaxToken<SyntaxKind> {
-    var Left = 0;
-    var Right = this.Tokens.length - 1;
-    var Position: number;
-    if (!(Index < this.Text.length)) return this.Tokens[this.Tokens.length - 1];
-    if (Index < 0) return this.Tokens[0];
+  GetToken(index: number): SyntaxToken<SyntaxKind> {
+    var left = 0;
+    var right = this.tokens.length - 1;
+    var pos: number;
+    if (!(index < this.text.length)) return this.tokens[this.tokens.length - 1];
+    if (index < 0) return this.tokens[0];
     while (true) {
-      Position = Left + Math.floor((Right - Left) / 2);
-      const Token = this.Tokens[Position];
-      const Span = Token.Span;
-      if (Index >= Span.Start && Index < Span.End) {
-        return Token;
+      pos = left + Math.floor((right - left) / 2);
+      const token = this.tokens[pos];
+      const span = token.GetSpan;
+      if (index >= span.start && index < span.end) {
+        return token;
       }
-      if (Index < Span.Start) Right = Position - 1;
-      else Left = Position + 1;
+      if (index < span.start) right = pos - 1;
+      else left = pos + 1;
     }
   }
 }

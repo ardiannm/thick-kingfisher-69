@@ -13,101 +13,101 @@ import { DiagnosticBag } from "./analysis/diagnostics/diagnostic.bag";
 import { BoundFunctionExpression } from "./analysis/binder/function.expression";
 
 export class Evaluator {
-  private Value = 0;
-  private Evaluated = new Set<string>();
-  private Edges = new Set<Cell>();
-  private Notified = new Set<string>();
-  constructor(private Diagnostics: DiagnosticBag) {}
+  private value = 0;
+  private evaluated = new Set<string>();
+  private edges = new Set<Cell>();
+  private notified = new Set<string>();
+  constructor(private diagnostics: DiagnosticBag) {}
 
-  Evaluate<Kind extends BoundNode>(Node: Kind): number {
+  Evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;
-    switch (Node.Kind) {
+    switch (node.kind) {
       case BoundKind.Program:
-        return this.EvaluateProgram(Node as NodeType<BoundProgram>);
+        return this.EvaluateProgram(node as NodeType<BoundProgram>);
       case BoundKind.FunctionExpression:
-        return this.EvaluateFunctionExpression(Node as NodeType<BoundFunctionExpression>);
+        return this.EvaluateFunctionExpression(node as NodeType<BoundFunctionExpression>);
       case BoundKind.CellAssignment:
-        return this.EvaluateCellAssignment(Node as NodeType<BoundCellAssignment>);
+        return this.EvaluateCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BinaryExpression:
-        return this.EvaluateBinaryExpression(Node as NodeType<BoundBinaryExpression>);
+        return this.EvaluateBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
-        return this.EvaluateUnaryExpression(Node as NodeType<BoundUnaryExpression>);
+        return this.EvaluateUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.Cell:
-        return this.EvaluateCell(Node as NodeType<Cell>);
+        return this.EvaluateCell(node as NodeType<Cell>);
       case BoundKind.NumericLiteral:
-        return this.EvaluateNumericLiteral(Node as NodeType<BoundNumericLiteral>);
+        return this.EvaluateNumericLiteral(node as NodeType<BoundNumericLiteral>);
     }
-    this.Diagnostics.EvaluatorMethod(Node.Kind);
+    this.diagnostics.EvaluatorMethod(node.kind);
     return 0;
   }
 
-  private EvaluateFunctionExpression(Node: BoundFunctionExpression): number {
-    return this.Value;
+  private EvaluateFunctionExpression(node: BoundFunctionExpression): number {
+    return this.value;
   }
 
-  private EvaluateProgram(Node: BoundProgram): number {
-    for (const Statement of Node.Statements) this.Value = this.Evaluate(Statement);
-    return this.Value;
+  private EvaluateProgram(node: BoundProgram): number {
+    for (const statement of node.statements) this.value = this.Evaluate(statement);
+    return this.value;
   }
 
-  private EvaluateCellAssignment(Node: BoundCellAssignment): number {
-    const Value = this.Evaluate(Node.Cell.Expression);
-    if (Node.Cell.Value !== Value) {
-      Node.Cell.Value = Value;
-      this.Edges.clear();
-      this.Notified.clear();
-      Node.Cell.Subscribers.forEach((Sub) => this.NotifyForChange(Sub));
-      this.Edges.forEach((Edge) => this.EvaluateCell(Edge));
+  private EvaluateCellAssignment(node: BoundCellAssignment): number {
+    const value = this.Evaluate(node.cell.expression);
+    if (node.cell.value !== value) {
+      node.cell.value = value;
+      this.edges.clear();
+      this.notified.clear();
+      node.cell.subscribers.forEach((sub) => this.NotifyForChange(sub));
+      this.edges.forEach((edge) => this.EvaluateCell(edge));
     }
-    return Node.Cell.Value;
+    return node.cell.value;
   }
 
-  private NotifyForChange(Node: Cell) {
-    this.Notified.add(Node.Name);
-    this.Evaluated.delete(Node.Name);
-    if (Node.Subscribers.size) Node.Subscribers.forEach((Sub) => !this.Notified.has(Sub.Name) && this.NotifyForChange(Sub));
-    else this.Edges.add(Node);
+  private NotifyForChange(node: Cell) {
+    this.notified.add(node.name);
+    this.evaluated.delete(node.name);
+    if (node.subscribers.size) node.subscribers.forEach((sub) => !this.notified.has(sub.name) && this.NotifyForChange(sub));
+    else this.edges.add(node);
   }
 
-  private EvaluateCell(Node: Cell) {
-    if (this.Evaluated.has(Node.Name)) {
-      console.log(ColorPalette.Terracotta(`cached value ${Node.Name} -> ${Node.Value}`));
-      return Node.Value;
+  private EvaluateCell(node: Cell) {
+    if (this.evaluated.has(node.name)) {
+      console.log(ColorPalette.Terracotta(`cached value ${node.name} -> ${node.value}`));
+      return node.value;
     }
-    Node.Value = this.Evaluate(Node.Expression);
-    this.Evaluated.add(Node.Name);
-    console.log(ColorPalette.Teal(`evaluated value ${Node.Name} -> ${Node.Value}`));
-    return Node.Value;
+    node.value = this.Evaluate(node.expression);
+    this.evaluated.add(node.name);
+    console.log(ColorPalette.Teal(`evaluated value ${node.name} -> ${node.value}`));
+    return node.value;
   }
 
-  private EvaluateBinaryExpression(Node: BoundBinaryExpression): number {
-    const Left = this.Evaluate(Node.Left);
-    const Right = this.Evaluate(Node.Right);
-    switch (Node.OperatorKind) {
+  private EvaluateBinaryExpression(node: BoundBinaryExpression): number {
+    const left = this.Evaluate(node.left);
+    const right = this.Evaluate(node.right);
+    switch (node.operatorKind) {
       case BoundBinaryOperatorKind.Addition:
-        return Left + Right;
+        return left + right;
       case BoundBinaryOperatorKind.Subtraction:
-        return Left - Right;
+        return left - right;
       case BoundBinaryOperatorKind.Multiplication:
-        return Left * Right;
+        return left * right;
       case BoundBinaryOperatorKind.Division:
-        return Left / Right;
+        return left / right;
       case BoundBinaryOperatorKind.Exponentiation:
-        return Left ** Right;
+        return left ** right;
     }
   }
 
-  private EvaluateUnaryExpression(Node: BoundUnaryExpression): number {
-    const Right = this.Evaluate(Node.Right);
-    switch (Node.OperatorKind) {
+  private EvaluateUnaryExpression(node: BoundUnaryExpression): number {
+    const right = this.Evaluate(node.right);
+    switch (node.operatorKind) {
       case BoundUnaryOperatorKind.Identity:
-        return Right;
+        return right;
       case BoundUnaryOperatorKind.Negation:
-        return -Right;
+        return -right;
     }
   }
 
-  private EvaluateNumericLiteral(Node: BoundNumericLiteral) {
-    return Node.Value;
+  private EvaluateNumericLiteral(node: BoundNumericLiteral) {
+    return node.value;
   }
 }

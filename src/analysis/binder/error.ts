@@ -3,7 +3,7 @@ import { BoundNode } from "./bound.node";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 
 export class BoundError extends BoundNode {
-  constructor(public override Kind: BoundKind.Error, public NodeKind: SyntaxKind) {
-    super(Kind);
+  constructor(public override kind: BoundKind.Error, public nodeKind: SyntaxKind) {
+    super(kind);
   }
 }

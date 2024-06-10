@@ -2,12 +2,12 @@ import { Span } from "../input/token.span";
 import { SyntaxKind } from "./kind/syntax.kind";
 
 export class SyntaxNode {
-  constructor(public Kind: SyntaxKind) {}
+  constructor(public kind: SyntaxKind) {}
 
   *Children(): Generator<SyntaxNode> {
-    for (const Data of Object.values(this)) {
-      if (Array.isArray(Data)) for (const Iteration of Data) yield Iteration;
-      if (Data instanceof SyntaxNode) yield Data;
+    for (const data of Object.values(this)) {
+      if (Array.isArray(data)) for (const iteration of data) yield iteration;
+      if (data instanceof SyntaxNode) yield data;
     }
   }
 
@@ -16,13 +16,13 @@ export class SyntaxNode {
   }
 
   Last() {
-    var LastNode: SyntaxNode = this.First();
-    for (const Node of this.Children()) LastNode = Node;
-    return LastNode;
+    var lastNode: SyntaxNode = this.First();
+    for (const node of this.Children()) lastNode = node;
+    return lastNode;
   }
 
-  get Span(): Span {
-    const FirstSpan = this.First().Span;
-    return FirstSpan.Input.SetTokenSpan(FirstSpan.Start, this.Last().Span.End);
+  GetSpan(): Span {
+    const firstSpan = this.First().GetSpan();
+    return firstSpan.input.SetTokenSpan(firstSpan.start, this.Last().GetSpan().end);
   }
 }

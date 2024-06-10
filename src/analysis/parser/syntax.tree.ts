@@ -11,19 +11,17 @@ import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 import { SourceText } from "../input/source.text";
 
 export class SyntaxTree {
-  EvaluatorService: Evaluator;
-  Tree: SyntaxNode;
-  BoundTree: BoundNode;
+  evaluator: Evaluator;
+  tree: SyntaxNode;
+  boundTree: BoundNode;
+  binder: Binder;
+  value = 0;
 
-  BinderService: Binder;
-
-  Value = 0;
-
-  private constructor(public Diagnostics: DiagnosticBag, private Configuration: CompilerOptions) {
-    this.BinderService = new Binder(this.Diagnostics, this.Configuration);
-    this.EvaluatorService = new Evaluator(this.Diagnostics);
-    this.Tree = new SyntaxNode(SyntaxNodeKind.BadToken);
-    this.BoundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
+  private constructor(public diagnostics: DiagnosticBag, private configuration: CompilerOptions) {
+    this.binder = new Binder(this.diagnostics, this.configuration);
+    this.evaluator = new Evaluator(this.diagnostics);
+    this.tree = new SyntaxNode(SyntaxNodeKind.BadToken);
+    this.boundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }
 
   static Init(Settings: CompilerOptions) {
@@ -31,30 +29,30 @@ export class SyntaxTree {
     return new SyntaxTree(Diagnostics, Settings);
   }
 
-  Parse(Text: string) {
-    this.BinderService.Scope.ClearUndeclared();
-    this.Diagnostics.Clear();
-    const Input = SourceText.From(Text, this.Diagnostics);
-    const ParserService = new Parser(Input, this.Diagnostics);
-    this.Tree = ParserService.Parse();
+  Parse(text: string) {
+    this.binder.scope.ClearUndeclared();
+    this.diagnostics.Clear();
+    const input = SourceText.From(text, this.diagnostics);
+    const parser = new Parser(input, this.diagnostics);
+    this.tree = parser.Parse();
     return this;
   }
 
   Bind() {
-    if (this.Diagnostics.None()) {
-      this.BoundTree = this.BinderService.Bind(this.Tree);
+    if (this.diagnostics.none) {
+      this.boundTree = this.binder.Bind(this.tree);
     }
     return this;
   }
 
   Evaluate() {
-    if (this.Diagnostics.None()) {
-      this.Value = this.EvaluatorService.Evaluate(this.BoundTree);
+    if (this.diagnostics.none) {
+      this.value = this.evaluator.Evaluate(this.boundTree);
     }
     return this;
   }
 
   Clear() {
-    this.Diagnostics.Clear();
+    this.diagnostics.Clear();
   }
 }

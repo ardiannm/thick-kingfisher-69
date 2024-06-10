@@ -4,7 +4,7 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class Program extends SyntaxNode {
-  constructor(public override Kind: SyntaxNodeKind.Program, public Root: Array<ExpressionSyntax>, public EOF: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
-    super(Kind);
+  constructor(public override kind: SyntaxNodeKind.Program, public root: Array<ExpressionSyntax>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
+    super(kind);
   }
 }

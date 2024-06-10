@@ -3,7 +3,7 @@ import { SyntaxNode } from "./syntax.node";
 import { ExpressionSyntax } from "./expression.syntax";
 
 export class RangeReference extends ExpressionSyntax {
-  constructor(public override Kind: SyntaxNodeKind.RangeReference, public Left: SyntaxNode, public Right: SyntaxNode) {
-    super(Kind);
+  constructor(public override kind: SyntaxNodeKind.RangeReference, public left: SyntaxNode, public right: SyntaxNode) {
+    super(kind);
   }
 }

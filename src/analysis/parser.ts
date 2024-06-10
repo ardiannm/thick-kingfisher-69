@@ -19,129 +19,130 @@ import { SourceText } from "./input/source.text";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 
 export class Parser {
-  private Index = 0;
+  private index = 0;
+  private tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private trivia = new Array<SyntaxToken<SyntaxKind>>();
 
-  private Tokens = new Array<SyntaxToken<SyntaxKind>>();
-  private Trivia = new Array<SyntaxToken<SyntaxKind>>();
+  private get any() {
+    return !this.MatchToken(SyntaxNodeKind.EndOfFileToken);
+  }
 
-  constructor(public readonly Input: SourceText, public Diagnostics: DiagnosticBag) {
-    for (const Token of this.Input.Tokens) {
-      if (SyntaxFacts.IsTrivia(Token.Kind)) {
-        this.Trivia.push(Token);
+  private get none() {
+    return !this.any;
+  }
+
+  constructor(public readonly input: SourceText, public diagnostics: DiagnosticBag) {
+    for (const token of this.input.tokens) {
+      if (SyntaxFacts.IsTrivia(token.kind)) {
+        this.trivia.push(token);
       } else {
-        this.Tokens.push(Token.EatTrivia(this.Trivia));
+        this.tokens.push(token.EatTrivia(this.trivia));
       }
     }
   }
 
   public Parse() {
-    if (this.None()) {
-      this.Diagnostics.EmptyProgram();
+    if (this.none) {
+      this.diagnostics.EmptyProgram();
     }
     return this.ParseProgram();
   }
 
   public ParseProgram() {
-    const Statements = new Array<StatementSyntax>();
-    while (this.Any()) {
-      const Token = this.Token;
-      Statements.push(this.ParseFunction());
-      if (this.Token === Token) this.NextToken();
+    const statements = new Array<StatementSyntax>();
+    while (this.any) {
+      const token = this.token;
+      statements.push(this.ParseFunction());
+      if (this.token === token) this.NextToken();
     }
-    console.log(Statements);
-
-    if (Statements.length === 1) {
-      this.ExpectToken(SyntaxNodeKind.EndOfFileToken);
-      return Statements[0];
-    }
-    return new Program(SyntaxNodeKind.Program, Statements, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
+    return new Program(SyntaxNodeKind.Program, statements, this.ExpectToken(SyntaxNodeKind.EndOfFileToken));
   }
 
   private ParseFunction() {
     if (this.MatchToken(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.OpenParenthesisToken)) {
-      const FunctionName = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
-      const OpenParen = this.ExpectToken(SyntaxNodeKind.OpenParenthesisToken);
-      const CloseParen = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
-      const OpenBrace = this.ExpectToken(SyntaxNodeKind.OpenBraceToken);
-      const Statements = new Array<StatementSyntax>();
-      while (this.Any()) {
+      const functionName = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
+      const openParen = this.ExpectToken(SyntaxNodeKind.OpenParenthesisToken);
+      const closeParen = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
+      const openBrace = this.ExpectToken(SyntaxNodeKind.OpenBraceToken);
+      const statements = new Array<StatementSyntax>();
+      while (this.any) {
         if (this.MatchToken(SyntaxNodeKind.CloseBraceToken)) break;
-        const Token = this.Token;
-        Statements.push(this.ParseFunction());
-        if (this.Token === Token) this.NextToken();
+        const token = this.token;
+        statements.push(this.ParseFunction());
+        if (this.token === token) this.NextToken();
       }
-      const CloseBrace = this.ExpectToken(SyntaxNodeKind.CloseBraceToken);
-      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, FunctionName, OpenParen, CloseParen, OpenBrace, Statements, CloseBrace);
+      const closeBrace = this.ExpectToken(SyntaxNodeKind.CloseBraceToken);
+      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, functionName, openParen, closeParen, openBrace, statements, closeBrace);
     }
     return this.ParseStatement();
   }
 
   private ParseStatement() {
-    const Left = this.ParseBinaryExpression();
-    switch (this.Token.Kind) {
+    const left = this.ParseBinaryExpression();
+    switch (this.token.kind) {
       case CompositeTokenKind.ColonColonToken:
-        const Keyword = this.NextToken() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
-        return new CellAssignment(SyntaxNodeKind.CellAssignment, Left, Keyword, this.ParseBinaryExpression());
+        const keyword = this.NextToken() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
+        return new CellAssignment(SyntaxNodeKind.CellAssignment, left, keyword, this.ParseBinaryExpression());
     }
-    return Left;
+    return left;
   }
 
-  private ParseBinaryExpression(ParentPrecedence = 0): ExpressionSyntax {
-    let Left = this.ParseUnaryExpression();
+  private ParseBinaryExpression(parentPrecedence = 0): ExpressionSyntax {
+    let left = this.ParseUnaryExpression();
     while (true) {
-      const BinaryPrecedence = SyntaxFacts.BinaryPrecedence(this.Token.Kind);
-      if (BinaryPrecedence === 0 || BinaryPrecedence <= ParentPrecedence) {
+      const binaryPrecedence = SyntaxFacts.BinaryPrecedence(this.token.kind);
+      if (binaryPrecedence === 0 || binaryPrecedence <= parentPrecedence) {
         break;
       }
-      const Operator = this.NextToken() as SyntaxToken<BinaryOperatorKind>;
-      const Right = this.ParseBinaryExpression(BinaryPrecedence);
-      Left = new BinaryExpression(SyntaxNodeKind.BinaryExpression, Left, Operator, Right);
+      const operator = this.NextToken() as SyntaxToken<BinaryOperatorKind>;
+      const right = this.ParseBinaryExpression(binaryPrecedence);
+      left = new BinaryExpression(SyntaxNodeKind.BinaryExpression, left, operator, right);
     }
-    return Left;
+    return left;
   }
 
   private ParseUnaryExpression(): ExpressionSyntax {
-    const BinaryPrecedence = SyntaxFacts.UnaryPrecedence(this.Token.Kind);
+    const BinaryPrecedence = SyntaxFacts.UnaryPrecedence(this.token.kind);
     if (BinaryPrecedence !== 0) {
-      const Operator = this.NextToken() as SyntaxToken<UnaryOperatorKind>;
-      const Right = this.ParseUnaryExpression();
-      return new UnaryExpression(SyntaxNodeKind.UnaryExpression, Operator, Right);
+      const operator = this.NextToken() as SyntaxToken<UnaryOperatorKind>;
+      const right = this.ParseUnaryExpression();
+      return new UnaryExpression(SyntaxNodeKind.UnaryExpression, operator, right);
     }
     return this.ParseParenthesis();
   }
 
   private ParseParenthesis() {
     if (this.MatchToken(SyntaxNodeKind.OpenParenthesisToken)) {
-      const Left = this.NextToken();
-      const Expression = this.ParseBinaryExpression();
-      const Right = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
-      return new ParenthesizedExpression(SyntaxNodeKind.ParenthesizedExpression, Left, Expression, Right);
+      const left = this.NextToken();
+      const expression = this.ParseBinaryExpression();
+      const right = this.ExpectToken(SyntaxNodeKind.CloseParenthesisToken);
+      return new ParenthesizedExpression(SyntaxNodeKind.ParenthesizedExpression, left, expression, right);
     }
     return this.ParseRangeReference();
   }
 
   private ParseRangeReference() {
-    const Left = this.ParseCellReference();
+    const left = this.ParseCellReference();
     if (this.MatchToken(SyntaxNodeKind.ColonToken)) {
       this.NextToken();
-      const Right = this.ParseCellReference();
-      return new RangeReference(SyntaxNodeKind.RangeReference, Left, Right);
+      const right = this.ParseCellReference();
+      return new RangeReference(SyntaxNodeKind.RangeReference, left, right);
     }
-    return Left;
+    return left;
   }
 
   private ParseCellReference() {
     if (this.MatchToken(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
-      const Left = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
-      const Right = this.NextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
-      return new CellReference(SyntaxNodeKind.CellReference, Left, Right);
+      const left = this.NextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
+      const right = this.NextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
+      return new CellReference(SyntaxNodeKind.CellReference, left, right);
     }
     return this.ParseLiteral();
   }
 
   private ParseLiteral() {
-    const Kind = this.Token.Kind;
-    switch (Kind) {
+    const kind = this.token.kind;
+    switch (kind) {
       // case TokenKind.TrueToken:
       // case TokenKind.FalseToken:
       case SyntaxNodeKind.IdentifierToken:
@@ -152,45 +153,37 @@ export class Parser {
     }
   }
 
-  private PeekToken(Offset: number) {
-    const ThisIndex = this.Index + Offset;
-    const PrevIndex = this.Tokens.length - 1;
-    if (ThisIndex > PrevIndex) return this.Tokens[PrevIndex];
-    return this.Tokens[ThisIndex];
+  private PeekToken(offset: number) {
+    const thisIndex = this.index + offset;
+    const prevIndex = this.tokens.length - 1;
+    if (thisIndex > prevIndex) return this.tokens[prevIndex];
+    return this.tokens[thisIndex];
   }
 
-  private get Token() {
+  private get token() {
     return this.PeekToken(0);
   }
 
   private NextToken() {
-    const Token = this.Token;
-    this.Index++;
-    return Token;
+    const token = this.token;
+    this.index++;
+    return token;
   }
 
-  private MatchToken(...Kinds: Array<SyntaxKind>) {
-    let Offset = 0;
-    for (const Kind of Kinds) {
-      if (Kind !== this.PeekToken(Offset).Kind) return false;
-      Offset++;
+  private MatchToken(...kinds: Array<SyntaxKind>) {
+    let offset = 0;
+    for (const kind of kinds) {
+      if (kind !== this.PeekToken(offset).kind) return false;
+      offset++;
     }
     return true;
   }
 
-  private ExpectToken<Kind extends SyntaxKind>(Kind: Kind): SyntaxToken<Kind> {
-    if (this.MatchToken(Kind)) {
+  private ExpectToken<Kind extends SyntaxKind>(kind: Kind): SyntaxToken<Kind> {
+    if (this.MatchToken(kind)) {
       return this.NextToken() as SyntaxToken<Kind>;
     }
-    this.Diagnostics.TokenMissmatch(this.Token.Kind, Kind);
-    return new SyntaxToken(this.Token.Kind as Kind, this.Token.Text as TokenText<Kind>, this.Token.Span);
-  }
-
-  private Any() {
-    return !this.MatchToken(SyntaxNodeKind.EndOfFileToken);
-  }
-
-  private None() {
-    return !this.Any();
+    this.diagnostics.TokenMissmatch(this.token.kind, kind);
+    return new SyntaxToken(this.token.kind as Kind, this.token.text as TokenText<Kind>, this.token.GetSpan());
   }
 }

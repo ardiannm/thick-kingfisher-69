@@ -44,8 +44,8 @@ const Input: Component = () => {
   createEffect(() => {
     const interpreter = SyntaxTree.Init(new CompilerOptions(true, true, true));
     const response = interpreter.Parse(text()).Bind().Evaluate();
-    setDiagnostics(response.Diagnostics.Get());
-    setValue(response.Value);
+    setDiagnostics(response.diagnostics.Get());
+    setValue(response.value);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

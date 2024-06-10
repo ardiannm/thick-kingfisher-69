@@ -5,111 +5,107 @@ import { Diagnostic } from "./diagnostic";
 import { DiagnosticSeverity } from "./diagnostic.severity";
 
 export class DiagnosticBag {
-  private DiagnosticsOther = new Array<Diagnostic>();
-  private DiagnosticsError = new Array<Diagnostic>();
+  private other = new Array<Diagnostic>();
+  private error = new Array<Diagnostic>();
+
+  get none() {
+    return !(this.error.length > 0);
+  }
 
   Get() {
-    return [...this.DiagnosticsOther, ...this.DiagnosticsError];
+    return [...this.other, ...this.error];
   }
 
-  Any() {
-    return this.DiagnosticsError.length > 0;
-  }
-
-  None() {
-    return !this.Any();
-  }
-
-  Add(Diagnostic: Diagnostic) {
-    switch (Diagnostic.Severity) {
+  Add(diagnostic: Diagnostic) {
+    switch (diagnostic.Severity) {
       case DiagnosticSeverity.Error:
       case DiagnosticSeverity.Error:
-        this.DiagnosticsError.push(Diagnostic);
+        this.error.push(diagnostic);
         break;
       case DiagnosticSeverity.Warning:
       case DiagnosticSeverity.Informative:
-        this.DiagnosticsOther.push(Diagnostic);
+        this.other.push(diagnostic);
         break;
     }
   }
 
   Clear() {
-    this.DiagnosticsOther.length = 0;
-    this.DiagnosticsError.length = 0;
+    this.other.length = 0;
+    this.error.length = 0;
   }
 
-  BadTokenFound(Text: string) {
-    const Message = `Bad character '${Text}' found`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  BadTokenFound(text: string) {
+    const message = `Bad character '${text}' found`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  TokenMissmatch(Matched: SyntaxKind, ExpectedKind: SyntaxKind) {
-    const Message = `Unexpected '${Matched}' found, expecting '${ExpectedKind}'`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  TokenMissmatch(matched: SyntaxKind, expectedKind: SyntaxKind) {
+    const message = `unexpected '${matched}' found, expecting '${expectedKind}'`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   EmptyProgram() {
-    const Message = `Program contains no code`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Program contains no code`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   CantDivideByZero() {
-    const Message = `Can't divide by zero`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Can't divide by zero`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  CircularDependency(Observer: Cell) {
-    const Message = `Circular dependency detected in '${Observer.Name}'`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  CircularDependency(observer: Cell) {
+    const message = `Circular dependency detected in '${observer.name}'`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  CantUseAsAReference(Unexpected: SyntaxKind) {
-    const Message = `'${Unexpected}' is not assignable to a cell reference`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  CantUseAsAReference(unexpected: SyntaxKind) {
+    const message = `'${unexpected}' is not assignable to a cell reference`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   UndeclaredCell(CellName: string) {
-    const Message = `Cell reference '${CellName}' is undeclared`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Cell reference '${CellName}' is undeclared`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   BadFloatingPointNumber() {
-    const Message = `Wrong floating number format`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Wrong floating number format`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  InvalidCellState(Subject: Cell) {
-    const Message = `Reference '${Subject.Name}' is in an invalid state`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+  InvalidCellState(subject: Cell) {
+    const message = `Reference '${subject.name}' is in an invalid state`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  AutoDeclaredCell(Subject: Cell, Cell: Cell) {
-    const Message = `Reference '${Subject.Name}' has been declared automatically after being referenced by '${Cell.Name}'`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Informative, Message));
+  AutoDeclaredCell(subject: Cell, Cell: Cell) {
+    const message = `Reference '${subject.name}' has been declared automatically after being referenced by '${Cell.name}'`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Informative, message));
   }
 
   WrongCellNameFormat(DidYouMean: string) {
-    const Message = `Did you mean '${DidYouMean}'?`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Did you mean '${DidYouMean}'?`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   BinderMethod(Kind: SyntaxKind) {
-    const Message = `Binder: Method for '${Kind}' is not implemented`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Binder: Method for '${Kind}' is not implemented`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   EvaluatorMethod(Kind: BoundKind) {
-    const Message = `Evaluator: Method for '${Kind}' is not implemented`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Evaluator: Method for '${Kind}' is not implemented`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   FunctionAlreadyDefined(FunctionName: string) {
-    const Message = `Function '${FunctionName}' has already been declared`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Function '${FunctionName}' has already been declared`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
   GlobalFunctionDeclarationsOnly(FunctionName: string) {
-    const Message = `Function '${FunctionName}' can only be defined within the global scope`;
-    return this.Add(new Diagnostic(DiagnosticSeverity.Error, Message));
+    const message = `Function '${FunctionName}' can only be defined within the global scope`;
+    return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 }

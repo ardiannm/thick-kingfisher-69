@@ -1,3 +1,3 @@
 export class CompilerOptions {
-  constructor(public AutoDeclaration: boolean, public CompactCellNames: boolean, public GlobalFunctionsOnly: boolean) {}
+  constructor(public autoDeclaration: boolean, public compactCellNames: boolean, public globalFunctionsOnly: boolean) {}
 }

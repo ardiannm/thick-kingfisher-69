@@ -5,7 +5,7 @@ import { ExpressionSyntax } from "./expression.syntax";
 import { SyntaxToken } from "./syntax.token";
 
 export class UnaryExpression extends ExpressionSyntax {
-  constructor(public override Kind: SyntaxNodeKind.UnaryExpression, public Operator: SyntaxToken<UnaryOperatorKind>, public Right: SyntaxNode) {
-    super(Kind);
+  constructor(public override kind: SyntaxNodeKind.UnaryExpression, public operator: SyntaxToken<UnaryOperatorKind>, public right: SyntaxNode) {
+    super(kind);
   }
 }

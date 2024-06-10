@@ -38,13 +38,13 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override Kind: T, public Text: TokenText<T>, private TokenSpan: Span, public Trivia = new Array<SyntaxToken<SyntaxKind>>()) {
-    super(Kind);
+  constructor(public override kind: T, public text: TokenText<T>, private span: Span, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+    super(kind);
   }
 
-  EatTrivia(Trivias: Array<SyntaxToken<SyntaxKind>>): SyntaxToken<SyntaxKind> {
-    while (Trivias.length > 0) {
-      this.Trivia.push(Trivias.shift() as SyntaxToken<SyntaxKind>);
+  EatTrivia(trivias: Array<SyntaxToken<SyntaxKind>>): SyntaxToken<SyntaxKind> {
+    while (trivias.length > 0) {
+      this.trivia.push(trivias.shift() as SyntaxToken<SyntaxKind>);
     }
     return this;
   }
@@ -61,11 +61,11 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this;
   }
 
-  override get Span() {
-    return this.TokenSpan;
+  override GetSpan() {
+    return this.span;
   }
 
   get Line() {
-    return this.TokenSpan.Input.GetLineSpan(this.TokenSpan.Start);
+    return this.span.input.GetLineSpan(this.span.start);
   }
 }

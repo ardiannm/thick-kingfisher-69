@@ -3,7 +3,7 @@ import { BoundExpression } from "./expression";
 import { BoundUnaryOperatorKind } from "./kind/unary.operator.kind";
 
 export class BoundUnaryExpression extends BoundExpression {
-  constructor(public override Kind: BoundKind.UnaryExpression, public OperatorKind: BoundUnaryOperatorKind, public Right: BoundExpression) {
-    super(Kind);
+  constructor(public override kind: BoundKind.UnaryExpression, public operatorKind: BoundUnaryOperatorKind, public right: BoundExpression) {
+    super(kind);
   }
 }

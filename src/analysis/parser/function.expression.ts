@@ -4,14 +4,14 @@ import { StatementSyntax } from "./statement.syntax";
 
 export class FunctionExpression extends StatementSyntax {
   constructor(
-    public override Kind: SyntaxNodeKind.FunctionExpression,
-    public FunctionName: SyntaxToken<SyntaxNodeKind.IdentifierToken>,
-    public OpenParen: SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>,
-    public CloseParen: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>,
-    public OpenBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
-    public Statements: Array<StatementSyntax>,
-    public CloseBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
+    public override kind: SyntaxNodeKind.FunctionExpression,
+    public functionName: SyntaxToken<SyntaxNodeKind.IdentifierToken>,
+    public openParen: SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>,
+    public closeParen: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>,
+    public openBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
+    public statements: Array<StatementSyntax>,
+    public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
   ) {
-    super(Kind);
+    super(kind);
   }
 }

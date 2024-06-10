@@ -6,85 +6,85 @@ import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 import { BoundFunctionExpression } from "./function.expression";
 
 export class BoundScope {
-  Cells = new Map<string, Cell>();
-  DeclarationSubscribers = new Set<(Cell: Cell) => void>();
-  EvaluationSubscribers = new Set<(Cell: Cell) => void>();
-  Functions = new Map<string, BoundFunctionExpression>();
+  cells = new Map<string, Cell>();
+  declarationSubscribers = new Set<(Cell: Cell) => void>();
+  evaluationSubscribers = new Set<(Cell: Cell) => void>();
+  functions = new Map<string, BoundFunctionExpression>();
 
-  constructor(public ParentScope: BoundScope | null, public Configuration: CompilerOptions) {}
+  constructor(public parent: BoundScope | null, public configuration: CompilerOptions) {}
 
-  ConstructCell(Name: string, Row: string, Column: string) {
-    const Scope = this.ResolveScopeForCell(Name);
-    let Data: Cell;
-    if (Scope) {
-      Data = Scope.Cells.get(Name) as Cell;
+  ConstructCell(name: string, row: string, column: string) {
+    const scope = this.ResolveScopeForCell(name);
+    let data: Cell;
+    if (scope) {
+      data = scope.cells.get(name) as Cell;
     } else {
-      const Expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-      Data = new Cell(BoundKind.Cell, Name, false, 0, Expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(Row), Cell.LetterToColumnIndex(Column));
+      const expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+      data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.LetterToColumnIndex(column));
     }
-    this.Cells.set(Name, Data);
-    return Data;
+    this.cells.set(name, data);
+    return data;
   }
 
-  private ResolveScopeForCell(Name: string): BoundScope | null {
-    if (this.Cells.has(Name)) {
+  private ResolveScopeForCell(name: string): BoundScope | null {
+    if (this.cells.has(name)) {
       return this;
     }
-    if (this.ParentScope) {
-      return this.ParentScope.ResolveScopeForCell(Name);
+    if (this.parent) {
+      return this.parent.ResolveScopeForCell(name);
     }
     return null;
   }
 
-  CheckDeclarations(Diagnostics: DiagnosticBag) {
-    this.Cells.forEach((Cell) => {
-      if (!Cell.Declared) {
-        Diagnostics.UndeclaredCell(Cell.Name);
+  CheckDeclarations(diagnostics: DiagnosticBag) {
+    this.cells.forEach((cell) => {
+      if (!cell.declared) {
+        diagnostics.UndeclaredCell(cell.name);
       }
-      Cell.Dependencies.forEach((Dependency) => {
-        if (!Dependency.Declared) {
-          Diagnostics.UndeclaredCell(Dependency.Name);
+      cell.dependencies.forEach((dependency) => {
+        if (!dependency.declared) {
+          diagnostics.UndeclaredCell(dependency.name);
         }
       });
-      if (Cell.Contains(Cell)) Diagnostics.CircularDependency(Cell);
+      if (cell.Contains(cell)) diagnostics.CircularDependency(cell);
     });
   }
 
-  Move(Dependency: Cell) {
-    if (this.ParentScope) {
-      this.ParentScope.Cells.set(Dependency.Name, Dependency);
-      this.Cells.delete(Dependency.Name);
+  Move(dependency: Cell) {
+    if (this.parent) {
+      this.parent.cells.set(dependency.name, dependency);
+      this.cells.delete(dependency.name);
       return true;
     }
     return false;
   }
 
   ClearUndeclared() {
-    this.Cells.forEach((Cell) => {
-      if (!Cell.Declared) {
-        this.Cells.delete(Cell.Name);
+    this.cells.forEach((Cell) => {
+      if (!Cell.declared) {
+        this.cells.delete(Cell.name);
       }
-      Cell.Dependencies.forEach((Dependency) => {
-        if (!Dependency.Declared) {
-          this.Cells.delete(Dependency.Name);
+      Cell.dependencies.forEach((dependency) => {
+        if (!dependency.declared) {
+          this.cells.delete(dependency.name);
         }
       });
     });
   }
 
-  SubscribeToDeclarationEvent(Fn: (Cell: Cell) => void) {
-    this.DeclarationSubscribers.add(Fn);
+  SubscribeToDeclarationEvent(fn: (cell: Cell) => void) {
+    this.declarationSubscribers.add(fn);
   }
 
   SubscribeToEvaluationEvent(Fn: (cell: Cell) => void) {
-    this.EvaluationSubscribers.add(Fn);
+    this.evaluationSubscribers.add(Fn);
   }
 
   EmitDeclarationEventForCell(Node: Cell) {
-    for (const Sub of this.EvaluationSubscribers) Sub(Node);
+    for (const sub of this.evaluationSubscribers) sub(Node);
   }
 
   EmitEvaluationEventForCell(Node: Cell) {
-    for (const Sub of this.EvaluationSubscribers) Sub(Node);
+    for (const sub of this.evaluationSubscribers) sub(Node);
   }
 }

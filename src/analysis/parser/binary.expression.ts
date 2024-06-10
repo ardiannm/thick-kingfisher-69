@@ -5,7 +5,7 @@ import { ExpressionSyntax } from "./expression.syntax";
 import { SyntaxToken } from "./syntax.token";
 
 export class BinaryExpression extends ExpressionSyntax {
-  constructor(public override Kind: SyntaxNodeKind.BinaryExpression, public Left: SyntaxNode, public Operator: SyntaxToken<BinaryOperatorKind>, public Right: SyntaxNode) {
-    super(Kind);
+  constructor(public override kind: SyntaxNodeKind.BinaryExpression, public left: SyntaxNode, public operator: SyntaxToken<BinaryOperatorKind>, public right: SyntaxNode) {
+    super(kind);
   }
 }

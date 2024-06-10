@@ -81,8 +81,8 @@ export class SyntaxFacts {
     }
   }
 
-  static IsTrivia(Kind: SyntaxKind) {
-    switch (Kind) {
+  static IsTrivia(kind: SyntaxKind) {
+    switch (kind) {
       case SyntaxTriviaKind.LineBreakTrivia:
       case SyntaxTriviaKind.SpaceTrivia:
       case SyntaxTriviaKind.CommentTrivia:
