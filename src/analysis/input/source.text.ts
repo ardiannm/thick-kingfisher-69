@@ -56,7 +56,7 @@ export class SourceText {
     while (true) {
       pos = left + Math.floor((right - left) / 2);
       const token = this.tokens[pos];
-      const span = token.GetSpan;
+      const span = token.GetSpan();
       if (index >= span.start && index < span.end) {
         return token;
       }

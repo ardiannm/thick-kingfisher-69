@@ -50,7 +50,7 @@ const Input: Component = () => {
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
-  const hasErrors = (a: Diagnostic) => a.Severity === DiagnosticSeverity.Error;
+  const hasErrors = (a: Diagnostic) => a.severity === DiagnosticSeverity.Error;
 
   return (
     <div class={styles.input}>
@@ -60,7 +60,7 @@ const Input: Component = () => {
           <div class={styles.diagnosticsWrapper}>
             <For each={diagnostics()}>
               {(diagnostic) => {
-                return <div class={styles.diagnostic}>{diagnostic.Message}</div>;
+                return <div class={styles.diagnostic}>{diagnostic.message}</div>;
               }}
             </For>
           </div>

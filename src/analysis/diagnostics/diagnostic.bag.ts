@@ -17,7 +17,7 @@ export class DiagnosticBag {
   }
 
   Add(diagnostic: Diagnostic) {
-    switch (diagnostic.Severity) {
+    switch (diagnostic.severity) {
       case DiagnosticSeverity.Error:
       case DiagnosticSeverity.Error:
         this.error.push(diagnostic);
@@ -40,7 +40,7 @@ export class DiagnosticBag {
   }
 
   TokenMissmatch(matched: SyntaxKind, expectedKind: SyntaxKind) {
-    const message = `unexpected '${matched}' found, expecting '${expectedKind}'`;
+    const message = `Unexpected '${matched}' found, expecting '${expectedKind}'`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 

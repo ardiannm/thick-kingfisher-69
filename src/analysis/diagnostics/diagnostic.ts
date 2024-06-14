@@ -1,5 +1,5 @@
 import { DiagnosticSeverity } from "./diagnostic.severity";
 
 export class Diagnostic {
-  constructor(public Severity: DiagnosticSeverity, public Message: string) {}
+  constructor(public severity: DiagnosticSeverity, public message: string) {}
 }
