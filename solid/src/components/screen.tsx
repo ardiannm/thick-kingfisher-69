@@ -57,11 +57,13 @@ const Input: Component = () => {
       <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
       <Show when={diagnostics().find(hasErrors)} fallback={<div class={styles.value}>{value()}</div>}>
         <div class={styles.diagnostics}>
-          <For each={diagnostics()}>
-            {(diagnostic) => {
-              return <div class={styles.diagnostic}>{diagnostic.Message}</div>;
-            }}
-          </For>
+          <div class={styles.diagnosticsWrapper}>
+            <For each={diagnostics()}>
+              {(diagnostic) => {
+                return <div class={styles.diagnostic}>{diagnostic.Message}</div>;
+              }}
+            </For>
+          </div>
         </div>
       </Show>
     </div>
