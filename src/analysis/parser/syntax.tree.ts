@@ -24,9 +24,9 @@ export class SyntaxTree {
     this.boundTree = new BoundNumericLiteral(BoundKind.NumericLiteral, 0) as BoundNode;
   }
 
-  static Init(Settings: CompilerOptions) {
-    const Diagnostics = new DiagnosticBag();
-    return new SyntaxTree(Diagnostics, Settings);
+  static Init(settings: CompilerOptions) {
+    const diagnostics = new DiagnosticBag();
+    return new SyntaxTree(diagnostics, settings);
   }
 
   Parse(text: string) {
@@ -39,14 +39,14 @@ export class SyntaxTree {
   }
 
   Bind() {
-    if (this.diagnostics.none) {
+    if (this.diagnostics.None()) {
       this.boundTree = this.binder.Bind(this.tree);
     }
     return this;
   }
 
   Evaluate() {
-    if (this.diagnostics.none) {
+    if (this.diagnostics.None()) {
       this.value = this.evaluator.Evaluate(this.boundTree);
     }
     return this;

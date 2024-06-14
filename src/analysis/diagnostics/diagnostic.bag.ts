@@ -8,7 +8,7 @@ export class DiagnosticBag {
   private other = new Array<Diagnostic>();
   private error = new Array<Diagnostic>();
 
-  get none() {
+  None() {
     return !(this.error.length > 0);
   }
 
@@ -64,8 +64,8 @@ export class DiagnosticBag {
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  UndeclaredCell(CellName: string) {
-    const message = `Cell reference '${CellName}' is undeclared`;
+  UndeclaredCell(cellName: string) {
+    const message = `Cell reference '${cellName}' is undeclared`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
@@ -79,33 +79,33 @@ export class DiagnosticBag {
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  AutoDeclaredCell(subject: Cell, Cell: Cell) {
-    const message = `Reference '${subject.name}' has been declared automatically after being referenced by '${Cell.name}'`;
+  AutoDeclaredCell(subject: Cell, cell: Cell) {
+    const message = `Reference '${subject.name}' has been declared automatically after being referenced by '${cell.name}'`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Informative, message));
   }
 
-  WrongCellNameFormat(DidYouMean: string) {
-    const message = `Did you mean '${DidYouMean}'?`;
+  WrongCellNameFormat(didYouMean: string) {
+    const message = `Did you mean '${didYouMean}'?`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  BinderMethod(Kind: SyntaxKind) {
-    const message = `Binder: Method for '${Kind}' is not implemented`;
+  BinderMethod(kind: SyntaxKind) {
+    const message = `Binder: Method for '${kind}' is not implemented`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  EvaluatorMethod(Kind: BoundKind) {
-    const message = `Evaluator: Method for '${Kind}' is not implemented`;
+  EvaluatorMethod(kind: BoundKind) {
+    const message = `Evaluator: Method for '${kind}' is not implemented`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  FunctionAlreadyDefined(FunctionName: string) {
-    const message = `Function '${FunctionName}' has already been declared`;
+  FunctionAlreadyDefined(functionName: string) {
+    const message = `Function '${functionName}' has already been declared`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 
-  GlobalFunctionDeclarationsOnly(FunctionName: string) {
-    const message = `Function '${FunctionName}' can only be defined within the global scope`;
+  GlobalFunctionDeclarationsOnly(functionName: string) {
+    const message = `Function '${functionName}' can only be defined within the global scope`;
     return this.Add(new Diagnostic(DiagnosticSeverity.Error, message));
   }
 }

@@ -147,7 +147,7 @@ export class Binder {
   }
 
   private BindParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.Bind(Node.Expression);
+    return this.Bind(Node.expression);
   }
 
   private BindCellReference(node: CellReference) {
