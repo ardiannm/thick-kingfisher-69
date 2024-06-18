@@ -6,7 +6,7 @@ import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 
 export class SyntaxFacts {
-  static UnaryPrecedence(kind: SyntaxKind) {
+  static unaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case UnaryOperatorKind.PlusToken:
       case UnaryOperatorKind.MinusToken:
@@ -16,7 +16,7 @@ export class SyntaxFacts {
     }
   }
 
-  static BinaryPrecedence(kind: SyntaxKind) {
+  static binaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case BinaryOperatorKind.HatToken:
         return 3;
@@ -31,7 +31,7 @@ export class SyntaxFacts {
     }
   }
 
-  static SyntaxKind(text: string): SyntaxKind {
+  static syntaxKind(text: string): SyntaxKind {
     switch (text) {
       case "+":
         return BinaryOperatorKind.PlusToken;
@@ -70,7 +70,7 @@ export class SyntaxFacts {
     }
   }
 
-  static KeywordOrIdentifer(text: string): SyntaxKind {
+  static isKeywordOrIdentifer(text: string): SyntaxKind {
     switch (text) {
       case "true":
         return SyntaxKeywordKind.TrueKeyword;
@@ -81,7 +81,7 @@ export class SyntaxFacts {
     }
   }
 
-  static IsTrivia(kind: SyntaxKind) {
+  static isTrivia(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxTriviaKind.LineBreakTrivia:
       case SyntaxTriviaKind.SpaceTrivia:

@@ -5,7 +5,8 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { BinaryOperatorKind } from "./kind/binary.operator.kind";
 import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
-import { Span } from "../input/token.span";
+import { TextSpan } from "../input/text.span";
+import { SyntaxTree } from "./syntax.tree";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
@@ -38,34 +39,37 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override kind: T, public text: TokenText<T>, private span: Span, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
-    super(kind);
+  constructor(public override kind: T, public override tree: SyntaxTree, public text: TokenText<T>, public span: TextSpan, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+    super(kind, tree);
   }
 
-  EatTrivia(trivias: Array<SyntaxToken<SyntaxKind>>): SyntaxToken<SyntaxKind> {
+  loadTrivias(trivias: Array<SyntaxToken<SyntaxKind>>): void {
     while (trivias.length > 0) {
       this.trivia.push(trivias.shift() as SyntaxToken<SyntaxKind>);
     }
-    return this;
   }
 
-  override *Children(): Generator<SyntaxNode, any, unknown> {
+  override *getLeaves(): Generator<SyntaxNode, any, unknown> {
     yield this;
   }
 
-  override First(): SyntaxNode {
+  override firstLeaf(): SyntaxNode {
     return this;
   }
 
-  override Last(): SyntaxNode {
+  override lastLeaf(): SyntaxNode {
     return this;
   }
 
-  override GetSpan() {
-    return this.span;
+  override getTextSpan() {
+    return new TextSpan(this.span.start, this.span.start + this.text.length);
   }
 
-  get Line() {
-    return this.span.input.GetLineSpan(this.span.start);
+  get getLine() {
+    return this.tree.text.getLineSpan(this.span.start);
+  }
+
+  public override getText(): string {
+    return this.text;
   }
 }

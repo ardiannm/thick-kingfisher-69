@@ -39,14 +39,14 @@ export class BoundScope {
   CheckDeclarations(diagnostics: DiagnosticBag) {
     this.cells.forEach((cell) => {
       if (!cell.declared) {
-        diagnostics.UndeclaredCell(cell.name);
+        diagnostics.undeclaredCell(cell.name);
       }
       cell.dependencies.forEach((dependency) => {
         if (!dependency.declared) {
-          diagnostics.UndeclaredCell(dependency.name);
+          diagnostics.undeclaredCell(dependency.name);
         }
       });
-      if (cell.Contains(cell)) diagnostics.CircularDependency(cell);
+      if (cell.Contains(cell)) diagnostics.circularDependency(cell);
     });
   }
 

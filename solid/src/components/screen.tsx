@@ -41,11 +41,16 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
   const [value, setValue] = createSignal(0);
 
+  // createEffect(() => {
+  //   const interpreter = SyntaxTree.Init(new CompilerOptions(true, true, true));
+  //   const response = interpreter.Parse(text()).Bind().Evaluate();
+  //   setDiagnostics(response.diagnostics.Get());
+  //   setValue(response.value);
+  // });
+
   createEffect(() => {
-    const interpreter = SyntaxTree.Init(new CompilerOptions(true, true, true));
-    const response = interpreter.Parse(text()).Bind().Evaluate();
-    setDiagnostics(response.diagnostics.Get());
-    setValue(response.value);
+    const tree = SyntaxTree.from(text());
+    tree.parse();
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

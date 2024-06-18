@@ -31,88 +31,88 @@ export class Binder {
   scope = new BoundScope(null, this.configuration);
   constructor(private diagnostics: DiagnosticBag, public configuration: CompilerOptions) {}
 
-  public Bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
+  public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
       case SyntaxNodeKind.Program:
-        return this.BindProgram(node as NodeType<Program>);
+        return this.bindProgram(node as NodeType<Program>);
       case SyntaxNodeKind.NumberToken:
-        return this.BindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
+        return this.bindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.CellReference:
-        return this.BindCellReference(node as NodeType<CellReference>);
+        return this.bindCellReference(node as NodeType<CellReference>);
       case SyntaxNodeKind.ParenthesizedExpression:
-        return this.BindParenthesizedExpression(node as NodeType<ParenthesizedExpression>);
+        return this.bindParenthesizedExpression(node as NodeType<ParenthesizedExpression>);
       case SyntaxNodeKind.UnaryExpression:
-        return this.BindUnaryExpression(node as NodeType<UnaryExpression>);
+        return this.bindUnaryExpression(node as NodeType<UnaryExpression>);
       case SyntaxNodeKind.BinaryExpression:
-        return this.BindBinaryExpression(node as NodeType<BinaryExpression>);
+        return this.bindBinaryExpression(node as NodeType<BinaryExpression>);
       case SyntaxNodeKind.CellAssignment:
-        return this.BindCellAssignment(node as NodeType<CellAssignment>);
+        return this.bindCellAssignment(node as NodeType<CellAssignment>);
       case SyntaxNodeKind.FunctionExpression:
-        return this.BindFunctionExpression(node as NodeType<FunctionExpression>);
+        return this.bindFunctionExpression(node as NodeType<FunctionExpression>);
     }
-    this.diagnostics.BinderMethod(node.kind);
+    this.diagnostics.binderMethod(node.kind);
     return new BoundError(BoundKind.Error, node.kind);
   }
 
-  private BindFunctionExpression(node: FunctionExpression): BoundNode {
+  private bindFunctionExpression(node: FunctionExpression): BoundNode {
     const name = node.functionName.text;
-    if (this.configuration.globalFunctionsOnly) if (this.scope.parent) this.diagnostics.GlobalFunctionDeclarationsOnly(name);
+    if (this.configuration.globalFunctionsOnly) if (this.scope.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
     if (this.scope.functions.has(name)) {
-      this.diagnostics.FunctionAlreadyDefined(name);
+      this.diagnostics.functionAlreadyDefined(name);
       return new BoundError(BoundKind.Error, node.kind);
     }
     const newFunctionScope = new BoundScope(this.scope, this.configuration);
     this.scope = newFunctionScope;
     const statements = new Array<BoundStatement>();
-    for (const statement of node.statements) statements.push(this.Bind(statement));
+    for (const statement of node.statements) statements.push(this.bind(statement));
     this.scope = this.scope.parent as BoundScope;
     const boundNode = new BoundFunctionExpression(BoundKind.FunctionExpression, node.functionName.text, this.scope, statements);
     this.scope.functions.set(name, boundNode);
     return boundNode;
   }
 
-  private BindProgram(node: Program) {
+  private bindProgram(node: Program) {
     const root = new Array<BoundStatement>();
-    for (const statement of node.root) root.push(this.Bind(statement));
+    for (const statement of node.root) root.push(this.bind(statement));
     this.scope.CheckDeclarations(this.diagnostics);
     return new BoundProgram(BoundKind.Program, root);
   }
 
-  private BindCellAssignment(node: CellAssignment) {
+  private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        const subject = this.Bind(node.left) as Cell;
+        const subject = this.bind(node.left) as Cell;
         const assignmentScope = new BoundScope(this.scope, this.configuration);
         this.scope = assignmentScope as BoundScope;
-        subject.expression = this.Bind(node.expression);
+        subject.expression = this.bind(node.expression);
         subject.ClearDependencies();
         for (const dep of this.scope.cells.values()) {
           subject.Track(dep);
           if (dep.declared) continue;
           if (this.configuration.autoDeclaration) {
-            this.diagnostics.AutoDeclaredCell(dep, subject);
+            this.diagnostics.autoDeclaredCell(dep, subject);
             dep.declared = true;
             this.scope.Move(dep);
           }
         }
         this.scope = this.scope.parent as BoundScope;
         subject.declared = true;
-        subject.formula = node.expression.GetSpan().GetText();
+        subject.formula = node.expression.getText();
         return new BoundCellAssignment(BoundKind.CellAssignment, subject);
     }
-    this.diagnostics.CantUseAsAReference(node.left.kind);
+    this.diagnostics.cantUseAsAReference(node.left.kind);
     return new BoundNode(BoundKind.CellAssignment);
   }
 
-  private BindBinaryExpression(node: BinaryExpression) {
-    const left = this.Bind(node.left);
-    const operator = this.BindBinaryOperatorKind(node.operator.kind);
-    const right = this.Bind(node.right);
+  private bindBinaryExpression(node: BinaryExpression) {
+    const left = this.bind(node.left);
+    const operator = this.bindBinaryOperatorKind(node.operator.kind);
+    const right = this.bind(node.right);
     return new BoundBinaryExpression(BoundKind.BinaryExpression, left, operator, right);
   }
 
-  private BindBinaryOperatorKind(Kind: BinaryOperatorKind): BoundBinaryOperatorKind {
+  private bindBinaryOperatorKind(Kind: BinaryOperatorKind): BoundBinaryOperatorKind {
     switch (Kind) {
       case BinaryOperatorKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;
@@ -127,17 +127,17 @@ export class Binder {
     }
   }
 
-  private BindUnaryExpression(node: UnaryExpression) {
-    const right = this.Bind(node.right);
+  private bindUnaryExpression(node: UnaryExpression) {
+    const right = this.bind(node.right);
     switch (node.operator.kind) {
       case UnaryOperatorKind.MinusToken:
       case UnaryOperatorKind.PlusToken:
-        const operator = this.BindUnaryOperatorKind(node.operator.kind);
+        const operator = this.bindUnaryOperatorKind(node.operator.kind);
         return new BoundUnaryExpression(BoundKind.UnaryExpression, operator, right);
     }
   }
 
-  private BindUnaryOperatorKind(Kind: UnaryOperatorKind): BoundUnaryOperatorKind {
+  private bindUnaryOperatorKind(Kind: UnaryOperatorKind): BoundUnaryOperatorKind {
     switch (Kind) {
       case UnaryOperatorKind.PlusToken:
         return BoundUnaryOperatorKind.Identity;
@@ -146,22 +146,22 @@ export class Binder {
     }
   }
 
-  private BindParenthesizedExpression(Node: ParenthesizedExpression) {
-    return this.Bind(Node.expression);
+  private bindParenthesizedExpression(Node: ParenthesizedExpression) {
+    return this.bind(Node.expression);
   }
 
-  private BindCellReference(node: CellReference) {
+  private bindCellReference(node: CellReference) {
     if (this.configuration.compactCellNames && node.right.trivia.length) {
-      this.diagnostics.WrongCellNameFormat(node.left.GetSpan().GetText() + node.right.GetSpan().GetText());
+      this.diagnostics.wrongCellNameFormat(node.left.getText() + node.right.getText());
       return new BoundError(BoundKind.Error, node.kind);
     }
-    const row = node.right.GetSpan().GetText();
-    const column = node.left.GetSpan().GetText();
-    const name = node.GetSpan().GetText();
+    const row = node.right.getText();
+    const column = node.left.getText();
+    const name = node.getText();
     return this.scope.ConstructCell(name, row, column);
   }
 
-  private BindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
+  private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
     const value = parseFloat(node.text);
     return new BoundNumericLiteral(BoundKind.NumericLiteral, value);
   }

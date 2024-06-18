@@ -5,155 +5,171 @@ import { SyntaxToken, TokenText, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
-import { SourceText } from "./input/source.text";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
-import { Span } from "./input/token.span";
+import { SyntaxTree } from "./parser/syntax.tree";
+import { TextSpan } from "./input/text.span";
 
 export class Lexer {
   private kind: SyntaxKind;
   private end: number;
   private start: number;
+  private trivias = new Array<SyntaxToken<SyntaxKind>>();
+  public readonly diagnostics = new DiagnosticBag();
 
-  constructor(public readonly input: SourceText, private diagnostics: DiagnosticBag) {
+  constructor(private readonly tree: SyntaxTree) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
     this.end = 0;
     this.start = this.end;
   }
 
-  public Lex(): SyntaxToken<SyntaxKind> {
+  public lex(): SyntaxToken<SyntaxKind> {
+    var token: SyntaxToken<SyntaxKind>;
+    do {
+      token = this.lexNextToken();
+      if (SyntaxFacts.isTrivia(token.kind)) {
+        this.trivias.push(token);
+      } else {
+        token.loadTrivias(this.trivias);
+        return token;
+      }
+    } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
+    return token;
+  }
+
+  private lexNextToken() {
     this.start = this.end;
-    this.kind = SyntaxFacts.SyntaxKind(this.Char()) as keyof TokenTextMapper;
+    this.kind = SyntaxFacts.syntaxKind(this.char()) as keyof TokenTextMapper;
     switch (this.kind) {
       case SyntaxNodeKind.BadToken:
-        return this.LexBadToken();
+        return this.lexBadToken();
       case SyntaxNodeKind.HashToken:
-        return this.LexCommentToken();
+        return this.lexCommentToken();
       case BinaryOperatorKind.MinusToken:
-        return this.LexMinusToken();
+        return this.lexMinusToken();
       case SyntaxNodeKind.GreaterToken:
-        return this.LexGreaterGreaterToken();
+        return this.lexGreaterGreaterToken();
       case SyntaxNodeKind.ColonToken:
-        return this.LexColonColonToken();
+        return this.lexColonColonToken();
     }
-    this.Next();
-    return new SyntaxToken(this.kind, this.Text(), this.SetTokenSpan());
+    this.next();
+    return new SyntaxToken(this.kind, this.tree, this.getText(), this.getTextSpan());
   }
 
-  private LexBadToken(): SyntaxToken<SyntaxKind> {
-    if (this.IsLetter()) {
-      return this.LexIdentifier();
+  private lexBadToken(): SyntaxToken<SyntaxKind> {
+    if (this.isLetter()) {
+      return this.lexIdentifier();
     }
-    if (this.IsDigit()) {
-      return this.LexNumberToken();
+    if (this.isDigit()) {
+      return this.lexNumberToken();
     }
-    if (this.IsSpace()) {
-      return this.LexSpaceToken();
+    if (this.isSpace()) {
+      return this.lexSpaceToken();
     }
-    this.diagnostics.BadTokenFound(this.Char());
-    this.Next();
-    return new SyntaxToken(this.kind, this.Text(), this.SetTokenSpan());
+    this.diagnostics.badTokenFound(this.char());
+    this.next();
+    return new SyntaxToken(this.kind, this.tree, this.getText(), this.getTextSpan());
   }
 
-  private LexCommentToken(): SyntaxToken<SyntaxKind> {
+  private lexCommentToken(): SyntaxToken<SyntaxKind> {
     do {
-      this.Next();
-    } while (!(this.Match(SyntaxTriviaKind.LineBreakTrivia) || this.Match(SyntaxNodeKind.EndOfFileToken)));
-    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.Text(), this.SetTokenSpan());
+      this.next();
+    } while (!(this.match(SyntaxTriviaKind.LineBreakTrivia) || this.match(SyntaxNodeKind.EndOfFileToken)));
+    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.tree, this.getText(), this.getTextSpan());
   }
 
-  private LexMinusToken(): SyntaxToken<SyntaxKind> {
-    this.Next();
+  private lexMinusToken(): SyntaxToken<SyntaxKind> {
+    this.next();
     this.kind = BinaryOperatorKind.MinusToken;
-    if (this.Match(SyntaxNodeKind.GreaterToken)) {
-      this.Next();
+    if (this.match(SyntaxNodeKind.GreaterToken)) {
+      this.next();
       this.kind = CompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.kind, this.Text() as TokenText<typeof this.kind>, this.SetTokenSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
   }
 
-  private LexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
-    this.Next();
+  private lexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
+    this.next();
     this.kind = SyntaxNodeKind.GreaterToken;
-    if (this.Match(SyntaxNodeKind.GreaterToken)) {
-      this.Next();
+    if (this.match(SyntaxNodeKind.GreaterToken)) {
+      this.next();
       this.kind = CompositeTokenKind.GreaterGreaterToken;
     }
-    return new SyntaxToken(this.kind, this.Text() as TokenText<typeof this.kind>, this.SetTokenSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
   }
 
-  private LexColonColonToken(): SyntaxToken<SyntaxKind> {
-    this.Next();
+  private lexColonColonToken(): SyntaxToken<SyntaxKind> {
+    this.next();
     this.kind = SyntaxNodeKind.ColonToken;
-    if (this.Match(SyntaxNodeKind.ColonToken)) {
-      this.Next();
+    if (this.match(SyntaxNodeKind.ColonToken)) {
+      this.next();
       this.kind = CompositeTokenKind.ColonColonToken;
     }
-    return new SyntaxToken(this.kind, this.Text() as TokenText<typeof this.kind>, this.SetTokenSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
   }
 
-  private LexIdentifier(): SyntaxToken<SyntaxKind> {
-    while (this.IsLetter()) this.Next();
-    const text = this.Text();
-    return new SyntaxToken(SyntaxFacts.KeywordOrIdentifer(text), text, this.SetTokenSpan());
+  private lexIdentifier(): SyntaxToken<SyntaxKind> {
+    while (this.isLetter()) this.next();
+    const text = this.getText();
+    return new SyntaxToken(SyntaxFacts.isKeywordOrIdentifer(text), this.tree, text, this.getTextSpan());
   }
 
-  private LexSpaceToken(): SyntaxToken<SyntaxKind> {
-    while (this.IsSpace()) this.Next();
-    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.Text(), this.SetTokenSpan());
+  private lexSpaceToken(): SyntaxToken<SyntaxKind> {
+    while (this.isSpace()) this.next();
+    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.tree, this.getText(), this.getTextSpan());
   }
 
-  private LexNumberToken(): SyntaxToken<SyntaxKind> {
-    while (this.IsDigit()) this.Next();
-    if (this.Match(SyntaxNodeKind.DotToken)) {
-      this.Next();
-      if (!this.IsDigit()) {
-        this.diagnostics.BadFloatingPointNumber();
+  private lexNumberToken(): SyntaxToken<SyntaxKind> {
+    while (this.isDigit()) this.next();
+    if (this.match(SyntaxNodeKind.DotToken)) {
+      this.next();
+      if (!this.isDigit()) {
+        this.diagnostics.badFloatingPointNumber();
       }
     }
-    while (this.IsDigit()) this.Next();
-    const numberText = this.Text() as TokenText<SyntaxNodeKind.NumberToken>;
-    return new SyntaxToken(SyntaxNodeKind.NumberToken, numberText, this.SetTokenSpan());
+    while (this.isDigit()) this.next();
+    const numberText = this.getText() as TokenText<SyntaxNodeKind.NumberToken>;
+    return new SyntaxToken(SyntaxNodeKind.NumberToken, this.tree, numberText, this.getTextSpan());
   }
 
-  private Text() {
-    return this.input.text.substring(this.start, this.end);
+  private getText() {
+    return this.tree.text.text.substring(this.start, this.end);
   }
 
-  private SetTokenSpan(): Span {
-    return this.input.SetTokenSpan(this.start, this.end);
+  private getTextSpan() {
+    return new TextSpan(this.start, this.end);
   }
 
-  private IsSpace(): boolean {
-    const char = this.Char();
+  private isSpace(): boolean {
+    const char = this.char();
     return char === " " || char === "\t" || char === "\r";
   }
 
-  private IsDigit(): boolean {
-    const charCode = this.Char().charCodeAt(0);
+  private isDigit(): boolean {
+    const charCode = this.char().charCodeAt(0);
     return charCode >= 48 && charCode <= 57;
   }
 
-  private IsLetter(): boolean {
-    const charCode = this.Char().charCodeAt(0);
+  private isLetter(): boolean {
+    const charCode = this.char().charCodeAt(0);
     return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
   }
 
-  private Peek(offset: number): string {
-    return this.input.text.charAt(this.end + offset);
+  private peek(offset: number): string {
+    return this.tree.text.text.charAt(this.end + offset);
   }
 
-  private Char() {
-    return this.Peek(0);
+  private char() {
+    return this.peek(0);
   }
 
-  private Next() {
+  private next() {
     this.end = this.end + 1;
   }
 
-  private Match(...Kinds: Array<SyntaxKind>) {
+  private match(...Kinds: Array<SyntaxKind>) {
     let Offset = 0;
     for (const Kind of Kinds) {
-      if (Kind !== SyntaxFacts.SyntaxKind(this.Peek(Offset))) return false;
+      if (Kind !== SyntaxFacts.syntaxKind(this.peek(Offset))) return false;
       Offset++;
     }
     return true;
