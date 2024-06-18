@@ -6,7 +6,7 @@ export enum SyntaxNodeKind {
   DotToken = "DotToken",
   GreaterToken = "GreaterToken",
   HashToken = "HashToken",
-  Program = "Program",
+  CompilationUnit = "CompilationUnit",
   CellAssignment = "CellAssignment",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",

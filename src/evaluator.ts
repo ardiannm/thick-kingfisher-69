@@ -1,6 +1,6 @@
 import { Cell } from "./cell";
 import { BoundKind } from "./analysis/binder/kind/bound.kind";
-import { BoundProgram } from "./analysis/binder/program";
+import { BoundCompilationUnit } from "./analysis/binder/compilation.unit";
 import { BoundBinaryOperatorKind } from "./analysis/binder/kind/binary.operator.kind";
 import { BoundUnaryOperatorKind } from "./analysis/binder/kind/unary.operator.kind";
 import { BoundBinaryExpression } from "./analysis/binder/binary.expression";
@@ -22,8 +22,8 @@ export class Evaluator {
   evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
-      case BoundKind.Program:
-        return this.evaluateProgram(node as NodeType<BoundProgram>);
+      case BoundKind.CompilationUnit:
+        return this.evaluateProgram(node as NodeType<BoundCompilationUnit>);
       case BoundKind.FunctionExpression:
         return this.evaluateFunctionExpression(node as NodeType<BoundFunctionExpression>);
       case BoundKind.CellAssignment:
@@ -45,7 +45,7 @@ export class Evaluator {
     return this.value;
   }
 
-  private evaluateProgram(node: BoundProgram): number {
+  private evaluateProgram(node: BoundCompilationUnit): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
   }

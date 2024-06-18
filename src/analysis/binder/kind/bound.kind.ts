@@ -1,5 +1,5 @@
 export enum BoundKind {
-  Program = "Program",
+  CompilationUnit = "CompilationUnit",
   Cell = "Cell",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",

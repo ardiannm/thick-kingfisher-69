@@ -15,9 +15,9 @@ import { BoundUnaryOperatorKind } from "./binder/kind/unary.operator.kind";
 import { ParenthesizedExpression } from "./parser/parenthesized.expression";
 import { BoundNode } from "./binder/bound.node";
 import { BoundError } from "./binder/error";
-import { Program } from "./parser/program";
+import { CompilationUnit } from "./parser/compilation.unit";
 import { BoundStatement } from "./binder/statement";
-import { BoundProgram } from "./binder/program";
+import { BoundCompilationUnit } from "./binder/compilation.unit";
 import { BoundScope } from "./binder/scope";
 import { CellAssignment } from "./parser/cell.assignment";
 import { Cell } from "../cell";
@@ -34,8 +34,8 @@ export class Binder {
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
-      case SyntaxNodeKind.Program:
-        return this.bindProgram(node as NodeType<Program>);
+      case SyntaxNodeKind.CompilationUnit:
+        return this.bindProgram(node as NodeType<CompilationUnit>);
       case SyntaxNodeKind.NumberToken:
         return this.bindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.CellReference:
@@ -72,11 +72,11 @@ export class Binder {
     return boundNode;
   }
 
-  private bindProgram(node: Program) {
+  private bindProgram(node: CompilationUnit) {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
     this.scope.checkDeclarations(this.diagnostics);
-    return new BoundProgram(BoundKind.Program, root);
+    return new BoundCompilationUnit(BoundKind.CompilationUnit, root);
   }
 
   private bindCellAssignment(node: CellAssignment) {

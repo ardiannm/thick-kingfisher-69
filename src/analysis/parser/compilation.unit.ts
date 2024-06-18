@@ -4,10 +4,8 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 import { SyntaxTree } from "./syntax.tree";
 
-export class Program extends SyntaxNode {
-  constructor(public override kind: SyntaxNodeKind.Program, 
-    public override tree: SyntaxTree,
-    public root: Array<ExpressionSyntax>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
+export class CompilationUnit extends SyntaxNode {
+  constructor(public override kind: SyntaxNodeKind.CompilationUnit, public override tree: SyntaxTree, public root: Array<ExpressionSyntax>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
     super(kind, tree);
   }
 }

@@ -13,7 +13,7 @@ export class Lexer {
   private kind: SyntaxKind;
   private end: number;
   private start: number;
-  private trivias = new Array<SyntaxToken<SyntaxKind>>();
+  private trivia = new Array<SyntaxToken<SyntaxKind>>();
   public readonly diagnostics = new DiagnosticBag();
 
   constructor(private readonly tree: SyntaxTree) {
@@ -27,9 +27,9 @@ export class Lexer {
     do {
       token = this.lexNextToken();
       if (SyntaxFacts.isTrivia(token.kind)) {
-        this.trivias.push(token);
+        this.trivia.push(token);
       } else {
-        token.loadTrivias(this.trivias);
+        token.loadTrivias(this.trivia);
         return token;
       }
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
@@ -151,7 +151,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.text.text.charAt(this.end + offset);
+    return this.tree.textAt(this.end + offset);
   }
 
   private char() {

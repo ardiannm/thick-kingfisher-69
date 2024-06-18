@@ -11,7 +11,7 @@ import { RangeReference } from "./parser/range.reference";
 import { CellReference } from "./parser/cell.reference";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { ExpressionSyntax } from "./parser/expression.syntax";
-import { Program } from "./parser/program";
+import { CompilationUnit } from "./parser/compilation.unit";
 import { StatementSyntax } from "./parser/statement.syntax";
 import { CellAssignment } from "./parser/cell.assignment";
 import { FunctionExpression } from "./parser/function.expression";
@@ -22,7 +22,7 @@ import { Lexer } from "./lexer";
 export class Parser {
   private index = 0;
   private tokens = new Array<SyntaxToken<SyntaxKind>>();
-  readonly diagnostics = new DiagnosticBag();
+  public readonly diagnostics = new DiagnosticBag();
 
   private get any() {
     return !this.match(SyntaxNodeKind.EndOfFileToken);
@@ -56,7 +56,7 @@ export class Parser {
       statements.push(this.parseFunction());
       if (this.token === token) this.next();
     }
-    return new Program(SyntaxNodeKind.Program, this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
+    return new CompilationUnit(SyntaxNodeKind.CompilationUnit, this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
 
   private parseFunction() {
