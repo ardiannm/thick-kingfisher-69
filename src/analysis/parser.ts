@@ -3,7 +3,7 @@ import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { BinaryOperatorKind } from "./parser/kind/binary.operator.kind";
 import { UnaryOperatorKind } from "./parser/kind/unary.operator.kind";
-import { SyntaxToken, TokenText } from "./parser/syntax.token";
+import { SyntaxToken } from "./parser/syntax.token";
 import { BinaryExpression } from "./parser/binary.expression";
 import { UnaryExpression } from "./parser/unary.expression";
 import { ParenthesizedExpression } from "./parser/parenthesized.expression";
@@ -185,6 +185,6 @@ export class Parser {
       return this.next() as SyntaxToken<Kind>;
     }
     this.diagnostics.tokenMissmatch(this.token.kind, kind);
-    return new SyntaxToken(this.token.kind as Kind, this.tree, this.token.text as TokenText<Kind>, this.token.span);
+    return new SyntaxToken(this.token.kind as Kind, this.tree, this.token.span);
   }
 }

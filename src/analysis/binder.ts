@@ -56,7 +56,7 @@ export class Binder {
   }
 
   private bindFunctionExpression(node: FunctionExpression): BoundNode {
-    const name = node.functionName.text;
+    const name = node.functionName.getText();
     if (this.configuration.globalFunctionsOnly) if (this.scope.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
     if (this.scope.functions.has(name)) {
       this.diagnostics.functionAlreadyDefined(name);
@@ -67,7 +67,7 @@ export class Binder {
     const statements = new Array<BoundStatement>();
     for (const statement of node.statements) statements.push(this.bind(statement));
     this.scope = this.scope.parent as BoundScope;
-    const boundNode = new BoundFunctionExpression(BoundKind.FunctionExpression, node.functionName.text, this.scope, statements);
+    const boundNode = new BoundFunctionExpression(BoundKind.FunctionExpression, node.functionName.getText(), this.scope, statements);
     this.scope.functions.set(name, boundNode);
     return boundNode;
   }
@@ -75,7 +75,7 @@ export class Binder {
   private bindProgram(node: Program) {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
-    this.scope.CheckDeclarations(this.diagnostics);
+    this.scope.checkDeclarations(this.diagnostics);
     return new BoundProgram(BoundKind.Program, root);
   }
 
@@ -86,14 +86,14 @@ export class Binder {
         const assignmentScope = new BoundScope(this.scope, this.configuration);
         this.scope = assignmentScope as BoundScope;
         subject.expression = this.bind(node.expression);
-        subject.ClearDependencies();
+        subject.clearDependencies();
         for (const dep of this.scope.cells.values()) {
-          subject.Track(dep);
+          subject.track(dep);
           if (dep.declared) continue;
           if (this.configuration.autoDeclaration) {
             this.diagnostics.autoDeclaredCell(dep, subject);
             dep.declared = true;
-            this.scope.Move(dep);
+            this.scope.move(dep);
           }
         }
         this.scope = this.scope.parent as BoundScope;
@@ -158,11 +158,11 @@ export class Binder {
     const row = node.right.getText();
     const column = node.left.getText();
     const name = node.getText();
-    return this.scope.ConstructCell(name, row, column);
+    return this.scope.constructCell(name, row, column);
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
-    const value = parseFloat(node.text);
+    const value = parseFloat(node.getText());
     return new BoundNumericLiteral(BoundKind.NumericLiteral, value);
   }
 }

@@ -1,7 +1,7 @@
 import { SyntaxKind } from "./parser/kind/syntax.kind";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
 import { BinaryOperatorKind } from "./parser/kind/binary.operator.kind";
-import { SyntaxToken, TokenText, TokenTextMapper } from "./parser/syntax.token";
+import { SyntaxToken, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
@@ -52,7 +52,7 @@ export class Lexer {
         return this.lexColonColonToken();
     }
     this.next();
-    return new SyntaxToken(this.kind, this.tree, this.getText(), this.getTextSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getTextSpan());
   }
 
   private lexBadToken(): SyntaxToken<SyntaxKind> {
@@ -67,14 +67,14 @@ export class Lexer {
     }
     this.diagnostics.badTokenFound(this.char());
     this.next();
-    return new SyntaxToken(this.kind, this.tree, this.getText(), this.getTextSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getTextSpan());
   }
 
   private lexCommentToken(): SyntaxToken<SyntaxKind> {
     do {
       this.next();
     } while (!(this.match(SyntaxTriviaKind.LineBreakTrivia) || this.match(SyntaxNodeKind.EndOfFileToken)));
-    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.tree, this.getText(), this.getTextSpan());
+    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.tree, this.getTextSpan());
   }
 
   private lexMinusToken(): SyntaxToken<SyntaxKind> {
@@ -84,7 +84,7 @@ export class Lexer {
       this.next();
       this.kind = CompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getTextSpan());
   }
 
   private lexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
@@ -94,7 +94,7 @@ export class Lexer {
       this.next();
       this.kind = CompositeTokenKind.GreaterGreaterToken;
     }
-    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getTextSpan());
   }
 
   private lexColonColonToken(): SyntaxToken<SyntaxKind> {
@@ -104,18 +104,19 @@ export class Lexer {
       this.next();
       this.kind = CompositeTokenKind.ColonColonToken;
     }
-    return new SyntaxToken(this.kind, this.tree, this.getText() as TokenText<typeof this.kind>, this.getTextSpan());
+    return new SyntaxToken(this.kind, this.tree, this.getTextSpan());
   }
 
   private lexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.isLetter()) this.next();
-    const text = this.getText();
-    return new SyntaxToken(SyntaxFacts.isKeywordOrIdentifer(text), this.tree, text, this.getTextSpan());
+    const span = this.getTextSpan();
+    const text = this.tree.textFrom(span);
+    return new SyntaxToken(SyntaxFacts.isKeywordOrIdentifer(text), this.tree, span);
   }
 
   private lexSpaceToken(): SyntaxToken<SyntaxKind> {
     while (this.isSpace()) this.next();
-    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.tree, this.getText(), this.getTextSpan());
+    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.tree, this.getTextSpan());
   }
 
   private lexNumberToken(): SyntaxToken<SyntaxKind> {
@@ -127,12 +128,7 @@ export class Lexer {
       }
     }
     while (this.isDigit()) this.next();
-    const numberText = this.getText() as TokenText<SyntaxNodeKind.NumberToken>;
-    return new SyntaxToken(SyntaxNodeKind.NumberToken, this.tree, numberText, this.getTextSpan());
-  }
-
-  private getText() {
-    return this.tree.text.text.substring(this.start, this.end);
+    return new SyntaxToken(SyntaxNodeKind.NumberToken, this.tree, this.getTextSpan());
   }
 
   private getTextSpan() {

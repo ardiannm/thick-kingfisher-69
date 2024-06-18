@@ -71,12 +71,12 @@ export class Evaluator {
 
   private evaluateCell(node: Cell) {
     if (this.evaluated.has(node.name)) {
-      console.log(ColorPalette.Terracotta(`cached value ${node.name} -> ${node.value}`));
+      console.log(ColorPalette.terracotta(`cached value ${node.name} -> ${node.value}`));
       return node.value;
     }
     node.value = this.evaluate(node.expression);
     this.evaluated.add(node.name);
-    console.log(ColorPalette.Teal(`evaluated value ${node.name} -> ${node.value}`));
+    console.log(ColorPalette.teal(`evaluated value ${node.name} -> ${node.value}`));
     return node.value;
   }
 

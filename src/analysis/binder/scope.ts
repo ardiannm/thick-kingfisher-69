@@ -13,30 +13,30 @@ export class BoundScope {
 
   constructor(public parent: BoundScope | null, public configuration: CompilerOptions) {}
 
-  ConstructCell(name: string, row: string, column: string) {
-    const scope = this.ResolveScopeForCell(name);
+  constructCell(name: string, row: string, column: string) {
+    const scope = this.resolveScopeForCell(name);
     let data: Cell;
     if (scope) {
       data = scope.cells.get(name) as Cell;
     } else {
       const expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
-      data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.LetterToColumnIndex(column));
+      data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.letterToColumnIndex(column));
     }
     this.cells.set(name, data);
     return data;
   }
 
-  private ResolveScopeForCell(name: string): BoundScope | null {
+  private resolveScopeForCell(name: string): BoundScope | null {
     if (this.cells.has(name)) {
       return this;
     }
     if (this.parent) {
-      return this.parent.ResolveScopeForCell(name);
+      return this.parent.resolveScopeForCell(name);
     }
     return null;
   }
 
-  CheckDeclarations(diagnostics: DiagnosticBag) {
+  checkDeclarations(diagnostics: DiagnosticBag) {
     this.cells.forEach((cell) => {
       if (!cell.declared) {
         diagnostics.undeclaredCell(cell.name);
@@ -46,11 +46,11 @@ export class BoundScope {
           diagnostics.undeclaredCell(dependency.name);
         }
       });
-      if (cell.Contains(cell)) diagnostics.circularDependency(cell);
+      if (cell.contains(cell)) diagnostics.circularDependency(cell);
     });
   }
 
-  Move(dependency: Cell) {
+  move(dependency: Cell) {
     if (this.parent) {
       this.parent.cells.set(dependency.name, dependency);
       this.cells.delete(dependency.name);
@@ -59,7 +59,7 @@ export class BoundScope {
     return false;
   }
 
-  ClearUndeclared() {
+  clearUndeclared() {
     this.cells.forEach((Cell) => {
       if (!Cell.declared) {
         this.cells.delete(Cell.name);
@@ -72,19 +72,19 @@ export class BoundScope {
     });
   }
 
-  SubscribeToDeclarationEvent(fn: (cell: Cell) => void) {
+  subscribeToDeclarationEvent(fn: (cell: Cell) => void) {
     this.declarationSubscribers.add(fn);
   }
 
-  SubscribeToEvaluationEvent(Fn: (cell: Cell) => void) {
+  subscribeToEvaluationEvent(Fn: (cell: Cell) => void) {
     this.evaluationSubscribers.add(Fn);
   }
 
-  EmitDeclarationEventForCell(Node: Cell) {
+  emitDeclarationEventForCell(Node: Cell) {
     for (const sub of this.evaluationSubscribers) sub(Node);
   }
 
-  EmitEvaluationEventForCell(Node: Cell) {
+  emitEvaluationEventForCell(Node: Cell) {
     for (const sub of this.evaluationSubscribers) sub(Node);
   }
 }

@@ -39,7 +39,7 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override kind: T, public override tree: SyntaxTree, public text: TokenText<T>, public span: TextSpan, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+  constructor(public override kind: T, public override tree: SyntaxTree, public span: TextSpan, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(kind, tree);
   }
 
@@ -62,7 +62,7 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   }
 
   override getTextSpan() {
-    return new TextSpan(this.span.start, this.span.start + this.text.length);
+    return this.span;
   }
 
   get getLine() {
@@ -70,6 +70,6 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   }
 
   public override getText(): string {
-    return this.text;
+    return this.tree.text.text.substring(this.span.start, this.span.end);
   }
 }

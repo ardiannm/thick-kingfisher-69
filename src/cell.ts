@@ -18,25 +18,25 @@ export class Cell extends BoundNode {
     super(kind);
   }
 
-  Track(dependency: Cell) {
+  track(dependency: Cell) {
     this.dependencies.set(dependency.name, dependency);
     dependency.subscribers.set(this.name, this);
   }
 
-  Contains(dependency: Cell, visited = new Set()) {
+  contains(dependency: Cell, visited = new Set()) {
     if (visited.has(this)) return false;
     visited.add(this);
     if (this.dependencies.has(dependency.name)) return true;
-    for (const dep of this.dependencies.values()) if (dep.Contains(dependency, visited)) return true;
+    for (const dep of this.dependencies.values()) if (dep.contains(dependency, visited)) return true;
     return false;
   }
 
-  ClearDependencies() {
+  clearDependencies() {
     this.dependencies.forEach((dependency) => dependency.subscribers.delete(this.name));
     this.dependencies.clear();
   }
 
-  static ColumnIndexToLetter(column: number): string {
+  static columnIndexToLetter(column: number): string {
     let name = "";
     while (column > 0) {
       const remainder = (column - 1) % 26;
@@ -46,7 +46,7 @@ export class Cell extends BoundNode {
     return name;
   }
 
-  static LetterToColumnIndex(letter: string): number {
+  static letterToColumnIndex(letter: string): number {
     let result = 0;
     for (let index = 0; index < letter.length; index++) {
       const charCode = letter.charCodeAt(index) - 65 + 1;
@@ -55,7 +55,7 @@ export class Cell extends BoundNode {
     return result;
   }
 
-  static FromIndex(row: number, column: number) {
-    return this.ColumnIndexToLetter(column) + row;
+  static fromIndex(row: number, column: number) {
+    return this.columnIndexToLetter(column) + row;
   }
 }
