@@ -5,37 +5,18 @@ import { Diagnostic } from "./diagnostic";
 import { DiagnosticSeverity } from "./diagnostic.severity";
 
 export class DiagnosticBag {
-  private other = new Array<Diagnostic>();
-  private error = new Array<Diagnostic>();
+  private diagnostics = new Array<Diagnostic>();
 
   none() {
-    return !(this.error.length > 0);
+    return !(this.diagnostics.length > 0);
   }
 
-  get() {
-    return [...this.other, ...this.error];
+  merge(bag: DiagnosticBag) {
+    for (const d of bag.diagnostics) this.add(d);
   }
 
-  merge(diagnostics: DiagnosticBag) {
-    for (const d of diagnostics.get()) this.add(d);
-  }
-
-  add(diagnostic: Diagnostic) {
-    switch (diagnostic.severity) {
-      case DiagnosticSeverity.Error:
-      case DiagnosticSeverity.Error:
-        this.error.push(diagnostic);
-        break;
-      case DiagnosticSeverity.Warning:
-      case DiagnosticSeverity.Informative:
-        this.other.push(diagnostic);
-        break;
-    }
-  }
-
-  clear() {
-    this.other.length = 0;
-    this.error.length = 0;
+  private add(d: Diagnostic) {
+    this.diagnostics.push(d);
   }
 
   badTokenFound(text: string) {

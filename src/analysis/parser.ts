@@ -21,8 +21,8 @@ import { Lexer } from "./lexer";
 
 export class Parser {
   private index = 0;
-  private tokens = new Array<SyntaxToken<SyntaxKind>>();
   public readonly diagnostics = new DiagnosticBag();
+  private tokens = new Array<SyntaxToken<SyntaxKind>>();
 
   private get any() {
     return !this.match(SyntaxNodeKind.EndOfFileToken);
