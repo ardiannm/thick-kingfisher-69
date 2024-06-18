@@ -4,10 +4,14 @@ import { Parser } from "../parser";
 import { CompilationUnit } from "./compilation.unit";
 
 export class SyntaxTree {
-  constructor(private text: SourceText) {}
+  private sourceText: SourceText;
+
+  constructor(text: string) {
+    this.sourceText = SourceText.from(text);
+  }
 
   static from(text: string) {
-    return new SyntaxTree(SourceText.from(text));
+    return new SyntaxTree(text);
   }
 
   parse(): CompilationUnit {
@@ -17,11 +21,11 @@ export class SyntaxTree {
     return compilation;
   }
 
-  textFrom(span: TextSpan) {
-    return this.text.text.substring(span.start, span.end);
+  getText(span: TextSpan) {
+    return this.sourceText.text.substring(span.start, span.end);
   }
 
-  textAt(position: number) {
-    return this.text.text.charAt(position);
+  getTextAt(position: number) {
+    return this.sourceText.text.charAt(position);
   }
 }

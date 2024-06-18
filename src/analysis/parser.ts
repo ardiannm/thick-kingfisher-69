@@ -56,7 +56,7 @@ export class Parser {
       statements.push(this.parseFunction());
       if (this.token === token) this.next();
     }
-    return new CompilationUnit(SyntaxNodeKind.CompilationUnit, this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
+    return new CompilationUnit(this.tree, SyntaxNodeKind.CompilationUnit, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
 
   private parseFunction() {
@@ -73,7 +73,7 @@ export class Parser {
         if (this.token === token) this.next();
       }
       const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
-      return new FunctionExpression(SyntaxNodeKind.FunctionExpression, this.tree, functionName, openParen, closeParen, openBrace, statements, closeBrace);
+      return new FunctionExpression(this.tree, SyntaxNodeKind.FunctionExpression, functionName, openParen, closeParen, openBrace, statements, closeBrace);
     }
     return this.parseStatement();
   }
@@ -83,7 +83,7 @@ export class Parser {
     switch (this.token.kind) {
       case CompositeTokenKind.ColonColonToken:
         const keyword = this.next() as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
-        return new CellAssignment(SyntaxNodeKind.CellAssignment, this.tree, left, keyword, this.parseBinaryExpression());
+        return new CellAssignment(this.tree, SyntaxNodeKind.CellAssignment, left, keyword, this.parseBinaryExpression());
     }
     return left;
   }
@@ -97,7 +97,7 @@ export class Parser {
       }
       const operator = this.next() as SyntaxToken<BinaryOperatorKind>;
       const right = this.parseBinaryExpression(binaryPrecedence);
-      left = new BinaryExpression(SyntaxNodeKind.BinaryExpression, this.tree, left, operator, right);
+      left = new BinaryExpression(this.tree, SyntaxNodeKind.BinaryExpression, left, operator, right);
     }
     return left;
   }
@@ -107,7 +107,7 @@ export class Parser {
     if (BinaryPrecedence !== 0) {
       const operator = this.next() as SyntaxToken<UnaryOperatorKind>;
       const right = this.parseUnaryExpression();
-      return new UnaryExpression(SyntaxNodeKind.UnaryExpression, this.tree, operator, right);
+      return new UnaryExpression(this.tree, SyntaxNodeKind.UnaryExpression, operator, right);
     }
     return this.parseParenthesis();
   }
@@ -117,7 +117,7 @@ export class Parser {
       const left = this.next();
       const expression = this.parseBinaryExpression();
       const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      return new ParenthesizedExpression(SyntaxNodeKind.ParenthesizedExpression, this.tree, left, expression, right);
+      return new ParenthesizedExpression(this.tree, SyntaxNodeKind.ParenthesizedExpression, left, expression, right);
     }
     return this.parseRangeReference();
   }
@@ -127,7 +127,7 @@ export class Parser {
     if (this.match(SyntaxNodeKind.ColonToken)) {
       this.next();
       const right = this.parseCellReference();
-      return new RangeReference(SyntaxNodeKind.RangeReference, this.tree, left, right);
+      return new RangeReference(this.tree, SyntaxNodeKind.RangeReference, left, right);
     }
     return left;
   }
@@ -136,7 +136,7 @@ export class Parser {
     if (this.match(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
       const left = this.next() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
       const right = this.next() as SyntaxToken<SyntaxNodeKind.NumberToken>;
-      return new CellReference(SyntaxNodeKind.CellReference, this.tree, left, right);
+      return new CellReference(this.tree, SyntaxNodeKind.CellReference, left, right);
     }
     return this.parseLiteral();
   }
@@ -185,6 +185,6 @@ export class Parser {
       return this.next() as SyntaxToken<Kind>;
     }
     this.diagnostics.tokenMissmatch(this.token.kind, kind);
-    return new SyntaxToken(this.token.kind as Kind, this.tree, this.token.span);
+    return new SyntaxToken(this.tree, this.token.kind as Kind, this.token.span);
   }
 }

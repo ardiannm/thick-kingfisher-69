@@ -3,7 +3,7 @@ import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "./syntax.tree";
 
 export class SyntaxNode {
-  constructor(public kind: SyntaxKind, public tree: SyntaxTree) {}
+  constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
 
   *getLeaves(): Generator<SyntaxNode> {
     for (const data of Object.values(this)) {
@@ -27,6 +27,6 @@ export class SyntaxNode {
   }
 
   getText(): string {
-    return this.tree.textFrom(this.getTextSpan());
+    return this.tree.getText(this.getTextSpan());
   }
 }

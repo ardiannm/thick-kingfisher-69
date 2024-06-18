@@ -5,8 +5,8 @@ import { SyntaxTree } from "./syntax.tree";
 
 export class FunctionExpression extends StatementSyntax {
   constructor(
-    public override kind: SyntaxNodeKind.FunctionExpression,
     public override tree: SyntaxTree,
+    public override kind: SyntaxNodeKind.FunctionExpression,
     public functionName: SyntaxToken<SyntaxNodeKind.IdentifierToken>,
     public openParen: SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>,
     public closeParen: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>,
@@ -14,6 +14,6 @@ export class FunctionExpression extends StatementSyntax {
     public statements: Array<StatementSyntax>,
     public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
   ) {
-    super(kind, tree);
+    super(tree, kind);
   }
 }

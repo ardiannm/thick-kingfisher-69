@@ -7,12 +7,12 @@ import { SyntaxTree } from "./syntax.tree";
 
 export class CellAssignment extends StatementSyntax {
   constructor(
-    public override kind: SyntaxNodeKind.CellAssignment,
     public override tree: SyntaxTree,
+    public override kind: SyntaxNodeKind.CellAssignment,
     public left: ExpressionSyntax,
     public Keyword: SyntaxToken<CompositeTokenKind.GreaterGreaterToken>,
     public expression: ExpressionSyntax
   ) {
-    super(kind, tree);
+    super(tree, kind);
   }
 }

@@ -1,7 +1,7 @@
 import { Colors } from "./colors";
 
 export class ColorPalette {
-  constructor(public r: number, public g: number, public b: number) {}
+  private constructor(public r: number, public g: number, public b: number) {}
 
   private static color(text: string, hex: string): string {
     return this.hexToColorCode(hex) + text + "\x1b[0m";

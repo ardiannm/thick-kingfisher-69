@@ -5,12 +5,12 @@ import { SyntaxTree } from "./syntax.tree";
 
 export class ParenthesizedExpression extends ExpressionSyntax {
   constructor(
-    public override kind: SyntaxNodeKind.ParenthesizedExpression,
     public override tree: SyntaxTree,
+    public override kind: SyntaxNodeKind.ParenthesizedExpression,
     public openParen: SyntaxNode,
     public expression: SyntaxNode,
     public closeParen: SyntaxNode
   ) {
-    super(kind, tree);
+    super(tree, kind);
   }
 }
