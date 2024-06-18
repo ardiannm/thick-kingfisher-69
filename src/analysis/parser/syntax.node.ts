@@ -27,7 +27,6 @@ export class SyntaxNode {
   }
 
   getText(): string {
-    const span = this.getTextSpan();
-    return this.tree.text.text.substring(span.start, span.end);
+    return this.tree.textFrom(this.getTextSpan());
   }
 }

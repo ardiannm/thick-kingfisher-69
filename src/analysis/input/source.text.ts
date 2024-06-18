@@ -3,9 +3,9 @@ import { LineSpan } from "./line.span";
 export class SourceText {
   private lines = new Array<LineSpan>();
 
-  constructor(public text: string) {}
+  private constructor(public text: string) {}
 
-  static From(text: string): SourceText {
+  static from(text: string): SourceText {
     return new SourceText(text);
   }
 

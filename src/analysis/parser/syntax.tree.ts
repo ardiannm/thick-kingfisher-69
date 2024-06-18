@@ -7,7 +7,7 @@ export class SyntaxTree {
   constructor(private text: SourceText) {}
 
   static from(text: string) {
-    return new SyntaxTree(new SourceText(text));
+    return new SyntaxTree(SourceText.from(text));
   }
 
   parse(): CompilationUnit {
