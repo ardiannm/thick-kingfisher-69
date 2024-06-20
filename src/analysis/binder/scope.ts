@@ -19,7 +19,7 @@ export class BoundScope {
     if (scope) {
       data = scope.cells.get(name) as Cell;
     } else {
-      const expression = new BoundNumericLiteral(BoundKind.NumericLiteral, 0);
+      const expression = new BoundNumericLiteral(0);
       data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.letterToColumnIndex(column));
     }
     this.cells.set(name, data);

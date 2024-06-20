@@ -4,12 +4,7 @@ import { ExpressionSyntax } from "./expression.syntax";
 import { SyntaxTree } from "./syntax.tree";
 
 export class CellReference extends ExpressionSyntax {
-  constructor(
-    public override tree: SyntaxTree,
-    public override kind: SyntaxNodeKind.CellReference,
-    public left: SyntaxToken<SyntaxNodeKind.IdentifierToken>,
-    public right: SyntaxToken<SyntaxNodeKind.NumberToken>
-  ) {
-    super(tree, kind);
+  constructor(public override tree: SyntaxTree, public left: SyntaxToken<SyntaxNodeKind.IdentifierToken>, public right: SyntaxToken<SyntaxNodeKind.NumberToken>) {
+    super(tree, SyntaxNodeKind.CellReference);
   }
 }

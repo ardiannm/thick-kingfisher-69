@@ -52,7 +52,7 @@ export class Binder {
         return this.bindFunctionExpression(node as NodeType<FunctionExpression>);
     }
     this.diagnostics.binderMethod(node.kind);
-    return new BoundError(BoundKind.Error, node.kind);
+    return new BoundError(node.kind);
   }
 
   private bindFunctionExpression(node: FunctionExpression): BoundNode {
@@ -60,14 +60,14 @@ export class Binder {
     if (this.configuration.globalFunctionsOnly) if (this.scope.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
     if (this.scope.functions.has(name)) {
       this.diagnostics.functionAlreadyDefined(name);
-      return new BoundError(BoundKind.Error, node.kind);
+      return new BoundError(node.kind);
     }
     const newFunctionScope = new BoundScope(this.scope, this.configuration);
     this.scope = newFunctionScope;
     const statements = new Array<BoundStatement>();
     for (const statement of node.statements) statements.push(this.bind(statement));
     this.scope = this.scope.parent as BoundScope;
-    const boundNode = new BoundFunctionExpression(BoundKind.FunctionExpression, node.functionName.getText(), this.scope, statements);
+    const boundNode = new BoundFunctionExpression(node.functionName.getText(), this.scope, statements);
     this.scope.functions.set(name, boundNode);
     return boundNode;
   }
@@ -76,7 +76,7 @@ export class Binder {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
     this.scope.checkDeclarations(this.diagnostics);
-    return new BoundCompilationUnit(BoundKind.CompilationUnit, root);
+    return new BoundCompilationUnit(root);
   }
 
   private bindCellAssignment(node: CellAssignment) {
@@ -99,7 +99,7 @@ export class Binder {
         this.scope = this.scope.parent as BoundScope;
         subject.declared = true;
         subject.formula = node.expression.getText();
-        return new BoundCellAssignment(BoundKind.CellAssignment, subject);
+        return new BoundCellAssignment(subject);
     }
     this.diagnostics.cantUseAsAReference(node.left.kind);
     return new BoundNode(BoundKind.CellAssignment);
@@ -109,7 +109,7 @@ export class Binder {
     const left = this.bind(node.left);
     const operator = this.bindBinaryOperatorKind(node.operator.kind);
     const right = this.bind(node.right);
-    return new BoundBinaryExpression(BoundKind.BinaryExpression, left, operator, right);
+    return new BoundBinaryExpression(left, operator, right);
   }
 
   private bindBinaryOperatorKind(Kind: BinaryOperatorKind): BoundBinaryOperatorKind {
@@ -133,7 +133,7 @@ export class Binder {
       case UnaryOperatorKind.MinusToken:
       case UnaryOperatorKind.PlusToken:
         const operator = this.bindUnaryOperatorKind(node.operator.kind);
-        return new BoundUnaryExpression(BoundKind.UnaryExpression, operator, right);
+        return new BoundUnaryExpression(operator, right);
     }
   }
 
@@ -153,7 +153,7 @@ export class Binder {
   private bindCellReference(node: CellReference) {
     if (this.configuration.compactCellNames && node.right.trivia.length) {
       this.diagnostics.wrongCellNameFormat(node.left.getText() + node.right.getText());
-      return new BoundError(BoundKind.Error, node.kind);
+      return new BoundError(node.kind);
     }
     const row = node.right.getText();
     const column = node.left.getText();
@@ -163,6 +163,6 @@ export class Binder {
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
     const value = parseFloat(node.getText());
-    return new BoundNumericLiteral(BoundKind.NumericLiteral, value);
+    return new BoundNumericLiteral(value);
   }
 }

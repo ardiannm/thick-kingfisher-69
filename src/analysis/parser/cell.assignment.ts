@@ -6,13 +6,7 @@ import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxTree } from "./syntax.tree";
 
 export class CellAssignment extends StatementSyntax {
-  constructor(
-    public override tree: SyntaxTree,
-    public override kind: SyntaxNodeKind.CellAssignment,
-    public left: ExpressionSyntax,
-    public Keyword: SyntaxToken<CompositeTokenKind.GreaterGreaterToken>,
-    public expression: ExpressionSyntax
-  ) {
-    super(tree, kind);
+  constructor(public override tree: SyntaxTree, public left: ExpressionSyntax, public Keyword: SyntaxToken<CompositeTokenKind.GreaterGreaterToken>, public expression: ExpressionSyntax) {
+    super(tree, SyntaxNodeKind.CellAssignment);
   }
 }

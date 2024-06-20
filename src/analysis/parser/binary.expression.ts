@@ -6,13 +6,7 @@ import { SyntaxToken } from "./syntax.token";
 import { SyntaxTree } from "./syntax.tree";
 
 export class BinaryExpression extends ExpressionSyntax {
-  constructor(
-    public override tree: SyntaxTree,
-    public override kind: SyntaxNodeKind.BinaryExpression,
-    public left: SyntaxNode,
-    public operator: SyntaxToken<BinaryOperatorKind>,
-    public right: SyntaxNode
-  ) {
-    super(tree, kind);
+  constructor(public override tree: SyntaxTree, public left: SyntaxNode, public operator: SyntaxToken<BinaryOperatorKind>, public right: SyntaxNode) {
+    super(tree, SyntaxNodeKind.BinaryExpression);
   }
 }

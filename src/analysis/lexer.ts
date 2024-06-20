@@ -162,11 +162,11 @@ export class Lexer {
     this.end = this.end + 1;
   }
 
-  private match(...Kinds: Array<SyntaxKind>) {
-    let Offset = 0;
-    for (const Kind of Kinds) {
-      if (Kind !== SyntaxFacts.syntaxKind(this.peek(Offset))) return false;
-      Offset++;
+  private match(...kinds: Array<SyntaxKind>) {
+    let offset = 0;
+    for (const kind of kinds) {
+      if (kind !== SyntaxFacts.syntaxKind(this.peek(offset))) return false;
+      offset++;
     }
     return true;
   }
