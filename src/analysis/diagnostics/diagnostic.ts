@@ -1,3 +1,7 @@
 export class Diagnostic {
-  constructor(public message: string) {}
+  private constructor(public message: string) {}
+
+  static from(message: string) {
+    return new Diagnostic(message);
+  }
 }

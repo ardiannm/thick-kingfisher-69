@@ -11,70 +11,70 @@ export class DiagnosticBag {
   }
 
   merge(bag: DiagnosticBag) {
-    for (const d of bag.diagnostics) this.report(d);
+    for (const d of bag.diagnostics) this.diagnostics.push(d);
   }
 
-  private report(d: Diagnostic) {
-    this.diagnostics.push(d);
+  private report(message: string) {
+    this.diagnostics.push(Diagnostic.from(message));
   }
 
   badTokenFound(text: string) {
-    return this.report(new Diagnostic(`Bad character '${text}' found`));
+    return this.report(`Bad character '${text}' found`);
   }
 
   tokenMissmatch(matched: SyntaxKind, expectedKind: SyntaxKind) {
-    return this.report(new Diagnostic(`Unexpected '${matched}' found, expecting '${expectedKind}'`));
+    return this.report(`Unexpected '${matched}' found, expecting '${expectedKind}'`);
   }
 
   emptyProgram() {
-    return this.report(new Diagnostic(`Program contains no code`));
+    return this.report(`Program contains no code`);
   }
 
   cantDivideByZero() {
-    return this.report(new Diagnostic(`Can't divide by zero`));
+    return this.report(`Can't divide by zero`);
   }
 
   circularDependency(observer: Cell) {
-    return this.report(new Diagnostic(`Circular dependency detected in '${observer.name}'`));
+    return this.report(`Circular dependency detected in '${observer.name}'`);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind) {
-    return this.report(new Diagnostic(`'${unexpected}' is not assignable to a cell reference`));
+    return this.report(`'${unexpected}' is not assignable to a cell reference`);
   }
 
   undeclaredCell(cellName: string) {
-    return this.report(new Diagnostic(`Cell reference '${cellName}' is undeclared`));
+    return this.report(`Cell reference '${cellName}' is undeclared`);
   }
 
   badFloatingPointNumber() {
-    return this.report(new Diagnostic(`Wrong floating number format`));
+    return this.report(`Wrong floating number format`);
   }
 
   invalidCellState(subject: Cell) {
-    return this.report(new Diagnostic(`Reference '${subject.name}' is in an invalid state`));
+    return this.report(`Reference '${subject.name}' is in an invalid state`);
   }
 
   autoDeclaredCell(subject: Cell, cell: Cell) {
-    return this.report(new Diagnostic(`Reference '${subject.name}' has been declared automatically after being referenced by '${cell.name}'`));
+    return this.report(`Reference '${subject.name}' has been declared automatically after being referenced by '${cell.name}'`);
   }
 
   wrongCellNameFormat(didYouMean: string) {
-    return this.report(new Diagnostic(`Did you mean '${didYouMean}'?`));
+    return this.report(`Did you mean '${didYouMean}'?`);
   }
 
   binderMethod(kind: SyntaxKind) {
-    return this.report(new Diagnostic(`Binder: Method for '${kind}' is not implemented`));
+    return this.report(`Binder: Method for '${kind}' is not implemented`);
   }
 
   evaluatorMethod(kind: BoundKind) {
-    return this.report(new Diagnostic(`Evaluator: Method for '${kind}' is not implemented`));
+    return this.report(`Evaluator: Method for '${kind}' is not implemented`);
   }
 
   functionAlreadyDefined(functionName: string) {
-    return this.report(new Diagnostic(`Function '${functionName}' has already been declared`));
+    return this.report(`Function '${functionName}' has already been declared`);
   }
 
   globalFunctionDeclarationsOnly(functionName: string) {
-    return this.report(new Diagnostic(`Function '${functionName}' can only be defined within the global scope`));
+    return this.report(`Function '${functionName}' can only be defined within the global scope`);
   }
 }
