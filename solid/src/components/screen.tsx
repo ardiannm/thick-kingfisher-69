@@ -3,7 +3,6 @@ import styles from "../styles/screen.module.scss";
 import { SyntaxTree } from "../../../src/analysis/parser/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
-import { DiagnosticSeverity } from "../../../src/analysis/diagnostics/diagnostic.severity";
 import { CompilerOptions } from "../../../src/compiler.options";
 
 type Input = InputEvent & {
@@ -55,12 +54,10 @@ const Input: Component = () => {
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
-  const hasErrors = (a: Diagnostic) => a.severity === DiagnosticSeverity.Error;
-
   return (
     <div class={styles.input}>
       <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
-      <Show when={diagnostics().find(hasErrors)} fallback={<div class={styles.value}>{value()}</div>}>
+      <Show when={diagnostics().length} fallback={<div class={styles.value}>{value()}</div>}>
         <div class={styles.diagnostics}>
           <div class={styles.diagnosticsWrapper}>
             <For each={diagnostics()}>
