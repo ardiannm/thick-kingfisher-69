@@ -23,7 +23,7 @@ export class SyntaxNode {
   }
 
   getTextSpan(): TextSpan {
-    return new TextSpan(this.firstLeaf().getTextSpan().start, this.lastLeaf().getTextSpan().end);
+    return TextSpan.from(this.firstLeaf().getTextSpan().start, this.lastLeaf().getTextSpan().end);
   }
 
   getText(): string {

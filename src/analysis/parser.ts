@@ -24,12 +24,12 @@ export class Parser {
   public readonly diagnostics = new DiagnosticBag();
   private tokens = new Array<SyntaxToken<SyntaxKind>>();
 
-  private get any() {
+  private any() {
     return !this.match(SyntaxNodeKind.EndOfFileToken);
   }
 
-  private get none() {
-    return !this.any;
+  private none() {
+    return !this.any();
   }
 
   constructor(public readonly tree: SyntaxTree) {
@@ -43,7 +43,7 @@ export class Parser {
   }
 
   public parse() {
-    if (this.none) {
+    if (this.none()) {
       this.diagnostics.emptyProgram();
     }
     return this.parseProgram();
@@ -51,7 +51,7 @@ export class Parser {
 
   public parseProgram() {
     const statements = new Array<StatementSyntax>();
-    while (this.any) {
+    while (this.any()) {
       const token = this.token;
       statements.push(this.parseFunction());
       if (this.token === token) this.next();
@@ -66,7 +66,7 @@ export class Parser {
       const closeParen = this.expect(SyntaxNodeKind.CloseParenthesisToken);
       const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
       const statements = new Array<StatementSyntax>();
-      while (this.any) {
+      while (this.any()) {
         if (this.match(SyntaxNodeKind.CloseBraceToken)) break;
         const token = this.token;
         statements.push(this.parseFunction());
