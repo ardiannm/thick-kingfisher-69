@@ -48,9 +48,9 @@ const Input: Component = () => {
   // });
 
   createEffect(() => {
-    const tree = SyntaxTree.from(text());
-    tree.parse();
-    console.log(tree);
+    const program = SyntaxTree.from(text());
+    const unit = program.parse();
+    console.log(unit);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

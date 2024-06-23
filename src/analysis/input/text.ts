@@ -1,6 +1,6 @@
 import { LineSpan } from "./line.span";
 
-export class SourceText {
+export class Text {
   private lines = new Array<LineSpan>();
 
   private constructor(private text: string) {
@@ -16,7 +16,7 @@ export class SourceText {
         start = position;
       }
     }
-    if (position >= start) this.lines.push(LineSpan.from(this, start, position, 0));
+    if (position >= start) this.lines.push(LineSpan.from(this, start, position, this.getLineBreakWidth(position)));
   }
 
   private getLineBreakWidth(position: number): number {
@@ -27,8 +27,8 @@ export class SourceText {
     return 0;
   }
 
-  static from(text: string): SourceText {
-    return new SourceText(text);
+  static from(text: string): Text {
+    return new Text(text);
   }
 
   private getLineIndex(position: number): number {
