@@ -132,7 +132,7 @@ export class Lexer {
   }
 
   private getTextSpan() {
-    return TextSpan.from(this.start, this.end);
+    return TextSpan.fromBounds(this.start, this.end);
   }
 
   private isSpace(): boolean {

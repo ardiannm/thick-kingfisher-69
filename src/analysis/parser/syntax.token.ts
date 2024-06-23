@@ -49,15 +49,15 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     }
   }
 
-  override *getLeaves(): Generator<SyntaxNode, any, unknown> {
+  override *getChildren(): Generator<SyntaxNode, any, unknown> {
     yield this;
   }
 
-  override firstLeaf(): SyntaxNode {
+  override getFirstChild(): SyntaxNode {
     return this;
   }
 
-  override lastLeaf(): SyntaxNode {
+  override getLastChild(): SyntaxNode {
     return this;
   }
 
