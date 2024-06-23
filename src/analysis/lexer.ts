@@ -7,19 +7,19 @@ import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 import { SyntaxTree } from "./parser/syntax.tree";
-import { TextSpan } from "./input/text.span";
+import { TokenSpan } from "./input/token.span";
 
 export class Lexer {
   private kind: SyntaxKind;
-  private end: number;
   private start: number;
+  private position: number;
   private trivia = new Array<SyntaxToken<SyntaxKind>>();
   public readonly diagnostics = new DiagnosticBag();
 
   constructor(private readonly tree: SyntaxTree) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
-    this.end = 0;
-    this.start = this.end;
+    this.position = 0;
+    this.start = this.position;
   }
 
   public lex(): SyntaxToken<SyntaxKind> {
@@ -37,7 +37,7 @@ export class Lexer {
   }
 
   private lexNextToken() {
-    this.start = this.end;
+    this.start = this.position;
     this.kind = SyntaxFacts.syntaxKind(this.char()) as keyof TokenTextMapper;
     switch (this.kind) {
       case SyntaxNodeKind.BadToken:
@@ -132,7 +132,7 @@ export class Lexer {
   }
 
   private getTextSpan() {
-    return TextSpan.fromBounds(this.start, this.end);
+    return TokenSpan.from(this.start, this.position);
   }
 
   private isSpace(): boolean {
@@ -151,7 +151,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.getTextAt(this.end + offset);
+    return this.tree.getCharAt(this.position + offset);
   }
 
   private char() {
@@ -159,7 +159,7 @@ export class Lexer {
   }
 
   private next() {
-    this.end = this.end + 1;
+    this.position = this.position + 1;
   }
 
   private match(...kinds: Array<SyntaxKind>) {

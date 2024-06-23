@@ -1,4 +1,4 @@
-import { TextSpan } from "../input/text.span";
+import { TokenSpan } from "../input/token.span";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "./syntax.tree";
 
@@ -22,11 +22,11 @@ export class SyntaxNode {
     return lastNode;
   }
 
-  getTextSpan(): TextSpan {
-    return TextSpan.fromBounds(this.getFirstChild().getTextSpan().start, this.getLastChild().getTextSpan().end);
+  getSpan(): TokenSpan {
+    return TokenSpan.from(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
   }
 
   getText(): string {
-    return this.tree.getText(this.getTextSpan());
+    return this.tree.getText(this.getSpan());
   }
 }

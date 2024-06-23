@@ -1,13 +1,13 @@
 import { SourceText } from "../input/source.text";
-import { TextSpan } from "../input/text.span";
+import { TokenSpan } from "../input/token.span";
 import { Parser } from "../parser";
 import { CompilationUnit } from "./compilation.unit";
 
 export class SyntaxTree {
-  private sourceText: SourceText;
+  public readonly text: SourceText;
 
   constructor(text: string) {
-    this.sourceText = SourceText.from(text);
+    this.text = SourceText.from(text);
   }
 
   static from(text: string) {
@@ -17,15 +17,14 @@ export class SyntaxTree {
   parse(): CompilationUnit {
     const parser = new Parser(this);
     const compilation = parser.parse();
-    console.log(compilation);
     return compilation;
   }
 
-  getText(span: TextSpan) {
-    return this.sourceText.text.substring(span.start, span.end);
+  getText(span: TokenSpan) {
+    return this.text.get(span.start, span.end);
   }
 
-  getTextAt(position: number) {
-    return this.sourceText.text.charAt(position);
+  getCharAt(position: number) {
+    return this.text.get(position);
   }
 }

@@ -28,12 +28,12 @@ third() {}
 `;
 
 var code = `A1 :: 1
-A2 :: A1+2
-A3 :: A1+A2+3
+B2 :: A1+2
+C3 :: A1+B2+3
 
 A1 :: 8
 
-A3`;
+C3`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
@@ -50,6 +50,7 @@ const Input: Component = () => {
   createEffect(() => {
     const tree = SyntaxTree.from(text());
     tree.parse();
+    console.log(tree);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
