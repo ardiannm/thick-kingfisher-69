@@ -1,4 +1,4 @@
-import { TokenSpan } from "../input/token.span";
+import { TokenSpan } from "../text/token.span";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "./syntax.tree";
 

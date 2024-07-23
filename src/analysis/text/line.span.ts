@@ -1,15 +1,15 @@
-import { Text } from "./text";
+import { SourceText } from "./source.text";
 
 export class LineSpan {
   private constructor(
-    public text: Text,
+    public text: SourceText,
     public start: number,
     public end: number,
 
     public lineBreakWidth: number
   ) {}
 
-  static from(sourceText: Text, start: number, end: number, lineBreakWidth: number): LineSpan {
+  static from(sourceText: SourceText, start: number, end: number, lineBreakWidth: number): LineSpan {
     return new LineSpan(sourceText, start, end, lineBreakWidth);
   }
 

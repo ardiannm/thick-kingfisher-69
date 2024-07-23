@@ -1,6 +1,6 @@
 import { LineSpan } from "./line.span";
 
-export class Text {
+export class SourceText {
   private lines = new Array<LineSpan>();
 
   private constructor(private text: string) {
@@ -27,8 +27,8 @@ export class Text {
     return 0;
   }
 
-  static from(text: string): Text {
-    return new Text(text);
+  static from(text: string): SourceText {
+    return new SourceText(text);
   }
 
   private getLineIndex(position: number): number {

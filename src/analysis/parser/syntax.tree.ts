@@ -1,13 +1,13 @@
-import { Text } from "../input/text";
-import { TokenSpan } from "../input/token.span";
+import { SourceText } from "../text/source.text";
+import { TokenSpan } from "../text/token.span";
 import { Parser } from "../parser";
 import { CompilationUnit } from "./compilation.unit";
 
 export class SyntaxTree {
-  public readonly text: Text;
+  public readonly text: SourceText;
 
   constructor(text: string) {
-    this.text = Text.from(text);
+    this.text = SourceText.from(text);
   }
 
   static from(text: string) {

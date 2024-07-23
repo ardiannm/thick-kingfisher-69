@@ -7,7 +7,7 @@ import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 import { SyntaxTree } from "./parser/syntax.tree";
-import { TokenSpan } from "./input/token.span";
+import { TokenSpan } from "./text/token.span";
 
 export class Lexer {
   private kind: SyntaxKind;

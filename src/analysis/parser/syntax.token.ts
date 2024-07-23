@@ -5,7 +5,7 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { BinaryOperatorKind } from "./kind/binary.operator.kind";
 import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
-import { TokenSpan } from "../input/token.span";
+import { TokenSpan } from "../text/token.span";
 import { SyntaxTree } from "./syntax.tree";
 
 export type TokenTextMapper = {
