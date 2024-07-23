@@ -49,9 +49,9 @@ const Input: Component = () => {
 
   createEffect(() => {
     const program = SyntaxTree.from(text());
-    const unit = program.parse();
-    console.log(unit);
+    const response = program.evaluate();
     setDiagnostics(program.diagnostics.getDiagnotics());
+    setValue(response as number);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

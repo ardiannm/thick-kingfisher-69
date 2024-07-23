@@ -181,7 +181,8 @@ export class Parser {
     if (this.match(kind)) {
       return this.nextToken as SyntaxToken<Kind>;
     }
-    this.tree.diagnostics.tokenMissmatch(this.token.kind);
+    console.log(this.token);
+    this.tree.diagnostics.unexpectedTokenFound(this.token.kind);
     return new SyntaxToken(this.tree, this.token.kind as Kind, this.token.span);
   }
 }

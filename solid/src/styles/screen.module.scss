@@ -80,6 +80,8 @@ $ground: #f4f3f8;
   text-shadow: 0px 0px 1px gray;
   overflow: hidden;
   box-sizing: border-box;
+  height: fit-content;
+  padding-bottom: 1px;
 }
 
 .value {

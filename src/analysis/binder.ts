@@ -28,8 +28,8 @@ import { BoundFunctionExpression } from "./binder/function.expression";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 
 export class Binder {
-  scope = new BoundScope(null, this.configuration);
   constructor(private diagnostics: DiagnosticBag, public configuration: CompilerOptions) {}
+  scope = new BoundScope(null, this.configuration);
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;

@@ -10,7 +10,7 @@ export class DiagnosticBag {
     this.diagnostics.push(Diagnostic.from(message));
   }
 
-  none() {
+  empty() {
     return !(this.diagnostics.length > 0);
   }
 
@@ -22,8 +22,8 @@ export class DiagnosticBag {
     return this.report(`Bad character '${text}' found.`);
   }
 
-  tokenMissmatch(matched: SyntaxKind) {
-    return this.report(`Unexpected token found: '${matched}'.`);
+  unexpectedTokenFound(matched: SyntaxKind) {
+    return this.report(`Parser: Unexpected token found: '${matched}'.`);
   }
 
   emptyProgram() {
