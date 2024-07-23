@@ -2,9 +2,11 @@ import { SourceText } from "../text/source.text";
 import { TokenSpan } from "../text/token.span";
 import { Parser } from "../parser";
 import { CompilationUnit } from "./compilation.unit";
+import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 
 export class SyntaxTree {
   public readonly text: SourceText;
+  public readonly diagnostics = new DiagnosticBag();
 
   constructor(text: string) {
     this.text = SourceText.from(text);

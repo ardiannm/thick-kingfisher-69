@@ -51,6 +51,7 @@ const Input: Component = () => {
     const program = SyntaxTree.from(text());
     const unit = program.parse();
     console.log(unit);
+    setDiagnostics(program.diagnostics.getDiagnotics());
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

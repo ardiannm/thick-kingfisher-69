@@ -5,21 +5,19 @@ import { SyntaxToken, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
-import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 import { SyntaxTree } from "./parser/syntax.tree";
 import { TokenSpan } from "./text/token.span";
 
 export class Lexer {
   private kind: SyntaxKind;
   private start: number;
-  private position: number;
+  private end: number;
   private trivia = new Array<SyntaxToken<SyntaxKind>>();
-  public readonly diagnostics = new DiagnosticBag();
 
   constructor(private readonly tree: SyntaxTree) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
-    this.position = 0;
-    this.start = this.position;
+    this.start = 0;
+    this.end = this.start;
   }
 
   public lex(): SyntaxToken<SyntaxKind> {
@@ -37,7 +35,7 @@ export class Lexer {
   }
 
   private lexNextToken() {
-    this.start = this.position;
+    this.start = this.end;
     this.kind = SyntaxFacts.syntaxKind(this.char()) as keyof TokenTextMapper;
     switch (this.kind) {
       case SyntaxNodeKind.BadToken:
@@ -65,7 +63,7 @@ export class Lexer {
     if (this.isSpace()) {
       return this.lexSpaceToken();
     }
-    this.diagnostics.badTokenFound(this.char());
+    this.tree.diagnostics.badTokenFound(this.char());
     this.next();
     return new SyntaxToken(this.tree, this.kind, this.getTextSpan());
   }
@@ -124,7 +122,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.diagnostics.badFloatingPointNumber();
+        this.tree.diagnostics.badFloatingPointNumber();
       }
     }
     while (this.isDigit()) this.next();
@@ -132,7 +130,7 @@ export class Lexer {
   }
 
   private getTextSpan() {
-    return TokenSpan.from(this.start, this.position);
+    return TokenSpan.from(this.start, this.end);
   }
 
   private isSpace(): boolean {
@@ -151,7 +149,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.getCharAt(this.position + offset);
+    return this.tree.getCharAt(this.end + offset);
   }
 
   private char() {
@@ -159,7 +157,7 @@ export class Lexer {
   }
 
   private next() {
-    this.position = this.position + 1;
+    this.end = this.end + 1;
   }
 
   private match(...kinds: Array<SyntaxKind>) {
