@@ -64,8 +64,4 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   override getSpan() {
     return this.span;
   }
-
-  public override getText(): string {
-    return this.tree.getText(this.span);
-  }
 }

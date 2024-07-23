@@ -27,6 +27,7 @@ export class SyntaxNode {
   }
 
   getText(): string {
-    return this.tree.getText(this.getSpan());
+    const span = this.getSpan();
+    return this.tree.sourceText.get(span.start, span.end);
   }
 }

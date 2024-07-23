@@ -108,7 +108,7 @@ export class Lexer {
   private lexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.isLetter()) this.next();
     const span = this.getTextSpan();
-    const text = this.tree.getText(span);
+    const text = this.tree.sourceText.get(span.start, span.end);
     return new SyntaxToken(this.tree, SyntaxFacts.isKeywordOrIdentifer(text), span);
   }
 
@@ -149,7 +149,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.getCharAt(this.end + offset);
+    return this.tree.sourceText.get(this.end + offset);
   }
 
   private char() {
