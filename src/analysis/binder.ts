@@ -25,11 +25,11 @@ import { BoundCellAssignment } from "./binder/cell.assignment";
 import { CompilerOptions } from "../compiler.options";
 import { FunctionExpression } from "./parser/function.expression";
 import { BoundFunctionExpression } from "./binder/function.expression";
-import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
+import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 
 export class Binder {
   public environment = new Environment(null, this.configuration);
-  constructor(private diagnostics: DiagnosticBag, public configuration: CompilerOptions) {}
+  constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -75,24 +75,12 @@ export class Binder {
   private bindProgram(node: CompilationUnit) {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
-    this.inspectCellDeclarations();
+    if (this.configuration.autoDeclaration) this.inspectCellDeclarations();
     return new BoundCompilationUnit(root);
   }
 
   private inspectCellDeclarations() {
-    for (const cell of this.environment.cells.values()) {
-      if (cell.declared) {
-        for (const dependency of cell.dependencies.values()) {
-          if (dependency.declared) {
-          } else {
-            this.diagnostics.undeclaredCell(dependency.name);
-          }
-        }
-      } else {
-        this.diagnostics.undeclaredCell(cell.name);
-      }
-      if (cell.hasCircularDependecy()) this.diagnostics.circularDependency(cell);
-    }
+    for (const cell of this.environment.cells.values()) for (const dependency of cell.dependencies.values()) if (!dependency.declared) this.diagnostics.undeclaredCell(dependency.name);
   }
 
   private bindCellAssignment(node: CellAssignment) {
@@ -105,16 +93,22 @@ export class Binder {
         subject.clearDependencies();
         for (const dependency of this.environment.cells.values()) {
           subject.track(dependency);
-          if (dependency.declared) continue;
-          if (this.configuration.autoDeclaration && dependency !== subject) {
-            this.diagnostics.autoDeclaredCell(dependency, subject);
-            dependency.declared = true;
-            this.environment.transferToParent(dependency);
+          if (dependency.declared) {
+            if (subject.hasCircularDependecy()) this.diagnostics.circularDependency(subject);
+            continue;
           }
+          if (this.configuration.autoDeclaration) {
+            dependency.declared = true;
+            this.diagnostics.autoDeclaredCell(dependency, subject);
+          } else {
+            this.diagnostics.undeclaredCell(dependency.name);
+            if (subject.hasCircularDependecy()) this.diagnostics.circularDependency(subject);
+          }
+          this.environment.transferToParent(dependency);
         }
         this.environment = this.environment.parent as Environment;
-        subject.declared = true;
         subject.formula = node.expression.getText();
+        subject.declared = true;
         return new BoundCellAssignment(subject);
     }
     this.diagnostics.cantUseAsAReference(node.left.kind);

@@ -1,7 +1,7 @@
 import { SourceText } from "../text/source.text";
 import { Parser } from "../parser";
 import { CompilationUnit } from "./compilation.unit";
-import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
+import { DiagnosticsBag } from "../diagnostics/diagnostics.bag";
 import { Binder } from "../binder";
 import { CompilerOptions } from "../../compiler.options";
 import { Evaluator } from "../../evaluator";
@@ -9,7 +9,7 @@ import { BoundCompilationUnit } from "../binder/compilation.unit";
 
 export class SyntaxTree {
   public root: CompilationUnit;
-  public readonly diagnosticsBag = new DiagnosticBag();
+  public readonly diagnosticsBag = new DiagnosticsBag();
 
   private constructor(public text: SourceText) {
     const parser = new Parser(this);

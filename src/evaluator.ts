@@ -9,7 +9,7 @@ import { BoundCellAssignment } from "./analysis/binder/cell.assignment";
 import { BoundUnaryExpression } from "./analysis/binder/unary.expression";
 import { BoundNode } from "./analysis/binder/bound.node";
 import { ColorPalette } from "./dev/color.palette";
-import { DiagnosticBag } from "./analysis/diagnostics/diagnostic.bag";
+import { DiagnosticsBag } from "./analysis/diagnostics/diagnostics.bag";
 import { BoundFunctionExpression } from "./analysis/binder/function.expression";
 
 export class Evaluator {
@@ -17,7 +17,7 @@ export class Evaluator {
   private evaluated = new Set<string>();
   private edges = new Set<Cell>();
   private notified = new Set<string>();
-  constructor(private diagnostics: DiagnosticBag) {}
+  constructor(private diagnostics: DiagnosticsBag) {}
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;

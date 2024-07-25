@@ -3,7 +3,7 @@ import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 
-export class DiagnosticBag {
+export class DiagnosticsBag {
   private diagnostics = new Array<Diagnostic>();
 
   private report(message: string) {
@@ -19,11 +19,11 @@ export class DiagnosticBag {
   }
 
   badCharacterFound(text: string) {
-    return this.report(`Lexer: Bad character '${text}' found.`);
+    return this.report(`Bad character '${text}' found.`);
   }
 
   unexpectedTokenFound(matched: SyntaxKind) {
-    return this.report(`Parser: Unexpected token found: '${matched}'.`);
+    return this.report(`Unexpected token found: '${matched}'.`);
   }
 
   emptyProgram() {
@@ -59,15 +59,15 @@ export class DiagnosticBag {
   }
 
   wrongCellNameFormat(didYouMean: string) {
-    return this.report(`Did you mean '${didYouMean}'?`);
+    return this.report(`Not a valid cell reference. Did you mean '${didYouMean}'?`);
   }
 
   binderMethod(kind: SyntaxKind) {
-    return this.report(`Binder: Method for '${kind}' is not implemented.`);
+    return this.report(`Method for binding '${kind}' is not implemented.`);
   }
 
   evaluatorMethod(kind: BoundKind) {
-    return this.report(`Evaluator: Method for '${kind}' is not implemented.`);
+    return this.report(`Method for evaluating '${kind}' is not implemented.`);
   }
 
   functionAlreadyDefined(functionName: string) {

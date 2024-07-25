@@ -34,6 +34,10 @@ A1 :: 8
 
 C3`;
 
+var code = `A1 :: A2+3
+
+# console should still print the value despite the warning`;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
