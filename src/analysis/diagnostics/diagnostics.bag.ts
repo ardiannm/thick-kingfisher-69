@@ -1,4 +1,4 @@
-import { Cell } from "../../cell";
+import { Cell } from "../../runtime/cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Diagnostic } from "./diagnostic";

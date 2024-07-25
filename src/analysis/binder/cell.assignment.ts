@@ -1,4 +1,4 @@
-import { Cell } from "../../cell";
+import { Cell } from "../../runtime/cell";
 import { BoundExpression } from "./expression";
 import { BoundKind } from "./kind/bound.kind";
 

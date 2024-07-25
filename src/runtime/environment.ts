@@ -1,13 +1,13 @@
-import { Cell } from "../cell";
+import { Cell } from "./cell";
 import { CompilerOptions } from "../compiler.options";
-import { BoundFunctionExpression } from "./binder/function.expression";
+import { BoundFunctionExpression } from "../analysis/binder/function.expression";
 
 export class Environment {
   cells = new Map<string, Cell>();
   functions = new Map<string, BoundFunctionExpression>();
   constructor(public parent: Environment | null, public configuration: CompilerOptions) {}
 
-  createCell(row: string, column: string, name: string) {
+  createCell(name: string) {
     const environment = this.resolveEnvForCell(name);
     let data: Cell;
     if (environment) {

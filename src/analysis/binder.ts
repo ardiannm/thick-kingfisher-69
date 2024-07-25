@@ -20,7 +20,7 @@ import { BoundCompilationUnit } from "./binder/compilation.unit";
 import { CellAssignment } from "./parser/cell.assignment";
 import { CompilerOptions } from "../compiler.options";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
-import { Cell } from "../cell";
+import { Cell } from "../runtime/cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
 
 class BoundScope {

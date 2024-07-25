@@ -1,5 +1,5 @@
 import { BoundKind } from "./kind/bound.kind";
-import { Environment } from "../environment";
+import { Environment } from "../../runtime/environment";
 import { BoundStatement } from "./statement";
 
 export class BoundFunctionExpression extends BoundStatement {

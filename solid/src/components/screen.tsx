@@ -1,6 +1,6 @@
 import styles from "../styles/screen.module.scss";
 
-import { SyntaxTree } from "../../../src/analysis/parser/syntax.tree";
+import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 

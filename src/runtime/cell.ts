@@ -1,12 +1,12 @@
-import { BoundKind } from "./analysis/binder/kind/bound.kind";
-import { BoundNode } from "./analysis/binder/bound.node";
-import { BoundExpression } from "./analysis/binder/expression";
-import { BoundNumericLiteral } from "./analysis/binder/numeric.literal";
+import { BoundKind } from "../analysis/binder/kind/bound.kind";
+import { BoundNode } from "../analysis/binder/bound.node";
+import { BoundExpression } from "../analysis/binder/expression";
+import { BoundNumericLiteral } from "../analysis/binder/numeric.literal";
 
 export class Cell extends BoundNode {
-  private dependencies = new Map<string, Cell>();
   private observers = new Map<string, Cell>();
-  constructor(public name: string, public value: number, public expression: BoundExpression) {
+  private dependencies = new Map<string, Cell>();
+  private constructor(public name: string, public value: number, public expression: BoundExpression) {
     super(BoundKind.Cell);
   }
 

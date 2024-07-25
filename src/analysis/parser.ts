@@ -15,7 +15,7 @@ import { CompilationUnit } from "./parser/compilation.unit";
 import { StatementSyntax } from "./parser/statement.syntax";
 import { CellAssignment } from "./parser/cell.assignment";
 import { FunctionExpression } from "./parser/function.expression";
-import { SyntaxTree } from "./parser/syntax.tree";
+import { SyntaxTree } from "../runtime/syntax.tree";
 import { Lexer } from "./lexer";
 
 export class Parser {

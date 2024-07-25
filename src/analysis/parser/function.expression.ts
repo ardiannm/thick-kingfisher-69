@@ -1,7 +1,7 @@
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxToken } from "./syntax.token";
 import { StatementSyntax } from "./statement.syntax";
-import { SyntaxTree } from "./syntax.tree";
+import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export class FunctionExpression extends StatementSyntax {
   constructor(

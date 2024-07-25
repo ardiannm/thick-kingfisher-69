@@ -1,13 +1,13 @@
-import { BoundKind } from "./analysis/binder/kind/bound.kind";
-import { BoundCompilationUnit } from "./analysis/binder/compilation.unit";
-import { BoundBinaryOperatorKind } from "./analysis/binder/kind/binary.operator.kind";
-import { BoundUnaryOperatorKind } from "./analysis/binder/kind/unary.operator.kind";
-import { BoundBinaryExpression } from "./analysis/binder/binary.expression";
-import { BoundNumericLiteral } from "./analysis/binder/numeric.literal";
-import { BoundUnaryExpression } from "./analysis/binder/unary.expression";
-import { BoundNode } from "./analysis/binder/bound.node";
-import { DiagnosticsBag } from "./analysis/diagnostics/diagnostics.bag";
-import { BoundFunctionExpression } from "./analysis/binder/function.expression";
+import { BoundKind } from "../analysis/binder/kind/bound.kind";
+import { BoundCompilationUnit } from "../analysis/binder/compilation.unit";
+import { BoundBinaryOperatorKind } from "../analysis/binder/kind/binary.operator.kind";
+import { BoundUnaryOperatorKind } from "../analysis/binder/kind/unary.operator.kind";
+import { BoundBinaryExpression } from "../analysis/binder/binary.expression";
+import { BoundNumericLiteral } from "../analysis/binder/numeric.literal";
+import { BoundUnaryExpression } from "../analysis/binder/unary.expression";
+import { BoundNode } from "../analysis/binder/bound.node";
+import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { BoundFunctionExpression } from "../analysis/binder/function.expression";
 
 export class Evaluator {
   private value = 0;

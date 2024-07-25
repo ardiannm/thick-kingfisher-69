@@ -1,11 +1,11 @@
-import { SourceText } from "../text/source.text";
-import { Parser } from "../parser";
-import { CompilationUnit } from "./compilation.unit";
-import { DiagnosticsBag } from "../diagnostics/diagnostics.bag";
-import { Binder } from "../binder";
-import { CompilerOptions } from "../../compiler.options";
-import { Evaluator } from "../../evaluator";
-import { BoundCompilationUnit } from "../binder/compilation.unit";
+import { SourceText } from "../analysis/text/source.text";
+import { Parser } from "../analysis/parser";
+import { CompilationUnit } from "../analysis/parser/compilation.unit";
+import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { Binder } from "../analysis/binder";
+import { CompilerOptions } from "../compiler.options";
+import { Evaluator } from "./evaluator";
+import { BoundCompilationUnit } from "../analysis/binder/compilation.unit";
 
 export class SyntaxTree {
   public root: CompilationUnit;
@@ -22,7 +22,7 @@ export class SyntaxTree {
 
   bind() {
     if (this.diagnosticsBag.canBind()) {
-      return new Binder(this.diagnosticsBag, new CompilerOptions(true, true)).bind(this.root);
+      return new Binder(this.diagnosticsBag, new CompilerOptions(true)).bind(this.root);
     }
     return this;
   }

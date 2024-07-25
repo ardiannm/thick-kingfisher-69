@@ -5,7 +5,7 @@ import { SyntaxToken, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
-import { SyntaxTree } from "./parser/syntax.tree";
+import { SyntaxTree } from "../runtime/syntax.tree";
 import { TokenSpan } from "./text/token.span";
 
 export class Lexer {

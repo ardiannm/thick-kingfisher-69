@@ -1,6 +1,6 @@
 import { TokenSpan } from "../text/token.span";
 import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxTree } from "./syntax.tree";
+import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export class SyntaxNode {
   constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}

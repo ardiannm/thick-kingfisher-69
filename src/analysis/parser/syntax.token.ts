@@ -6,7 +6,7 @@ import { BinaryOperatorKind } from "./kind/binary.operator.kind";
 import { CompositeTokenKind } from "./kind/composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { TokenSpan } from "../text/token.span";
-import { SyntaxTree } from "./syntax.tree";
+import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export type TokenTextMapper = {
   [BinaryOperatorKind.PlusToken]: "+";
