@@ -13,7 +13,7 @@ export class Environment {
     if (environment) {
       data = environment.cells.get(name) as Cell;
     } else {
-      data = Cell.createFrom(row, column, name);
+      data = Cell.createFrom(name);
     }
     this.cells.set(name, data);
     return data;

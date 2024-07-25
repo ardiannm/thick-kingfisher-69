@@ -65,12 +65,12 @@ export class DiagnosticsBag {
     return this.report(`Reference '${subject.name}' is in an invalid state.`, Severity.CantEvaluate);
   }
 
-  autoDeclaredCell(subject: Cell, cell: Cell) {
-    return this.report(`Reference '${subject.name}' has been declared automatically after being referenced by '${cell.name}'.`, Severity.Ok);
+  autoDeclaredCell(reference: Cell, dependency: Cell) {
+    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Ok);
   }
 
-  wrongCellNameFormat(didYouMean: string) {
-    return this.report(`Not a valid cell reference. Did you mean '${didYouMean}'?`, Severity.CantEvaluate);
+  wrongCellNameFormat(correctName: string) {
+    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantEvaluate);
   }
 
   binderMethod(kind: SyntaxKind) {

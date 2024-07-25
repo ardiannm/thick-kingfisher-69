@@ -9,34 +9,8 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `if true {
-   println("Hello world")
-}
-
-`;
-
-var code = `#
-
-first() {
-    second() {}
-}
-
-third() {}
-
-#
-`;
-
-var code = `A1 :: 1
-B2 :: A1+2
-C3 :: A1+B2+3
-
-A1 :: 8
-
-C3`;
-
-var code = `A1 :: A2+3
-
-# console should still print the value despite the warning`;
+var code = `A1 :: A2
+A3 :: A4+A5`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

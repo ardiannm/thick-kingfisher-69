@@ -6,7 +6,6 @@ import { BinaryExpression } from "./parser/binary.expression";
 import { CellReference } from "./parser/cell.reference";
 import { SyntaxToken } from "./parser/syntax.token";
 import { BoundBinaryExpression } from "./binder/binary.expression";
-import { BoundKind } from "./binder/kind/bound.kind";
 import { BoundNumericLiteral } from "./binder/numeric.literal";
 import { BoundBinaryOperatorKind } from "./binder/kind/binary.operator.kind";
 import { UnaryExpression } from "./parser/unary.expression";
@@ -18,16 +17,26 @@ import { BoundError } from "./binder/error";
 import { CompilationUnit } from "./parser/compilation.unit";
 import { BoundStatement } from "./binder/statement";
 import { BoundCompilationUnit } from "./binder/compilation.unit";
-import { Environment } from "./environment";
 import { CellAssignment } from "./parser/cell.assignment";
-import { BoundCellAssignment } from "./binder/cell.assignment";
 import { CompilerOptions } from "../compiler.options";
-import { FunctionExpression } from "./parser/function.expression";
-import { BoundFunctionExpression } from "./binder/function.expression";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
+import { Cell } from "../cell";
+import { BoundCellAssignment } from "./binder/cell.assignment";
+
+class BoundScope {
+  reference = new Map<string, Cell>();
+  declared = new Set<Cell>();
+
+  createCell(name: string): Cell {
+    if (this.reference.has(name)) return this.reference.get(name) as Cell;
+    const cell = Cell.createFrom(name);
+    this.reference.set(name, cell);
+    return cell;
+  }
+}
 
 export class Binder {
-  public environment = new Environment(null, this.configuration);
+  scope = new BoundScope();
   constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
@@ -47,73 +56,37 @@ export class Binder {
         return this.bindBinaryExpression(node as NodeType<BinaryExpression>);
       case SyntaxNodeKind.CellAssignment:
         return this.bindCellAssignment(node as NodeType<CellAssignment>);
-      case SyntaxNodeKind.FunctionExpression:
-        return this.bindFunctionExpression(node as NodeType<FunctionExpression>);
     }
     this.diagnostics.binderMethod(node.kind);
     return new BoundError(node.kind);
   }
 
-  private bindFunctionExpression(node: FunctionExpression): BoundNode {
-    const name = node.functionName.getText();
-    if (this.configuration.globalFunctionsOnly) if (this.environment.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
-    if (this.environment.functions.has(name)) {
-      this.diagnostics.functionAlreadyDefined(name);
-      return new BoundError(node.kind);
-    }
-    const environment = new Environment(this.environment, this.configuration);
-    this.environment = environment;
-    const statements = new Array<BoundStatement>();
-    for (const statement of node.statements) statements.push(this.bind(statement));
-    this.environment = this.environment.parent as Environment;
-    const boundNode = new BoundFunctionExpression(node.functionName.getText(), this.environment, statements);
-    this.environment.functions.set(name, boundNode);
-    return boundNode;
-  }
-
   private bindProgram(node: CompilationUnit) {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
-    if (this.configuration.autoDeclaration) this.inspectCellDeclarations();
     return new BoundCompilationUnit(root);
-  }
-
-  private inspectCellDeclarations() {
-    for (const cell of this.environment.cells.values()) for (const dependency of cell.dependencies.values()) if (!dependency.declared) this.diagnostics.undeclaredCell(dependency.name);
   }
 
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        var subject = this.bindCellReference(node.left as CellReference);
-        const environment = new Environment(this.environment, this.configuration);
-        this.environment = environment as Environment;
+        const reference = this.bindCellReference(node.left as CellReference);
+        this.scope.reference.clear();
         const expression = this.bind(node.expression);
-        if (subject instanceof BoundError) return subject;
-        subject.expression = expression;
-        subject.clearDependencies();
-        for (const dependency of this.environment.cells.values()) {
-          subject.track(dependency);
-          if (dependency.declared) {
-            if (subject.hasCircularDependecy()) this.diagnostics.circularDependency(subject);
-            continue;
-          }
-          if (this.configuration.autoDeclaration && subject !== dependency) {
-            dependency.declared = true;
-            this.diagnostics.autoDeclaredCell(dependency, subject);
-          } else {
-            this.diagnostics.undeclaredCell(dependency.name);
-            if (subject.hasCircularDependecy()) this.diagnostics.circularDependency(subject);
-          }
-          this.environment.transferToParent(dependency);
+        reference.expression = expression;
+        for (const dependency of this.scope.reference.values()) {
+          reference.track(dependency);
+          if (this.scope.declared.has(dependency)) continue;
+          this.diagnostics.undeclaredCell(dependency.name);
         }
-        this.environment = this.environment.parent as Environment;
-        subject.formula = node.expression.getText();
-        subject.declared = true;
-        return new BoundCellAssignment(subject);
+        this.scope.declared.add(reference);
+        this.scope.reference.clear();
+        const bound = new BoundCellAssignment(reference, expression);
+        console.log(reference);
+        return bound;
     }
     this.diagnostics.cantUseAsAReference(node.left.kind);
-    return new BoundNode(BoundKind.CellAssignment);
+    return new BoundError(node.kind);
   }
 
   private bindBinaryExpression(node: BinaryExpression) {
@@ -164,12 +137,12 @@ export class Binder {
   private bindCellReference(node: CellReference) {
     const row = node.right.getText();
     const column = node.left.getText();
-    if (this.configuration.compactCellNames && node.right.hasTrivia()) {
-      this.diagnostics.wrongCellNameFormat(column + row);
-      return new BoundError(node.kind);
+    const name = column + row;
+    if (node.right.hasTrivia()) {
+      this.diagnostics.wrongCellNameFormat(name);
+      return Cell.createFrom(name);
     }
-    const name = node.getText();
-    return this.environment.createCell(row, column, name);
+    return this.scope.createCell(name);
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
