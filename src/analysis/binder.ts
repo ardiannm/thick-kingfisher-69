@@ -24,20 +24,20 @@ import { Cell } from "../runtime/cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
 
 class BoundScope {
-  reference = new Map<string, Cell>();
+  references = new Map<string, Cell>();
   declared = new Set<Cell>();
 
   createCell(name: string): Cell {
-    if (this.reference.has(name)) return this.reference.get(name) as Cell;
-    const cell = Cell.createFrom(name);
-    this.reference.set(name, cell);
-    return cell;
+    if (this.references.has(name)) return this.references.get(name) as Cell;
+    const node = Cell.createFrom(name);
+    this.references.set(name, node);
+    return node;
   }
 }
 
 export class Binder {
   scope = new BoundScope();
-  constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
+  constructor(private diagnosticsBag: DiagnosticsBag, public configuration: CompilerOptions) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -57,7 +57,7 @@ export class Binder {
       case SyntaxNodeKind.CellAssignment:
         return this.bindCellAssignment(node as NodeType<CellAssignment>);
     }
-    this.diagnostics.binderMethod(node.kind);
+    this.diagnosticsBag.binderMethod(node.kind);
     return new BoundError(node.kind);
   }
 
@@ -71,21 +71,20 @@ export class Binder {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
         const reference = this.bindCellReference(node.left as CellReference);
-        this.scope.reference.clear();
+        this.scope.references.clear();
         const expression = this.bind(node.expression);
         reference.expression = expression;
-        for (const dependency of this.scope.reference.values()) {
+        reference.clearDependencies();
+        for (const dependency of this.scope.references.values()) {
           reference.track(dependency);
           if (this.scope.declared.has(dependency)) continue;
-          this.diagnostics.undeclaredCell(dependency.name);
+          this.diagnosticsBag.undeclaredCell(dependency.name);
         }
         this.scope.declared.add(reference);
-        this.scope.reference.clear();
-        const bound = new BoundCellAssignment(reference, expression);
-        console.log(reference);
-        return bound;
+        this.scope.references.clear();
+        return new BoundCellAssignment(reference, expression);
     }
-    this.diagnostics.cantUseAsAReference(node.left.kind);
+    this.diagnosticsBag.cantUseAsAReference(node.left.kind);
     return new BoundError(node.kind);
   }
 
@@ -135,13 +134,7 @@ export class Binder {
   }
 
   private bindCellReference(node: CellReference) {
-    const row = node.right.getText();
-    const column = node.left.getText();
-    const name = column + row;
-    if (node.right.hasTrivia()) {
-      this.diagnostics.wrongCellNameFormat(name);
-      return Cell.createFrom(name);
-    }
+    const name = node.getText();
     return this.scope.createCell(name);
   }
 

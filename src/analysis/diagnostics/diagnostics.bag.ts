@@ -70,7 +70,7 @@ export class DiagnosticsBag {
   }
 
   wrongCellNameFormat(correctName: string) {
-    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantEvaluate);
+    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind);
   }
 
   binderMethod(kind: SyntaxKind) {

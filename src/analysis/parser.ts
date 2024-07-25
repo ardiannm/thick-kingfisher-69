@@ -133,7 +133,11 @@ export class Parser {
     if (this.match(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
       const left = this.nextToken as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
       const right = this.nextToken as SyntaxToken<SyntaxNodeKind.NumberToken>;
-      return new CellReference(this.tree, left, right);
+      const node = new CellReference(this.tree, left, right);
+      if (right.hasTrivia()) {
+        this.tree.diagnosticsBag.wrongCellNameFormat(node.getText());
+      }
+      return node;
     }
     return this.parseLiteral();
   }

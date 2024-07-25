@@ -16,7 +16,7 @@ export class SyntaxNode {
     return this.getChildren().next().value as SyntaxNode;
   }
 
-  getLastChild() {
+  getLastChild(): SyntaxNode {
     var lastNode: SyntaxNode = this.getFirstChild();
     for (const node of this.getChildren()) lastNode = node;
     return lastNode;
@@ -27,7 +27,8 @@ export class SyntaxNode {
   }
 
   getText(): string {
-    const span = this.getSpan();
-    return this.tree.text.get(span.start, span.end);
+    var text = "";
+    for (const child of this.getChildren()) text += this.tree.text.get(child.getSpan().start, child.getSpan().end);
+    return text;
   }
 }

@@ -15,6 +15,11 @@ export class Cell extends BoundNode {
     dependency.observers.set(this.name, this);
   }
 
+  public clearDependencies() {
+    this.dependencies.forEach((dep) => dep.observers.delete(this.name));
+    this.dependencies.clear();
+  }
+
   public static createFrom(name: string) {
     const expression = new BoundNumericLiteral(0);
     return new Cell(name, expression.value, expression);
