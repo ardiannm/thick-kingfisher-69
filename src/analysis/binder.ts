@@ -98,7 +98,7 @@ export class Binder {
             if (subject.hasCircularDependecy()) this.diagnostics.circularDependency(subject);
             continue;
           }
-          if (this.configuration.autoDeclaration) {
+          if (this.configuration.autoDeclaration && subject !== dependency) {
             dependency.declared = true;
             this.diagnostics.autoDeclaredCell(dependency, subject);
           } else {
