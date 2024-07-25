@@ -9,11 +9,11 @@ export class LineSpan {
     public lineBreakWidth: number
   ) {}
 
-  static from(sourceText: SourceText, start: number, end: number, lineBreakWidth: number): LineSpan {
+  public static createFrom(sourceText: SourceText, start: number, end: number, lineBreakWidth: number): LineSpan {
     return new LineSpan(sourceText, start, end, lineBreakWidth);
   }
 
-  getText() {
+  public getText() {
     return this.text.get(this.start, this.end);
   }
 }

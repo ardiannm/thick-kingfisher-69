@@ -23,11 +23,11 @@ export class SyntaxNode {
   }
 
   getSpan(): TokenSpan {
-    return TokenSpan.from(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
+    return TokenSpan.createFrom(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
   }
 
   getText(): string {
     const span = this.getSpan();
-    return this.tree.sourceText.get(span.start, span.end);
+    return this.tree.text.get(span.start, span.end);
   }
 }

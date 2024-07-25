@@ -13,7 +13,7 @@ export class BoundScope {
 
   constructor(public parent: BoundScope | null, public configuration: CompilerOptions) {}
 
-  constructCell(name: string, row: string, column: string) {
+  createCell(name: string, row: string, column: string) {
     const scope = this.resolveScopeForCell(name);
     let data: Cell;
     if (scope) {
@@ -57,34 +57,5 @@ export class BoundScope {
       return true;
     }
     return false;
-  }
-
-  clearUndeclared() {
-    this.cells.forEach((Cell) => {
-      if (!Cell.declared) {
-        this.cells.delete(Cell.name);
-      }
-      Cell.dependencies.forEach((dependency) => {
-        if (!dependency.declared) {
-          this.cells.delete(dependency.name);
-        }
-      });
-    });
-  }
-
-  subscribeToDeclarationEvent(fn: (cell: Cell) => void) {
-    this.declarationSubscribers.add(fn);
-  }
-
-  subscribeToEvaluationEvent(Fn: (cell: Cell) => void) {
-    this.evaluationSubscribers.add(Fn);
-  }
-
-  emitDeclarationEventForCell(Node: Cell) {
-    for (const sub of this.evaluationSubscribers) sub(Node);
-  }
-
-  emitEvaluationEventForCell(Node: Cell) {
-    for (const sub of this.evaluationSubscribers) sub(Node);
   }
 }

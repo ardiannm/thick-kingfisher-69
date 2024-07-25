@@ -11,12 +11,12 @@ export class SourceText {
       if (lineBreakWidth === 0) {
         position++;
       } else {
-        this.lines.push(LineSpan.from(this, start, position, lineBreakWidth));
+        this.lines.push(LineSpan.createFrom(this, start, position, lineBreakWidth));
         position += lineBreakWidth;
         start = position;
       }
     }
-    if (position >= start) this.lines.push(LineSpan.from(this, start, position, this.getLineBreakWidth(position)));
+    if (position >= start) this.lines.push(LineSpan.createFrom(this, start, position, this.getLineBreakWidth(position)));
   }
 
   private getLineBreakWidth(position: number): number {
@@ -27,7 +27,7 @@ export class SourceText {
     return 0;
   }
 
-  static from(text: string): SourceText {
+  public static createFrom(text: string): SourceText {
     return new SourceText(text);
   }
 
@@ -47,11 +47,11 @@ export class SourceText {
     return lower - 1;
   }
 
-  getLineSpan(position: number) {
+  public getLineSpan(position: number) {
     return this.lines[this.getLineIndex(position)];
   }
 
-  get(start: number, end?: number): string {
+  public get(start: number, end?: number): string {
     if (end === undefined) return this.text.charAt(start);
     return this.text.substring(start, end);
   }

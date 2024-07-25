@@ -158,7 +158,7 @@ export class Binder {
     const row = node.right.getText();
     const column = node.left.getText();
     const name = node.getText();
-    return this.scope.constructCell(name, row, column);
+    return this.scope.createCell(name, row, column);
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

@@ -63,7 +63,7 @@ export class Lexer {
     if (this.isSpace()) {
       return this.lexSpaceToken();
     }
-    this.tree.diagnostics.badTokenFound(this.char());
+    this.tree.diagnosticsBag.badCharacterFound(this.char());
     this.next();
     return new SyntaxToken(this.tree, this.kind, this.getTextSpan());
   }
@@ -108,7 +108,7 @@ export class Lexer {
   private lexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.isLetter()) this.next();
     const span = this.getTextSpan();
-    const text = this.tree.sourceText.get(span.start, span.end);
+    const text = this.tree.text.get(span.start, span.end);
     return new SyntaxToken(this.tree, SyntaxFacts.isKeywordOrIdentifer(text), span);
   }
 
@@ -122,7 +122,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.tree.diagnostics.badFloatingPointNumber();
+        this.tree.diagnosticsBag.badFloatingPointNumber();
       }
     }
     while (this.isDigit()) this.next();
@@ -130,7 +130,7 @@ export class Lexer {
   }
 
   private getTextSpan() {
-    return TokenSpan.from(this.start, this.end);
+    return TokenSpan.createFrom(this.start, this.end);
   }
 
   private isSpace(): boolean {
@@ -149,7 +149,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.sourceText.get(this.end + offset);
+    return this.tree.text.get(this.end + offset);
   }
 
   private char() {

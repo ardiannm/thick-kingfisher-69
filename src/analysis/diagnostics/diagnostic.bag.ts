@@ -7,19 +7,19 @@ export class DiagnosticBag {
   private diagnostics = new Array<Diagnostic>();
 
   private report(message: string) {
-    this.diagnostics.push(Diagnostic.from(message));
+    this.diagnostics.push(Diagnostic.createFrom(message));
   }
 
-  empty() {
+  isEmpty() {
     return !(this.diagnostics.length > 0);
   }
 
-  getDiagnotics() {
+  getDiagnostics() {
     return this.diagnostics;
   }
 
-  badTokenFound(text: string) {
-    return this.report(`Bad character '${text}' found.`);
+  badCharacterFound(text: string) {
+    return this.report(`Lexer: Bad character '${text}' found.`);
   }
 
   unexpectedTokenFound(matched: SyntaxKind) {
@@ -59,7 +59,7 @@ export class DiagnosticBag {
   }
 
   wrongCellNameFormat(didYouMean: string) {
-    return this.report(`Did you mean '${didYouMean}'?.`);
+    return this.report(`Did you mean '${didYouMean}'?`);
   }
 
   binderMethod(kind: SyntaxKind) {

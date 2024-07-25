@@ -41,7 +41,7 @@ export class Parser {
 
   public parse() {
     if (this.hasNoMoreTokens()) {
-      this.tree.diagnostics.emptyProgram();
+      this.tree.diagnosticsBag.emptyProgram();
     }
     return this.parseProgram();
   }
@@ -181,8 +181,7 @@ export class Parser {
     if (this.match(kind)) {
       return this.nextToken as SyntaxToken<Kind>;
     }
-    console.log(this.token);
-    this.tree.diagnostics.unexpectedTokenFound(this.token.kind);
+    this.tree.diagnosticsBag.unexpectedTokenFound(this.token.kind);
     return new SyntaxToken(this.tree, this.token.kind as Kind, this.token.span);
   }
 }

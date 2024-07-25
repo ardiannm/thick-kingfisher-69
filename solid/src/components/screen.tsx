@@ -3,7 +3,6 @@ import styles from "../styles/screen.module.scss";
 import { SyntaxTree } from "../../../src/analysis/parser/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
-import { CompilerOptions } from "../../../src/compiler.options";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
@@ -40,17 +39,10 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
   const [value, setValue] = createSignal(0);
 
-  // createEffect(() => {
-  //   const interpreter = SyntaxTree.Init(new CompilerOptions(true, true, true));
-  //   const response = interpreter.Parse(text()).Bind().Evaluate();
-  //   setDiagnostics(response.diagnostics.Get());
-  //   setValue(response.value);
-  // });
-
   createEffect(() => {
-    const program = SyntaxTree.from(text());
+    const program = SyntaxTree.createFrom(text());
     const response = program.evaluate();
-    setDiagnostics(program.diagnostics.getDiagnotics());
+    setDiagnostics(program.diagnosticsBag.getDiagnostics());
     setValue(response as number);
   });
 

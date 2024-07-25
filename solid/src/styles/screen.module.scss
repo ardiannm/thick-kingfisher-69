@@ -3,7 +3,7 @@
 $ground: #f4f3f8;
 
 * {
-  color: #10245f;
+  color: #010000;
 }
 
 .input {
@@ -35,13 +35,10 @@ $ground: #f4f3f8;
   padding: 14px;
   padding-top: 40px;
   border-radius: 30px;
-  margin-bottom: 11px;
+  margin-bottom: 7px;
   z-index: 3;
   text-shadow: 0px 0px 1px gray;
-  &::selection {
-    background-color: whitesmoke;
-  }
-  background-color: $ground;
+  background: linear-gradient(to top, #cbd8eb50, #cbd8eb98);
 }
 
 .diagnostics {
@@ -56,9 +53,9 @@ $ground: #f4f3f8;
   font-family: "Roboto";
   font-size: 11px;
   // background-color: #fca66c4d;
-  background-color: $ground;
   overflow-y: hidden;
   max-height: 35%;
+  background-color: #cbd8eb50;
 }
 
 .diagnosticsWrapper {
@@ -68,7 +65,7 @@ $ground: #f4f3f8;
   height: fit-content;
   font-family: "Roboto";
   // background-color: #fca66c4d;
-  background-color: $ground;
+  background-color: transparent;
   overflow-y: hidden;
   max-height: 100%;
 }
@@ -93,5 +90,18 @@ $ground: #f4f3f8;
   font-size: 11px;
   @include center;
   text-shadow: 0px 0px 1px gray;
-  background-color: $ground;
+  background-color: #cbd8eb50;
+}
+
+textarea {
+  &::selection {
+    color: #313131;
+    background-color: #cbd8eb;
+  }
+  // code for firefox
+  &::-moz-selection {
+    color: #313131;
+    background-color: #cbd8eb;
+  }
+  background-color: #cbd8eb;
 }
