@@ -18,7 +18,7 @@ import { BoundError } from "./binder/error";
 import { CompilationUnit } from "./parser/compilation.unit";
 import { BoundStatement } from "./binder/statement";
 import { BoundCompilationUnit } from "./binder/compilation.unit";
-import { BoundScope } from "./binder/scope";
+import { Environment } from "./environment";
 import { CellAssignment } from "./parser/cell.assignment";
 import { Cell } from "../cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
@@ -28,8 +28,8 @@ import { BoundFunctionExpression } from "./binder/function.expression";
 import { DiagnosticBag } from "./diagnostics/diagnostic.bag";
 
 export class Binder {
+  public environment = new Environment(null, this.configuration);
   constructor(private diagnostics: DiagnosticBag, public configuration: CompilerOptions) {}
-  scope = new BoundScope(null, this.configuration);
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -57,18 +57,18 @@ export class Binder {
 
   private bindFunctionExpression(node: FunctionExpression): BoundNode {
     const name = node.functionName.getText();
-    if (this.configuration.globalFunctionsOnly) if (this.scope.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
-    if (this.scope.functions.has(name)) {
+    if (this.configuration.globalFunctionsOnly) if (this.environment.parent) this.diagnostics.globalFunctionDeclarationsOnly(name);
+    if (this.environment.functions.has(name)) {
       this.diagnostics.functionAlreadyDefined(name);
       return new BoundError(node.kind);
     }
-    const newFunctionScope = new BoundScope(this.scope, this.configuration);
-    this.scope = newFunctionScope;
+    const environment = new Environment(this.environment, this.configuration);
+    this.environment = environment;
     const statements = new Array<BoundStatement>();
     for (const statement of node.statements) statements.push(this.bind(statement));
-    this.scope = this.scope.parent as BoundScope;
-    const boundNode = new BoundFunctionExpression(node.functionName.getText(), this.scope, statements);
-    this.scope.functions.set(name, boundNode);
+    this.environment = this.environment.parent as Environment;
+    const boundNode = new BoundFunctionExpression(node.functionName.getText(), this.environment, statements);
+    this.environment.functions.set(name, boundNode);
     return boundNode;
   }
 
@@ -80,7 +80,7 @@ export class Binder {
   }
 
   private inspectCellDeclarations() {
-    for (const cell of this.scope.cells.values()) {
+    for (const cell of this.environment.cells.values()) {
       if (cell.declared) {
         for (const dependency of cell.dependencies.values()) {
           if (dependency.declared) {
@@ -99,20 +99,20 @@ export class Binder {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
         const subject = this.bind(node.left) as Cell;
-        const assignmentScope = new BoundScope(this.scope, this.configuration);
-        this.scope = assignmentScope as BoundScope;
+        const environment = new Environment(this.environment, this.configuration);
+        this.environment = environment as Environment;
         subject.expression = this.bind(node.expression);
         subject.clearDependencies();
-        for (const dependency of this.scope.cells.values()) {
+        for (const dependency of this.environment.cells.values()) {
           subject.track(dependency);
           if (dependency.declared) continue;
-          if (this.configuration.autoDeclaration) {
+          if (this.configuration.autoDeclaration && dependency !== subject) {
             this.diagnostics.autoDeclaredCell(dependency, subject);
             dependency.declared = true;
-            this.scope.transferToParent(dependency);
+            this.environment.transferToParent(dependency);
           }
         }
-        this.scope = this.scope.parent as BoundScope;
+        this.environment = this.environment.parent as Environment;
         subject.declared = true;
         subject.formula = node.expression.getText();
         return new BoundCellAssignment(subject);
@@ -174,7 +174,7 @@ export class Binder {
     const row = node.right.getText();
     const column = node.left.getText();
     const name = node.getText();
-    return this.scope.createCell(name, row, column);
+    return this.environment.createCell(name, row, column);
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

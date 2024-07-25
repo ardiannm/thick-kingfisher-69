@@ -1,22 +1,22 @@
-import { BoundKind } from "./kind/bound.kind";
-import { Cell } from "../../cell";
-import { BoundNumericLiteral } from "./numeric.literal";
-import { CompilerOptions } from "../../compiler.options";
-import { BoundFunctionExpression } from "./function.expression";
+import { BoundKind } from "./binder/kind/bound.kind";
+import { Cell } from "../cell";
+import { BoundNumericLiteral } from "./binder/numeric.literal";
+import { CompilerOptions } from "../compiler.options";
+import { BoundFunctionExpression } from "./binder/function.expression";
 
-export class BoundScope {
+export class Environment {
   cells = new Map<string, Cell>();
   declarationSubscribers = new Set<(Cell: Cell) => void>();
   evaluationSubscribers = new Set<(Cell: Cell) => void>();
   functions = new Map<string, BoundFunctionExpression>();
 
-  constructor(public parent: BoundScope | null, public configuration: CompilerOptions) {}
+  constructor(public parent: Environment | null, public configuration: CompilerOptions) {}
 
   createCell(name: string, row: string, column: string) {
-    const scope = this.resolveScopeForCell(name);
+    const environment = this.resolveEnvForCell(name);
     let data: Cell;
-    if (scope) {
-      data = scope.cells.get(name) as Cell;
+    if (environment) {
+      data = environment.cells.get(name) as Cell;
     } else {
       const expression = new BoundNumericLiteral(0);
       data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.letterToColumnIndex(column));
@@ -25,12 +25,12 @@ export class BoundScope {
     return data;
   }
 
-  private resolveScopeForCell(name: string): BoundScope | null {
+  private resolveEnvForCell(name: string): Environment | null {
     if (this.cells.has(name)) {
       return this;
     }
     if (this.parent) {
-      return this.parent.resolveScopeForCell(name);
+      return this.parent.resolveEnvForCell(name);
     }
     return null;
   }

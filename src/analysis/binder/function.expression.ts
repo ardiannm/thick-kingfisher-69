@@ -1,9 +1,9 @@
 import { BoundKind } from "./kind/bound.kind";
-import { BoundScope } from "./scope";
+import { Environment } from "../environment";
 import { BoundStatement } from "./statement";
 
 export class BoundFunctionExpression extends BoundStatement {
-  constructor(public name: string, public scope: BoundScope, public statements: Array<BoundStatement>) {
+  constructor(public name: string, public scope: Environment, public statements: Array<BoundStatement>) {
     super(BoundKind.FunctionExpression);
   }
 }
