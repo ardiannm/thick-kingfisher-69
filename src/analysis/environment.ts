@@ -4,10 +4,7 @@ import { BoundFunctionExpression } from "./binder/function.expression";
 
 export class Environment {
   cells = new Map<string, Cell>();
-  declarationSubscribers = new Set<(Cell: Cell) => void>();
-  evaluationSubscribers = new Set<(Cell: Cell) => void>();
   functions = new Map<string, BoundFunctionExpression>();
-
   constructor(public parent: Environment | null, public configuration: CompilerOptions) {}
 
   createCell(row: string, column: string, name: string) {
