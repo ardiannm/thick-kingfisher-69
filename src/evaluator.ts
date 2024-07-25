@@ -21,6 +21,7 @@ export class Evaluator {
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;
+
     switch (node.kind) {
       case BoundKind.CompilationUnit:
         return this.evaluateProgram(node as NodeType<BoundCompilationUnit>);
@@ -37,6 +38,7 @@ export class Evaluator {
       case BoundKind.NumericLiteral:
         return this.evaluateNumericLiteral(node as NodeType<BoundNumericLiteral>);
     }
+    console.log(node.kind);
     this.diagnostics.evaluatorMethod(node.kind);
     return 0;
   }

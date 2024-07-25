@@ -21,16 +21,16 @@ export class SyntaxTree {
   }
 
   bind() {
-    if (this.diagnosticsBag.isEmpty()) {
+    if (this.diagnosticsBag.canBind()) {
       return new Binder(this.diagnosticsBag, new CompilerOptions(true, true, true)).bind(this.root);
     }
     return this;
   }
 
   evaluate() {
-    const program = this.bind();
-    if (this.diagnosticsBag.isEmpty()) {
-      return new Evaluator(this.diagnosticsBag).evaluate(program as BoundCompilationUnit);
+    const tree = this.bind();
+    if (this.diagnosticsBag.canEvaluate()) {
+      return new Evaluator(this.diagnosticsBag).evaluate(tree as BoundCompilationUnit);
     }
     return this;
   }

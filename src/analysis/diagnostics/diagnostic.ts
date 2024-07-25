@@ -1,7 +1,9 @@
-export class Diagnostic {
-  private constructor(public message: string) {}
+import { Severity } from "./severity";
 
-  public static createFrom(message: string) {
-    return new Diagnostic(message);
+export class Diagnostic {
+  private constructor(public severity: Severity, public message: string) {}
+
+  public static createFrom(message: string, severity: Severity) {
+    return new Diagnostic(severity, message);
   }
 }

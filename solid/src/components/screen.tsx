@@ -42,12 +42,14 @@ const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
   const [value, setValue] = createSignal(0);
+  const [doEval, setDoEval] = createSignal(false);
 
   createEffect(() => {
-    const program = SyntaxTree.createFrom(text());
-    const response = program.evaluate();
-    setDiagnostics(program.diagnosticsBag.getDiagnostics());
-    setValue(response as number);
+    const tree = SyntaxTree.createFrom(text());
+    const value = tree.evaluate();
+    setDiagnostics(tree.diagnosticsBag.getDiagnostics());
+    setValue(value as number);
+    setDoEval(tree.diagnosticsBag.canEvaluate());
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
@@ -55,8 +57,9 @@ const Input: Component = () => {
   return (
     <div class={styles.input}>
       <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
-      <Show when={diagnostics().length} fallback={<div class={styles.value}>{value()}</div>}>
+      <Show when={diagnostics().length || doEval()}>
         <div class={styles.diagnostics}>
+          <Show when={doEval()}>{<div class={styles.value}>{value()}</div>} </Show>
           <div class={styles.diagnosticsWrapper}>
             <For each={diagnostics()}>
               {(diagnostic) => {
