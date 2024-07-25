@@ -20,7 +20,6 @@ import { BoundStatement } from "./binder/statement";
 import { BoundCompilationUnit } from "./binder/compilation.unit";
 import { Environment } from "./environment";
 import { CellAssignment } from "./parser/cell.assignment";
-import { Cell } from "../cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
 import { CompilerOptions } from "../compiler.options";
 import { FunctionExpression } from "./parser/function.expression";
@@ -86,10 +85,12 @@ export class Binder {
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        const subject = this.bind(node.left) as Cell;
+        var subject = this.bindCellReference(node.left as CellReference);
         const environment = new Environment(this.environment, this.configuration);
         this.environment = environment as Environment;
-        subject.expression = this.bind(node.expression);
+        const expression = this.bind(node.expression);
+        if (subject instanceof BoundError) return subject;
+        subject.expression = expression;
         subject.clearDependencies();
         for (const dependency of this.environment.cells.values()) {
           subject.track(dependency);
@@ -161,14 +162,14 @@ export class Binder {
   }
 
   private bindCellReference(node: CellReference) {
-    if (this.configuration.compactCellNames && node.right.trivia.length) {
-      this.diagnostics.wrongCellNameFormat(node.left.getText() + node.right.getText());
-      return new BoundError(node.kind);
-    }
     const row = node.right.getText();
     const column = node.left.getText();
+    if (this.configuration.compactCellNames && node.right.hasTrivia()) {
+      this.diagnostics.wrongCellNameFormat(column + row);
+      return new BoundError(node.kind);
+    }
     const name = node.getText();
-    return this.environment.createCell(name, row, column);
+    return this.environment.createCell(row, column, name);
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

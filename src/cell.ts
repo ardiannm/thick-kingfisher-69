@@ -1,6 +1,7 @@
 import { BoundExpression } from "./analysis/binder/expression";
 import { BoundKind } from "./analysis/binder/kind/bound.kind";
 import { BoundNode } from "./analysis/binder/bound.node";
+import { BoundNumericLiteral } from "./analysis/binder/numeric.literal";
 
 export class Cell extends BoundNode {
   constructor(
@@ -61,5 +62,9 @@ export class Cell extends BoundNode {
 
   public static createFromIndex(row: number, column: number) {
     return this.columnIndexToLetter(column) + row;
+  }
+
+  public static createFrom(row: string, column: string, name: string) {
+    return new Cell(BoundKind.Cell, name, false, 0, new BoundNumericLiteral(0), new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.letterToColumnIndex(column));
   }
 }

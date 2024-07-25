@@ -49,6 +49,10 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     }
   }
 
+  hasTrivia() {
+    return this.trivia.length;
+  }
+
   override *getChildren(): Generator<SyntaxNode, any, unknown> {
     yield this;
   }

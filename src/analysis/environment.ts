@@ -1,6 +1,4 @@
-import { BoundKind } from "./binder/kind/bound.kind";
 import { Cell } from "../cell";
-import { BoundNumericLiteral } from "./binder/numeric.literal";
 import { CompilerOptions } from "../compiler.options";
 import { BoundFunctionExpression } from "./binder/function.expression";
 
@@ -12,14 +10,13 @@ export class Environment {
 
   constructor(public parent: Environment | null, public configuration: CompilerOptions) {}
 
-  createCell(name: string, row: string, column: string) {
+  createCell(row: string, column: string, name: string) {
     const environment = this.resolveEnvForCell(name);
     let data: Cell;
     if (environment) {
       data = environment.cells.get(name) as Cell;
     } else {
-      const expression = new BoundNumericLiteral(0);
-      data = new Cell(BoundKind.Cell, name, false, 0, expression, new Map<string, Cell>(), new Map<string, Cell>(), "0", parseFloat(row), Cell.letterToColumnIndex(column));
+      data = Cell.createFrom(row, column, name);
     }
     this.cells.set(name, data);
     return data;
