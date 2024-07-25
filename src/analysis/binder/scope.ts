@@ -2,7 +2,6 @@ import { BoundKind } from "./kind/bound.kind";
 import { Cell } from "../../cell";
 import { BoundNumericLiteral } from "./numeric.literal";
 import { CompilerOptions } from "../../compiler.options";
-import { DiagnosticBag } from "../diagnostics/diagnostic.bag";
 import { BoundFunctionExpression } from "./function.expression";
 
 export class BoundScope {
@@ -36,24 +35,10 @@ export class BoundScope {
     return null;
   }
 
-  checkDeclarations(diagnostics: DiagnosticBag) {
-    this.cells.forEach((cell) => {
-      if (!cell.declared) {
-        diagnostics.undeclaredCell(cell.name);
-      }
-      cell.dependencies.forEach((dependency) => {
-        if (!dependency.declared) {
-          diagnostics.undeclaredCell(dependency.name);
-        }
-      });
-      if (cell.contains(cell)) diagnostics.circularDependency(cell);
-    });
-  }
-
-  move(dependency: Cell) {
+  transferToParent(cell: Cell) {
     if (this.parent) {
-      this.parent.cells.set(dependency.name, dependency);
-      this.cells.delete(dependency.name);
+      this.parent.cells.set(cell.name, cell);
+      this.cells.delete(cell.name);
       return true;
     }
     return false;

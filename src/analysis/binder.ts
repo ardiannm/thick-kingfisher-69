@@ -75,8 +75,24 @@ export class Binder {
   private bindProgram(node: CompilationUnit) {
     const root = new Array<BoundStatement>();
     for (const statement of node.root) root.push(this.bind(statement));
-    this.scope.checkDeclarations(this.diagnostics);
+    this.inspectCellDeclarations();
     return new BoundCompilationUnit(root);
+  }
+
+  private inspectCellDeclarations() {
+    for (const cell of this.scope.cells.values()) {
+      if (cell.declared) {
+        for (const dependency of cell.dependencies.values()) {
+          if (dependency.declared) {
+          } else {
+            this.diagnostics.undeclaredCell(dependency.name);
+          }
+        }
+      } else {
+        this.diagnostics.undeclaredCell(cell.name);
+      }
+      if (cell.hasCircularDependecy()) this.diagnostics.circularDependency(cell);
+    }
   }
 
   private bindCellAssignment(node: CellAssignment) {
@@ -87,13 +103,13 @@ export class Binder {
         this.scope = assignmentScope as BoundScope;
         subject.expression = this.bind(node.expression);
         subject.clearDependencies();
-        for (const dep of this.scope.cells.values()) {
-          subject.track(dep);
-          if (dep.declared) continue;
+        for (const dependency of this.scope.cells.values()) {
+          subject.track(dependency);
+          if (dependency.declared) continue;
           if (this.configuration.autoDeclaration) {
-            this.diagnostics.autoDeclaredCell(dep, subject);
-            dep.declared = true;
-            this.scope.move(dep);
+            this.diagnostics.autoDeclaredCell(dependency, subject);
+            dependency.declared = true;
+            this.scope.transferToParent(dependency);
           }
         }
         this.scope = this.scope.parent as BoundScope;

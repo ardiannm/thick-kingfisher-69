@@ -18,25 +18,29 @@ export class Cell extends BoundNode {
     super(kind);
   }
 
-  track(dependency: Cell) {
+  private doesReference(dependency: Cell, visited = new Set()) {
+    if (visited.has(this)) return false;
+    visited.add(this);
+    if (this.dependencies.has(dependency.name)) return true;
+    for (const dep of this.dependencies.values()) if (dep.doesReference(dependency, visited)) return true;
+    return false;
+  }
+
+  public track(dependency: Cell) {
     this.dependencies.set(dependency.name, dependency);
     dependency.subscribers.set(this.name, this);
   }
 
-  contains(dependency: Cell, visited = new Set()) {
-    if (visited.has(this)) return false;
-    visited.add(this);
-    if (this.dependencies.has(dependency.name)) return true;
-    for (const dep of this.dependencies.values()) if (dep.contains(dependency, visited)) return true;
-    return false;
+  public hasCircularDependecy() {
+    return this.doesReference(this);
   }
 
-  clearDependencies() {
+  public clearDependencies() {
     this.dependencies.forEach((dependency) => dependency.subscribers.delete(this.name));
     this.dependencies.clear();
   }
 
-  static columnIndexToLetter(column: number): string {
+  public static columnIndexToLetter(column: number): string {
     let name = "";
     while (column > 0) {
       const remainder = (column - 1) % 26;
@@ -46,7 +50,7 @@ export class Cell extends BoundNode {
     return name;
   }
 
-  static letterToColumnIndex(letter: string): number {
+  public static letterToColumnIndex(letter: string): number {
     let result = 0;
     for (let index = 0; index < letter.length; index++) {
       const charCode = letter.charCodeAt(index) - 65 + 1;
@@ -55,7 +59,7 @@ export class Cell extends BoundNode {
     return result;
   }
 
-  static fromIndex(row: number, column: number) {
+  public static createFromIndex(row: number, column: number) {
     return this.columnIndexToLetter(column) + row;
   }
 }
