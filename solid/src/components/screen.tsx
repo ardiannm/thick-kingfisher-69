@@ -23,7 +23,6 @@ const Input: Component = () => {
     const tree = SyntaxTree.createFrom(text());
     const value = tree.evaluate();
     const d = tree.diagnosticsBag.getDiagnostics();
-    console.log(d);
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnosticsBag.canEvaluate());

@@ -13,7 +13,7 @@ import { BoundUnaryExpression } from "./binder/unary.expression";
 import { BoundUnaryOperatorKind } from "./binder/kind/unary.operator.kind";
 import { ParenthesizedExpression } from "./parser/parenthesized.expression";
 import { BoundNode } from "./binder/bound.node";
-import { BoundError } from "./binder/error";
+import { BoundErrorExpression } from "./binder/error.expression";
 import { CompilationUnit } from "./parser/compilation.unit";
 import { BoundStatement } from "./binder/statement";
 import { BoundCompilationUnit } from "./binder/compilation.unit";
@@ -60,7 +60,7 @@ export class Binder {
         return this.bindCellAssignment(node as NodeType<CellAssignment>);
     }
     this.diagnosticsBag.binderMethod(node.kind);
-    return new BoundError(node.kind);
+    return new BoundErrorExpression(node.kind);
   }
 
   private bindProgram(node: CompilationUnit) {
@@ -90,7 +90,7 @@ export class Binder {
         return new BoundCellAssignment(reference, expression);
     }
     this.diagnosticsBag.cantUseAsAReference(node.left.kind);
-    return new BoundError(node.kind);
+    return new BoundErrorExpression(node.kind);
   }
 
   private bindBinaryExpression(node: BinaryExpression) {

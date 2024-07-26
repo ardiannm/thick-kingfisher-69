@@ -39,7 +39,7 @@ export class Parser {
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
-  public parse() {
+  public parseCompilationUnit() {
     if (this.hasNoMoreTokens()) {
       this.tree.diagnosticsBag.emptyProgram();
     }

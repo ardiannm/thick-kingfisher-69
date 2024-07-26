@@ -13,7 +13,7 @@ export class SyntaxTree {
 
   private constructor(public text: SourceText) {
     const parser = new Parser(this);
-    this.root = parser.parse();
+    this.root = parser.parseCompilationUnit();
   }
 
   public static createFrom(text: string) {

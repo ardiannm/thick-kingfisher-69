@@ -1,6 +1,5 @@
 export enum BoundKind {
   CompilationUnit = "CompilationUnit",
-  Cell = "Cell",
   BinaryExpression = "BinaryExpression",
   UnaryExpression = "UnaryExpression",
   RowReference = "RowReference",
@@ -9,5 +8,6 @@ export enum BoundKind {
   NumericLiteral = "NumericLiteral",
   CellAssignment = "CellAssignment",
   FunctionExpression = "FunctionExpression",
-  Error = "Error",
+  ErrorExpression = "ErrorExpression",
+  Cell = "Cell",
 }
