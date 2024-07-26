@@ -33,9 +33,7 @@ class BoundScope {
       return this.declared.get(name) as Cell;
     }
     console.log(name, "created");
-    const node = Cell.createFrom(name);
-    this.declared.set(name, node);
-    return node;
+    return Cell.createFrom(name);
   }
 }
 
@@ -74,9 +72,9 @@ export class Binder {
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
+        const reference = this.bindCellReference(node.left as CellReference);
         this.scope.references.clear();
         const expression = this.bind(node.expression);
-        const reference = this.bindCellReference(node.left as CellReference);
         reference.expression = expression;
         reference.clearDependencies();
         for (const dependency of this.scope.references.values()) {
@@ -85,6 +83,7 @@ export class Binder {
           this.diagnosticsBag.undeclaredCell(dependency.name);
         }
         this.scope.references.clear();
+        this.scope.declared.set(reference.name, reference);
         return new BoundCellAssignment(reference, expression);
     }
     this.diagnosticsBag.cantUseAsAReference(node.left.kind);
