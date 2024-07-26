@@ -20,6 +20,14 @@ export class Cell extends BoundNode {
     this.dependencies.clear();
   }
 
+  public doesReference(dependency: Cell, visited = new Set()) {
+    if (visited.has(this)) return false;
+    visited.add(this);
+    if (this.dependencies.has(dependency.name)) return true;
+    for (const dep of this.dependencies.values()) if (dep.doesReference(dependency, visited)) return true;
+    return false;
+  }
+
   public static createFrom(name: string) {
     const expression = new BoundNumericLiteral(0);
     return new Cell(name, expression.value, expression);

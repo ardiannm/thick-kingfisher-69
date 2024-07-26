@@ -135,7 +135,7 @@ export class Parser {
       const right = this.nextToken as SyntaxToken<SyntaxNodeKind.NumberToken>;
       const node = new CellReference(this.tree, left, right);
       if (right.hasTrivia()) {
-        this.tree.diagnosticsBag.wrongCellNameFormat(node.getText());
+        this.tree.diagnosticsBag.badCellReference(node.getText());
       }
       return node;
     }
@@ -185,7 +185,7 @@ export class Parser {
     if (this.match(kind)) {
       return this.nextToken as SyntaxToken<Kind>;
     }
-    this.tree.diagnosticsBag.unexpectedTokenFound(this.token.kind);
+    this.tree.diagnosticsBag.badTokenFound(this.token.kind);
     return new SyntaxToken(this.tree, this.token.kind as Kind, this.token.span);
   }
 }

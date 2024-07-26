@@ -21,10 +21,6 @@ export class DiagnosticsBag {
     return this.canBind() && !this.severity.has(Severity.CantEvaluate);
   }
 
-  isEmpty() {
-    return !(this.diagnostics.length > 0);
-  }
-
   getDiagnostics() {
     return this.diagnostics;
   }
@@ -33,7 +29,7 @@ export class DiagnosticsBag {
     return this.report(`Bad character '${text}' found.`, Severity.Ok);
   }
 
-  unexpectedTokenFound(matched: SyntaxKind) {
+  badTokenFound(matched: SyntaxKind) {
     return this.report(`Unexpected token found: '${matched}'.`, Severity.CantBind);
   }
 
@@ -61,15 +57,11 @@ export class DiagnosticsBag {
     return this.report(`Wrong floating number format.`, Severity.CantBind);
   }
 
-  invalidCellState(subject: Cell) {
-    return this.report(`Reference '${subject.name}' is in an invalid state.`, Severity.CantEvaluate);
-  }
-
   autoDeclaredCell(reference: Cell, dependency: Cell) {
     return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Ok);
   }
 
-  wrongCellNameFormat(correctName: string) {
+  badCellReference(correctName: string) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind);
   }
 
@@ -79,13 +71,5 @@ export class DiagnosticsBag {
 
   evaluatorMethod(kind: BoundKind) {
     return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.Ok);
-  }
-
-  functionAlreadyDefined(functionName: string) {
-    return this.report(`Function '${functionName}' has already been declared.`, Severity.CantEvaluate);
-  }
-
-  globalFunctionDeclarationsOnly(functionName: string) {
-    return this.report(`Function '${functionName}' can only be defined within the global scope.`, Severity.CantEvaluate);
   }
 }

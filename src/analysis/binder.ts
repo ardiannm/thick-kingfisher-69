@@ -30,14 +30,11 @@ class BoundScope {
   createCell(name: string): Cell {
     if (this.declared.has(name)) {
       console.log(name, "already exists");
-      const node = this.declared.get(name) as Cell;
-      this.references.set(node.name, node);
-      return node;
+      return this.declared.get(name) as Cell;
     }
-    const node = Cell.createFrom(name);
     console.log(name, "created");
+    const node = Cell.createFrom(name);
     this.declared.set(name, node);
-    this.references.set(node.name, node);
     return node;
   }
 }
@@ -87,7 +84,6 @@ export class Binder {
           if (this.scope.declared.has(dependency.name)) continue;
           this.diagnosticsBag.undeclaredCell(dependency.name);
         }
-        this.scope.declared.has(reference.name);
         this.scope.references.clear();
         return new BoundCellAssignment(reference, expression);
     }
@@ -142,7 +138,9 @@ export class Binder {
 
   private bindCellReference(node: CellReference) {
     const name = node.getText();
-    return this.scope.createCell(name);
+    const bound = this.scope.createCell(name);
+    this.scope.references.set(name, bound);
+    return bound;
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
