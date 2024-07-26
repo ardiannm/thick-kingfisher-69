@@ -41,8 +41,8 @@ export class DiagnosticsBag {
     return this.report(`Can't divide by zero.`, Severity.Ok);
   }
 
-  circularDependency(observer: Cell) {
-    return this.report(`Circular dependency detected in '${observer.name}'.`, Severity.CantEvaluate);
+  circularDependency(reference: string, dependency: string) {
+    return this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind) {

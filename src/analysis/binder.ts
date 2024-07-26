@@ -79,6 +79,9 @@ export class Binder {
         reference.clearDependencies();
         for (const dependency of this.scope.references.values()) {
           reference.track(dependency);
+          if (dependency.doesReference(reference)) {
+            this.diagnosticsBag.circularDependency(reference.name, dependency.name);
+          }
           if (this.scope.declared.has(dependency.name)) continue;
           this.diagnosticsBag.undeclaredCell(dependency.name);
         }
