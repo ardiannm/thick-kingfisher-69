@@ -72,12 +72,14 @@ export class Binder {
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        const reference = this.bindCellReference(node.left as CellReference);
         this.scope.references.clear();
         const expression = this.bind(node.expression);
+        const dependencies = new Set<Cell>(this.scope.references.values());
+        const reference = this.bindCellReference(node.left as CellReference);
+        this.scope.references.clear();
         reference.expression = expression;
         reference.clearDependencies();
-        for (const dependency of this.scope.references.values()) {
+        for (const dependency of dependencies) {
           reference.track(dependency);
           if (dependency.doesReference(reference)) {
             this.diagnosticsBag.circularDependency(reference.name, dependency.name);
@@ -85,7 +87,6 @@ export class Binder {
           if (this.scope.declared.has(dependency.name)) continue;
           this.diagnosticsBag.undeclaredCell(dependency.name);
         }
-        this.scope.references.clear();
         this.scope.declared.set(reference.name, reference);
         return new BoundCellAssignment(reference, expression);
     }
