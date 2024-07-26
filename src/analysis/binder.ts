@@ -25,12 +25,19 @@ import { BoundCellAssignment } from "./binder/cell.assignment";
 
 class BoundScope {
   references = new Map<string, Cell>();
-  declared = new Set<Cell>();
+  declared = new Map<string, Cell>();
 
   createCell(name: string): Cell {
-    if (this.references.has(name)) return this.references.get(name) as Cell;
+    if (this.declared.has(name)) {
+      console.log(name, "already exists");
+      const node = this.declared.get(name) as Cell;
+      this.references.set(node.name, node);
+      return node;
+    }
     const node = Cell.createFrom(name);
-    this.references.set(name, node);
+    console.log(name, "created");
+    this.declared.set(name, node);
+    this.references.set(node.name, node);
     return node;
   }
 }
@@ -70,17 +77,17 @@ export class Binder {
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        const reference = this.bindCellReference(node.left as CellReference);
         this.scope.references.clear();
         const expression = this.bind(node.expression);
+        const reference = this.bindCellReference(node.left as CellReference);
         reference.expression = expression;
         reference.clearDependencies();
         for (const dependency of this.scope.references.values()) {
           reference.track(dependency);
-          if (this.scope.declared.has(dependency)) continue;
+          if (this.scope.declared.has(dependency.name)) continue;
           this.diagnosticsBag.undeclaredCell(dependency.name);
         }
-        this.scope.declared.add(reference);
+        this.scope.declared.has(reference.name);
         this.scope.references.clear();
         return new BoundCellAssignment(reference, expression);
     }

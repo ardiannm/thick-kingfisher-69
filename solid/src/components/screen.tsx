@@ -9,8 +9,8 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: A2
-A3 :: A4+A5`;
+var code = `A1 :: A2+A3
+A3 :: A4+A5+A1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
