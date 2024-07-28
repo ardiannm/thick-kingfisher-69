@@ -35,6 +35,7 @@ export class Parser {
     var token: SyntaxToken<SyntaxKind>;
     do {
       token = lexer.lex();
+      if (token.kind === SyntaxNodeKind.BadToken) continue;
       this.tokens.push(token);
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
