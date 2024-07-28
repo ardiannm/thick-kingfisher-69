@@ -45,16 +45,16 @@ export class DiagnosticsBag {
     return this.report(`Can't divide by zero.`, Severity.Warning);
   }
 
-  circularDependency(reference: string, dependency: string) {
-    return this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate);
+  circularDependency(reference: string, dependency: string, span: Span) {
+    return this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate, span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind) {
     return this.report(`'${unexpected}' is not assignable to a cell reference.`, Severity.CantEvaluate);
   }
 
-  undeclaredCell(cellName: string) {
-    return this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate);
+  undeclaredCell(cellName: string, span: Span) {
+    return this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate, span);
   }
 
   badFloatingPointNumber() {

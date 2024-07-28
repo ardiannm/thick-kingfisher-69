@@ -27,7 +27,6 @@ $ground: #f4f3f8;
   outline: none;
   font-family: inherit;
   resize: none;
-  font-size: 13px;
   cursor: pointer;
   border: none;
   width: 100%;
@@ -51,7 +50,6 @@ $ground: #f4f3f8;
   padding-bottom: 20px;
   height: fit-content;
   font-family: "Roboto";
-  font-size: 11px;
   // background-color: #fca66c4d;
   overflow-y: hidden;
   max-height: 35%;
@@ -90,7 +88,6 @@ $ground: #f4f3f8;
 }
 
 .value {
-  font-size: 11px;
   display: flex;
   @include center;
   text-shadow: 0px 0px 1px gray;

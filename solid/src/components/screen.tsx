@@ -9,7 +9,9 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: A2+A3
+var code = `# circular dependency in cell assignments
+
+A1 :: A2+A3
 A3 :: A4+A5+A1+A8
 A2 :: A3`;
 

@@ -22,9 +22,10 @@ import { CompilerOptions } from "../compiler.options";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { Cell } from "../runtime/cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
+import { BoundCellReference } from "./binder/cell.reference";
 
 class BoundScope {
-  references = new Map<string, Cell>();
+  references = new Map<string, BoundCellReference>();
   declared = new Map<string, Cell>();
 
   createCell(name: string): Cell {
@@ -74,18 +75,18 @@ export class Binder {
       case SyntaxNodeKind.CellReference:
         this.scope.references.clear();
         const expression = this.bind(node.expression);
-        const dependencies = new Set<Cell>(this.scope.references.values());
+        const dependencies = new Set<BoundCellReference>(this.scope.references.values());
         const reference = this.bindCellReference(node.left as CellReference);
         this.scope.references.clear();
         reference.expression = expression;
         reference.clearDependencies();
-        for (const dependency of dependencies) {
-          reference.track(dependency);
-          if (dependency.doesReference(reference)) {
-            this.diagnosticsBag.circularDependency(reference.name, dependency.name);
+        for (const node of dependencies) {
+          reference.track(node.cell);
+          if (node.cell.doesReference(reference)) {
+            this.diagnosticsBag.circularDependency(reference.name, node.cell.name, node.span);
           }
-          if (this.scope.declared.has(dependency.name)) continue;
-          this.diagnosticsBag.undeclaredCell(dependency.name);
+          if (this.scope.declared.has(node.cell.name)) continue;
+          this.diagnosticsBag.undeclaredCell(node.cell.name, node.span);
         }
         this.scope.declared.set(reference.name, reference);
         return new BoundCellAssignment(reference, expression);
@@ -142,7 +143,8 @@ export class Binder {
   private bindCellReference(node: CellReference) {
     const name = node.getText();
     const cell = this.scope.createCell(name);
-    this.scope.references.set(name, cell);
+    const bound = new BoundCellReference(cell, node.getSpan());
+    this.scope.references.set(name, bound);
     return cell;
   }
 
