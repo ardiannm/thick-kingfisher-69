@@ -6,7 +6,7 @@ import { SyntaxToken } from "./syntax.token";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export class UnaryExpression extends ExpressionSyntax {
-  constructor(public override tree: SyntaxTree, public operator: SyntaxToken<UnaryOperatorKind>, public right: SyntaxNode) {
+  constructor(protected override tree: SyntaxTree, public operator: SyntaxToken<UnaryOperatorKind>, public right: SyntaxNode) {
     super(tree, SyntaxNodeKind.UnaryExpression);
   }
 }

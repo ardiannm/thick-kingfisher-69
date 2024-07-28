@@ -21,4 +21,6 @@ export enum SyntaxNodeKind {
   FunctionExpression = "FunctionExpression",
   OpenBraceToken = "OpenBraceToken",
   CloseBraceToken = "CloseBraceToken",
+  BlockStatements = "BlockStatements",
+  BlockScope = "BlockScope",
 }

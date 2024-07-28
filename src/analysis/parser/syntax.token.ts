@@ -39,7 +39,7 @@ export type TokenTextMapper = {
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override tree: SyntaxTree, public override kind: T, private tokenSpan: Span, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
+  constructor(protected override tree: SyntaxTree, public override kind: T, private tokenSpan: Span, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
     super(tree, kind);
   }
 

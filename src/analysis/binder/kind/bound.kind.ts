@@ -8,4 +8,6 @@ export enum BoundKind {
   FunctionExpression = "FunctionExpression",
   CellReference = "CellReference",
   Cell = "Cell",
+  BoundBlockStatements = "BoundBlockStatements",
+  BoundBlockScope = "BoundBlockScope"
 }

@@ -4,7 +4,7 @@ import { ExpressionSyntax } from "./expression.syntax";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export class ParenthesizedExpression extends ExpressionSyntax {
-  constructor(public override tree: SyntaxTree, public openParen: SyntaxNode, public expression: SyntaxNode, public closeParen: SyntaxNode) {
+  constructor(protected override tree: SyntaxTree, public openParen: SyntaxNode, public expression: SyntaxNode, public closeParen: SyntaxNode) {
     super(tree, SyntaxNodeKind.ParenthesizedExpression);
   }
 }

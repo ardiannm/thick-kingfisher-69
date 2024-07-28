@@ -15,6 +15,18 @@ A1 :: B3
 B3 :: A1+D7+A1
 E :: 1+F`;
 
+var code = `# circular dependency in cell assignments
+
+{
+   A1 :: B3
+   B3 :: A1+D7+A1
+   {
+       A1 :: B3
+    }
+}
+
+A1`;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());

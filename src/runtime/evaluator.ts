@@ -17,7 +17,7 @@ export class Evaluator {
 
     switch (node.kind) {
       case BoundKind.CompilationUnit:
-        return this.evaluateProgram(node as NodeType<BoundCompilationUnit>);
+        return this.evaluateCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BinaryExpression:
         return this.evaluateBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
@@ -29,8 +29,8 @@ export class Evaluator {
     return 0;
   }
 
-  private evaluateProgram(node: BoundCompilationUnit): number {
-    for (const statement of node.statements) this.value = this.evaluate(statement);
+  private evaluateCompilationUnit(node: BoundCompilationUnit): number {
+    for (const statement of node.statements.members) this.value = this.evaluate(statement);
     return this.value;
   }
 

@@ -33,8 +33,8 @@ export class DiagnosticsBag {
     return this.report(`Bad character '${text}' found.`, Severity.Warning, span);
   }
 
-  badTokenFound(matched: SyntaxKind, span: Span) {
-    return this.report(`Unexpected token found: '${matched}'.`, Severity.CantBind, span);
+  badTokenFound(matched: SyntaxKind, expecting: SyntaxKind, span: Span) {
+    return this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantBind, span);
   }
 
   emptyProgram(span: Span) {
@@ -67,6 +67,10 @@ export class DiagnosticsBag {
 
   badCellReference(correctName: string, span: Span) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
+  }
+
+  emptyBlockStatement(span: Span) {
+    return this.report(`Empty block statement.`, Severity.Warning, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {

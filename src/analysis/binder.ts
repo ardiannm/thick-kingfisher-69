@@ -23,10 +23,17 @@ import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { Cell } from "../runtime/cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
 import { BoundCellReference } from "./binder/cell.reference";
+import { BlockScope, BlockStatements } from "./parser/block.statement";
+import { BoundBlockStatements } from "./binder/bound.block.statements";
+import { BoundKind } from "./binder/kind/bound.kind";
 
-class BoundScope {
+class BoundScope extends BoundNode {
   private references = new Array<BoundCellReference>();
   private declared = new Map<string, Cell>();
+
+  constructor(public parent: BoundScope | null) {
+    super(BoundKind.BoundBlockScope);
+  }
 
   createCell(name: string): Cell {
     if (this.declared.has(name)) {
@@ -41,7 +48,7 @@ class BoundScope {
     this.references.length = 0;
   }
 
-  storesRef() {
+  hasMore() {
     return this.references.length;
   }
 
@@ -63,14 +70,18 @@ class BoundScope {
 }
 
 export class Binder {
-  scope = new BoundScope();
+  scope = new BoundScope(null);
   constructor(private diagnosticsBag: DiagnosticsBag, public configuration: CompilerOptions) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
       case SyntaxNodeKind.CompilationUnit:
-        return this.bindProgram(node as NodeType<CompilationUnit>);
+        return this.bindCompilationUnit(node as NodeType<CompilationUnit>);
+      case SyntaxNodeKind.BlockScope:
+        return this.bindBlockScope(node as NodeType<BlockScope>);
+      case SyntaxNodeKind.BlockStatements:
+        return this.bindBlockStatements(node as NodeType<BlockStatements>);
       case SyntaxNodeKind.NumberToken:
         return this.bindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.CellReference:
@@ -88,10 +99,24 @@ export class Binder {
     return new BoundErrorExpression(node.kind);
   }
 
-  private bindProgram(node: CompilationUnit) {
-    const root = new Array<BoundStatement>();
-    for (const statement of node.root) root.push(this.bind(statement));
-    return new BoundCompilationUnit(root);
+  private bindCompilationUnit(node: CompilationUnit) {
+    const statements = this.bindBlockStatements(node.root);
+    return new BoundCompilationUnit(statements);
+  }
+
+  private bindBlockScope(node: BlockScope): BoundNode {
+    this.scope = new BoundScope(this.scope);
+    const statements = this.bindBlockStatements(node.statements);
+    if (this.scope.parent) this.scope = this.scope.parent;
+    return statements;
+  }
+
+  private bindBlockStatements(node: BlockStatements) {
+    const members = new Array<BoundStatement>();
+    for (const member of node.members) {
+      members.push(this.bind(member));
+    }
+    return new BoundBlockStatements(members);
   }
 
   private bindCellAssignment(node: CellAssignment) {
@@ -102,7 +127,7 @@ export class Binder {
         const expression = this.bind(node.expression);
         left.expression = expression;
         left.clearDependencies();
-        while (this.scope.storesRef()) {
+        while (this.scope.hasMore()) {
           const bound = this.scope.nextReference();
           left.track(bound.reference);
           if (bound.reference.doesReference(left)) {
@@ -116,7 +141,7 @@ export class Binder {
         return new BoundCellAssignment(left, expression);
     }
     this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
-    this.bind(node.expression)
+    this.bind(node.expression);
     return new BoundErrorExpression(node.kind);
   }
 
