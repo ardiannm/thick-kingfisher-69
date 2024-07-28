@@ -80,7 +80,7 @@ export class Parser {
     const left = this.parseBinaryExpression();
     switch (this.token.kind) {
       case CompositeTokenKind.ColonColonToken:
-        const keyword = this.nextToken as SyntaxToken<CompositeTokenKind.GreaterGreaterToken>;
+        const keyword = this.nextToken as SyntaxToken<CompositeTokenKind.ColonColonToken>;
         return new CellAssignment(this.tree, left, keyword, this.parseBinaryExpression());
     }
     return left;

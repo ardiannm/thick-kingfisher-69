@@ -31,11 +31,11 @@ export class SourceText {
     return new SourceText(text);
   }
 
-  private getLineIndex(position: number): number {
+  public getLineIndex(position: number): number {
     let lower = 0;
     let upper = this.lines.length - 1;
     while (lower <= upper) {
-      var index = lower + (upper - lower) / 2;
+      var index = Math.floor(lower + (upper - lower) / 2);
       var start = this.lines[index].start;
       if (position === start) return index;
       if (start > position) {

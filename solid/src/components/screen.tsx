@@ -43,9 +43,9 @@ const Input: Component = () => {
               {(d) => (
                 <div class={styles.diagnostic}>
                   <span class={styles.diagnosticsLocation}>
-                    {d.span.start}:{d.span.end}
+                    {d.line}:{d.offset}
                   </span>
-                  - <span class={styles.diagnosticMessage}> {d.message}</span>
+                  <span class={styles.diagnosticMessage}> {d.message}</span>
                 </div>
               )}
             </For>
