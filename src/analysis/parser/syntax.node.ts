@@ -22,13 +22,13 @@ export class SyntaxNode {
     return lastNode;
   }
 
-  getSpan(): Span {
-    return Span.createFrom(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
+  public get span(): Span {
+    return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
-  getText(): string {
+  get text(): string {
     var text = "";
-    for (const child of this.getChildren()) text += this.tree.text.get(child.getSpan().start, child.getSpan().end);
+    for (const child of this.getChildren()) text += this.tree.text.get(child.span.start, child.span.end);
     return text;
   }
 }

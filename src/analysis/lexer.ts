@@ -63,9 +63,11 @@ export class Lexer {
     if (this.isSpace()) {
       return this.lexSpaceToken();
     }
-    this.tree.diagnosticsBag.badCharacterFound(this.char());
+    const character = this.char();
     this.next();
-    return new SyntaxToken(this.tree, this.kind, this.createSpan());
+    const span = this.createSpan();
+    this.tree.diagnosticsBag.badCharacterFound(character, span);
+    return new SyntaxToken(this.tree, this.kind, span);
   }
 
   private lexCommentToken(): SyntaxToken<SyntaxKind> {
@@ -122,7 +124,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.tree.diagnosticsBag.badFloatingPointNumber();
+        this.tree.diagnosticsBag.badFloatingPointNumber(this.createSpan());
       }
     }
     while (this.isDigit()) this.next();

@@ -60,7 +60,7 @@ export class Binder {
       case SyntaxNodeKind.CellAssignment:
         return this.bindCellAssignment(node as NodeType<CellAssignment>);
     }
-    this.diagnosticsBag.binderMethod(node.kind);
+    this.diagnosticsBag.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind);
   }
 
@@ -91,7 +91,8 @@ export class Binder {
         this.scope.declared.set(reference.name, reference);
         return new BoundCellAssignment(reference, expression);
     }
-    this.diagnosticsBag.cantUseAsAReference(node.left.kind);
+    const left = node.left;
+    this.diagnosticsBag.cantUseAsAReference(left.kind, left.span);
     return new BoundErrorExpression(node.kind);
   }
 
@@ -141,15 +142,15 @@ export class Binder {
   }
 
   private bindCellReference(node: CellReference) {
-    const name = node.getText();
+    const name = node.text;
     const cell = this.scope.createCell(name);
-    const bound = new BoundCellReference(cell, node.getSpan());
+    const bound = new BoundCellReference(cell, node.span);
     this.scope.references.set(name, bound);
     return cell;
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
-    const value = parseFloat(node.getText());
+    const value = parseFloat(node.text);
     return new BoundNumericLiteral(value);
   }
 }

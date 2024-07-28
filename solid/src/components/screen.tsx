@@ -11,9 +11,8 @@ type Input = InputEvent & {
 
 var code = `# circular dependency in cell assignments
 
-A1 :: A2+A3
-A3 :: A4+A5+A1+A8
-A2 :: A3`;
+A1 :: A3
+A3 ::  A1+A1+A1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

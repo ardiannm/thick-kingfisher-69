@@ -12,7 +12,7 @@ export class DiagnosticsBag {
   private diagnostics = new Array<Diagnostic>();
   private severity = new Set<Severity>();
 
-  private report(message: string, severity: Severity, span: Span = Span.createFrom(0, 0)) {
+  private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
     this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
   }
@@ -29,51 +29,51 @@ export class DiagnosticsBag {
     return this.diagnostics;
   }
 
-  badCharacterFound(text: string) {
-    return this.report(`Bad character '${text}' found.`, Severity.Warning);
+  badCharacterFound(text: string, span: Span) {
+    return this.report(`Bad character '${text}' found.`, Severity.Warning, span);
   }
 
-  badTokenFound(matched: SyntaxKind) {
-    return this.report(`Unexpected token found: '${matched}'.`, Severity.CantBind);
+  badTokenFound(matched: SyntaxKind, span: Span) {
+    return this.report(`Unexpected token found: '${matched}'.`, Severity.CantBind, span);
   }
 
-  emptyProgram() {
-    return this.report(`Program contains no code.`, Severity.CantBind);
+  emptyProgram(span: Span) {
+    return this.report(`Program contains no code.`, Severity.CantBind, span);
   }
 
-  cantDivideByZero() {
-    return this.report(`Can't divide by zero.`, Severity.Warning);
+  cantDivideByZero(span: Span) {
+    return this.report(`Can't divide by zero.`, Severity.Warning, span);
   }
 
   circularDependency(reference: string, dependency: string, span: Span) {
     return this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate, span);
   }
 
-  cantUseAsAReference(unexpected: SyntaxKind) {
-    return this.report(`'${unexpected}' is not assignable to a cell reference.`, Severity.CantEvaluate);
+  cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
+    return this.report(`'${unexpected}' is not assignable to a cell reference.`, Severity.CantEvaluate, span);
   }
 
   undeclaredCell(cellName: string, span: Span) {
     return this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate, span);
   }
 
-  badFloatingPointNumber() {
-    return this.report(`Wrong floating number format.`, Severity.CantBind);
+  badFloatingPointNumber(span: Span) {
+    return this.report(`Wrong floating number format.`, Severity.CantBind, span);
   }
 
-  autoDeclaredCell(reference: Cell, dependency: Cell) {
-    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning);
+  autoDeclaredCell(reference: Cell, dependency: Cell, span: Span) {
+    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
   }
 
   badCellReference(correctName: string, span: Span) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
   }
 
-  binderMethod(kind: SyntaxKind) {
-    return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind);
+  binderMethod(kind: SyntaxKind, span: Span) {
+    return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }
 
   evaluatorMethod(kind: BoundKind) {
-    return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate);
+    return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, Span.createFrom(0, 1));
   }
 }
