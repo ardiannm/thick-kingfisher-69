@@ -1,5 +1,5 @@
 export enum Severity {
-  Ok,
+  Warning,
   CantParse,
   CantBind,
   CantEvaluate,

@@ -1,7 +1,7 @@
-export class TokenSpan {
+export class Span {
   private constructor(public start: number, public end: number) {}
 
   public static createFrom(start: number, end: number) {
-    return new TokenSpan(start, end);
+    return new Span(start, end);
   }
 }

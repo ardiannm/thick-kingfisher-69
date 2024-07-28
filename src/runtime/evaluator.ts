@@ -7,7 +7,6 @@ import { BoundNumericLiteral } from "../analysis/binder/numeric.literal";
 import { BoundUnaryExpression } from "../analysis/binder/unary.expression";
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
-import { BoundFunctionExpression } from "../analysis/binder/function.expression";
 
 export class Evaluator {
   private value = 0;
@@ -19,8 +18,6 @@ export class Evaluator {
     switch (node.kind) {
       case BoundKind.CompilationUnit:
         return this.evaluateProgram(node as NodeType<BoundCompilationUnit>);
-      case BoundKind.FunctionExpression:
-        return this.evaluateFunctionExpression(node as NodeType<BoundFunctionExpression>);
       case BoundKind.BinaryExpression:
         return this.evaluateBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.UnaryExpression:
@@ -30,10 +27,6 @@ export class Evaluator {
     }
     this.diagnostics.evaluatorMethod(node.kind);
     return 0;
-  }
-
-  private evaluateFunctionExpression(node: BoundFunctionExpression): number {
-    return this.value;
   }
 
   private evaluateProgram(node: BoundCompilationUnit): number {

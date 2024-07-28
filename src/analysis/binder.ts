@@ -29,10 +29,10 @@ class BoundScope {
 
   createCell(name: string): Cell {
     if (this.declared.has(name)) {
-      console.log(name, "already exists");
+      // console.log(name, "already exists");
       return this.declared.get(name) as Cell;
     }
-    console.log(name, "created");
+    // console.log(name, "created");
     return Cell.createFrom(name);
   }
 }
@@ -141,9 +141,9 @@ export class Binder {
 
   private bindCellReference(node: CellReference) {
     const name = node.getText();
-    const bound = this.scope.createCell(name);
-    this.scope.references.set(name, bound);
-    return bound;
+    const cell = this.scope.createCell(name);
+    this.scope.references.set(name, cell);
+    return cell;
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

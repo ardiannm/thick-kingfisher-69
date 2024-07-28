@@ -36,11 +36,16 @@ const Input: Component = () => {
       <Show when={diagnostics().length || doEval()}>
         <div class={styles.diagnostics}>
           <Show when={doEval()}>{<div class={styles.value}>{value()}</div>} </Show>
-          <div class={styles.diagnosticsWrapper}>
+          <div class={styles.diagnosticsContainer}>
             <For each={diagnostics()}>
-              {(diagnostic) => {
-                return <div class={styles.diagnostic}>{diagnostic.message}</div>;
-              }}
+              {(d) => (
+                <div class={styles.diagnostic}>
+                  <span class={styles.diagnosticsLocation}>
+                    {d.span.start}:{d.span.end}
+                  </span>
+                  <span>{d.message}</span>
+                </div>
+              )}
             </For>
           </div>
         </div>

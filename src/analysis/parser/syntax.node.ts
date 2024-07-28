@@ -1,4 +1,4 @@
-import { TokenSpan } from "../text/token.span";
+import { Span } from "../text/span";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 
@@ -22,8 +22,8 @@ export class SyntaxNode {
     return lastNode;
   }
 
-  getSpan(): TokenSpan {
-    return TokenSpan.createFrom(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
+  getSpan(): Span {
+    return Span.createFrom(this.getFirstChild().getSpan().start, this.getLastChild().getSpan().end);
   }
 
   getText(): string {

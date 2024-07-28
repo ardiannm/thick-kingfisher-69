@@ -135,7 +135,7 @@ export class Parser {
       const right = this.nextToken as SyntaxToken<SyntaxNodeKind.NumberToken>;
       const node = new CellReference(this.tree, left, right);
       if (right.hasTrivia()) {
-        this.tree.diagnosticsBag.badCellReference(node.getText());
+        this.tree.diagnosticsBag.badCellReference(node.getText(), node.getSpan());
       }
       return node;
     }

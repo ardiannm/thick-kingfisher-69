@@ -6,6 +6,7 @@ import { BoundNumericLiteral } from "../analysis/binder/numeric.literal";
 export class Cell extends BoundNode {
   private observers = new Map<string, Cell>();
   private dependencies = new Map<string, Cell>();
+
   private constructor(public name: string, public value: number, public expression: BoundExpression) {
     super(BoundKind.Cell);
   }

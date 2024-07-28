@@ -1,16 +1,20 @@
 import { Cell } from "../../runtime/cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
+import { SourceText } from "../text/source.text";
+import { Span } from "../text/span";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
+  constructor(private text: SourceText) {}
+
   private diagnostics = new Array<Diagnostic>();
   private severity = new Set<Severity>();
 
-  private report(message: string, severity: Severity) {
+  private report(message: string, severity: Severity, span: Span = Span.createFrom(0, 0)) {
     this.severity.add(severity);
-    this.diagnostics.push(Diagnostic.createFrom(message, severity));
+    this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
   }
 
   canBind() {
@@ -26,7 +30,7 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string) {
-    return this.report(`Bad character '${text}' found.`, Severity.Ok);
+    return this.report(`Bad character '${text}' found.`, Severity.Warning);
   }
 
   badTokenFound(matched: SyntaxKind) {
@@ -38,7 +42,7 @@ export class DiagnosticsBag {
   }
 
   cantDivideByZero() {
-    return this.report(`Can't divide by zero.`, Severity.Ok);
+    return this.report(`Can't divide by zero.`, Severity.Warning);
   }
 
   circularDependency(reference: string, dependency: string) {
@@ -58,18 +62,18 @@ export class DiagnosticsBag {
   }
 
   autoDeclaredCell(reference: Cell, dependency: Cell) {
-    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Ok);
+    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning);
   }
 
-  badCellReference(correctName: string) {
-    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind);
+  badCellReference(correctName: string, span: Span) {
+    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
   }
 
   binderMethod(kind: SyntaxKind) {
-    return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantEvaluate);
+    return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind);
   }
 
   evaluatorMethod(kind: BoundKind) {
-    return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.Ok);
+    return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate);
   }
 }
