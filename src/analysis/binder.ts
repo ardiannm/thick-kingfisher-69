@@ -116,6 +116,7 @@ export class Binder {
         return new BoundCellAssignment(left, expression);
     }
     this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
+    this.bind(node.expression)
     return new BoundErrorExpression(node.kind);
   }
 
