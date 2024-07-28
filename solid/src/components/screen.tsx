@@ -11,8 +11,8 @@ type Input = InputEvent & {
 
 var code = `# circular dependency in cell assignments
 
-A1 :: A3
-A3 ::  A1+A1+A1`;
+A1 :: B3+C
+B3 :: A1+D7+A1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
@@ -44,7 +44,7 @@ const Input: Component = () => {
                   <span class={styles.diagnosticsLocation}>
                     {d.span.start}:{d.span.end}
                   </span>
-                  <span>{d.message}</span>
+                  - <span class={styles.diagnosticMessage}> {d.message}</span>
                 </div>
               )}
             </For>

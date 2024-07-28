@@ -78,13 +78,18 @@ $ground: #f4f3f8;
   box-sizing: border-box;
   height: fit-content;
   padding-bottom: 1px;
+  margin-bottom: 1px;
 }
 
 .diagnosticsLocation {
   padding-inline: 7px;
   justify-content: left;
   display: flex;
-  min-width: 43px;
+  min-width: 40px;
+}
+
+.diagnosticMessage {
+  margin-left: 3px;
 }
 
 .value {

@@ -25,8 +25,8 @@ import { BoundCellAssignment } from "./binder/cell.assignment";
 import { BoundCellReference } from "./binder/cell.reference";
 
 class BoundScope {
-  references = new Map<string, BoundCellReference>();
-  declared = new Map<string, Cell>();
+  private references = new Array<BoundCellReference>();
+  private declared = new Map<string, Cell>();
 
   createCell(name: string): Cell {
     if (this.declared.has(name)) {
@@ -35,6 +35,30 @@ class BoundScope {
     }
     // console.log(name, "created");
     return Cell.createFrom(name);
+  }
+
+  clearStack() {
+    this.references.length = 0;
+  }
+
+  storesRef() {
+    return this.references.length;
+  }
+
+  nextReference() {
+    return this.references.shift() as BoundCellReference;
+  }
+
+  registerReference(reference: BoundCellReference) {
+    this.references.push(reference);
+  }
+
+  declareCell(cell: Cell) {
+    this.declared.set(cell.name, cell);
+  }
+
+  isDeclared(cell: string) {
+    return this.declared.has(cell);
   }
 }
 
@@ -73,26 +97,25 @@ export class Binder {
   private bindCellAssignment(node: CellAssignment) {
     switch (node.left.kind) {
       case SyntaxNodeKind.CellReference:
-        this.scope.references.clear();
+        const left = this.bindCellReference(node.left as CellReference);
+        this.scope.clearStack();
         const expression = this.bind(node.expression);
-        const dependencies = new Set<BoundCellReference>(this.scope.references.values());
-        const reference = this.bindCellReference(node.left as CellReference);
-        this.scope.references.clear();
-        reference.expression = expression;
-        reference.clearDependencies();
-        for (const node of dependencies) {
-          reference.track(node.cell);
-          if (node.cell.doesReference(reference)) {
-            this.diagnosticsBag.circularDependency(reference.name, node.cell.name, node.span);
+        left.expression = expression;
+        left.clearDependencies();
+        while (this.scope.storesRef()) {
+          const bound = this.scope.nextReference();
+          left.track(bound.reference);
+          if (bound.reference.doesReference(left)) {
+            this.diagnosticsBag.circularDependency(left.name, bound.reference.name, bound.span);
           }
-          if (this.scope.declared.has(node.cell.name)) continue;
-          this.diagnosticsBag.undeclaredCell(node.cell.name, node.span);
+          if (this.scope.isDeclared(bound.reference.name)) continue;
+          this.diagnosticsBag.undeclaredCell(bound.reference.name, bound.span);
         }
-        this.scope.declared.set(reference.name, reference);
-        return new BoundCellAssignment(reference, expression);
+        this.scope.declareCell(left);
+        this.scope.clearStack();
+        return new BoundCellAssignment(left, expression);
     }
-    const left = node.left;
-    this.diagnosticsBag.cantUseAsAReference(left.kind, left.span);
+    this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
     return new BoundErrorExpression(node.kind);
   }
 
@@ -145,7 +168,7 @@ export class Binder {
     const name = node.text;
     const cell = this.scope.createCell(name);
     const bound = new BoundCellReference(cell, node.span);
-    this.scope.references.set(name, bound);
+    this.scope.registerReference(bound);
     return cell;
   }
 
