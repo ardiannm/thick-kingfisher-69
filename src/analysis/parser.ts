@@ -81,20 +81,20 @@ export class Parser {
   private parseBinaryExpression(parentPrecedence = 0): ExpressionSyntax {
     let left = this.parseUnaryExpression();
     while (true) {
-      const binaryPrecedence = SyntaxFacts.binaryPrecedence(this.peekToken().kind);
-      if (binaryPrecedence === 0 || binaryPrecedence <= parentPrecedence) {
+      const precedence = SyntaxFacts.binaryPrecedence(this.peekToken().kind);
+      if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }
       const operator = this.nextToken as SyntaxToken<BinaryOperatorKind>;
-      const right = this.parseBinaryExpression(binaryPrecedence);
+      const right = this.parseBinaryExpression(precedence);
       left = new BinaryExpression(this.tree, left, operator, right);
     }
     return left;
   }
 
   private parseUnaryExpression(): ExpressionSyntax {
-    const BinaryPrecedence = SyntaxFacts.unaryPrecedence(this.peekToken().kind);
-    if (BinaryPrecedence !== 0) {
+    const precedence = SyntaxFacts.unaryPrecedence(this.peekToken().kind);
+    if (precedence) {
       const operator = this.nextToken as SyntaxToken<UnaryOperatorKind>;
       const right = this.parseUnaryExpression();
       return new UnaryExpression(this.tree, operator, right);

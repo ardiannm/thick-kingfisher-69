@@ -27,6 +27,8 @@ var code = `# circular dependency in cell assignments
 
 A1`;
 
+var code = ``;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
