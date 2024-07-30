@@ -131,11 +131,7 @@ export class Parser {
       case SyntaxNodeKind.NumberToken:
         return this.getNextToken();
     }
-    if (this.match(SyntaxNodeKind.EndOfFileToken)) {
-      this.tree.diagnostics.expectingSyntaxExpression(token.span);
-    } else {
-      this.expect(SyntaxNodeKind.SyntaxExpression);
-    }
+    this.tree.diagnostics.expectingSyntaxExpression(token.span);
     return this.getNextToken();
   }
 

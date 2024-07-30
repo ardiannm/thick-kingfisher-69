@@ -63,6 +63,10 @@ export class DiagnosticsBag {
     return this.report(`Wrong floating number format.`, Severity.CantBind, span);
   }
 
+  usginBeforeDeclaration(name: string, span: Span) {
+    return this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
+  }
+
   autoDeclaredCell(reference: Cell, dependency: Cell, span: Span) {
     return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
   }
