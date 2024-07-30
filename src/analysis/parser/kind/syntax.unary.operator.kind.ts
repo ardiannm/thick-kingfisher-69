@@ -1,4 +1,4 @@
-export enum UnaryOperatorKind {
+export enum SyntaxUnaryOperatorKind {
   PlusToken = "PlusToken",
   MinusToken = "MinusToken",
 }

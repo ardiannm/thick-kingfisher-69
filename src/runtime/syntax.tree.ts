@@ -1,6 +1,6 @@
 import { SourceText } from "../analysis/text/source.text";
 import { Parser } from "../analysis/parser";
-import { CompilationUnit } from "../analysis/parser/compilation.unit";
+import { SyntaxCompilationUnit } from "../analysis/parser/syntax.compilation.unit";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Binder } from "../analysis/binder";
 import { CompilerOptions } from "../compiler.options";
@@ -8,8 +8,8 @@ import { Evaluator } from "./evaluator";
 import { BoundCompilationUnit } from "../analysis/binder/compilation.unit";
 
 export class SyntaxTree {
-  public root: CompilationUnit;
-  public readonly diagnosticsBag = new DiagnosticsBag(this.text);
+  public root: SyntaxCompilationUnit;
+  public readonly diagnostics = new DiagnosticsBag(this.text);
 
   private constructor(public text: SourceText) {
     const parser = new Parser(this);
@@ -21,16 +21,16 @@ export class SyntaxTree {
   }
 
   bind() {
-    if (this.diagnosticsBag.canBind()) {
-      return new Binder(this.diagnosticsBag, new CompilerOptions(true)).bind(this.root);
+    if (this.diagnostics.canBind()) {
+      return new Binder(this.diagnostics, new CompilerOptions(true)).bind(this.root);
     }
     return this;
   }
 
   evaluate() {
     const tree = this.bind();
-    if (this.diagnosticsBag.canEvaluate()) {
-      return new Evaluator(this.diagnosticsBag).evaluate(tree as BoundCompilationUnit);
+    if (this.diagnostics.canEvaluate()) {
+      return new Evaluator(this.diagnostics).evaluate(tree as BoundCompilationUnit);
     }
     return this;
   }

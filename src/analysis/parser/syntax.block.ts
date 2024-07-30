@@ -1,22 +1,16 @@
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxToken } from "./syntax.token";
-import { StatementSyntax } from "./statement.syntax";
+import { SyntaxStatement } from "./sytax.statements";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 import { SyntaxNode } from "./syntax.node";
 
-export class BlockScope extends SyntaxNode {
+export class SyntaxBlock extends SyntaxNode {
   constructor(
     protected override tree: SyntaxTree,
     public openBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
-    public statements: BlockStatement,
+    public statements: Array<SyntaxStatement>,
     public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
   ) {
-    super(tree, SyntaxNodeKind.BlockScope);
-  }
-}
-
-export class BlockStatement extends SyntaxNode {
-  constructor(protected override tree: SyntaxTree, public members: Array<StatementSyntax>) {
-    super(tree, SyntaxNodeKind.BlockStatements);
+    super(tree, SyntaxNodeKind.SyntaxBlock);
   }
 }

@@ -30,7 +30,7 @@ export class Evaluator {
   }
 
   private evaluateCompilationUnit(node: BoundCompilationUnit): number {
-    for (const statement of node.statements.members) this.value = this.evaluate(statement);
+    for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
   }
 

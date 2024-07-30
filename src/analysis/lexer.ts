@@ -66,7 +66,7 @@ export class Lexer {
     const character = this.char();
     this.next();
     const span = this.createSpan();
-    this.tree.diagnosticsBag.badCharacterFound(character, span);
+    this.tree.diagnostics.badCharacterFound(character, span);
     return new SyntaxToken(this.tree, this.kind, span);
   }
 
@@ -124,7 +124,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.tree.diagnosticsBag.badFloatingPointNumber(this.createSpan());
+        this.tree.diagnostics.badFloatingPointNumber(this.createSpan());
       }
     }
     while (this.isDigit()) this.next();

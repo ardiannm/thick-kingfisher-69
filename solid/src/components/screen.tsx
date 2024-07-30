@@ -38,10 +38,10 @@ const Input: Component = () => {
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text());
     const value = tree.evaluate();
-    const d = tree.diagnosticsBag.getDiagnostics();
+    const d = tree.diagnostics.getDiagnostics();
     setDiagnostics(d);
     setValue(value as number);
-    setDoEval(tree.diagnosticsBag.canEvaluate());
+    setDoEval(tree.diagnostics.canEvaluate());
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);

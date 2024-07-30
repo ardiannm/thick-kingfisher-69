@@ -1,15 +1,15 @@
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { BinaryOperatorKind } from "./kind/binary.operator.kind";
-import { UnaryOperatorKind } from "./kind/unary.operator.kind";
+import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 
 export class SyntaxFacts {
   static unaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
-      case UnaryOperatorKind.PlusToken:
-      case UnaryOperatorKind.MinusToken:
+      case SyntaxUnaryOperatorKind.PlusToken:
+      case SyntaxUnaryOperatorKind.MinusToken:
         return 3;
       default:
         return 0;

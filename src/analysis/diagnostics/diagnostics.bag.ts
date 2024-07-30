@@ -1,6 +1,7 @@
 import { Cell } from "../../runtime/cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
+import { SyntaxNode } from "../parser/syntax.node";
 import { SourceText } from "../text/source.text";
 import { Span } from "../text/span";
 import { Diagnostic } from "./diagnostic";
@@ -15,6 +16,11 @@ export class DiagnosticsBag {
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
     this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
+  }
+
+  hasErrorAfter(syntax: SyntaxNode) {
+    for (const d of this.diagnostics) if (d.span.start > syntax.span.start) return true;
+    return false;
   }
 
   canBind() {
@@ -71,6 +77,10 @@ export class DiagnosticsBag {
 
   badRangeFormat(span: Span) {
     return this.report(`Not a valid range reference. Expecting a cell reference, row or column.`, Severity.CantBind, span);
+  }
+
+  expectingSyntaxExpression(span: Span) {
+    return this.report(`Expecting an expression.`, Severity.CantBind, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {
