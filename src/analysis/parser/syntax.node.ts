@@ -22,6 +22,10 @@ export class SyntaxNode {
     return lastNode;
   }
 
+  hasTrivia(): boolean {
+    return this.getFirstChild().hasTrivia();
+  }
+
   public get span(): Span {
     return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }

@@ -8,14 +8,14 @@ export class BlockScope extends SyntaxNode {
   constructor(
     protected override tree: SyntaxTree,
     public openBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
-    public statements: BlockStatements,
+    public statements: BlockStatement,
     public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
   ) {
     super(tree, SyntaxNodeKind.BlockScope);
   }
 }
 
-export class BlockStatements extends SyntaxNode {
+export class BlockStatement extends SyntaxNode {
   constructor(protected override tree: SyntaxTree, public members: Array<StatementSyntax>) {
     super(tree, SyntaxNodeKind.BlockStatements);
   }

@@ -23,7 +23,7 @@ import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { Cell } from "../runtime/cell";
 import { BoundCellAssignment } from "./binder/cell.assignment";
 import { BoundCellReference } from "./binder/cell.reference";
-import { BlockScope, BlockStatements } from "./parser/block.statement";
+import { BlockScope, BlockStatement } from "./parser/block.statement";
 import { BoundBlockStatements } from "./binder/bound.block.statements";
 import { BoundKind } from "./binder/kind/bound.kind";
 
@@ -81,7 +81,7 @@ export class Binder {
       case SyntaxNodeKind.BlockScope:
         return this.bindBlockScope(node as NodeType<BlockScope>);
       case SyntaxNodeKind.BlockStatements:
-        return this.bindBlockStatements(node as NodeType<BlockStatements>);
+        return this.bindBlockStatements(node as NodeType<BlockStatement>);
       case SyntaxNodeKind.NumberToken:
         return this.bindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.CellReference:
@@ -111,7 +111,7 @@ export class Binder {
     return statements;
   }
 
-  private bindBlockStatements(node: BlockStatements) {
+  private bindBlockStatements(node: BlockStatement) {
     const members = new Array<BoundStatement>();
     for (const member of node.members) {
       members.push(this.bind(member));
