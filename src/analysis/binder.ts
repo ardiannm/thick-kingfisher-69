@@ -1,47 +1,47 @@
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
-import { BinaryOperatorKind } from "./parser/kind/binary.operator.kind";
+import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./parser/kind/syntax.unary.operator.kind";
 import { SyntaxNode } from "./parser/syntax.node";
 import { SyntaxBinaryExpression } from "./parser/syntax.binary.expression";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { SyntaxToken } from "./parser/syntax.token";
 import { BoundBinaryExpression } from "./binder/binary.expression";
-import { BoundNumericLiteral } from "./binder/numeric.literal";
-import { BoundBinaryOperatorKind } from "./binder/kind/binary.operator.kind";
-import { UnaryExpression } from "./parser/unary.expression";
-import { BoundUnaryExpression } from "./binder/unary.expression";
-import { BoundUnaryOperatorKind } from "./binder/kind/unary.operator.kind";
+import { BoundNumericLiteral } from "./binder/bound.numeric.literal";
+import { BoundBinaryOperatorKind } from "./binder/kind/bound.binary.operator.kind";
+import { SyntaxUnaryExpression } from "./parser/syntax.unary.expression";
+import { BoundUnaryExpression } from "./binder/bound.unary.expression";
+import { BoundUnaryOperatorKind } from "./binder/kind/bound.unary.operator.kind";
 import { SyntaxParenthesis } from "./parser/syntax.parenthesis";
 import { BoundNode } from "./binder/bound.node";
-import { BoundErrorExpression } from "./binder/error.expression";
+import { BoundErrorExpression } from "./binder/bound.error.expression";
 import { SyntaxCompilationUnit } from "./parser/syntax.compilation.unit";
-import { BoundCompilationUnit } from "./binder/compilation.unit";
+import { BoundCompilationUnit } from "./binder/bound.compilation.unit";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { CompilerOptions } from "../compiler.options";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
-import { Cell } from "../runtime/cell";
-import { BoundCellAssignment } from "./binder/cell.assignment";
-import { BoundCellReference } from "./binder/cell.reference";
+import { BoundCell } from "./binder/bound.cell";
+import { BoundCellAssignment } from "./binder/bound.cell.assignment";
+import { BoundCellReference } from "./binder/bound.cell.reference";
 import { BoundKind } from "./binder/kind/bound.kind";
-import { BoundStatement } from "./binder/statement";
+import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 
 class BoundScope extends BoundNode {
   private references = new Array<BoundCellReference>();
-  private declared = new Map<string, Cell>();
+  private declared = new Map<string, BoundCell>();
 
   constructor(public parent: BoundScope | null) {
     super(BoundKind.BoundScope);
   }
 
-  createCell(name: string): Cell {
+  createCell(name: string): BoundCell {
     if (this.declared.has(name)) {
       // console.log(name, "already exists");
-      return this.declared.get(name) as Cell;
+      return this.declared.get(name) as BoundCell;
     }
     // console.log(name, "created");
-    return Cell.createFrom(name);
+    return BoundCell.createFrom(name);
   }
 
   clearStack() {
@@ -60,7 +60,7 @@ class BoundScope extends BoundNode {
     this.references.push(reference);
   }
 
-  declareCell(cell: Cell) {
+  declareCell(cell: BoundCell) {
     this.declared.set(cell.name, cell);
   }
 
@@ -85,7 +85,7 @@ export class Binder {
       case SyntaxNodeKind.SyntaxParenthesis:
         return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
-        return this.bindSyntaxUnaryExpression(node as NodeType<UnaryExpression>);
+        return this.bindSyntaxUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
       case SyntaxNodeKind.BinaryExpression:
         return this.bindSyntaxBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
       case SyntaxNodeKind.SyntaxCellAssignment:
@@ -145,22 +145,22 @@ export class Binder {
     return new BoundBinaryExpression(left, operator, right);
   }
 
-  private bindBinaryOperatorKind(Kind: BinaryOperatorKind): BoundBinaryOperatorKind {
+  private bindBinaryOperatorKind(Kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
     switch (Kind) {
-      case BinaryOperatorKind.PlusToken:
+      case SyntaxBinaryOperatorKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;
-      case BinaryOperatorKind.MinusToken:
+      case SyntaxBinaryOperatorKind.MinusToken:
         return BoundBinaryOperatorKind.Subtraction;
-      case BinaryOperatorKind.StarToken:
+      case SyntaxBinaryOperatorKind.StarToken:
         return BoundBinaryOperatorKind.Multiplication;
-      case BinaryOperatorKind.SlashToken:
+      case SyntaxBinaryOperatorKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
-      case BinaryOperatorKind.HatToken:
+      case SyntaxBinaryOperatorKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
   }
 
-  private bindSyntaxUnaryExpression(node: UnaryExpression) {
+  private bindSyntaxUnaryExpression(node: SyntaxUnaryExpression) {
     const right = this.bind(node.right);
     switch (node.operator.kind) {
       case SyntaxUnaryOperatorKind.MinusToken:

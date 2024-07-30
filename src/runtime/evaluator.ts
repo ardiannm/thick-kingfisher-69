@@ -1,10 +1,10 @@
 import { BoundKind } from "../analysis/binder/kind/bound.kind";
-import { BoundCompilationUnit } from "../analysis/binder/compilation.unit";
-import { BoundBinaryOperatorKind } from "../analysis/binder/kind/binary.operator.kind";
-import { BoundUnaryOperatorKind } from "../analysis/binder/kind/unary.operator.kind";
+import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
+import { BoundBinaryOperatorKind } from "../analysis/binder/kind/bound.binary.operator.kind";
+import { BoundUnaryOperatorKind } from "../analysis/binder/kind/bound.unary.operator.kind";
 import { BoundBinaryExpression } from "../analysis/binder/binary.expression";
-import { BoundNumericLiteral } from "../analysis/binder/numeric.literal";
-import { BoundUnaryExpression } from "../analysis/binder/unary.expression";
+import { BoundNumericLiteral } from "../analysis/binder/bound.numeric.literal";
+import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression";
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 
@@ -16,13 +16,13 @@ export class Evaluator {
     type NodeType<T> = Kind & T;
 
     switch (node.kind) {
-      case BoundKind.CompilationUnit:
+      case BoundKind.BoundCompilationUnit:
         return this.evaluateCompilationUnit(node as NodeType<BoundCompilationUnit>);
-      case BoundKind.BinaryExpression:
+      case BoundKind.BoundBinaryExpression:
         return this.evaluateBinaryExpression(node as NodeType<BoundBinaryExpression>);
-      case BoundKind.UnaryExpression:
+      case BoundKind.BoundUnaryExpression:
         return this.evaluateUnaryExpression(node as NodeType<BoundUnaryExpression>);
-      case BoundKind.NumericLiteral:
+      case BoundKind.BoundNumericLiteral:
         return this.evaluateNumericLiteral(node as NodeType<BoundNumericLiteral>);
     }
     this.diagnostics.evaluatorMethod(node.kind);

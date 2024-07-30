@@ -2,18 +2,18 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
-import { BinaryOperatorKind } from "./kind/binary.operator.kind";
-import { CompositeTokenKind } from "./kind/composite.token.kind";
+import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
+import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { Span } from "../text/span";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export type TokenTextMapper = {
-  [BinaryOperatorKind.PlusToken]: "+";
-  [BinaryOperatorKind.MinusToken]: "-";
-  [BinaryOperatorKind.StarToken]: "*";
-  [BinaryOperatorKind.SlashToken]: "/";
-  [BinaryOperatorKind.HatToken]: "^";
+  [SyntaxBinaryOperatorKind.PlusToken]: "+";
+  [SyntaxBinaryOperatorKind.MinusToken]: "-";
+  [SyntaxBinaryOperatorKind.StarToken]: "*";
+  [SyntaxBinaryOperatorKind.SlashToken]: "/";
+  [SyntaxBinaryOperatorKind.HatToken]: "^";
   [SyntaxNodeKind.OpenParenthesisToken]: "(";
   [SyntaxNodeKind.CloseParenthesisToken]: ")";
   [SyntaxNodeKind.OpenBraceToken]: "{";
@@ -22,9 +22,9 @@ export type TokenTextMapper = {
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";
   [SyntaxNodeKind.ColonToken]: ":";
-  [CompositeTokenKind.GreaterGreaterToken]: ">>";
-  [CompositeTokenKind.ColonColonToken]: "::";
-  [CompositeTokenKind.PointerToken]: "->";
+  [SyntaxCompositeTokenKind.GreaterGreaterToken]: ">>";
+  [SyntaxCompositeTokenKind.ColonColonToken]: "::";
+  [SyntaxCompositeTokenKind.PointerToken]: "->";
   [SyntaxKeywordKind.TrueKeyword]: "true";
   [SyntaxKeywordKind.FalseKeyword]: "false";
   [SyntaxNodeKind.EndOfFileToken]: "";

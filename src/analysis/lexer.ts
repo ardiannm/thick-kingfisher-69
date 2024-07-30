@@ -1,9 +1,9 @@
 import { SyntaxKind } from "./parser/kind/syntax.kind";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
-import { BinaryOperatorKind } from "./parser/kind/binary.operator.kind";
+import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
 import { SyntaxToken, TokenTextMapper } from "./parser/syntax.token";
 import { SyntaxFacts } from "./parser/syntax.facts";
-import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
+import { SyntaxCompositeTokenKind } from "./parser/kind/syntax.composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
 import { SyntaxTree } from "../runtime/syntax.tree";
 import { Span } from "./text/span";
@@ -42,7 +42,7 @@ export class Lexer {
         return this.lexBadToken();
       case SyntaxNodeKind.HashToken:
         return this.lexCommentToken();
-      case BinaryOperatorKind.MinusToken:
+      case SyntaxBinaryOperatorKind.MinusToken:
         return this.lexMinusToken();
       case SyntaxNodeKind.GreaterToken:
         return this.lexGreaterGreaterToken();
@@ -79,10 +79,10 @@ export class Lexer {
 
   private lexMinusToken(): SyntaxToken<SyntaxKind> {
     this.next();
-    this.kind = BinaryOperatorKind.MinusToken;
+    this.kind = SyntaxBinaryOperatorKind.MinusToken;
     if (this.match(SyntaxNodeKind.GreaterToken)) {
       this.next();
-      this.kind = CompositeTokenKind.PointerToken;
+      this.kind = SyntaxCompositeTokenKind.PointerToken;
     }
     return new SyntaxToken(this.tree, this.kind, this.createSpan());
   }
@@ -92,7 +92,7 @@ export class Lexer {
     this.kind = SyntaxNodeKind.GreaterToken;
     if (this.match(SyntaxNodeKind.GreaterToken)) {
       this.next();
-      this.kind = CompositeTokenKind.GreaterGreaterToken;
+      this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
     }
     return new SyntaxToken(this.tree, this.kind, this.createSpan());
   }
@@ -102,7 +102,7 @@ export class Lexer {
     this.kind = SyntaxNodeKind.ColonToken;
     if (this.match(SyntaxNodeKind.ColonToken)) {
       this.next();
-      this.kind = CompositeTokenKind.ColonColonToken;
+      this.kind = SyntaxCompositeTokenKind.ColonColonToken;
     }
     return new SyntaxToken(this.tree, this.kind, this.createSpan());
   }

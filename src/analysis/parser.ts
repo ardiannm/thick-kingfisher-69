@@ -1,11 +1,11 @@
 import { SyntaxKind } from "./parser/kind/syntax.kind";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
-import { CompositeTokenKind } from "./parser/kind/composite.token.kind";
-import { BinaryOperatorKind } from "./parser/kind/binary.operator.kind";
+import { SyntaxCompositeTokenKind } from "./parser/kind/syntax.composite.token.kind";
+import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./parser/kind/syntax.unary.operator.kind";
 import { SyntaxToken } from "./parser/syntax.token";
 import { SyntaxBinaryExpression } from "./parser/syntax.binary.expression";
-import { UnaryExpression } from "./parser/unary.expression";
+import { SyntaxUnaryExpression } from "./parser/syntax.unary.expression";
 import { SyntaxParenthesis } from "./parser/syntax.parenthesis";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { SyntaxFacts } from "./parser/syntax.facts";
@@ -50,7 +50,7 @@ export class Parser {
         statements.push(this.parseBlock());
       }
       var closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
-      if (this.tree.diagnostics.hasErrorSince(openBrace)) {
+      if (openBrace.errorAfter()) {
         closeBrace = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
       } else {
         closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
@@ -63,8 +63,8 @@ export class Parser {
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
     switch (this.peekToken().kind) {
-      case CompositeTokenKind.ColonColonToken:
-        const keyword = this.getNextToken() as SyntaxToken<CompositeTokenKind.ColonColonToken>;
+      case SyntaxCompositeTokenKind.ColonColonToken:
+        const keyword = this.getNextToken() as SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>;
         return new SyntaxCellAssignment(this.tree, left, keyword, this.parseBinaryExpression());
     }
     return left;
@@ -77,7 +77,7 @@ export class Parser {
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }
-      const operator = this.getNextToken() as SyntaxToken<BinaryOperatorKind>;
+      const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
       const right = this.parseBinaryExpression(precedence);
       left = new SyntaxBinaryExpression(this.tree, left, operator, right);
     }
@@ -89,7 +89,7 @@ export class Parser {
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
       const right = this.parseUnaryExpression();
-      return new UnaryExpression(this.tree, operator, right);
+      return new SyntaxUnaryExpression(this.tree, operator, right);
     }
     return this.parseParenthesis();
   }
@@ -99,7 +99,7 @@ export class Parser {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
       var right: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
-      if (this.tree.diagnostics.hasErrorSince(left)) {
+      if (left.errorAfter()) {
         right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
       } else {
         right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
@@ -131,8 +131,7 @@ export class Parser {
       case SyntaxNodeKind.NumberToken:
         return this.getNextToken();
     }
-    this.tree.diagnostics.expectingSyntaxExpression(token.span);
-    return this.getNextToken();
+    return this.expect(SyntaxNodeKind.SyntaxExpression);
   }
 
   private peekToken(offset: number = 0) {

@@ -5,7 +5,7 @@ import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Binder } from "../analysis/binder";
 import { CompilerOptions } from "../compiler.options";
 import { Evaluator } from "./evaluator";
-import { BoundCompilationUnit } from "../analysis/binder/compilation.unit";
+import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
 
 export class SyntaxTree {
   public root: SyntaxCompilationUnit;

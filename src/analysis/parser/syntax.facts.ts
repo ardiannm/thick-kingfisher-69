@@ -1,6 +1,6 @@
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { BinaryOperatorKind } from "./kind/binary.operator.kind";
+import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
@@ -18,13 +18,13 @@ export class SyntaxFacts {
 
   static binaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
-      case BinaryOperatorKind.HatToken:
+      case SyntaxBinaryOperatorKind.HatToken:
         return 3;
-      case BinaryOperatorKind.StarToken:
-      case BinaryOperatorKind.SlashToken:
+      case SyntaxBinaryOperatorKind.StarToken:
+      case SyntaxBinaryOperatorKind.SlashToken:
         return 2;
-      case BinaryOperatorKind.PlusToken:
-      case BinaryOperatorKind.MinusToken:
+      case SyntaxBinaryOperatorKind.PlusToken:
+      case SyntaxBinaryOperatorKind.MinusToken:
         return 1;
       default:
         return 0;
@@ -34,15 +34,15 @@ export class SyntaxFacts {
   static syntaxKind(text: string): SyntaxKind {
     switch (text) {
       case "+":
-        return BinaryOperatorKind.PlusToken;
+        return SyntaxBinaryOperatorKind.PlusToken;
       case "-":
-        return BinaryOperatorKind.MinusToken;
+        return SyntaxBinaryOperatorKind.MinusToken;
       case "*":
-        return BinaryOperatorKind.StarToken;
+        return SyntaxBinaryOperatorKind.StarToken;
       case "/":
-        return BinaryOperatorKind.SlashToken;
+        return SyntaxBinaryOperatorKind.SlashToken;
       case "^":
-        return BinaryOperatorKind.HatToken;
+        return SyntaxBinaryOperatorKind.HatToken;
       case ":":
         return SyntaxNodeKind.ColonToken;
       case "(":

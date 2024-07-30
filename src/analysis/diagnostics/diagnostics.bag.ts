@@ -1,7 +1,6 @@
-import { Cell } from "../../runtime/cell";
+import { BoundCell } from "../binder/bound.cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
-import { SyntaxNode } from "../parser/syntax.node";
 import { SourceText } from "../text/source.text";
 import { Span } from "../text/span";
 import { Diagnostic } from "./diagnostic";
@@ -18,8 +17,8 @@ export class DiagnosticsBag {
     this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
   }
 
-  hasErrorSince(syntax: SyntaxNode) {
-    for (const d of this.diagnostics) if (d.span.start > syntax.span.start) return true;
+  errorAfter(position: number) {
+    for (const diagnostic of this.diagnostics) if (diagnostic.span.start > position) return true;
     return false;
   }
 
@@ -52,7 +51,7 @@ export class DiagnosticsBag {
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
-    return this.report(`'${unexpected}' is not assignable to a cell reference.`, Severity.CantEvaluate, span);
+    return this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
   }
 
   undeclaredCell(cellName: string, span: Span) {
@@ -67,20 +66,12 @@ export class DiagnosticsBag {
     return this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
   }
 
-  autoDeclaredCell(reference: Cell, dependency: Cell, span: Span) {
+  autoDeclaredCell(reference: BoundCell, dependency: BoundCell, span: Span) {
     return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
-  }
-
-  badRangeFormat(span: Span) {
-    return this.report(`Not a valid range reference. Expecting a cell reference, row or column.`, Severity.CantBind, span);
-  }
-
-  expectingSyntaxExpression(span: Span) {
-    return this.report(`Expecting an expression.`, Severity.CantBind, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {

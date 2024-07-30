@@ -1,9 +1,9 @@
-import { BoundExpression } from "./expression";
+import { BoundExpression } from "./bound.expression";
 import { BoundKind } from "./kind/bound.kind";
-import { BoundBinaryOperatorKind } from "./kind/binary.operator.kind";
+import { BoundBinaryOperatorKind } from "./kind/bound.binary.operator.kind";
 
 export class BoundBinaryExpression extends BoundExpression {
   constructor(public left: BoundExpression, public operatorKind: BoundBinaryOperatorKind, public right: BoundExpression) {
-    super(BoundKind.BinaryExpression);
+    super(BoundKind.BoundBinaryExpression);
   }
 }

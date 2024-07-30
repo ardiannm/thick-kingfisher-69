@@ -1,4 +1,4 @@
-export enum BinaryOperatorKind {
+export enum SyntaxBinaryOperatorKind {
   PlusToken = "PlusToken",
   MinusToken = "MinusToken",
   SlashToken = "SlashToken",
