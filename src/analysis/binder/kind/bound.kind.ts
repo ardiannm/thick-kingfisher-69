@@ -7,7 +7,7 @@ export enum BoundKind {
   CellAssignment = "CellAssignment",
   FunctionExpression = "FunctionExpression",
   CellReference = "CellReference",
-  Cell = "Cell",
   BoundScope = "BoundScope",
-  BoundBlock = "BoundBlock"
+  BoundBlock = "BoundBlock",
+  Cell = "Cell",
 }

@@ -18,7 +18,7 @@ export class DiagnosticsBag {
     this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
   }
 
-  hasErrorAfter(syntax: SyntaxNode) {
+  hasErrorSince(syntax: SyntaxNode) {
     for (const d of this.diagnostics) if (d.span.start > syntax.span.start) return true;
     return false;
   }
@@ -69,10 +69,6 @@ export class DiagnosticsBag {
 
   requireCompactCellReference(correctName: string, span: Span) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
-  }
-
-  requireCompactRangeReference(correctName: string, span: Span) {
-    return this.report(`Not a valid range reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
   }
 
   badRangeFormat(span: Span) {

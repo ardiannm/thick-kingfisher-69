@@ -18,7 +18,6 @@ export enum SyntaxNodeKind {
   SyntaxCellAssignment = "SyntaxCellAssignment",
   SyntaxUnaryExpression = "SyntaxUnaryExpression",
   SyntaxParenthesis = "SyntaxParenthesizedExpression",
-  SyntaxRangeReference = "SyntaxRangeReference",
   SyntaxCellReference = "SyntaxCellReference",
   SyntaxExpression = "SyntaxExpression",
 }

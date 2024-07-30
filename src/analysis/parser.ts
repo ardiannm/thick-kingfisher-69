@@ -7,7 +7,6 @@ import { SyntaxToken } from "./parser/syntax.token";
 import { SyntaxBinaryExpression } from "./parser/syntax.binary.expression";
 import { UnaryExpression } from "./parser/unary.expression";
 import { SyntaxParenthesis } from "./parser/syntax.parenthesis";
-import { SyntaxRangeReference } from "./parser/syntax.range.reference";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { SyntaxExpression } from "./parser/syntax.expression";
@@ -51,7 +50,7 @@ export class Parser {
         statements.push(this.parseBlock());
       }
       var closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
-      if (this.tree.diagnostics.hasErrorAfter(openBrace)) {
+      if (this.tree.diagnostics.hasErrorSince(openBrace)) {
         closeBrace = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
       } else {
         closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
@@ -100,34 +99,14 @@ export class Parser {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
       var right: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
-      if (this.tree.diagnostics.hasErrorAfter(left)) {
+      if (this.tree.diagnostics.hasErrorSince(left)) {
         right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
       } else {
         right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
       }
       return new SyntaxParenthesis(this.tree, left, expression, right);
     }
-    return this.parseRangeReference();
-  }
-
-  private parseRangeReference() {
-    const left = this.parseCellReference();
-    if (this.match(SyntaxNodeKind.ColonToken)) {
-      this.getNextToken();
-      const { NumberToken, IdentifierToken } = SyntaxNodeKind;
-      if (this.match(IdentifierToken) || this.match(NumberToken)) {
-        const right = this.parseCellReference();
-        if (right.hasTrivia()) {
-          const correctName = right.text;
-          this.tree.diagnostics.requireCompactRangeReference(correctName, right.span);
-        }
-        return new SyntaxRangeReference(this.tree, left, right);
-      }
-      const right = this.peekToken();
-      this.tree.diagnostics.badRangeFormat(right.span);
-      return new SyntaxRangeReference(this.tree, left, right);
-    }
-    return left;
+    return this.parseCellReference();
   }
 
   private parseCellReference() {
