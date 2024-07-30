@@ -57,7 +57,18 @@ export class Parser {
       }
       return new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
     }
-    return this.parseCellAssignment();
+    return this.parseStatement();
+  }
+
+  private parseStatement() {
+    const statement = this.parseCellAssignment();
+    if (this.hasMoreTokens()) {
+      const token = this.peekToken();
+      if (token.line === statement.line) {
+        this.tree.diagnostics.insertLineAfterStatement(token.span);
+      }
+    }
+    return statement;
   }
 
   private parseCellAssignment() {

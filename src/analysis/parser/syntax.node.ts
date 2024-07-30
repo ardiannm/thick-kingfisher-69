@@ -39,4 +39,8 @@ export class SyntaxNode {
   errorAfter() {
     return this.tree.diagnostics.errorAfter(this.span.start);
   }
+
+  public get line() {
+    return this.tree.text.getLineIndex(this.span.start) + 1;
+  }
 }

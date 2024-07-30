@@ -74,6 +74,10 @@ export class DiagnosticsBag {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
   }
 
+  insertLineAfterStatement(span: Span) {
+    return this.report(`New line expected.`, Severity.CantEvaluate, span);
+  }
+
   binderMethod(kind: SyntaxKind, span: Span) {
     return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }

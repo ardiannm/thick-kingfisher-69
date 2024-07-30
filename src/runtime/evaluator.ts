@@ -7,6 +7,7 @@ import { BoundNumericLiteral } from "../analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression";
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { BoundBlock } from "../analysis/binder/bound.block";
 
 export class Evaluator {
   private value = 0;
@@ -17,24 +18,31 @@ export class Evaluator {
 
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
-        return this.evaluateCompilationUnit(node as NodeType<BoundCompilationUnit>);
+        return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBinaryExpression:
-        return this.evaluateBinaryExpression(node as NodeType<BoundBinaryExpression>);
+        return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
-        return this.evaluateUnaryExpression(node as NodeType<BoundUnaryExpression>);
+        return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
-        return this.evaluateNumericLiteral(node as NodeType<BoundNumericLiteral>);
+        return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
+      case BoundKind.BoundBlock:
+        return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
     }
     this.diagnostics.evaluatorMethod(node.kind);
     return 0;
   }
 
-  private evaluateCompilationUnit(node: BoundCompilationUnit): number {
+  private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
   }
 
-  private evaluateBinaryExpression(node: BoundBinaryExpression): number {
+  private evaluateBoundBlock(node: BoundBlock): number {
+    for (const statement of node.statements) this.value = this.evaluate(statement);
+    return this.value
+  }
+
+  private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
     const left = this.evaluate(node.left);
     const right = this.evaluate(node.right);
     switch (node.operatorKind) {
@@ -51,7 +59,7 @@ export class Evaluator {
     }
   }
 
-  private evaluateUnaryExpression(node: BoundUnaryExpression): number {
+  private evaluateBoundUnaryExpression(node: BoundUnaryExpression): number {
     const right = this.evaluate(node.right);
     switch (node.operatorKind) {
       case BoundUnaryOperatorKind.Identity:
@@ -61,7 +69,7 @@ export class Evaluator {
     }
   }
 
-  private evaluateNumericLiteral(node: BoundNumericLiteral) {
+  private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {
     return node.value;
   }
 }
