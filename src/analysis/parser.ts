@@ -94,8 +94,15 @@ export class Parser {
   private parseParenthesis() {
     if (this.match(SyntaxNodeKind.OpenParenthesisToken)) {
       const left = this.nextToken();
+      const before = this.tree.diagnosticsBag.getDiagnostics().length;
       const expression = this.parseBinaryExpression();
-      const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
+      const after = this.tree.diagnosticsBag.getDiagnostics().length;
+      var right: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
+      if (after > before) {
+        right = this.nextToken() as SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
+      } else {
+        right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
+      }
       return new ParenthesizedExpression(this.tree, left, expression, right);
     }
     return this.parseRangeReference();
