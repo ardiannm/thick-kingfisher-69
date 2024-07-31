@@ -40,7 +40,7 @@ export class Parser {
     while (this.hasMoreTokens()) {
       const startToken = this.peekToken();
       statements.push(this.parseBlock());
-      if (startToken === this.peekToken()) this.getNextToken();
+      if (this.peekToken() === startToken) this.getNextToken();
     }
     return new SyntaxCompilationUnit(this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
@@ -50,7 +50,9 @@ export class Parser {
       const statements = new Array<SyntaxExpression>();
       const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
       while (this.hasMoreTokens() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
+        const startToken = this.peekToken();
         statements.push(this.parseBlock());
+        if (this.peekToken() === startToken) this.getNextToken();
       }
       const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
       return new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
