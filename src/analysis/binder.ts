@@ -96,27 +96,19 @@ export class Binder {
     this.diagnosticsBag.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind);
   }
+
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
     const statements = new Array<BoundStatement>();
     for (const statement of node.root) {
       statements.push(this.bind(statement));
-      this.bindeCellDeclarations();
     }
     return new BoundCompilationUnit(statements);
-  }
-
-  private bindeCellDeclarations() {
-    for (const u of this.scope.references) {
-      this.scope.references.shift();
-      this.diagnosticsBag.undeclaredCell(u.reference.name, u.span);
-    }
   }
 
   private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
     const statements = new Array<BoundStatement>();
     for (const statement of node.statements) {
       statements.push(this.bind(statement));
-      this.bindeCellDeclarations()
     }
     return new BoundBlock(statements);
   }
