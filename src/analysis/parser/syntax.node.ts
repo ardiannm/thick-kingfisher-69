@@ -35,12 +35,4 @@ export class SyntaxNode {
     for (const child of this.getChildren()) text += this.tree.text.get(child.span.start, child.span.end);
     return text;
   }
-
-  errorAfter() {
-    return this.tree.diagnostics.errorAfter(this.span.start);
-  }
-
-  public get line() {
-    return this.tree.text.getLineIndex(this.span.start) + 1;
-  }
 }

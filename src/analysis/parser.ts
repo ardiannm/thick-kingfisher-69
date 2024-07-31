@@ -19,6 +19,7 @@ import { SyntaxBlock } from "./parser/syntax.block";
 export class Parser {
   private index = 0;
   private tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private recovering = false;
 
   private hasMoreTokens() {
     return !this.match(SyntaxNodeKind.EndOfFileToken);
@@ -37,7 +38,9 @@ export class Parser {
   public parseCompilationUnit() {
     const statements = new Array<SyntaxExpression>(this.parseBlock());
     while (this.hasMoreTokens()) {
+      const startToken = this.peekToken();
       statements.push(this.parseBlock());
+      if (startToken === this.peekToken()) this.getNextToken();
     }
     return new SyntaxCompilationUnit(this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
@@ -49,26 +52,10 @@ export class Parser {
       while (this.hasMoreTokens() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
         statements.push(this.parseBlock());
       }
-      var closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
-      if (openBrace.errorAfter()) {
-        closeBrace = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseBraceToken>;
-      } else {
-        closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
-      }
+      const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
       return new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
     }
-    return this.parseStatement();
-  }
-
-  private parseStatement() {
-    const statement = this.parseCellAssignment();
-    if (this.hasMoreTokens()) {
-      const token = this.peekToken();
-      if (token.line === statement.line) {
-        this.tree.diagnostics.insertLineAfterStatement(token.span);
-      }
-    }
-    return statement;
+    return this.parseCellAssignment();
   }
 
   private parseCellAssignment() {
@@ -109,12 +96,7 @@ export class Parser {
     if (this.match(SyntaxNodeKind.OpenParenthesisToken)) {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
-      var right: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
-      if (left.errorAfter()) {
-        right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>;
-      } else {
-        right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      }
+      const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
       return new SyntaxParenthesis(this.tree, left, expression, right);
     }
     return this.parseCellReference();
@@ -164,6 +146,7 @@ export class Parser {
       if (kind !== this.peekToken(offset).kind) return false;
       offset++;
     }
+    this.recovering = false;
     return true;
   }
 
@@ -171,7 +154,11 @@ export class Parser {
     if (this.match(kind)) {
       return this.getNextToken() as SyntaxToken<Kind>;
     }
-    const token = this.getNextToken() as SyntaxToken<Kind>;
+    const token = this.peekToken() as SyntaxToken<Kind>;
+    if (this.recovering) {
+      return token;
+    }
+    this.recovering = true;
     this.tree.diagnostics.unexpectedTokenFound(token.kind, kind, token.span);
     return token as SyntaxToken<Kind>;
   }

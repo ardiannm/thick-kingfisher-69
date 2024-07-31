@@ -17,11 +17,6 @@ export class DiagnosticsBag {
     this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
   }
 
-  errorAfter(position: number) {
-    for (const diagnostic of this.diagnostics) if (diagnostic.span.start > position) return true;
-    return false;
-  }
-
   canBind() {
     return !this.severity.has(Severity.CantBind);
   }
@@ -72,10 +67,6 @@ export class DiagnosticsBag {
 
   requireCompactCellReference(correctName: string, span: Span) {
     return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
-  }
-
-  insertLineAfterStatement(span: Span) {
-    return this.report(`New line expected.`, Severity.CantEvaluate, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {
