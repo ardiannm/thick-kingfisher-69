@@ -28,7 +28,7 @@ import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 
 class BoundScope extends BoundNode {
-  private references = new Array<BoundCellReference>();
+  public references = new Array<BoundCellReference>();
   private declared = new Map<string, BoundCell>();
 
   constructor(public parent: BoundScope | null) {
@@ -98,13 +98,26 @@ export class Binder {
   }
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
     const statements = new Array<BoundStatement>();
-    for (const statement of node.root) statements.push(this.bind(statement));
+    for (const statement of node.root) {
+      statements.push(this.bind(statement));
+      this.bindeCellDeclarations();
+    }
     return new BoundCompilationUnit(statements);
+  }
+
+  private bindeCellDeclarations() {
+    for (const u of this.scope.references) {
+      this.scope.references.shift();
+      this.diagnosticsBag.undeclaredCell(u.reference.name, u.span);
+    }
   }
 
   private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
     const statements = new Array<BoundStatement>();
-    for (const statement of node.statements) statements.push(this.bind(statement));
+    for (const statement of node.statements) {
+      statements.push(this.bind(statement));
+      this.bindeCellDeclarations()
+    }
     return new BoundBlock(statements);
   }
 
