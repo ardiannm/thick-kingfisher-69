@@ -147,6 +147,7 @@ export class Binder {
     const cell = this.scope.createOrGetCell(name);
     const span = node.span;
     const bound = new BoundCellReference(cell, span);
+    if (this.configuration.autoDeclaration) cell.declared = true;
     if (report && !cell.declared) {
       this.diagnostics.undeclaredCell(cell.name, span);
     }
