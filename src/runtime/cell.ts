@@ -1,11 +1,7 @@
-import { BoundExpression } from "../analysis/binder/bound.expression";
-import { BoundNumericLiteral } from "../analysis/binder/bound.numeric.literal";
-
 export class Cell {
   private observers = new Map<string, Cell>();
   private dependencies = new Map<string, Cell>();
-
-  private constructor(public name: string, public declared: boolean, public value: number, public expression: BoundExpression) {}
+  private constructor(public name: string, public declared: boolean, public value: number) {}
 
   public track(dependency: Cell) {
     this.dependencies.set(dependency.name, dependency);
@@ -26,8 +22,7 @@ export class Cell {
   }
 
   public static createFrom(name: string) {
-    const expression = new BoundNumericLiteral(0);
-    return new Cell(name, false, expression.value, expression);
+    return new Cell(name, false, 0);
   }
 
   public static referenceFromIndex(row: number, column: number) {

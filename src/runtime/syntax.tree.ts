@@ -9,7 +9,7 @@ import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit"
 
 export class SyntaxTree {
   public root: SyntaxCompilationUnit;
-  public readonly diagnostics = new DiagnosticsBag(this.text);
+  public readonly diagnostics = new DiagnosticsBag();
 
   private constructor(public text: SourceText) {
     const parser = new Parser(this);

@@ -28,7 +28,8 @@ import { BoundScope } from "./binder/bound.scope";
 
 export class Binder {
   scope = new BoundScope(null);
-  constructor(private diagnosticsBag: DiagnosticsBag, public configuration: CompilerOptions) {}
+
+  constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -50,7 +51,7 @@ export class Binder {
       case SyntaxNodeKind.SyntaxBlock:
         return this.bindSyntaxBlock(node as NodeType<SyntaxBlock>);
     }
-    this.diagnosticsBag.binderMethod(node.kind, node.span);
+    this.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
@@ -72,22 +73,22 @@ export class Binder {
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
     if (node.left.kind !== SyntaxNodeKind.SyntaxCellReference) {
-      this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
+      this.diagnostics.cantUseAsAReference(node.left.kind, node.left.span);
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
     const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.stack.length = 0;
     const expression = this.bind(node.expression);
-    left.reference.expression = expression;
+    this.scope.expressions.set(left.reference, expression);
     left.reference.clearDependencies();
     for (const right of this.scope.stack) {
       left.reference.track(right.reference);
       if (left.reference.name === right.reference.name) {
-        this.diagnosticsBag.usginBeforeDeclaration(right.reference.name, right.span);
+        this.diagnostics.usginBeforeDeclaration(right.reference.name, right.span);
       }
       if (right.reference.doesReference(left.reference)) {
-        this.diagnosticsBag.circularDependency(left.reference.name, right.reference.name, right.span);
+        this.diagnostics.circularDependency(left.reference.name, right.reference.name, right.span);
       }
     }
     left.reference.declared = true;
@@ -103,8 +104,8 @@ export class Binder {
     return new BoundBinaryExpression(left, operator, right, node.span);
   }
 
-  private bindBinaryOperatorKind(Kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
-    switch (Kind) {
+  private bindBinaryOperatorKind(kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
+    switch (kind) {
       case SyntaxBinaryOperatorKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;
       case SyntaxBinaryOperatorKind.MinusToken:
@@ -128,8 +129,8 @@ export class Binder {
     }
   }
 
-  private bindUnaryOperatorKind(Kind: SyntaxUnaryOperatorKind): BoundUnaryOperatorKind {
-    switch (Kind) {
+  private bindUnaryOperatorKind(kind: SyntaxUnaryOperatorKind): BoundUnaryOperatorKind {
+    switch (kind) {
       case SyntaxUnaryOperatorKind.PlusToken:
         return BoundUnaryOperatorKind.Identity;
       case SyntaxUnaryOperatorKind.MinusToken:
@@ -137,8 +138,8 @@ export class Binder {
     }
   }
 
-  private bindSyntaxParenthesizedExpression(Node: SyntaxParenthesis) {
-    return this.bind(Node.expression);
+  private bindSyntaxParenthesizedExpression(node: SyntaxParenthesis) {
+    return this.bind(node.expression);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference, report: boolean) {
@@ -147,7 +148,7 @@ export class Binder {
     const span = node.span;
     const bound = new BoundCellReference(cell, span);
     if (report && !cell.declared) {
-      this.diagnosticsBag.undeclaredCell(cell.name, span);
+      this.diagnostics.undeclaredCell(cell.name, span);
     }
     this.scope.stack.push(bound);
     return bound;

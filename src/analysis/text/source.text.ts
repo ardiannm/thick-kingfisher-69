@@ -11,12 +11,12 @@ export class SourceText {
       if (lineBreakWidth === 0) {
         position++;
       } else {
-        this.lines.push(Span.createFrom(start, position));
+        this.lines.push(Span.createFrom(this, start, position));
         position += lineBreakWidth;
         start = position;
       }
     }
-    if (position >= start) this.lines.push(Span.createFrom(start, position));
+    if (position >= start) this.lines.push(Span.createFrom(this, start, position));
   }
 
   private getLineBreakWidth(position: number): number {

@@ -27,7 +27,7 @@ export class SyntaxNode {
   }
 
   public get span(): Span {
-    return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
+    return Span.createFrom(this.tree.text, this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
   get text(): string {

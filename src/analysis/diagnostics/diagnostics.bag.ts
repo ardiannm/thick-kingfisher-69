@@ -1,20 +1,17 @@
 import { Cell } from "../../runtime/cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
-import { SourceText } from "../text/source.text";
 import { Span } from "../text/span";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
-  constructor(private text: SourceText) {}
-
   private diagnostics = new Array<Diagnostic>();
   private severity = new Set<Severity>();
 
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
-    this.diagnostics.push(Diagnostic.createFrom(this.text, message, severity, span));
+    this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
   }
 
   canBind() {

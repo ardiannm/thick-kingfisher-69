@@ -132,7 +132,7 @@ export class Lexer {
   }
 
   private createSpan() {
-    return Span.createFrom(this.start, this.end);
+    return Span.createFrom(this.tree.text, this.start, this.end);
   }
 
   private isSpace(): boolean {

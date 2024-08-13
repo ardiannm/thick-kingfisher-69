@@ -57,7 +57,7 @@ const Input: Component = () => {
               {(d) => (
                 <div class={styles.diagnostic}>
                   <span class={styles.diagnosticsLocation}>
-                    {d.line}:{d.offset}
+                    {d.span.line}:{d.span.offset}
                   </span>
                   <span class={styles.diagnosticMessage}> {d.message}</span>
                 </div>
