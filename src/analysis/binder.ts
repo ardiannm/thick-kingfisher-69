@@ -71,33 +71,33 @@ export class Binder {
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
-    switch (node.left.kind) {
-      case SyntaxNodeKind.SyntaxCellReference:
-        const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference);
-        this.scope.clearStack();
-        const expression = this.bind(node.expression);
-        left.expression = expression;
-        left.clearDependencies();
-        while (this.scope.hasMore()) {
-          const bound = this.scope.getNextReference();
-          left.track(bound.reference);
-          if (bound.reference.doesReference(left)) {
-            this.diagnosticsBag.circularDependency(left.name, bound.reference.name, bound.span);
-          }
-          if (this.scope.isDeclared(bound.reference.name)) continue;
-          if (left.name === bound.reference.name) {
-            this.diagnosticsBag.usginBeforeDeclaration(bound.reference.name, bound.span);
-          } else {
-            this.diagnosticsBag.undeclaredCell(bound.reference.name, bound.span);
-          }
-        }
-        this.scope.declareCell(left);
-        this.scope.clearStack();
-        return new BoundCellAssignment(left, expression);
+    if (node.left.kind !== SyntaxNodeKind.SyntaxCellReference) {
+      this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
+      this.bind(node.expression);
+      return new BoundErrorExpression(node.kind);
     }
-    this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
-    this.bind(node.expression);
-    return new BoundErrorExpression(node.kind);
+    const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference);
+    this.scope.stack.length = 0;
+    const expression = this.bind(node.expression);
+    left.reference.expression = expression;
+    left.reference.clearDependencies();
+    while (this.scope.hasNext()) {
+      const right = this.scope.getNext();
+      left.reference.track(right.reference);
+      if (right.reference.doesReference(left.reference)) {
+        this.diagnosticsBag.circularDependency(left.reference.name, right.reference.name, right.span);
+      }
+      if (right.reference.declared) continue;
+      if (left.reference.name === right.reference.name) {
+        this.diagnosticsBag.usginBeforeDeclaration(right.reference.name, right.span);
+      } else {
+        this.diagnosticsBag.undeclaredCell(right.reference.name, right.span);
+      }
+    }
+    left.reference.declared = true;
+    this.scope.varibales.set(left.reference.name, left.reference);
+    this.scope.stack.length = 0;
+    return new BoundCellAssignment(left, expression);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
@@ -147,10 +147,9 @@ export class Binder {
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
     const name = node.text;
-    const cell = this.scope.createCell(name);
-    const bound = new BoundCellReference(cell, node.span);
-    this.scope.registerReference(bound);
-    return cell;
+    const bound = new BoundCellReference(this.scope.createOrGetCell(name), node.span);
+    this.scope.stack.push(bound);
+    return bound;
   }
 
   private bindSyntaxNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {

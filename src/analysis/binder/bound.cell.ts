@@ -7,7 +7,7 @@ export class BoundCell extends BoundNode {
   private observers = new Map<string, BoundCell>();
   private dependencies = new Map<string, BoundCell>();
 
-  private constructor(public name: string, public value: number, public expression: BoundExpression) {
+  private constructor(public name: string, public declared: boolean, public value: number, public expression: BoundExpression) {
     super(BoundKind.Cell);
   }
 
@@ -31,7 +31,7 @@ export class BoundCell extends BoundNode {
 
   public static createFrom(name: string) {
     const expression = new BoundNumericLiteral(0);
-    return new BoundCell(name, expression.value, expression);
+    return new BoundCell(name, false, expression.value, expression);
   }
 
   public static referenceFromIndex(row: number, column: number) {
