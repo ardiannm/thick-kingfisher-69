@@ -80,21 +80,22 @@ export class Binder {
     const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.stack.length = 0;
     const expression = this.bind(node.expression);
-    this.scope.expressions.set(left.reference, expression);
-    left.reference.clearDependencies();
+    const reference = left.reference;
+    this.scope.expressions.set(reference, expression);
+    reference.clearDependencies();
     for (const right of this.scope.stack) {
       left.reference.track(right.reference);
-      if (left.reference.name === right.reference.name) {
+      if (reference.name === right.reference.name) {
         this.diagnostics.usginBeforeDeclaration(right.reference.name, right.span);
       }
-      if (right.reference.doesReference(left.reference)) {
-        this.diagnostics.circularDependency(left.reference.name, right.reference.name, right.span);
+      if (right.reference.doesReference(reference)) {
+        this.diagnostics.circularDependency(reference.name, right.reference.name, right.span);
       }
     }
-    left.reference.declared = true;
-    this.scope.varibales.set(left.reference.name, left.reference);
+    reference.declared = true;
+    this.scope.varibales.set(reference.name, reference);
     this.scope.stack.length = 0;
-    return new BoundCellAssignment(left, expression, node.span);
+    return new BoundCellAssignment(reference, expression, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {

@@ -9,6 +9,7 @@ import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
 import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
+import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
 
 export class Evaluator {
   private value = 0;
@@ -21,6 +22,8 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
+      case BoundKind.BoundCellAssignment:
+        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
@@ -33,6 +36,7 @@ export class Evaluator {
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
   }
+
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
@@ -41,6 +45,12 @@ export class Evaluator {
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
+  }
+
+  private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
+    const value = this.evaluate(node.expression);
+    node.reference.value = value;
+    return value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
