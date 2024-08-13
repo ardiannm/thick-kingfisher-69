@@ -47,15 +47,19 @@ export class Parser {
 
   private parseBlock() {
     if (this.match(SyntaxNodeKind.OpenBraceToken)) {
-      const statements = new Array<SyntaxExpression>();
       const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
+      const statements = new Array<SyntaxExpression>();
       while (this.hasMoreTokens() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
         if (this.peekToken() === startToken) this.getNextToken();
       }
       const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
-      return new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
+      const node = new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
+      if (closeBrace.kind === SyntaxNodeKind.CloseBraceToken && !statements.length) {
+        this.tree.diagnostics.emptyBlock(node.span);
+      }
+      return node;
     }
     return this.parseCellAssignment();
   }

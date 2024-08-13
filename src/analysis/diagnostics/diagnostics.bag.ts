@@ -1,4 +1,4 @@
-import { BoundCell } from "../binder/bound.cell";
+import { Cell } from "../../runtime/cell";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { SourceText } from "../text/source.text";
@@ -30,50 +30,54 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string, span: Span) {
-    return this.report(`Illegal character '${text}' found.`, Severity.Warning, span);
+    this.report(`Illegal character '${text}' found.`, Severity.Warning, span);
   }
 
   unexpectedTokenFound(matched: SyntaxKind, expecting: SyntaxKind, span: Span) {
-    return this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantBind, span);
+    this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantBind, span);
   }
 
   cantDivideByZero(span: Span) {
-    return this.report(`Can't divide by zero.`, Severity.Warning, span);
+    this.report(`Can't divide by zero.`, Severity.Warning, span);
   }
 
   circularDependency(reference: string, dependency: string, span: Span) {
-    return this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate, span);
+    this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate, span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
-    return this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
+    this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
   }
 
   undeclaredCell(cellName: string, span: Span) {
-    return this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate, span);
+    this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate, span);
   }
 
   badFloatingPointNumber(span: Span) {
-    return this.report(`Wrong floating number format.`, Severity.CantBind, span);
+    this.report(`Wrong floating number format.`, Severity.CantBind, span);
   }
 
   usginBeforeDeclaration(name: string, span: Span) {
-    return this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
+    this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
   }
 
-  autoDeclaredCell(reference: BoundCell, dependency: BoundCell, span: Span) {
-    return this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
+  autoDeclaredCell(reference: Cell, dependency: Cell, span: Span) {
+    this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
-    return this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
+    this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
+  }
+
+  emptyBlock(span: Span) {
+    this.report(`Expecting statements in the block.`, Severity.CantBind, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {
-    return this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
+    this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }
 
   evaluatorMethod(kind: BoundKind) {
-    return this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, Span.createFrom(0, 1));
+    this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, Span.createFrom(0, 1));
   }
 }

@@ -1,23 +1,23 @@
 import { BoundNode } from "./bound.node";
-import { BoundCell } from "./bound.cell";
+import { Cell } from "../../runtime/cell";
 import { BoundCellReference } from "./bound.cell.reference";
 import { BoundKind } from "./kind/bound.kind";
 
 export class BoundScope extends BoundNode {
-  public stack = new Array<BoundCellReference>();
-  public varibales = new Map<string, BoundCell>();
+  public varibales: Map<string, Cell> = new Map();
+  public stack: Array<BoundCellReference> = new Array();
 
   constructor(public parent: BoundScope | null) {
     super(BoundKind.BoundScope);
   }
 
-  createOrGetCell(name: string): BoundCell {
+  createOrGetCell(name: string): Cell {
     if (this.varibales.has(name)) {
       // console.log(name, "already exists");
-      return this.varibales.get(name) as BoundCell;
+      return this.varibales.get(name) as Cell;
     }
     // console.log(name, "created");
-    return BoundCell.createFrom(name);
+    return Cell.createFrom(name);
   }
 
   hasNext() {

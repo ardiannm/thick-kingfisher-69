@@ -1,17 +1,13 @@
-import { BoundKind } from "./kind/bound.kind";
-import { BoundNode } from "./bound.node";
-import { BoundExpression } from "./bound.expression";
-import { BoundNumericLiteral } from "./bound.numeric.literal";
+import { BoundExpression } from "../analysis/binder/bound.expression";
+import { BoundNumericLiteral } from "../analysis/binder/bound.numeric.literal";
 
-export class BoundCell extends BoundNode {
-  private observers = new Map<string, BoundCell>();
-  private dependencies = new Map<string, BoundCell>();
+export class Cell {
+  private observers = new Map<string, Cell>();
+  private dependencies = new Map<string, Cell>();
 
-  private constructor(public name: string, public declared: boolean, public value: number, public expression: BoundExpression) {
-    super(BoundKind.Cell);
-  }
+  private constructor(public name: string, public declared: boolean, public value: number, public expression: BoundExpression) {}
 
-  public track(dependency: BoundCell) {
+  public track(dependency: Cell) {
     this.dependencies.set(dependency.name, dependency);
     dependency.observers.set(this.name, this);
   }
@@ -21,7 +17,7 @@ export class BoundCell extends BoundNode {
     this.dependencies.clear();
   }
 
-  public doesReference(dependency: BoundCell, visited = new Set()) {
+  public doesReference(dependency: Cell, visited = new Set()) {
     if (visited.has(this)) return false;
     visited.add(this);
     if (this.dependencies.has(dependency.name)) return true;
@@ -31,7 +27,7 @@ export class BoundCell extends BoundNode {
 
   public static createFrom(name: string) {
     const expression = new BoundNumericLiteral(0);
-    return new BoundCell(name, false, expression.value, expression);
+    return new Cell(name, false, expression.value, expression);
   }
 
   public static referenceFromIndex(row: number, column: number) {
