@@ -81,7 +81,7 @@ export class Binder {
     this.scope.stack.length = 0;
     const expression = this.bind(node.expression);
     const reference = left.reference;
-    this.scope.expressions.set(reference, expression);
+    reference.expression = expression;
     reference.clearDependencies();
     for (const right of this.scope.stack) {
       left.reference.track(right.reference);
@@ -95,7 +95,7 @@ export class Binder {
     reference.declared = true;
     this.scope.varibales.set(reference.name, reference);
     this.scope.stack.length = 0;
-    return new BoundCellAssignment(reference, expression, node.span);
+    return new BoundCellAssignment(left, expression, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {

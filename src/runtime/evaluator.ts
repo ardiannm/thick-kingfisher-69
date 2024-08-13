@@ -48,8 +48,8 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    const value = this.evaluate(node.expression);
-    node.reference.value = value;
+    node.left.reference.expression = node.expression;
+    const value = this.evaluate(node.left);
     return value;
   }
 
@@ -81,7 +81,17 @@ export class Evaluator {
   }
 
   evaluateBoundCellReference(node: BoundCellReference): number {
-    return node.reference.value;
+    if (node.reference.evaluated) {
+      const value = node.reference.value;
+      console.log(`cache(${node.span.line})\t${node.reference.name} -> ${value}`);
+      return value;
+    }
+    const expression = node.reference.expression;
+    if (expression) node.reference.value = this.evaluate(expression);
+    node.reference.evaluated = true;
+    const value = node.reference.value;
+    console.log(`process(${node.span.line})\t${node.reference.name} -> ${value}`);
+    return value;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {

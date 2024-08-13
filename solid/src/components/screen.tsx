@@ -27,7 +27,12 @@ var code = `# circular dependency in cell assignments
 
 A1`;
 
-var code = ``;
+var code = `A1 :: 1
+A2 :: A1+3
+A1
+A2
+A1 :: 3
+A2`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
