@@ -19,55 +19,12 @@ import { BoundCompilationUnit } from "./binder/bound.compilation.unit";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { CompilerOptions } from "../compiler.options";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
-import { BoundCell } from "./binder/bound.cell";
 import { BoundCellAssignment } from "./binder/bound.cell.assignment";
 import { BoundCellReference } from "./binder/bound.cell.reference";
-import { BoundKind } from "./binder/kind/bound.kind";
 import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
-
-class BoundScope extends BoundNode {
-  public references = new Array<BoundCellReference>();
-  private declared = new Map<string, BoundCell>();
-
-  constructor(public parent: BoundScope | null) {
-    super(BoundKind.BoundScope);
-  }
-
-  createCell(name: string): BoundCell {
-    if (this.declared.has(name)) {
-      // console.log(name, "already exists");
-      return this.declared.get(name) as BoundCell;
-    }
-    // console.log(name, "created");
-    return BoundCell.createFrom(name);
-  }
-
-  clearStack() {
-    this.references.length = 0;
-  }
-
-  hasMore() {
-    return this.references.length;
-  }
-
-  nextReference() {
-    return this.references.shift() as BoundCellReference;
-  }
-
-  registerReference(reference: BoundCellReference) {
-    this.references.push(reference);
-  }
-
-  declareCell(cell: BoundCell) {
-    this.declared.set(cell.name, cell);
-  }
-
-  isDeclared(cell: string) {
-    return this.declared.has(cell);
-  }
-}
+import { BoundScope } from "./binder/bound.scope";
 
 export class Binder {
   scope = new BoundScope(null);
@@ -122,7 +79,7 @@ export class Binder {
         left.expression = expression;
         left.clearDependencies();
         while (this.scope.hasMore()) {
-          const bound = this.scope.nextReference();
+          const bound = this.scope.getNextReference();
           left.track(bound.reference);
           if (bound.reference.doesReference(left)) {
             this.diagnosticsBag.circularDependency(left.name, bound.reference.name, bound.span);
