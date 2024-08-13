@@ -15,6 +15,6 @@ export class BoundScope {
       return this.varibales.get(name) as Cell;
     }
     // console.log(name, "created");
-    return Cell.createFrom(name);
+    return Cell.createFrom(this, name);
   }
 }

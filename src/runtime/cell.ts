@@ -1,7 +1,9 @@
+import { BoundScope } from "../analysis/binder/bound.scope";
+
 export class Cell {
   private observers = new Map<string, Cell>();
   private dependencies = new Map<string, Cell>();
-  private constructor(public name: string, public declared: boolean, public value: number) {}
+  private constructor(private scope: BoundScope, public name: string, public declared: boolean, public value: number) {}
 
   public track(dependency: Cell) {
     this.dependencies.set(dependency.name, dependency);
@@ -21,8 +23,12 @@ export class Cell {
     return false;
   }
 
-  public static createFrom(name: string) {
-    return new Cell(name, false, 0);
+  public get expression() {
+    return this.scope.expressions.get(this);
+  }
+
+  public static createFrom(scope: BoundScope, name: string) {
+    return new Cell(scope, name, false, 0);
   }
 
   public static referenceFromIndex(row: number, column: number) {
