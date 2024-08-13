@@ -77,7 +77,7 @@ export class DiagnosticsBag {
     this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }
 
-  evaluatorMethod(kind: BoundKind) {
-    this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, Span.createFrom(0, 1));
+  evaluatorMethod(kind: BoundKind, span: Span) {
+    this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, span);
   }
 }

@@ -1,15 +1,11 @@
-import { BoundNode } from "./bound.node";
 import { Cell } from "../../runtime/cell";
 import { BoundCellReference } from "./bound.cell.reference";
-import { BoundKind } from "./kind/bound.kind";
 
-export class BoundScope extends BoundNode {
+export class BoundScope {
   public varibales: Map<string, Cell> = new Map();
   public stack: Array<BoundCellReference> = new Array();
 
-  constructor(public parent: BoundScope | null) {
-    super(BoundKind.BoundScope);
-  }
+  constructor(public parent: BoundScope | null) {}
 
   createOrGetCell(name: string): Cell {
     if (this.varibales.has(name)) {

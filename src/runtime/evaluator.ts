@@ -27,7 +27,7 @@ export class Evaluator {
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
     }
-    this.diagnostics.evaluatorMethod(node.kind);
+    this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
   }
 

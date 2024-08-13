@@ -31,7 +31,7 @@ var code = ``;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
-  const [diagnostics, setDiagnostics] = createSignal(new Array<Diagnostic>());
+  const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
 

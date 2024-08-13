@@ -51,7 +51,7 @@ export class Binder {
         return this.bindSyntaxBlock(node as NodeType<SyntaxBlock>);
     }
     this.diagnosticsBag.binderMethod(node.kind, node.span);
-    return new BoundErrorExpression(node.kind);
+    return new BoundErrorExpression(node.kind, node.span);
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
@@ -59,7 +59,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
-    return new BoundCompilationUnit(statements);
+    return new BoundCompilationUnit(statements, node.span);
   }
 
   private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
@@ -67,14 +67,14 @@ export class Binder {
     for (const statement of node.statements) {
       statements.push(this.bind(statement));
     }
-    return new BoundBlock(statements);
+    return new BoundBlock(statements, node.span);
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
     if (node.left.kind !== SyntaxNodeKind.SyntaxCellReference) {
       this.diagnosticsBag.cantUseAsAReference(node.left.kind, node.left.span);
       this.bind(node.expression);
-      return new BoundErrorExpression(node.kind);
+      return new BoundErrorExpression(node.kind, node.span);
     }
     const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.stack.length = 0;
@@ -93,14 +93,14 @@ export class Binder {
     left.reference.declared = true;
     this.scope.varibales.set(left.reference.name, left.reference);
     this.scope.stack.length = 0;
-    return new BoundCellAssignment(left, expression);
+    return new BoundCellAssignment(left, expression, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
     const left = this.bind(node.left);
     const operator = this.bindBinaryOperatorKind(node.operator.kind);
     const right = this.bind(node.right);
-    return new BoundBinaryExpression(left, operator, right);
+    return new BoundBinaryExpression(left, operator, right, node.span);
   }
 
   private bindBinaryOperatorKind(Kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
@@ -124,7 +124,7 @@ export class Binder {
       case SyntaxUnaryOperatorKind.MinusToken:
       case SyntaxUnaryOperatorKind.PlusToken:
         const operator = this.bindUnaryOperatorKind(node.operator.kind);
-        return new BoundUnaryExpression(operator, right);
+        return new BoundUnaryExpression(operator, right, node.span);
     }
   }
 
@@ -155,6 +155,6 @@ export class Binder {
 
   private bindSyntaxNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
     const value = parseFloat(node.text);
-    return new BoundNumericLiteral(value);
+    return new BoundNumericLiteral(value, node.span);
   }
 }
