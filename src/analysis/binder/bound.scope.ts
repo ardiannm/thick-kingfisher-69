@@ -19,12 +19,4 @@ export class BoundScope extends BoundNode {
     // console.log(name, "created");
     return Cell.createFrom(name);
   }
-
-  hasNext() {
-    return this.stack.length;
-  }
-
-  getNext() {
-    return this.stack.shift() as BoundCellReference;
-  }
 }

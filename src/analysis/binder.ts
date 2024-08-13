@@ -38,7 +38,7 @@ export class Binder {
       case SyntaxNodeKind.NumberToken:
         return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxCellReference:
-        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
+        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>, true);
       case SyntaxNodeKind.SyntaxParenthesis:
         return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
@@ -76,22 +76,18 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind);
     }
-    const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference);
+    const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.stack.length = 0;
     const expression = this.bind(node.expression);
     left.reference.expression = expression;
     left.reference.clearDependencies();
-    while (this.scope.hasNext()) {
-      const right = this.scope.getNext();
+    for (const right of this.scope.stack) {
       left.reference.track(right.reference);
-      if (right.reference.doesReference(left.reference)) {
-        this.diagnosticsBag.circularDependency(left.reference.name, right.reference.name, right.span);
-      }
-      if (right.reference.declared) continue;
       if (left.reference.name === right.reference.name) {
         this.diagnosticsBag.usginBeforeDeclaration(right.reference.name, right.span);
-      } else {
-        this.diagnosticsBag.undeclaredCell(right.reference.name, right.span);
+      }
+      if (right.reference.doesReference(left.reference)) {
+        this.diagnosticsBag.circularDependency(left.reference.name, right.reference.name, right.span);
       }
     }
     left.reference.declared = true;
@@ -145,9 +141,14 @@ export class Binder {
     return this.bind(Node.expression);
   }
 
-  private bindSyntaxCellReference(node: SyntaxCellReference) {
+  private bindSyntaxCellReference(node: SyntaxCellReference, report: boolean) {
     const name = node.text;
-    const bound = new BoundCellReference(this.scope.createOrGetCell(name), node.span);
+    const cell = this.scope.createOrGetCell(name);
+    const span = node.span;
+    const bound = new BoundCellReference(cell, span);
+    if (report && !cell.declared) {
+      this.diagnosticsBag.undeclaredCell(cell.name, span);
+    }
     this.scope.stack.push(bound);
     return bound;
   }

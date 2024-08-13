@@ -15,7 +15,6 @@ export class Evaluator {
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;
-
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
@@ -39,7 +38,7 @@ export class Evaluator {
 
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
-    return this.value
+    return this.value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
