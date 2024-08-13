@@ -11,7 +11,7 @@
   height: fit-content;
   width: fit-content;
   margin-top: 5%;
-  border: 7px solid #0a0a0a;
+  border: 8px solid #0a0a0a;
   border-radius: 50px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   width: 350px;
@@ -105,4 +105,32 @@ textarea {
     color: #313131;
     background-color: #d2d4da;
   }
+}
+
+.curve {
+  position: absolute;
+  background-color: #0a0a0a;
+  height: 3.5%;
+  width: 40%;
+  top: -0.5%;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 20;
+}
+
+.buttonTop {
+  position: absolute;
+  background-color: #0a0a0a;
+  height: 55px;
+  width: 8px;
+  z-index: 20;
+  left: -11px;
+  top: 100px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.buttonBottom {
+  @extend .buttonTop;
+  top: 165px;
 }

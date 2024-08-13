@@ -53,6 +53,9 @@ const Input: Component = () => {
 
   return (
     <div class={styles.input}>
+      <div class={styles.curve}></div>
+      <div class={styles.buttonTop}></div>
+      <div class={styles.buttonBottom}></div>
       <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
       <Show when={diagnostics().length || doEval()}>
         <div class={styles.diagnostics}>
