@@ -1,7 +1,5 @@
 @import "../index.scss";
 
-$ground: #f4f3f8;
-
 * {
   color: #010000;
 }
@@ -13,14 +11,15 @@ $ground: #f4f3f8;
   height: fit-content;
   width: fit-content;
   margin-top: 5%;
-  border: 5px solid #0a0a0a;
-  border-radius: 40px;
+  border: 7px solid #0a0a0a;
+  border-radius: 50px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   width: 350px;
   height: 700px;
-  padding: 8px;
+  // padding: 5px;
   scale: 1.1;
   user-select: none;
+  padding: 5px;
 }
 
 .textArea {
@@ -33,11 +32,12 @@ $ground: #f4f3f8;
   height: 100%;
   padding: 14px;
   padding-top: 40px;
-  border-radius: 30px;
-  margin-bottom: 7px;
+  border-radius: 40px;
   z-index: 3;
   text-shadow: 0px 0px 1px gray;
-  background: linear-gradient(to top, #cbd8eb50, #cbd8eb98);
+  background-color: #e6e5eb;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 
 .diagnostics {
@@ -46,14 +46,15 @@ $ground: #f4f3f8;
   width: 100%;
   padding-top: 20px;
   padding-inline: 15px;
-  border-radius: 30px;
+  border-radius: 40px;
   padding-bottom: 20px;
   height: fit-content;
   font-family: "Roboto";
-  // background-color: #fca66c4d;
   overflow-y: hidden;
   max-height: 35%;
-  background-color: #cbd8eb50;
+  background-color: #e6e5eb;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
 }
 
 .diagnosticsContainer {
@@ -97,12 +98,11 @@ $ground: #f4f3f8;
 textarea {
   &::selection {
     color: #313131;
-    background-color: #cbd8eb;
+    background-color: #d2d4da;
   }
   // code for firefox
   &::-moz-selection {
     color: #313131;
-    background-color: #cbd8eb;
+    background-color: #d2d4da;
   }
-  background-color: #cbd8eb;
 }
