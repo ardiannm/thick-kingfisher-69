@@ -9,30 +9,11 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `# circular dependency in cell assignments
-
-A1 :: B3
-B3 :: A1+D7+A1
-E :: 1+F`;
-
-var code = `# circular dependency in cell assignments
-
-{
-   A1 :: B3
-   B3 :: A1+D7+A1
-   {
-       A1 :: B3
-    }
-}
-
-A1`;
-
-var code = `A1 :: 1
+var code = `A1 :: 2
 A2 :: A1+3
-A1
-A2
-A1 :: 3
-A2`;
+A1 :: 5
+
+A2 # should be logging 8`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
