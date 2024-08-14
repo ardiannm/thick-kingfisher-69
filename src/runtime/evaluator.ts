@@ -8,13 +8,9 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
-import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
-import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
-import { Cell } from "./cell";
 
 export class Evaluator {
   private value = 0;
-  private store = new Set<Cell>();
   constructor(private diagnostics: DiagnosticsBag) {}
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
@@ -24,14 +20,10 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
-      case BoundKind.BoundCellAssignment:
-        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
-      case BoundKind.BoundCellReference:
-        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
     }
@@ -47,26 +39,6 @@ export class Evaluator {
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
-  }
-
-  private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    node.reference.cell.expression = node.expression;
-    for (const dependecy of node.dependecies.values()) node.reference.cell.track(dependecy);
-    console.log(`assinging ${node.reference.cell.name}`);
-    this.markDirtyForEvaluation(node.reference.cell);
-    const value = this.evaluate(node.reference);
-    this.store.clear();
-    console.log(``);
-    return value;
-  }
-
-  private markDirtyForEvaluation(node: Cell) {
-    if (node.evaluated) node.evaluated = false;
-    if (node.observers.size) {
-      node.observers.forEach((observer) => observer.evaluated && this.markDirtyForEvaluation(observer));
-    } else {
-      this.store.add(node);
-    }
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
@@ -94,20 +66,6 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -right;
     }
-  }
-
-  evaluateBoundCellReference(node: BoundCellReference): number {
-    if (node.cell.evaluated) {
-      const value = node.cell.value;
-      console.log(`Ln ${node.span.line} ${node.cell.name}, cache\t${node.cell.name} -> ${value}`);
-      return value;
-    }
-    const expression = node.cell.expression;
-    if (expression) node.cell.value = this.evaluate(expression);
-    node.cell.evaluated = true;
-    const value = node.cell.value;
-    console.log(`Ln ${node.span.line} ${node.cell.name}, process\t${node.cell.name} -> ${value}`);
-    return value;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {

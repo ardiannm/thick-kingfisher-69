@@ -9,4 +9,5 @@ export enum BoundKind {
   BoundScope = "BoundScope",
   BoundBlock = "BoundBlock",
   Cell = "BoundCell",
+  BoundZero = "BoundZero"
 }
