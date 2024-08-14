@@ -39,7 +39,7 @@ export class Binder {
       case SyntaxNodeKind.NumberToken:
         return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxCellReference:
-        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
+        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>, true);
       case SyntaxNodeKind.SyntaxParenthesis:
         return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
@@ -77,9 +77,9 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
-    const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference);
+    const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     const expression = this.bind(node.expression);
-    return new BoundCellAssignment(left, expression, node.span);
+    return new BoundCellAssignment(reference, expression, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
@@ -127,8 +127,11 @@ export class Binder {
     return this.bind(node.expression);
   }
 
-  private bindSyntaxCellReference(node: SyntaxCellReference) {
-    const bound = new BoundCellReference(node.span);
+  private bindSyntaxCellReference(node: SyntaxCellReference, report: boolean) {
+    const bound = new BoundCellReference(node.text, report, node.span);
+    if (this.configuration.autoDeclaration) bound.declared = true;
+    if (bound.declared) return bound;
+    this.diagnostics.undeclaredCell(node.text, node.span);
     return bound;
   }
 
