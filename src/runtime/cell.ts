@@ -2,7 +2,7 @@ import { BoundExpression } from "../analysis/binder/bound.expression";
 
 export class Cell {
   public observers = new Map<string, Cell>();
-  private dependencies = new Map<string, Cell>();
+  public dependencies = new Map<string, Cell>();
   private constructor(public name: string, public declared: boolean, public value: number, public evaluated: boolean, public expression: BoundExpression | null) {}
 
   public track(dependency: Cell) {
@@ -13,6 +13,16 @@ export class Cell {
   public clearDependencies() {
     this.dependencies.forEach((dep) => dep.observers.delete(this.name));
     this.dependencies.clear();
+  }
+
+  public clearObservers() {
+    this.observers.forEach((obs) => obs.dependencies.delete(this.name));
+    this.observers.clear();
+  }
+
+  public clearGraph() {
+    this.clearDependencies();
+    this.clearObservers();
   }
 
   public doesReference(dependency: Cell, visited = new Set()) {

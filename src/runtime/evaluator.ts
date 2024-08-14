@@ -48,8 +48,10 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    node.left.reference.expression = node.expression;
-    const value = this.evaluate(node.left);
+    node.reference.cell.expression = node.expression;
+    for (const dependecy of node.dependecies.values()) node.reference.cell.track(dependecy);
+    console.log("Ln, " + node.span.line, node.reference.cell.name, " >>> ", node.reference.cell.dependencies.keys(), node.reference.cell.observers.keys());
+    const value = this.evaluate(node.reference);
     return value;
   }
 
@@ -81,16 +83,16 @@ export class Evaluator {
   }
 
   evaluateBoundCellReference(node: BoundCellReference): number {
-    if (node.reference.evaluated) {
-      const value = node.reference.value;
-      console.log(`cache(${node.span.line})\t${node.reference.name} -> ${value}`);
+    if (node.cell.evaluated) {
+      const value = node.cell.value;
+      // console.log(`cache(${node.span.line})\t${node.reference.name} -> ${value}`);
       return value;
     }
-    const expression = node.reference.expression;
-    if (expression) node.reference.value = this.evaluate(expression);
-    node.reference.evaluated = true;
-    const value = node.reference.value;
-    console.log(`process(${node.span.line})\t${node.reference.name} -> ${value}`);
+    const expression = node.cell.expression;
+    if (expression) node.cell.value = this.evaluate(expression);
+    node.cell.evaluated = true;
+    const value = node.cell.value;
+    // console.log(`process(${node.span.line})\t${node.reference.name} -> ${value}`);
     return value;
   }
 

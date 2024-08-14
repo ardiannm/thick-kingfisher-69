@@ -15,4 +15,16 @@ export class BoundScope {
     // console.log(name, "created");
     return Cell.createFrom(name);
   }
+
+  captureDependencies() {
+    const dependencies = new Map<string, Cell>();
+    for (const dependency of this.stack) {
+      dependencies.set(dependency.cell.name, dependency.cell);
+    }
+    return dependencies;
+  }
+
+  clearGraph() {
+    this.varibales.forEach((variable) => variable.clearGraph());
+  }
 }

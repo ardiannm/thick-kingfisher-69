@@ -60,6 +60,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
+    this.scope.clearGraph();
     return new BoundCompilationUnit(statements, node.span);
   }
 
@@ -80,22 +81,23 @@ export class Binder {
     const left = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.stack.length = 0;
     const expression = this.bind(node.expression);
-    const reference = left.reference;
+    const reference = left.cell;
     reference.expression = expression;
     reference.clearDependencies();
     for (const right of this.scope.stack) {
-      left.reference.track(right.reference);
-      if (reference.name === right.reference.name) {
-        this.diagnostics.usginBeforeDeclaration(right.reference.name, right.span);
+      left.cell.track(right.cell);
+      if (reference.name === right.cell.name) {
+        this.diagnostics.usginBeforeDeclaration(right.cell.name, right.span);
       }
-      if (right.reference.doesReference(reference)) {
-        this.diagnostics.circularDependency(reference.name, right.reference.name, right.span);
+      if (right.cell.doesReference(reference)) {
+        this.diagnostics.circularDependency(reference.name, right.cell.name, right.span);
       }
     }
     reference.declared = true;
     this.scope.varibales.set(reference.name, reference);
+    const dependencies = this.scope.captureDependencies();
     this.scope.stack.length = 0;
-    return new BoundCellAssignment(left, expression, node.span);
+    return new BoundCellAssignment(left, expression, dependencies, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
