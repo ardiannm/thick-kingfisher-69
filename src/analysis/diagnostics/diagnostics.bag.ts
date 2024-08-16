@@ -59,7 +59,7 @@ export class DiagnosticsBag {
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
-    this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantBind, span);
+    this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantEvaluate, span);
   }
 
   emptyBlock(span: Span) {

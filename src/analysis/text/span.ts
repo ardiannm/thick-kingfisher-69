@@ -14,8 +14,4 @@ export class Span {
   public get offset() {
     return this.start - this.text.getLineSpan(this.start).start + 1;
   }
-
-  getText() {
-    return this.text.get(this.start, this.end);
-  }
 }

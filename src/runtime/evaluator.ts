@@ -38,7 +38,6 @@ export class Evaluator {
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
   }
-
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
@@ -50,14 +49,11 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    node.triggers.forEach((t) => this.evaluate(t));
     return this.evaluate(node.reference);
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    node.cell.value = this.evaluate(node.expression);
-    console.log(node.span.line + "", node.name, node.expression.span.getText(), node.cell.value);
-    return node.cell.value;
+    return this.evaluate(node.expression);
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
