@@ -9,10 +9,10 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 1
+var code = `A1 
 A2 :: A1+2
 A3 :: A1
-A5 :: A1+A2
+A5 :: A2+A1
 A1 :: 2
 
 
