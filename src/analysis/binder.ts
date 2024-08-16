@@ -81,6 +81,7 @@ export class Binder {
     const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
     this.scope.current.clear();
     reference.expression = this.bind(node.expression);
+    reference.cell.expression = reference.expression;
     reference.clearGraph();
     this.scope.current.forEach((dependency) => reference.observe(dependency));
     const triggers = reference.getEdges();
@@ -134,8 +135,10 @@ export class Binder {
 
   private bindSyntaxCellReference(node: SyntaxCellReference, report: boolean) {
     const name = node.text;
-    const value = this.scope.bind(name);
+    const value = this.scope.bind(name, node.span);
     const bound = new BoundCellReference(name, report, value, node.span);
+    const prev = this.scope.vars.get(bound.name);
+    if (prev) bound.expression = prev.expression;
     this.scope.register(bound);
     if (this.configuration.autoDeclaration) bound.declared = true;
     if (bound.declared) return bound;
