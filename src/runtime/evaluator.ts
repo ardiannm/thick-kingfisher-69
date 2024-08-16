@@ -8,6 +8,8 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
+import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
+import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
 
 export class Evaluator {
   private value = 0;
@@ -20,12 +22,18 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
+      case BoundKind.BoundCellAssignment:
+        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
-      case BoundKind.BoundUnaryExpression:
+      case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
+      case BoundKind.BoundCellReference:
+        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
+      case BoundKind.BoundDefaultZero:
+        return 0;
     }
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
@@ -39,6 +47,16 @@ export class Evaluator {
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
+  }
+
+  private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
+    const value = this.evaluate(node.reference.expression);
+    node.reference.cell.value = value;
+    return value;
+  }
+
+  private evaluateBoundCellReference(node: BoundCellReference): number {
+    return node.cell.value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
