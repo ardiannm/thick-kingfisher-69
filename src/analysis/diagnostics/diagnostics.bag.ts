@@ -1,4 +1,4 @@
-import { Cell } from "../../runtime/cell";
+import { BoundCellReference } from "../binder/bound.cell.reference";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -46,8 +46,8 @@ export class DiagnosticsBag {
     this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
   }
 
-  undeclaredCell(cellName: string, span: Span) {
-    this.report(`Cell reference '${cellName}' is undeclared.`, Severity.CantEvaluate, span);
+  undeclaredCell(node: BoundCellReference) {
+    this.report(`Cell reference '${node.name}' is undeclared.`, Severity.CantEvaluate, node.span);
   }
 
   badFloatingPointNumber(span: Span) {
@@ -56,10 +56,6 @@ export class DiagnosticsBag {
 
   usginBeforeDeclaration(name: string, span: Span) {
     this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
-  }
-
-  autoDeclaredCell(reference: Cell, dependency: Cell, span: Span) {
-    this.report(`Reference '${reference.name}' has been declared automatically after being referenced by '${dependency.name}'.`, Severity.Warning, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {

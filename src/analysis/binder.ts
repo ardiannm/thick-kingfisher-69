@@ -58,7 +58,8 @@ export class Binder {
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
     const statements = new Array<BoundStatement>();
     for (const statement of node.root) {
-      statements.push(this.bind(statement));
+      const bound = this.bind(statement);
+      statements.push(bound);
     }
     return new BoundCompilationUnit(statements, node.span);
   }
@@ -78,8 +79,11 @@ export class Binder {
       return new BoundErrorExpression(node.kind, node.span);
     }
     const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, false);
-    const expression = this.bind(node.expression);
-    return new BoundCellAssignment(reference, expression, node.span);
+    this.scope.current.clear();
+    reference.expression = this.bind(node.expression);
+    reference.clearGraph();
+    this.scope.current.forEach((dependency) => reference.observe(dependency));
+    return new BoundCellAssignment(reference, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
@@ -128,10 +132,13 @@ export class Binder {
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference, report: boolean) {
-    const bound = new BoundCellReference(node.text, report, node.span);
+    const name = node.text;
+    const value = this.scope.bind(name);
+    const bound = new BoundCellReference(name, report, value, node.span);
+    this.scope.register(bound);
     if (this.configuration.autoDeclaration) bound.declared = true;
     if (bound.declared) return bound;
-    this.diagnostics.undeclaredCell(node.text, node.span);
+    this.diagnostics.undeclaredCell(bound);
     return bound;
   }
 
