@@ -48,7 +48,7 @@ export class Evaluator {
 
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
-    return this.value;
+  return this.value;
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
@@ -56,7 +56,8 @@ export class Evaluator {
     const value = this.evaluate(node.reference);
     // notify observers backtracking
     // execute final observers only (nashta duhet mi rujt kto mrena BoundCellAssignment)
-    console.log(node.span.line + "", node.reference.name, node.observers);
+    // console.log(node.span.line + "", node.reference.name, node.observers);
+    console.log(node.span.line + "", node.triggers);
     return value;
   }
 

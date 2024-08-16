@@ -29,4 +29,13 @@ export class BoundCellReference extends BoundNode {
     this.cell.dependencies.forEach((dependency) => dependency.cell.observers.delete(this.name));
     this.cell.dependencies.clear();
   }
+
+  getEdges(map = new Map<string, BoundCellReference>()) {
+    if (this.cell.observers.size === 0) {
+      map.set(this.name, this);
+    } else {
+      this.cell.observers.forEach((o) => o.getEdges(map));
+    }
+    return map;
+  }
 }
