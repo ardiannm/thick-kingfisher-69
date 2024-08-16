@@ -31,11 +31,13 @@ export class BoundCellReference extends BoundNode {
   }
 
   getEdges(map = new Map<string, BoundCellReference>()) {
-    if (this.cell.observers.size === 0) {
-      map.set(this.name, this);
-    } else {
-      this.cell.observers.forEach((o) => o.getEdges(map));
-    }
+    this.cell.observers.forEach((observer) => {
+      if (observer.cell.observers.size) {
+        observer.getEdges(map);
+      } else {
+        map.set(observer.name, observer);
+      }
+    });
     return map;
   }
 }
