@@ -25,10 +25,6 @@ export class BoundCellReference extends BoundNode {
     dependency.cell.observers.set(this.name, this);
   }
 
-  get edge() {
-    return this.cell.observers.size === 0;
-  }
-
   clearGraph() {
     this.cell.dependencies.forEach((dependency) => dependency.cell.observers.delete(this.name));
     this.cell.dependencies.clear();

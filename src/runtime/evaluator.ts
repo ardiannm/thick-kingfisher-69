@@ -14,6 +14,7 @@ import { ColorPalette } from "../dev/color.palette";
 
 export class Evaluator {
   private value = 0;
+  private logging = false;
   constructor(private diagnostics: DiagnosticsBag) {}
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
@@ -55,19 +56,20 @@ export class Evaluator {
     const value = this.evaluate(node.reference);
     // notify observers backtracking
     // execute final observers only (nashta duhet mi rujt kto mrena BoundCellAssignment)
+    console.log(node.span.line + "", node.reference.name, node.observers);
     return value;
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
     if (node.cell.evaluated) {
       const message = ColorPalette.terracotta(`Ln, ${node.span.line} >> ${node.name} = ${node.cell.value}`);
-      console.log(message);
+      if (this.logging) console.log(message);
       return node.cell.value;
     }
     node.cell.value = this.evaluate(node.expression);
     node.cell.evaluated = true;
     const message = ColorPalette.teal(`Ln, ${node.span.line} >> ${node.name} = ${node.cell.value}`);
-    console.log(message);
+    if (this.logging) console.log(message);
     return node.cell.value;
   }
 

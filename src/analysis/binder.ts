@@ -83,7 +83,9 @@ export class Binder {
     reference.expression = this.bind(node.expression);
     reference.clearGraph();
     this.scope.current.forEach((dependency) => reference.observe(dependency));
-    return new BoundCellAssignment(reference, node.span);
+    const observers = new Map<string, BoundCellReference>();
+    reference.cell.observers.forEach((o) => observers.set(o.name, o));
+    return new BoundCellAssignment(reference, observers, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
