@@ -10,6 +10,7 @@ import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
 import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
 import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
+import { ColorPalette } from "../dev/color.palette";
 
 export class Evaluator {
   private value = 0;
@@ -50,12 +51,23 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    const value = this.evaluate(node.reference.expression);
-    node.reference.cell.value = value;
+    node.reference.cell.evaluated = false;
+    const value = this.evaluate(node.reference);
+    // notify observers backtracking
+    // execute final observers only (nashta duhet mi rujt kto mrena BoundCellAssignment)
     return value;
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
+    if (node.cell.evaluated) {
+      const message = ColorPalette.terracotta(`Ln, ${node.span.line} >> ${node.name} = ${node.cell.value}`);
+      console.log(message);
+      return node.cell.value;
+    }
+    node.cell.value = this.evaluate(node.expression);
+    node.cell.evaluated = true;
+    const message = ColorPalette.teal(`Ln, ${node.span.line} >> ${node.name} = ${node.cell.value}`);
+    console.log(message);
     return node.cell.value;
   }
 

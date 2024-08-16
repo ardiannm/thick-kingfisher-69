@@ -3,7 +3,7 @@ import { BoundCellReference } from "./bound.cell.reference";
 export class Cell {
   observers = new Map<string, BoundCellReference>();
   dependencies = new Map<string, BoundCellReference>();
-  constructor(public value: number) {}
+  constructor(public value: number, public evaluated: boolean) {}
 }
 
 export class BoundScope {
@@ -16,7 +16,7 @@ export class BoundScope {
     if (this.vars.has(reference)) {
       return this.vars.get(reference) as Cell;
     } else {
-      const newCell = new Cell(0);
+      const newCell = new Cell(0, false);
       this.vars.set(reference, newCell);
       return newCell;
     }

@@ -18,7 +18,7 @@ A4 :: A2+A3	# should result in 2
 
 A1 :: 2
 
-A4 :: A2+A3	# should resut in 4`;
+A4 :: A2+A3	# should result in 4`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
