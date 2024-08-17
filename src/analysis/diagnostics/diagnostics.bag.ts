@@ -1,4 +1,3 @@
-import { BoundCellReference } from "../binder/bound.cell.reference";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -46,8 +45,8 @@ export class DiagnosticsBag {
     this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
   }
 
-  undeclaredCell(node: BoundCellReference) {
-    this.report(`Cell reference '${node.name}' is undeclared.`, Severity.CantEvaluate, node.span);
+  undeclaredCell(name: string, span: Span) {
+    this.report(`Cell reference '${name}' is undeclared.`, Severity.CantEvaluate, span);
   }
 
   badFloatingPointNumber(span: Span) {

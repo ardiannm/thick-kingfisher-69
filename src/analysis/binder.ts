@@ -24,11 +24,11 @@ import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
-import { BoundExpression } from "./binder/bound.expression";
-import { BoundDefaultZero } from "./binder/bound.default.zero";
+import { BoundCellReference } from "./binder/bound.cell.reference";
 
 export class Binder {
   scope = new BoundScope(null);
+  references = new Map<string, BoundCellReference>();
 
   constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
 
@@ -40,8 +40,7 @@ export class Binder {
       case SyntaxNodeKind.NumberToken:
         return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxCellReference:
-        const expression = this.scope.getExpression(node as NodeType<SyntaxCellReference>);
-        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>, expression);
+        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>, false);
       case SyntaxNodeKind.SyntaxParenthesis:
         return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
@@ -80,11 +79,13 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
-    this.scope.stack.clear();
+    this.references.clear();
     const expression = this.bind(node.expression);
-    const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, expression);
-    this.scope.setExpression(reference);
-    console.log(reference);
+    const map = new Map<string, BoundCellReference>();
+    this.references.forEach((r) => map.set(r.name, r));
+    this.scope.setExpression(node.left.text, expression);
+    const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, true);
+    console.log(node.span.line, node.left.text, expression);
     return new BoundCellAssignment(reference, node.span);
   }
 
@@ -133,11 +134,17 @@ export class Binder {
     return this.bind(node.expression);
   }
 
-  private bindSyntaxCellReference(node: SyntaxCellReference, expression: BoundExpression) {
-    const bound = this.scope.bind(node, expression);
-    if (!this.configuration.autoDeclaration && bound.expression instanceof BoundDefaultZero) {
-      this.diagnostics.undeclaredCell(bound);
+  private bindSyntaxCellReference(node: SyntaxCellReference, declare: boolean) {
+    const value = this.scope.get(node.text);
+    if (declare) {
+      value.declared = true;
     }
+    if (!value.declared) {
+      this.diagnostics.undeclaredCell(node.text, node.span);
+    }
+    const expression = this.scope.getExpression(node.text, node.span);
+    const bound = new BoundCellReference(node.text, value, expression, node.span);
+    this.references.set(bound.name, bound);
     return bound;
   }
 

@@ -1,27 +1,43 @@
-import { SyntaxCellReference } from "../parser/syntax.cell.reference";
-import { BoundCellReference } from "./bound.cell.reference";
-import { BoundDefaultZero } from "./bound.default.zero";
+import { Span } from "../text/span";
 import { BoundExpression } from "./bound.expression";
+import { BoundNode } from "./bound.node";
+import { BoundKind } from "./kind/bound.kind";
+
+export class Cell {
+  constructor(public declared: boolean) {}
+}
+
+export class BoundDefaultZero extends BoundNode {
+  private constructor(public override span: Span) {
+    super(BoundKind.BoundDefaultZero, span);
+  }
+
+  static createFrom(span: Span) {
+    return new BoundDefaultZero(span);
+  }
+}
 
 export class BoundScope {
-  stack = new Map<string, BoundCellReference>();
-  private expressions = new Map<string, BoundExpression>();
+  values = new Map<string, Cell>();
+  expressions = new Map<string, BoundExpression>();
 
   constructor(public parent: BoundScope | null) {}
 
-  setExpression(reference: BoundCellReference) {
-    this.expressions.set(reference.name, reference);
+  getExpression(text: string, span: Span) {
+    if (!this.expressions.has(text)) {
+      this.expressions.set(text, BoundDefaultZero.createFrom(span));
+    }
+    return this.expressions.get(text) as BoundExpression;
   }
 
-  getExpression(node: SyntaxCellReference) {
-    const prevNode = this.expressions.get(node.text) as BoundCellReference;
-    if (prevNode) return prevNode;
-    return new BoundDefaultZero(node.span);
+  setExpression(text: string, expression: BoundNode) {
+    this.expressions.set(text, expression);
   }
 
-  bind(node: SyntaxCellReference, expression: BoundExpression) {
-    const bound = new BoundCellReference(node.text, expression, 0, node.span);
-    this.stack.set(bound.name, bound);
-    return bound;
+  get(text: string) {
+    if (!this.values.has(text)) {
+      this.values.set(text, new Cell(false));
+    }
+    return this.values.get(text) as Cell;
   }
 }
