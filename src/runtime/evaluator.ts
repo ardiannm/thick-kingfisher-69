@@ -9,7 +9,7 @@ import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
 import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
-import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
+import { BoundCell } from "../analysis/binder/bound.cell";
 
 export class Evaluator {
   private value = 0;
@@ -22,14 +22,14 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
-      case BoundKind.BoundCellAssignment:
-        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundCellReference:
         return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
+      case BoundKind.BoundCell:
+        return this.evaluateBoundCell(node as NodeType<BoundCell>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
       case BoundKind.BoundDefaultZero:
@@ -37,6 +37,15 @@ export class Evaluator {
     }
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
+  }
+
+  private evaluateBoundCell(node: BoundCell): number {
+    node.value = this.evaluate(node.expression);
+    return node.value;
+  }
+
+  private evaluateBoundCellReference(node: BoundCellReference): number {
+    return node.cell.value;
   }
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
@@ -74,17 +83,6 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -right;
     }
-  }
-
-  private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    const value = this.evaluate(node.reference);
-    // console.log(node.span.line, node.reference.name, node.reference.expression.kind);
-    return value;
-  }
-
-  private evaluateBoundCellReference(node: BoundCellReference): number {
-    // console.log(node.span.line, node.name, node.expression.kind);
-    return 0;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {
