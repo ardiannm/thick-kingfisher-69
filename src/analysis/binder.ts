@@ -62,6 +62,7 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
+    this.scope.references.clear();
     const expression = this.bind(node.expression);
     return new BoundCell(this.scope, node.left.text, expression, node.span);
   }
@@ -75,7 +76,9 @@ export class Binder {
     if (!this.configuration.autoDeclaration && cell.expression instanceof BoundDefaultZero) {
       this.diagnostics.undeclaredCell(node.text, node.span);
     }
-    return new BoundCellReference(node.text, cell, node.span);
+    const bound = new BoundCellReference(node.text, cell, node.span);
+    this.scope.references.set(bound.name, bound);
+    return bound;
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
