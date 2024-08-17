@@ -78,12 +78,13 @@ export class Evaluator {
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
     const value = this.evaluate(node.reference);
+    // console.log(node.span.line, node.reference.name, node.reference.expression.kind);
     return value;
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    const value = this.evaluate(node.expression);
-    return value;
+    // console.log(node.span.line, node.name, node.expression.kind);
+    return 0;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {
