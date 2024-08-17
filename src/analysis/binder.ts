@@ -81,11 +81,15 @@ export class Binder {
     }
     this.references.clear();
     const expression = this.bind(node.expression);
-    const map = new Map<string, BoundCellReference>();
-    this.references.forEach((r) => map.set(r.name, r));
     this.scope.setExpression(node.left.text, expression);
+    const dependencies = new Map<string, BoundCellReference>();
+    this.references.forEach((n) => dependencies.set(n.name, n));
     const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, true);
-    console.log(node.span.line, node.left.text, expression);
+    for (const dep of dependencies.values()) {
+      reference.observe(dep);
+    }
+    // console.log(node.span.line, node.left.text, expression);
+    reference.loggerLog();
     return new BoundCellAssignment(reference, node.span);
   }
 

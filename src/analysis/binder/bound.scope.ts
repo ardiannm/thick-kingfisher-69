@@ -1,9 +1,13 @@
 import { Span } from "../text/span";
+import { BoundCellReference } from "./bound.cell.reference";
 import { BoundDefaultZero } from "./bound.default.zero";
 import { BoundExpression } from "./bound.expression";
 import { BoundNode } from "./bound.node";
 
 export class Cell {
+  observers = new Map<string, BoundCellReference>();
+  dependencies = new Map<string, BoundCellReference>();
+
   constructor(public declared: boolean) {}
 }
 
