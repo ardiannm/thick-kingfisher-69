@@ -1,20 +1,10 @@
 import { Span } from "../text/span";
+import { BoundDefaultZero } from "./bound.default.zero";
 import { BoundExpression } from "./bound.expression";
 import { BoundNode } from "./bound.node";
-import { BoundKind } from "./kind/bound.kind";
 
 export class Cell {
   constructor(public declared: boolean) {}
-}
-
-export class BoundDefaultZero extends BoundNode {
-  private constructor(public override span: Span) {
-    super(BoundKind.BoundDefaultZero, span);
-  }
-
-  static createFrom(span: Span) {
-    return new BoundDefaultZero(span);
-  }
 }
 
 export class BoundScope {
