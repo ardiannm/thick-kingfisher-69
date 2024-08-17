@@ -83,8 +83,9 @@ export class Binder {
     const expression = this.bind(node.expression);
     const map = new Map<string, BoundCellReference>();
     this.references.forEach((r) => map.set(r.name, r));
+    this.scope.setExpression(node.left.text, expression);
     const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, true);
-    
+    console.log(node.span.line, node.left.text, expression);
     return new BoundCellAssignment(reference, node.span);
   }
 
@@ -141,7 +142,8 @@ export class Binder {
     if (!value.declared) {
       this.diagnostics.undeclaredCell(node.text, node.span);
     }
-    const bound = new BoundCellReference(node.text, value, node.span);
+    const expression = this.scope.getExpression(node.text, node.span);
+    const bound = new BoundCellReference(node.text, value, expression, node.span);
     this.references.set(bound.name, bound);
     return bound;
   }
