@@ -136,7 +136,7 @@ export class Binder {
 
   private bindSyntaxCellReference(node: SyntaxCellReference, declare: boolean) {
     const value = this.scope.get(node.text);
-    if (declare) {
+    if (declare || this.configuration.autoDeclaration) {
       value.declared = true;
     }
     if (!value.declared) {
