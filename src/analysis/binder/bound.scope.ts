@@ -1,28 +1,15 @@
-import { BoundCellReference } from "./bound.cell.reference";
-
 export class Cell {
-  observers = new Map<string, BoundCellReference>();
-  dependencies = new Map<string, BoundCellReference>();
-  constructor(public value: number, public evaluated: boolean) {}
+  constructor(public declared: boolean) {}
 }
 
 export class BoundScope {
-  vars = new Map<string, Cell>();
-  current = new Map<string, BoundCellReference>();
-
+  values = new Map<string, Cell>();
   constructor(public parent: BoundScope | null) {}
 
-  public bind(reference: string) {
-    if (this.vars.has(reference)) {
-      return this.vars.get(reference) as Cell;
-    } else {
-      const newCell = new Cell(0, false);
-      this.vars.set(reference, newCell);
-      return newCell;
+  get(text: string) {
+    if (!this.values.has(text)) {
+      this.values.set(text, new Cell(false));
     }
-  }
-
-  register(reference: BoundCellReference) {
-    this.current.set(reference.name, reference);
+    return this.values.get(text) as Cell;
   }
 }
