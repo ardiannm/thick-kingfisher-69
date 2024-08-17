@@ -22,7 +22,7 @@ export class SyntaxTree {
 
   bind() {
     if (this.diagnostics.canBind()) {
-      return new Binder(this.diagnostics, new CompilerOptions(true)).bind(this.root);
+      return new Binder(this.diagnostics, new CompilerOptions(false)).bind(this.root);
     }
     return this;
   }

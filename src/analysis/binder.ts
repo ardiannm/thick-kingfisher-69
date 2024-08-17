@@ -72,6 +72,9 @@ export class Binder {
       cell = new BoundCell(this.scope, node.text, BoundDefaultZero.createFrom(node.span), node.span);
       this.scope.declarations.set(node.text, cell);
     }
+    if (!this.configuration.autoDeclaration && cell.expression instanceof BoundDefaultZero) {
+      this.diagnostics.undeclaredCell(node.text, node.span);
+    }
     return new BoundCellReference(node.text, cell, node.span);
   }
 
