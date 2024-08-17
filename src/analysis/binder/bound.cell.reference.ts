@@ -14,10 +14,15 @@ export class BoundCellReference extends BoundNode {
     node.cell.observers.set(this.name, this);
   }
 
-  loggerLog() {
-    console.log(this.span.line, this.name);
-    console.log(this.cell.dependencies);
-    console.log(this.cell.observers);
-    console.log("");
+  print() {
+    var struct = "after processing line " + this.span.line + ", cell " + this.name + " has these:";
+    struct += "\n{";
+    struct += "\n\tdependencies: ";
+    this.cell.dependencies.forEach((u) => (struct += u.name + " "));
+    struct += ",\n\tobservers: ";
+    this.cell.observers.forEach((u) => (struct += u.name + " "));
+    struct += ",\n}";
+    console.log(struct);
+    return struct;
   }
 }

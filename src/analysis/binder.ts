@@ -89,7 +89,7 @@ export class Binder {
       reference.observe(dep);
     }
     // console.log(node.span.line, node.left.text, expression);
-    reference.loggerLog();
+    reference.print();
     return new BoundCellAssignment(reference, node.span);
   }
 
