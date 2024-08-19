@@ -21,11 +21,10 @@ import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
-import { BoundCell } from "./binder/bound.cell";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { BoundCellReference } from "./binder/bound.cell.reference";
-import { BoundDefaultZero } from "./binder/bound.default.zero";
+import { BoundCellAssignment } from "./binder/bound.cell.assignment";
 
 export class Binder {
   scope = new BoundScope(null);
@@ -62,30 +61,21 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
-    this.scope.references.clear();
     const expression = this.bind(node.expression);
-    return new BoundCell(this.scope, node.left.text, expression, node.span);
+    const name = node.left.text;
+    const reference = this.scope.createCell(name, expression);
+    return new BoundCellAssignment(reference, node.span);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
-    var cell = this.scope.declarations.get(node.text);
-    if (!cell) {
-      cell = new BoundCell(this.scope, node.text, BoundDefaultZero.createFrom(node.span), node.span);
-      this.scope.declarations.set(node.text, cell);
-    }
-    if (!this.configuration.autoDeclaration && cell.expression instanceof BoundDefaultZero) {
-      this.diagnostics.undeclaredCell(node.text, node.span);
-    }
-    const bound = new BoundCellReference(node.text, cell, node.span);
-    this.scope.references.set(bound.name, bound);
-    return bound;
+    const reference = this.scope.getCell(node.text, node.span);
+    return new BoundCellReference(reference, node.span);
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
     const statements = new Array<BoundStatement>();
     for (const statement of node.root) {
-      const bound = this.bind(statement);
-      statements.push(bound);
+      statements.push(this.bind(statement));
     }
     return new BoundCompilationUnit(statements, node.span);
   }

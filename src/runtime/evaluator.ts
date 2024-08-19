@@ -9,10 +9,10 @@ import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
 import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
-import { BoundCell } from "../analysis/binder/bound.cell";
 
 export class Evaluator {
   private value = 0;
+
   constructor(private diagnostics: DiagnosticsBag) {}
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
@@ -28,8 +28,6 @@ export class Evaluator {
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundCellReference:
         return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
-      case BoundKind.BoundCell:
-        return this.evaluateBoundCell(node as NodeType<BoundCell>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
       case BoundKind.BoundDefaultZero:
@@ -37,11 +35,6 @@ export class Evaluator {
     }
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
-  }
-
-  private evaluateBoundCell(node: BoundCell): number {
-    node.value = this.evaluate(node.expression);
-    return node.value;
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
