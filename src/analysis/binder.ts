@@ -15,7 +15,6 @@ import { BoundNode } from "./binder/bound.node";
 import { BoundErrorExpression } from "./binder/bound.error.expression";
 import { SyntaxCompilationUnit } from "./parser/syntax.compilation.unit";
 import { BoundCompilationUnit } from "./binder/bound.compilation.unit";
-import { CompilerOptions } from "../compiler.options";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
@@ -25,11 +24,12 @@ import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { BoundCellReference } from "./binder/bound.cell.reference";
 import { BoundCellAssignment } from "./binder/bound.cell.assignment";
+import { BoundDefaultZero } from "./binder/bound.default.zero";
 
 export class Binder {
   scope = new BoundScope(null);
 
-  constructor(private diagnostics: DiagnosticsBag, public configuration: CompilerOptions) {}
+  constructor(private diagnostics: DiagnosticsBag) {}
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -39,7 +39,7 @@ export class Binder {
       case SyntaxNodeKind.NumberToken:
         return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxCellReference:
-        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
+        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>, false);
       case SyntaxNodeKind.SyntaxParenthesis:
         return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
@@ -62,14 +62,18 @@ export class Binder {
       return new BoundErrorExpression(node.kind, node.span);
     }
     const expression = this.bind(node.expression);
-    const name = node.left.text;
-    const reference = this.scope.createCell(name, expression);
-    return new BoundCellAssignment(reference, node.span);
+    const reference = this.bindSyntaxCellReference(node.left as SyntaxCellReference, true);
+    reference.cell.expression = expression;
+    return new BoundCellAssignment(reference, expression, node.span);
   }
 
-  private bindSyntaxCellReference(node: SyntaxCellReference) {
-    const reference = this.scope.getCell(node.text, node.span);
-    return new BoundCellReference(reference, node.span);
+  private bindSyntaxCellReference(node: SyntaxCellReference, declaring: boolean) {
+    const name = node.text;
+    const cell = this.scope.createCell(name, node.span);
+    if (!node.tree.configuration.autoDeclaration && !declaring && cell.expression instanceof BoundDefaultZero) {
+      this.diagnostics.undeclaredCell(name, node.span);
+    }
+    return new BoundCellReference(name, cell, node.span);
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {

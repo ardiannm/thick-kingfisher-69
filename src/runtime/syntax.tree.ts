@@ -11,18 +11,18 @@ export class SyntaxTree {
   public root: SyntaxCompilationUnit;
   public readonly diagnostics = new DiagnosticsBag();
 
-  private constructor(public text: SourceText) {
+  private constructor(public text: SourceText, public configuration: CompilerOptions) {
     const parser = new Parser(this);
     this.root = parser.parseCompilationUnit();
   }
 
-  public static createFrom(text: string) {
-    return new SyntaxTree(SourceText.createFrom(text));
+  public static createFrom(text: string, configuration: CompilerOptions) {
+    return new SyntaxTree(SourceText.createFrom(text), configuration);
   }
 
   bind() {
     if (this.diagnostics.canBind()) {
-      return new Binder(this.diagnostics, new CompilerOptions(true)).bind(this.root);
+      return new Binder(this.diagnostics).bind(this.root);
     }
     return this;
   }

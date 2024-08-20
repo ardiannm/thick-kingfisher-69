@@ -3,13 +3,14 @@ import styles from "../styles/screen.module.scss";
 import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
+import { CompilerOptions } from "../../../src/compiler.options";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 
+var code = `A1
 A2 :: A1+2
 A3 :: 3+A1
 A5 :: A2+A3		# expected result 5
@@ -21,9 +22,10 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
+  const [auto, setAuto] = createSignal(true);
 
   createEffect(() => {
-    const tree = SyntaxTree.createFrom(text());
+    const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
     const value = tree.evaluate();
     const d = tree.diagnostics.getDiagnostics();
     setDiagnostics(d);
