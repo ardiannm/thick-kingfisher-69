@@ -8,7 +8,7 @@ import { Evaluator } from "./evaluator";
 import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
 
 export class SyntaxTree {
-  public root: SyntaxCompilationUnit;
+  protected root: SyntaxCompilationUnit;
   public readonly diagnostics = new DiagnosticsBag();
 
   private constructor(public text: SourceText, public configuration: CompilerOptions) {
@@ -22,7 +22,7 @@ export class SyntaxTree {
 
   bind() {
     if (this.diagnostics.canBind()) {
-      return new Binder(this.diagnostics).bind(this.root);
+      return new Binder().bind(this.root);
     }
     return this;
   }

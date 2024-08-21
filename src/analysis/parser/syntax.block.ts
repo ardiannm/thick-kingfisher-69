@@ -6,7 +6,7 @@ import { SyntaxNode } from "./syntax.node";
 
 export class SyntaxBlock extends SyntaxNode {
   constructor(
-    protected override tree: SyntaxTree,
+    public override tree: SyntaxTree,
     public openBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
     public statements: Array<SyntaxStatement>,
     public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>

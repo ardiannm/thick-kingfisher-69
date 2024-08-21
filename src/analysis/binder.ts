@@ -15,7 +15,6 @@ import { BoundNode } from "./binder/bound.node";
 import { BoundErrorExpression } from "./binder/bound.error.expression";
 import { SyntaxCompilationUnit } from "./parser/syntax.compilation.unit";
 import { BoundCompilationUnit } from "./binder/bound.compilation.unit";
-import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
@@ -27,9 +26,7 @@ import { BoundCellAssignment } from "./binder/bound.cell.assignment";
 import { BoundDefaultZero } from "./binder/bound.default.zero";
 
 export class Binder {
-  scope = new BoundScope(null);
-
-  constructor(private diagnostics: DiagnosticsBag) {}
+  public scope = new BoundScope(null);
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -51,13 +48,13 @@ export class Binder {
       case SyntaxNodeKind.SyntaxBlock:
         return this.bindSyntaxBlock(node as NodeType<SyntaxBlock>);
     }
-    this.diagnostics.binderMethod(node.kind, node.span);
+    node.tree.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
     if (node.left.kind !== SyntaxNodeKind.SyntaxCellReference) {
-      this.diagnostics.cantUseAsAReference(node.left.kind, node.left.span);
+      node.tree.diagnostics.cantUseAsAReference(node.left.kind, node.left.span);
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
@@ -71,7 +68,7 @@ export class Binder {
     const name = node.text;
     const cell = this.scope.createCell(name, node.span);
     if (!node.tree.configuration.autoDeclaration && !declaring && cell.expression instanceof BoundDefaultZero) {
-      this.diagnostics.undeclaredCell(name, node.span);
+      node.tree.diagnostics.undeclaredCell(name, node.span);
     }
     return new BoundCellReference(name, cell, node.span);
   }

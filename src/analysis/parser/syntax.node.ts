@@ -3,7 +3,7 @@ import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 
 export class SyntaxNode {
-  constructor(protected tree: SyntaxTree, public kind: SyntaxKind) {}
+  constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
 
   *getChildren(): Generator<SyntaxNode> {
     for (const data of Object.values(this)) {
