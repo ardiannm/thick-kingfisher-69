@@ -23,9 +23,10 @@ import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { BoundCellAssignment } from "./binder/bound.cell.assignment";
 import { BoundCell } from "./binder/bound.cell";
-import { BoundExpression } from "./binder/bound.expression";
 import { BoundCellReference } from "./binder/bound.cell.reference";
+import { SyntaxExpression } from "./parser/syntax.expression";
 import { BoundDefaultZero } from "./binder/bound.default.zero";
+import { BoundExpression } from "./binder/bound.expression";
 
 export class Binder {
   public scope = new BoundScope(null);
@@ -60,28 +61,32 @@ export class Binder {
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
     }
-    const expression = this.bind(node.expression);
-    const reference = this.bindSyntaxCell(node.left as SyntaxCellReference, expression);
-    return new BoundCellAssignment(reference, node.span);
+    const cell = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
+    return new BoundCellAssignment(cell, node.span);
   }
 
-  private bindSyntaxCell(node: SyntaxCellReference, expression: BoundExpression) {
-    const bound = new BoundCell(node.text, 0, expression, node.span);
-    this.scope.values.set(bound.name, bound);
+  private bindSyntaxCell(node: SyntaxCellReference, expression?: SyntaxExpression) {
+    const name = node.text;
+    var boundExpression: BoundExpression;
+    if (expression) {
+      boundExpression = this.bind(expression);
+    } else {
+      boundExpression = new BoundDefaultZero(node.span);
+    }
+    const bound = new BoundCell(name, 0, boundExpression, node.span);
+    this.scope.cells.set(name, bound);
     return bound;
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
-    var value: BoundCell;
+    var cell: BoundCell;
     const name = node.text;
-    if (this.scope.values.has(name)) {
-      value = this.scope.values.get(name) as BoundCell;
+    if (this.scope.cells.has(name)) {
+      cell = this.scope.cells.get(name) as BoundCell;
     } else {
-      const expression = new BoundDefaultZero(node.span);
-      value = this.bindSyntaxCell(node, expression);
+      cell = this.bindSyntaxCell(node);
     }
-    const bound = new BoundCellReference(value, node.span);
-    // console.log(bound.cell.name, bound.span.line, bound.span.offset, bound.cell.expression);
+    const bound = new BoundCellReference(cell, node.span);
     return bound;
   }
 

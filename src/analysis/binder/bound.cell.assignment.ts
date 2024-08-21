@@ -4,7 +4,7 @@ import { BoundExpression } from "./bound.expression";
 import { BoundKind } from "./kind/bound.kind";
 
 export class BoundCellAssignment extends BoundExpression {
-  constructor(public reference: BoundCell, public override span: Span) {
+  constructor(public cell: BoundCell, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 }
