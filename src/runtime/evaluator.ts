@@ -8,8 +8,6 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
-import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
-import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
 
 export class Evaluator {
   private value = 0;
@@ -23,14 +21,10 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
-      case BoundKind.BoundCellAssignment:
-        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
-      case BoundKind.BoundCellReference:
-        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
       case BoundKind.BoundDefaultZero:
@@ -38,19 +32,6 @@ export class Evaluator {
     }
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
-  }
-
-  private evaluateBoundCellAssignment(node: BoundCellAssignment): number {
-    const expression = node.expression;
-    const value = this.evaluate(expression);
-    node.reference.cell.expression = expression;
-    console.log(node.reference.name, node.reference.cell.expression);
-    node.reference.cell.value = value;
-    return value;
-  }
-
-  private evaluateBoundCellReference(node: BoundCellReference): number {
-    return node.cell.value;
   }
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {

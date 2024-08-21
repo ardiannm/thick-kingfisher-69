@@ -2,10 +2,10 @@ import { SourceText } from "../analysis/text/source.text";
 import { Parser } from "../analysis/parser";
 import { SyntaxCompilationUnit } from "../analysis/parser/syntax.compilation.unit";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
-import { Binder } from "../analysis/binder";
 import { CompilerOptions } from "../compiler.options";
 import { Evaluator } from "./evaluator";
 import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
+import { Binder } from "../analysis/binder";
 
 export class SyntaxTree {
   protected root: SyntaxCompilationUnit;
