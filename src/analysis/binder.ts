@@ -73,7 +73,7 @@ export class Binder {
     } else {
       boundExpression = new BoundDefaultZero(node.span);
     }
-    const bound = new BoundCell(name, 0, boundExpression, node.span);
+    const bound = new BoundCell(name, boundExpression, node.span);
     this.scope.cells.set(name, bound);
     return bound;
   }
@@ -85,6 +85,9 @@ export class Binder {
       cell = this.scope.cells.get(name) as BoundCell;
     } else {
       cell = this.bindSyntaxCell(node);
+    }
+    if (!node.tree.configuration.autoDeclaration && cell.expression instanceof BoundDefaultZero) {
+      node.tree.diagnostics.undeclaredCell(name, node.span);
     }
     const bound = new BoundCellReference(cell, node.span);
     return bound;

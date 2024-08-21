@@ -22,7 +22,7 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [auto, setAuto] = createSignal(true);
+  const [auto, setAuto] = createSignal(false);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));

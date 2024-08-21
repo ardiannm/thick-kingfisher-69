@@ -4,7 +4,7 @@ import { Span } from "../text/span";
 import { BoundExpression } from "./bound.expression";
 
 export class BoundCell extends BoundNode {
-  constructor(public name: string, public value: number, public expression: BoundExpression, public override span: Span) {
+  constructor(public name: string, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCell, span);
   }
 }
