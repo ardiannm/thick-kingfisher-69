@@ -7,8 +7,9 @@ import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
 import { BoundBinaryExpression } from "../../../src/analysis/binder/binary.expression";
 import { BoundNumericLiteral } from "../../../src/analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.expression";
-import { BoundCell, BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
+import { BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
 import { BoundBinaryOperatorKind } from "../../../src/analysis/binder/kind/bound.binary.operator.kind";
+import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
 
 export class MapTree {
   render<Kind extends BoundNode>(node: Kind): JSX.Element {
@@ -18,8 +19,6 @@ export class MapTree {
         return this.renderBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundCellAssignment:
         return this.renderBoundCellAssignment(node as NodeType<BoundCellAssignment>);
-      case BoundKind.BoundCell:
-        return this.renderBoundCell(node as NodeType<BoundCell>);
       case BoundKind.BoundCellReference:
         return this.renderBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundBinaryExpression:
@@ -28,24 +27,17 @@ export class MapTree {
         return this.renderBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
         return this.renderBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
+      case BoundKind.BoundNoneToken:
+        return <div class={styles.BoundNumericLiteral}>{0}</div>;
     }
-    return <div class={styles.BoundErrorExpression}>Error: {node.kind}</div>;
+    return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).kind}</div>;
   }
 
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
     return (
       <div class={styles.BoundCellReference}>
-        <div>{node.name}</div>
-        {this.render(node.cell)}
-      </div>
-    );
-  }
-
-  private renderBoundCell(node: BoundCell): JSX.Element {
-    return (
-      <div class={styles.BoundCell}>
-        {/* {node.name} */}
-        {node.name + " (x)".replace("x", node.id + "")}
+        <div class={styles.BoundCellReferenceName}>{node.name}</div>
+        {this.render(node.expression)}
       </div>
     );
   }
@@ -53,8 +45,8 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        {this.render(node.reference)}
-        {this.render(node.reference.expression)}
+        <div class={styles.BoundCellReferenceName}>{node.name}</div>
+        {this.render(node.expression)}
       </div>
     );
   }

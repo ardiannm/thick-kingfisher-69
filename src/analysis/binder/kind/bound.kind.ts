@@ -9,5 +9,6 @@ export enum BoundKind {
   BoundUnaryExpression = "BoundUnaryExpression",
   BoundCellAssignment = "BoundCellAssignment",
   BoundCell = "BoundCell",
-  BoundDefaultZero = "BoundDefaultZero"
+  BoundDefaultZero = "BoundDefaultZero",
+  BoundNoneToken = "BoundNoneToken"
 }

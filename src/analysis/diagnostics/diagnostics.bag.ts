@@ -5,7 +5,7 @@ import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
-  private diagnostics = new Array<Diagnostic>();
+  public diagnostics = new Array<Diagnostic>();
   private severity = new Set<Severity>();
 
   private report(message: string, severity: Severity, span: Span) {
@@ -19,10 +19,6 @@ export class DiagnosticsBag {
 
   canEvaluate() {
     return this.canBind() && !this.severity.has(Severity.CantEvaluate);
-  }
-
-  getDiagnostics() {
-    return this.diagnostics;
   }
 
   badCharacterFound(text: string, span: Span) {

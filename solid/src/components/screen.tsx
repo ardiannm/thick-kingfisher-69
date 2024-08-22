@@ -31,7 +31,7 @@ const Input: Component = () => {
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
     const value = tree.evaluate();
-    const d = tree.diagnostics.getDiagnostics();
+    const d = tree.diagnostics.diagnostics;
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());

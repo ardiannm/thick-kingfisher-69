@@ -69,7 +69,7 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this.tokenSpan;
   }
 
-  public static create(tree: SyntaxTree, span: Span) {
-    return new SyntaxToken(tree, SyntaxNodeKind.NoneToken, span);
+  public static create(node: SyntaxNode) {
+    return new SyntaxToken(node.tree, SyntaxNodeKind.SyntaxNoneToken, node.span);
   }
 }

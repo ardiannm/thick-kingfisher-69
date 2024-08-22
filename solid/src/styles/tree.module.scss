@@ -60,6 +60,10 @@
   @extend .Node;
 }
 
+.BoundCellReferenceName {
+  padding: 4px;
+}
+
 .BoundCellAssignment {
   display: flex;
   flex-direction: row;
