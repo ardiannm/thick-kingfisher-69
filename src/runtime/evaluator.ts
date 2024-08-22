@@ -27,8 +27,6 @@ export class Evaluator {
         return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
-      case BoundKind.BoundDefaultZero:
-        return 0;
     }
     this.diagnostics.evaluatorMethod(node.kind, node.span);
     return 0;
