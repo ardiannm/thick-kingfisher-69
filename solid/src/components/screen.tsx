@@ -4,6 +4,9 @@ import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { CompilerOptions } from "../../../src/compiler.options";
+import { BoundNode } from "../../../src/analysis/binder/bound.node";
+import { MapTree } from "./tree";
+import { BoundExpression } from "../../../src/analysis/binder/bound.expression";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
@@ -23,6 +26,7 @@ const Input: Component = () => {
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
   const [auto, setAuto] = createSignal(false);
+  const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
@@ -31,34 +35,40 @@ const Input: Component = () => {
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());
+    setTree(tree.bound);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
+  const mapper = new MapTree();
+
   return (
-    <div class={styles.input}>
-      <div class={styles.curve}></div>
-      <div class={styles.buttonTop}></div>
-      <div class={styles.buttonBottom}></div>
-      <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
-      <Show when={diagnostics().length || doEval()}>
-        <div class={styles.diagnostics}>
-          <Show when={doEval()}>{<div class={styles.value}>{value()}</div>} </Show>
-          <div class={styles.diagnosticsContainer}>
-            <For each={diagnostics()}>
-              {(d) => (
-                <div class={styles.diagnostic}>
-                  <span class={styles.diagnosticsLocation}>
-                    {d.span.line}:{d.span.offset}
-                  </span>
-                  <span class={styles.diagnosticMessage}> {d.message}</span>
-                </div>
-              )}
-            </For>
+    <>
+      <div class={styles.input}>
+        <div class={styles.curve}></div>
+        <div class={styles.buttonTop}></div>
+        <div class={styles.buttonBottom}></div>
+        <textarea class={styles.textArea} spellcheck={false} oninput={handleTextAreaInput} value={text()} autofocus={true}></textarea>
+        <Show when={diagnostics().length || doEval()}>
+          <div class={styles.diagnostics}>
+            <Show when={doEval()}>{<div class={styles.value}>{value()}</div>} </Show>
+            <div class={styles.diagnosticsContainer}>
+              <For each={diagnostics()}>
+                {(d) => (
+                  <div class={styles.diagnostic}>
+                    <span class={styles.diagnosticsLocation}>
+                      {d.span.line}:{d.span.offset}
+                    </span>
+                    <span class={styles.diagnosticMessage}> {d.message}</span>
+                  </div>
+                )}
+              </For>
+            </div>
           </div>
-        </div>
-      </Show>
-    </div>
+        </Show>
+      </div>
+      <Show when={tree()}>{mapper.render(tree() as BoundExpression)}</Show>
+    </>
   );
 };
 

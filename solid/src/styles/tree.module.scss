@@ -1,0 +1,50 @@
+.Node {
+  font-family: "Roboto";
+  // border-radius: 5px;
+  font-size: 14px;
+}
+
+.BoundCompilationUnit {
+  display: flex;
+  flex-direction: column;
+  left: 1%;
+  height: fit-content;
+  top: 3%;
+  position: absolute;
+  cursor: pointer;
+  @extend .Node;
+  background-color: transparent;
+}
+
+.BoundNumericLiteral {
+  display: flex;
+  // border: 1px solid lightcoral;
+  margin: 1px;
+  justify-content: center;
+  align-items: center;
+  padding: 1px 7px;
+  border: 1px solid #474745;
+  @extend .Node;
+}
+
+.BoundCell {
+  border: 1px solid #474745;
+  display: flex;
+  flex-direction: row;
+  padding: 1px;
+  margin: 1px;
+  margin-bottom: none;
+  @extend .Node;
+}
+
+.BoundCellName {
+  padding: 4px;
+}
+
+.BoundErrorExpression {
+  // border: 1px solid #474745;
+  margin: 1px;
+  padding: 1px 7px;
+  // background-color: black;
+  @extend .Node;
+}
