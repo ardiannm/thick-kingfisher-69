@@ -68,4 +68,8 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
   override get span() {
     return this.tokenSpan;
   }
+
+  public static create(tree: SyntaxTree, span: Span) {
+    return new SyntaxToken(tree, SyntaxNodeKind.NoneToken, span);
+  }
 }

@@ -1,7 +1,8 @@
 .Node {
   font-family: "Roboto";
-  // border-radius: 5px;
   font-size: 14px;
+  width: auto;
+  box-sizing: border-box;
 }
 
 .BoundCompilationUnit {
@@ -14,6 +15,16 @@
   cursor: pointer;
   @extend .Node;
   background-color: transparent;
+  padding: 5px;
+}
+
+.Statement {
+  @extend .Node;
+  display: flex;
+  border: 1px solid #474745;
+  min-width: 100px;
+  margin-bottom: 1px;
+  padding: 3px;
 }
 
 .BoundNumericLiteral {
@@ -28,17 +39,41 @@
 }
 
 .BoundCell {
+  display: flex;
+  flex-direction: row;
+  margin: 1px;
+  margin-bottom: none;
+  @extend .Node;
+  // color: white;
+  padding: 4px;
+  border: 1px solid #474745;
+  background-color: #e6e5eb;
+}
+
+.BoundCellReference {
   border: 1px solid #474745;
   display: flex;
   flex-direction: row;
-  padding: 1px;
+  padding: 1px 3px;
   margin: 1px;
   margin-bottom: none;
   @extend .Node;
 }
 
+.BoundCellAssignment {
+  display: flex;
+  flex-direction: row;
+}
+
 .BoundCellName {
   padding: 4px;
+}
+
+.BoundBinaryExpression {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .BoundErrorExpression {

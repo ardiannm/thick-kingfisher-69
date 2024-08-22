@@ -13,7 +13,7 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1
+var code = `A1 :: 3
 A2 :: A1+2
 A3 :: 3+A1
 A5 :: A2+A3		# expected result 5
