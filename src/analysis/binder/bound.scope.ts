@@ -1,6 +1,6 @@
-import { SyntaxExpression } from "../parser/syntax.expression";
+import { BoundCellAssignment } from "../binder";
 
 export class BoundScope {
-  expressions = new Map<string, SyntaxExpression>();
+  assignments = new Map<string, BoundCellAssignment>();
   constructor(public parent: BoundScope | null) {}
 }

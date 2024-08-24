@@ -1,76 +1,67 @@
 .Node {
-  font-family: "Roboto";
-  font-size: 14px;
+  display: flex;
   width: auto;
   box-sizing: border-box;
+  min-width: 27px;
+  min-height: 27px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  background-color: honeydew;
+  border-radius: 3px;
+  margin-bottom: 0px;
+  margin: 0.5px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 13px;
 }
 
 .BoundCompilationUnit {
-  display: flex;
   flex-direction: column;
-  left: 1%;
+  left: 10px;
+  top: 10px;
   height: fit-content;
-  top: 3%;
   position: absolute;
   cursor: pointer;
-  @extend .Node;
   background-color: transparent;
   padding: 5px;
+  justify-content: left;
+  align-items: left;
+  user-select: none;
+  padding: 0;
 }
 
 .Statement {
   @extend .Node;
-  display: flex;
-  border: 1px solid #474745;
   min-width: 100px;
-  margin-bottom: 1px;
-  padding: 3px;
+  justify-content: left;
+  align-items: left;
+  margin-bottom: 5px;
+  padding: 1px;
+  padding-bottom: 0;
 }
 
 .BoundNumericLiteral {
-  display: flex;
   // border: 1px solid lightcoral;
-  margin: 1px;
   justify-content: center;
   align-items: center;
   padding: 1px 7px;
-  border: 1px solid #474745;
   @extend .Node;
-}
-
-.BoundCell {
-  display: flex;
-  flex-direction: row;
-  margin: 1px;
-  margin-bottom: none;
-  @extend .Node;
-  // color: white;
-  padding: 4px;
-  border: 1px solid #474745;
-  background-color: #e6e5eb;
 }
 
 .BoundCellReference {
-  border: 1px solid #474745;
-  display: flex;
   flex-direction: row;
-  padding: 1px 3px;
-  margin: 1px;
-  margin-bottom: none;
   @extend .Node;
+  // border: none;
+  background-color: lightgreen;
 }
 
-.BoundCellReferenceName {
-  padding: 4px;
+.BoundCell {
+  @extend .Node;
 }
 
 .BoundCellAssignment {
   display: flex;
   flex-direction: row;
-}
-
-.BoundCellName {
-  padding: 4px;
 }
 
 .BoundBinaryExpression {
@@ -80,10 +71,30 @@
   align-items: center;
 }
 
+.BoundUnaryExpression {
+  @extend .BoundBinaryExpression;
+}
+
 .BoundErrorExpression {
-  // border: 1px solid #474745;
-  margin: 1px;
   padding: 1px 7px;
-  // background-color: black;
   @extend .Node;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Observers {
+  @extend .Node;
+  height: auto;
+  padding-inline: 4px;
+  flex-direction: row;
+  min-width: 70px;
+  align-items: start;
+  // flex-direction: column;
+}
+
+.ObserversTitle {
+  font-size: 12px;
+  padding: 1px;
 }

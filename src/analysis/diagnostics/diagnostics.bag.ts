@@ -68,8 +68,4 @@ export class DiagnosticsBag {
   evaluatorMethod(kind: BoundKind, span: Span) {
     this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, span);
   }
-
-  trackMethod(kind: BoundKind, span: Span) {
-    this.report(`Method for tracking '${kind}' is not implemented.`, Severity.CantEvaluate, span);
-  }
 }

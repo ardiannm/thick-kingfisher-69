@@ -10,6 +10,7 @@ import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.e
 import { BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
 import { BoundBinaryOperatorKind } from "../../../src/analysis/binder/kind/bound.binary.operator.kind";
 import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
+import { BoundUnaryOperatorKind } from "../../../src/analysis/binder/kind/bound.unary.operator.kind";
 
 export class MapTree {
   render<Kind extends BoundNode>(node: Kind): JSX.Element {
@@ -27,32 +28,39 @@ export class MapTree {
         return this.renderBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
         return this.renderBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
-      case BoundKind.BoundNoneToken:
-        return <div class={styles.BoundNumericLiteral}>{0}</div>;
     }
+    if (node instanceof BoundErrorExpression) return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).nodeKind}</div>;
     return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).kind}</div>;
-  }
-
-  private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return (
-      <div class={styles.BoundCellReference}>
-        <div class={styles.BoundCellReferenceName}>{node.name}</div>
-        {this.render(node.expression)}
-      </div>
-    );
   }
 
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.BoundCellReferenceName}>{node.name}</div>
+        <div class={styles.BoundCell}>{node.reference}</div>
         {this.render(node.expression)}
+        <div class={styles.Observers}>
+          <span class={styles.ObserversTitle}>tracked by these cells:</span>
+        </div>
+      </div>
+    );
+  }
+
+  private renderBoundCellReference(node: BoundCellReference): JSX.Element {
+    return (
+      <div class={styles.BoundCellReference}>
+        {node.cell.reference}
+        {/* {this.render(node.cell)} */}
       </div>
     );
   }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {
-    return <div class={styles.BoundUnaryExpression}>{this.render(node.right)}</div>;
+    return (
+      <div class={styles.BoundUnaryExpression}>
+        {/* {node.operatorKind === BoundUnaryOperatorKind.Identity ? "+" : "-"} */}
+        {this.render(node.right)}
+      </div>
+    );
   }
 
   private renderBoundNumericLiteral(node: BoundNumericLiteral): JSX.Element {
@@ -63,7 +71,7 @@ export class MapTree {
     return (
       <div class={styles.BoundBinaryExpression}>
         {this.render(node.left)}
-        {node.operatorKind === BoundBinaryOperatorKind.Addition ? "+" : "-"}
+        {/* {node.operatorKind === BoundBinaryOperatorKind.Addition ? "+" : "-"} */}
         {this.render(node.right)}
       </div>
     );
