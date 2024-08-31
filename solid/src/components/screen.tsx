@@ -14,11 +14,10 @@ type Input = InputEvent & {
 };
 
 var code = `A1
-A2 :: A1+2
-A3 :: 3+A1
-A5 :: A2+A3		# expected result 5
-A1 :: 2
-A5				# expected result 9`;
+A2 :: A1
+A3 :: A2
+A5 :: A1+A3
+A1 :: 4`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

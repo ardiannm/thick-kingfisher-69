@@ -1,6 +1,6 @@
 import styles from "../styles/tree.module.scss";
 
-import { JSX, For } from "solid-js";
+import { JSX, For, Show } from "solid-js";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
 import { BoundCompilationUnit } from "../../../src/analysis/binder/bound.compilation.unit";
 import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
@@ -39,13 +39,14 @@ export class MapTree {
         <div class={styles.BoundCell}>{node.reference}</div>
         {this.render(node.expression)}
         <div class={styles.Observers}>
-          <span class={styles.ObserversTitle}>tracked by these cells:</span>
-          {
-            <span class={styles.ObserversList}>
-              <span class={styles.BoundIdentifier}>{node.count}</span>
-              <For each={["A1", "A2"]}>{(observer) => <div class={styles.BoundNumericLiteral}>{observer}</div>}</For>
-            </span>
-          }
+          <Show when={node.dependencies.size}>
+            <span class={styles.ObserversTitle}>these dependencies:</span>
+            {
+              <span class={styles.ObserversList}>
+                <For each={[...node.dependencies.keys()]}>{(observer) => <div class={styles.BoundNumericLiteral}>{observer}</div>}</For>
+              </span>
+            }
+          </Show>
         </div>
       </div>
     );

@@ -34,14 +34,14 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public reference: string, public expression: BoundExpression, public count: number, public override span: Span) {
+  constructor(public reference: string, public expression: BoundExpression, public dependencies: Map<string, BoundCellAssignment>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 }
 
 export class Binder {
   public scope = new BoundScope(null);
-  public references = new Map<string, BoundCellReference>();
+  public references = new Map<string, BoundCellAssignment>();
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -80,9 +80,9 @@ export class Binder {
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     this.references.clear();
     const boundExpression = this.bind(expression);
-    const bound = new BoundCellAssignment(node.text, boundExpression, this.references.size, node.span);
+    const bound = new BoundCellAssignment(node.text, boundExpression, this.references, node.span);
     this.scope.assignments.set(bound.reference, bound);
-    this.references.clear();
+    this.references = new Map<string, BoundCellAssignment>();
     return bound;
   }
 
@@ -97,7 +97,7 @@ export class Binder {
       if (!report) return assignment;
     }
     const bound = new BoundCellReference(assignment, node.span);
-    this.references.set(assignment.reference, bound);
+    this.references.set(bound.cell.reference, bound.cell);
     return bound;
   }
 
