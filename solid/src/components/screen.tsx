@@ -13,7 +13,7 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 3
+var code = `A1
 A2 :: A1+2
 A3 :: 3+A1
 A5 :: A2+A3		# expected result 5
@@ -25,7 +25,7 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [auto, setAuto] = createSignal(false);
+  const [auto] = createSignal(true);
   const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {

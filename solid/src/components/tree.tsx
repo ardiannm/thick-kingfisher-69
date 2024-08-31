@@ -8,9 +8,7 @@ import { BoundBinaryExpression } from "../../../src/analysis/binder/binary.expre
 import { BoundNumericLiteral } from "../../../src/analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.expression";
 import { BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
-import { BoundBinaryOperatorKind } from "../../../src/analysis/binder/kind/bound.binary.operator.kind";
 import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
-import { BoundUnaryOperatorKind } from "../../../src/analysis/binder/kind/bound.unary.operator.kind";
 
 export class MapTree {
   render<Kind extends BoundNode>(node: Kind): JSX.Element {
@@ -28,6 +26,8 @@ export class MapTree {
         return this.renderBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
         return this.renderBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
+      case BoundKind.BoundNone:
+        return <div class={styles.BoundNumericLiteral}>0</div>;
     }
     if (node instanceof BoundErrorExpression) return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).nodeKind}</div>;
     return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).kind}</div>;
@@ -40,6 +40,12 @@ export class MapTree {
         {this.render(node.expression)}
         <div class={styles.Observers}>
           <span class={styles.ObserversTitle}>tracked by these cells:</span>
+          {
+            <span class={styles.ObserversList}>
+              <span class={styles.BoundIdentifier}>{node.count}</span>
+              <For each={["A1", "A2"]}>{(observer) => <div class={styles.BoundNumericLiteral}>{observer}</div>}</For>
+            </span>
+          }
         </div>
       </div>
     );

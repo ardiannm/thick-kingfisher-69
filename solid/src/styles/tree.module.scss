@@ -6,13 +6,13 @@
   min-height: 27px;
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
+  border: 1px solid rgba(0, 0, 0, 0.678);
   background-color: honeydew;
-  border-radius: 3px;
   margin-bottom: 0px;
   margin: 0.5px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 13px;
+  border-radius: 3px;
 }
 
 .BoundCompilationUnit {
@@ -35,9 +35,9 @@
   min-width: 100px;
   justify-content: left;
   align-items: left;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   padding: 1px;
-  padding-bottom: 0;
+  border: none;
 }
 
 .BoundNumericLiteral {
@@ -52,7 +52,7 @@
   flex-direction: row;
   @extend .Node;
   // border: none;
-  background-color: lightgreen;
+  background-color: lightgoldenrodyellow;
 }
 
 .BoundCell {
@@ -87,14 +87,26 @@
 .Observers {
   @extend .Node;
   height: auto;
-  padding-inline: 4px;
-  flex-direction: row;
+  flex-direction: column;
   min-width: 70px;
-  align-items: start;
-  // flex-direction: column;
+  padding: 1px;
 }
 
 .ObserversTitle {
-  font-size: 12px;
-  padding: 1px;
+  display: flex;
+  font-size: 11px;
+  padding-inline: 4px;
+  // margin-bottom: 4px;
+}
+
+.ObserversList {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  margin-top: auto;
+}
+
+.BoundIdentifier {
+  @extend .BoundNumericLiteral;
+  border: none;
 }

@@ -20,4 +20,5 @@ export enum SyntaxNodeKind {
   SyntaxParenthesis = "SyntaxParenthesizedExpression",
   SyntaxCellReference = "SyntaxCellReference",
   SyntaxExpression = "SyntaxExpression",
+  NoneToken = "NoneToken"
 }
