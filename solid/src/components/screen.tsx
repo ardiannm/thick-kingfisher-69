@@ -17,6 +17,7 @@ var code = `A1
 A2 :: A1
 A3 :: A2
 A5 :: A1+A3
+A6 :: A3
 A1 :: 4`;
 
 const Input: Component = () => {

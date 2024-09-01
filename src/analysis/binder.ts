@@ -34,8 +34,19 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public reference: string, public expression: BoundExpression, public dependencies: Map<string, BoundCellAssignment>, public override span: Span) {
+  public observers = new Map<string, BoundCellAssignment>();
+  public dependencies = new Map<string, BoundCellAssignment>();
+  constructor(public reference: string, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
+  }
+
+  observe(node: BoundCellAssignment) {
+    this.dependencies.set(node.reference, node);
+    node.observers.set(this.reference, this);
+  }
+
+  inherit(node: BoundCellAssignment) {
+    node.observers.forEach((o) => o.observe(this));
   }
 }
 
@@ -80,7 +91,12 @@ export class Binder {
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     this.references.clear();
     const boundExpression = this.bind(expression);
-    const bound = new BoundCellAssignment(node.text, boundExpression, this.references, node.span);
+    const bound = new BoundCellAssignment(node.text, boundExpression, node.span);
+    if (this.scope.assignments.has(node.text)) {
+      const prevNode = this.scope.assignments.get(node.text) as BoundCellAssignment;
+      bound.inherit(prevNode);
+    }
+    this.references.forEach((n) => bound.observe(n));
     this.scope.assignments.set(bound.reference, bound);
     this.references = new Map<string, BoundCellAssignment>();
     return bound;

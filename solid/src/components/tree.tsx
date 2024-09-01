@@ -40,10 +40,28 @@ export class MapTree {
         {this.render(node.expression)}
         <div class={styles.Observers}>
           <Show when={node.dependencies.size}>
-            <span class={styles.ObserversTitle}>these dependencies:</span>
             {
               <span class={styles.ObserversList}>
-                <For each={[...node.dependencies.keys()]}>{(observer) => <div class={styles.BoundNumericLiteral}>{observer}</div>}</For>
+                <For each={[...node.dependencies.values()]}>
+                  {(dependency) => (
+                    <div class={styles.Dependency}>
+                      {dependency.reference}({dependency.span.line})
+                    </div>
+                  )}
+                </For>
+              </span>
+            }
+          </Show>
+          <Show when={node.observers.size}>
+            {
+              <span class={styles.ObserversList}>
+                <For each={[...node.observers.values()]}>
+                  {(observer) => (
+                    <div class={styles.Observer}>
+                      {observer.reference}({observer.span.line})
+                    </div>
+                  )}
+                </For>
               </span>
             }
           </Show>
