@@ -1,3 +1,4 @@
+import { BoundCellAssignment } from "../binder";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -33,8 +34,8 @@ export class DiagnosticsBag {
     this.report(`Can't divide by zero.`, Severity.Warning, span);
   }
 
-  circularDependency(reference: string, dependency: string, span: Span) {
-    this.report(`Circular dependency '${dependency}' detected while binding '${reference}'.`, Severity.CantEvaluate, span);
+  circularDependency(assignee: BoundCellAssignment, dependency: BoundCellAssignment) {
+    this.report(`Circular dependency '${dependency.name}' detected while binding '${assignee.name}'.`, Severity.CantEvaluate, dependency.span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {

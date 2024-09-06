@@ -36,17 +36,29 @@ export class BoundCellReference extends BoundNode {
 export class BoundCellAssignment extends BoundNode {
   public observers = new Map<string, BoundCellAssignment>();
   public dependencies = new Map<string, BoundCellAssignment>();
-  constructor(public reference: string, public expression: BoundExpression, public override span: Span) {
+  constructor(public name: string, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 
   observe(node: BoundCellAssignment) {
-    this.dependencies.set(node.reference, node);
-    node.observers.set(this.reference, this);
+    this.dependencies.set(node.name, node);
+    node.observers.set(this.name, this);
   }
 
   inherit(node: BoundCellAssignment) {
     node.observers.forEach((o) => o.observe(this));
+  }
+
+  private doesReference(dependency: BoundCellAssignment, visited = new Set()) {
+    if (visited.has(this)) return false;
+    visited.add(this);
+    if (this.dependencies.has(dependency.name)) return true;
+    for (const dep of this.dependencies.values()) if (dep.doesReference(dependency, visited)) return true;
+    return false;
+  }
+
+  hasCirculerDependency() {
+    return this.doesReference(this);
   }
 }
 
@@ -97,7 +109,13 @@ export class Binder {
       bound.inherit(prevNode);
     }
     this.references.forEach((n) => bound.observe(n));
-    this.scope.assignments.set(bound.reference, bound);
+    for (const ref of this.references.values()) {
+      bound.observe(ref);
+      if (bound.hasCirculerDependency()) {
+        node.tree.diagnostics.circularDependency(bound, ref);
+      }
+    }
+    this.scope.assignments.set(bound.name, bound);
     this.references = new Map<string, BoundCellAssignment>();
     return bound;
   }
@@ -113,7 +131,7 @@ export class Binder {
       if (!report) return assignment;
     }
     const bound = new BoundCellReference(assignment, node.span);
-    this.references.set(bound.cell.reference, bound.cell);
+    this.references.set(bound.cell.name, bound.cell);
     return bound;
   }
 

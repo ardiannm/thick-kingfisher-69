@@ -36,7 +36,7 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.BoundCell}>{node.reference}</div>
+        <div class={styles.BoundCell}>{node.name}</div>
         {this.render(node.expression)}
         <div class={styles.Observers}>
           <Show when={node.dependencies.size}>
@@ -45,7 +45,7 @@ export class MapTree {
                 <For each={[...node.dependencies.values()]}>
                   {(dependency) => (
                     <div class={styles.Dependency}>
-                      {dependency.reference}({dependency.span.line})
+                      {dependency.name}({dependency.span.line})
                     </div>
                   )}
                 </For>
@@ -58,7 +58,7 @@ export class MapTree {
                 <For each={[...node.observers.values()]}>
                   {(observer) => (
                     <div class={styles.Observer}>
-                      {observer.reference}({observer.span.line})
+                      {observer.name}({observer.span.line})
                     </div>
                   )}
                 </For>
@@ -73,7 +73,7 @@ export class MapTree {
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
     return (
       <div class={styles.BoundCellReference}>
-        {node.cell.reference}
+        {node.cell.name}
         {/* {this.render(node.cell)} */}
       </div>
     );
