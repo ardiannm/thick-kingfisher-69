@@ -18,7 +18,11 @@ A2 :: A1
 A3 :: A2
 A5 :: A1+A3
 A6 :: A3
-A1 :: 6`;
+A1 :: A6+A4
+
+#   A6 must throw a circular dependecy error
+#   but fails to do since A4 is undeclared
+#   and clears the stack`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
@@ -31,7 +35,7 @@ const Input: Component = () => {
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
     const value = tree.evaluate();
-    const d = tree.diagnostics.getDiagnostics(4);
+    const d = tree.diagnostics.getDiagnostics(5);
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());

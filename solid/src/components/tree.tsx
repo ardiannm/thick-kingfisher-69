@@ -38,34 +38,38 @@ export class MapTree {
       <div class={styles.BoundCellAssignment}>
         <div class={styles.BoundCell}>{node.name}</div>
         {this.render(node.expression)}
-        <div class={styles.Observers}>
-          <Show when={node.dependencies.size}>
-            {
-              <span class={styles.ObserversList}>
-                <For each={[...node.dependencies.values()]}>
-                  {(dependency) => (
-                    <div class={styles.Dependency}>
-                      {dependency.name}({dependency.span.line})
-                    </div>
-                  )}
-                </For>
-              </span>
-            }
-          </Show>
-          <Show when={node.nodes.size}>
-            {
-              <span class={styles.ObserversList}>
-                <For each={[...node.nodes.values()]}>
-                  {(node) => (
-                    <div class={styles.Observer}>
-                      {node.name}({node.span.line})
-                    </div>
-                  )}
-                </For>
-              </span>
-            }
-          </Show>
-        </div>
+        <Show when={node.dependencies.size || node.nodes.size}>
+          {
+            <div class={styles.Observers}>
+              <Show when={node.dependencies.size}>
+                {
+                  <span class={styles.ObserversList}>
+                    <For each={[...node.dependencies.values()]}>
+                      {(dependency) => (
+                        <div class={styles.Dependency}>
+                          {dependency.name}({dependency.span.line})
+                        </div>
+                      )}
+                    </For>
+                  </span>
+                }
+              </Show>
+              <Show when={node.nodes.size}>
+                {
+                  <span class={styles.ObserversList}>
+                    <For each={[...node.nodes.values()]}>
+                      {(node) => (
+                        <div class={styles.Observer}>
+                          {node.name}({node.span.line})
+                        </div>
+                      )}
+                    </For>
+                  </span>
+                }
+              </Show>
+            </div>
+          }
+        </Show>
       </div>
     );
   }
