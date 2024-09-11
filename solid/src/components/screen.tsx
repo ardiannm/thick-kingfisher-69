@@ -18,7 +18,7 @@ A2 :: A1
 A3 :: A2
 A5 :: A1+A3
 A6 :: A3
-A1 :: 4`;
+A1 :: 6`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
@@ -31,7 +31,7 @@ const Input: Component = () => {
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
     const value = tree.evaluate();
-    const d = tree.diagnostics.diagnostics;
+    const d = tree.diagnostics.getDiagnostics(4);
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());

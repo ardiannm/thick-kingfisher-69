@@ -52,13 +52,13 @@ export class MapTree {
               </span>
             }
           </Show>
-          <Show when={node.observers.size}>
+          <Show when={node.nodes.size}>
             {
               <span class={styles.ObserversList}>
-                <For each={[...node.observers.values()]}>
-                  {(observer) => (
+                <For each={[...node.nodes.values()]}>
+                  {(node) => (
                     <div class={styles.Observer}>
-                      {observer.name}({observer.span.line})
+                      {node.name}({node.span.line})
                     </div>
                   )}
                 </For>

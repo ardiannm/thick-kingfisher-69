@@ -36,6 +36,8 @@ export class BoundCellReference extends BoundNode {
 export class BoundCellAssignment extends BoundNode {
   public observers = new Map<string, BoundCellAssignment>();
   public dependencies = new Map<string, BoundCellAssignment>();
+  public nodes = new Map<string, BoundCellAssignment>();
+
   constructor(public name: string, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
@@ -60,11 +62,15 @@ export class BoundCellAssignment extends BoundNode {
   hasCirculerDependency() {
     return this.doesReference(this);
   }
+
+  freezeNodes() {
+    this.observers.forEach((o) => this.nodes.set(o.name, o));
+  }
 }
 
 export class Binder {
   public scope = new BoundScope(null);
-  public references = new Map<string, BoundCellAssignment>();
+  public references = new Set<BoundCellReference>();
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -103,20 +109,22 @@ export class Binder {
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     this.references.clear();
     const boundExpression = this.bind(expression);
-    const bound = new BoundCellAssignment(node.text, boundExpression, node.span);
-    if (this.scope.assignments.has(node.text)) {
-      const prevNode = this.scope.assignments.get(node.text) as BoundCellAssignment;
+    const name = node.text;
+    const bound = new BoundCellAssignment(name, boundExpression, node.span);
+    if (this.scope.assignments.has(name)) {
+      const prevNode = this.scope.assignments.get(name) as BoundCellAssignment;
       bound.inherit(prevNode);
     }
-    this.references.forEach((n) => bound.observe(n));
-    for (const ref of this.references.values()) {
-      bound.observe(ref);
+    this.references.forEach((node) => bound.observe(node.cell));
+    for (const dependency of this.references.values()) {
+      bound.observe(dependency.cell);
       if (bound.hasCirculerDependency()) {
-        node.tree.diagnostics.circularDependency(bound, ref);
+        node.tree.diagnostics.circularDependency(bound, dependency);
       }
     }
+    bound.freezeNodes();
     this.scope.assignments.set(bound.name, bound);
-    this.references = new Map<string, BoundCellAssignment>();
+    this.references = new Set<BoundCellReference>();
     return bound;
   }
 
@@ -131,7 +139,7 @@ export class Binder {
       if (!report) return assignment;
     }
     const bound = new BoundCellReference(assignment, node.span);
-    this.references.set(bound.cell.name, bound.cell);
+    this.references.add(bound);
     return bound;
   }
 

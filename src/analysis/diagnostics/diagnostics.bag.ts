@@ -1,4 +1,4 @@
-import { BoundCellAssignment } from "../binder";
+import { BoundCellAssignment, BoundCellReference } from "../binder";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -6,12 +6,16 @@ import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
-  public diagnostics = new Array<Diagnostic>();
+  private diagnostics = new Array<Diagnostic>();
   private severity = new Set<Severity>();
 
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
     this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
+  }
+
+  getDiagnostics(limit: number) {
+    return this.diagnostics.slice(0, limit);
   }
 
   canBind() {
@@ -34,8 +38,8 @@ export class DiagnosticsBag {
     this.report(`Can't divide by zero.`, Severity.Warning, span);
   }
 
-  circularDependency(assignee: BoundCellAssignment, dependency: BoundCellAssignment) {
-    this.report(`Circular dependency '${dependency.name}' detected while binding '${assignee.name}'.`, Severity.CantEvaluate, dependency.span);
+  circularDependency(assignee: BoundCellAssignment, dependency: BoundCellReference) {
+    this.report(`Circular dependency '${dependency.cell.name}' detected while binding '${assignee.name}'.`, Severity.CantEvaluate, dependency.span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
@@ -55,7 +59,7 @@ export class DiagnosticsBag {
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
-    this.report(`Not a valid cell reference. Did you mean '${correctName}'?`, Severity.CantEvaluate, span);
+    this.report(`Did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
   }
 
   emptyBlock(span: Span) {
