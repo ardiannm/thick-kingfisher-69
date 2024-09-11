@@ -16,8 +16,6 @@ export class MapTree {
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
         return this.renderBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
-      case BoundKind.BoundCellAssignment:
-        return this.renderBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundCellReference:
         return this.renderBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundBinaryExpression:
@@ -26,8 +24,8 @@ export class MapTree {
         return this.renderBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
       case BoundKind.BoundNumericLiteral:
         return this.renderBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
-      case BoundKind.BoundNone:
-        return <div class={styles.BoundNumericLiteral}>0</div>;
+      case BoundKind.BoundCellAssignment:
+        return this.renderBoundCellAssignment(node as NodeType<BoundCellAssignment>);
     }
     if (node instanceof BoundErrorExpression) return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).nodeKind}</div>;
     return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).kind}</div>;
@@ -36,40 +34,8 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.BoundCell}>{node.name}</div>
+        <div class={styles.Cell}>{node.reference.name}</div>
         {this.render(node.expression)}
-        <Show when={node.dependencies.size || node.nodes.size}>
-          {
-            <div class={styles.Observers}>
-              <Show when={node.dependencies.size}>
-                {
-                  <span class={styles.ObserversList}>
-                    <For each={[...node.dependencies.values()]}>
-                      {(dependency) => (
-                        <div class={styles.Dependency}>
-                          {dependency.name}({dependency.span.line})
-                        </div>
-                      )}
-                    </For>
-                  </span>
-                }
-              </Show>
-              <Show when={node.nodes.size}>
-                {
-                  <span class={styles.ObserversList}>
-                    <For each={[...node.nodes.values()]}>
-                      {(node) => (
-                        <div class={styles.Observer}>
-                          {node.name}({node.span.line})
-                        </div>
-                      )}
-                    </For>
-                  </span>
-                }
-              </Show>
-            </div>
-          }
-        </Show>
       </div>
     );
   }
@@ -77,8 +43,7 @@ export class MapTree {
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
     return (
       <div class={styles.BoundCellReference}>
-        {node.cell.name}
-        {/* {this.render(node.cell)} */}
+        {node.name}({node.assignment.span.line}){/* {this.render(node.cell)} */}
       </div>
     );
   }

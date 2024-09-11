@@ -10,5 +10,4 @@ export enum BoundKind {
   BoundCellAssignment = "BoundCellAssignment",
   BoundCell = "BoundCell",
   BoundDefaultZero = "BoundDefaultZero",
-  BoundNone = "BoundNone"
 }

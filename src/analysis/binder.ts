@@ -1,3 +1,4 @@
+import { Span } from "./text/span";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./parser/kind/syntax.unary.operator.kind";
@@ -19,66 +20,36 @@ import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
+import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { BoundKind } from "./binder/kind/bound.kind";
-import { Span } from "./text/span";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { BoundExpression } from "./binder/bound.expression";
-import { SyntaxCellReference } from "./parser/syntax.cell.reference";
-import { BoundNone } from "./binder/bound.none";
 import { SyntaxExpression } from "./parser/syntax.expression";
 
 export class BoundCellReference extends BoundNode {
-  constructor(public cell: BoundCellAssignment, public override span: Span) {
+  constructor(public name: string, public assignment: BoundCellAssignment, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
 }
 
+export class Cell {
+  constructor(public name: string) {}
+}
+
 export class BoundCellAssignment extends BoundNode {
-  public observers = new Map<string, BoundCellAssignment>();
-  public dependencies = new Map<string, BoundCellAssignment>();
-  public nodes = new Map<string, BoundCellAssignment>();
-
-  constructor(public name: string, public expression: BoundExpression, public override span: Span) {
+  constructor(public reference: Cell, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
-  }
-
-  observe(node: BoundCellAssignment) {
-    this.dependencies.set(node.name, node);
-    node.observers.set(this.name, this);
-  }
-
-  inherit(node: BoundCellAssignment) {
-    node.observers.forEach((o) => o.observe(this));
-  }
-
-  private doesReference(dependency: BoundCellAssignment, visited = new Set()) {
-    if (visited.has(this)) return false;
-    visited.add(this);
-    if (this.dependencies.has(dependency.name)) return true;
-    for (const dep of this.dependencies.values()) if (dep.doesReference(dependency, visited)) return true;
-    return false;
-  }
-
-  hasCirculerDependency() {
-    return this.doesReference(this);
-  }
-
-  freezeNodes() {
-    this.observers.forEach((o) => this.nodes.set(o.name, o));
   }
 }
 
 export class Binder {
   public scope = new BoundScope(null);
-  public references = new Set<BoundCellReference>();
 
   public bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
       case SyntaxNodeKind.SyntaxCompilationUnit:
         return this.bindSyntaxCompilationUnit(node as NodeType<SyntaxCompilationUnit>);
-      case SyntaxNodeKind.NoneToken:
-        return BoundNone.createFrom(node.span);
       case SyntaxNodeKind.NumberToken:
         return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxParenthesis:
@@ -89,61 +60,44 @@ export class Binder {
         return this.bindSyntaxBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
       case SyntaxNodeKind.SyntaxBlock:
         return this.bindSyntaxBlock(node as NodeType<SyntaxBlock>);
-      case SyntaxNodeKind.SyntaxCellAssignment:
-        return this.bindSyntaxCellAssignment(node as NodeType<SyntaxCellAssignment>);
       case SyntaxNodeKind.SyntaxCellReference:
         return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
+      case SyntaxNodeKind.SyntaxCellAssignment:
+        return this.bindSyntaxCellAssignment(node as NodeType<SyntaxCellAssignment>);
+      case SyntaxNodeKind.Auto:
+        return new BoundNumericLiteral(0, node.span);
     }
     node.tree.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment): BoundNode {
-    if (node.left.kind !== SyntaxNodeKind.SyntaxCellReference) {
-      node.tree.diagnostics.cantUseAsAReference(node.left.kind, node.left.span);
-      return new BoundErrorExpression(node.left.kind, node.left.span);
-    }
-    return this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression, true);
+    return this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
   }
 
-  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression, clear: boolean) {
-    if (clear) this.references.clear();
+  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
+    var reference = this.scope.create(node.text);
     const boundExpression = this.bind(expression);
-    const name = node.text;
-    const bound = new BoundCellAssignment(name, boundExpression, node.span);
-    if (this.scope.assignments.has(name)) {
-      const prevNode = this.scope.assignments.get(name) as BoundCellAssignment;
-      bound.inherit(prevNode);
-    }
-    this.references.forEach((node) => bound.observe(node.cell));
-    for (const dependency of this.references.values()) {
-      bound.observe(dependency.cell);
-      if (bound.hasCirculerDependency()) {
-        node.tree.diagnostics.circularDependency(bound, dependency);
-      }
-    }
-    if (clear) {
-      bound.freezeNodes();
-      this.references = new Set<BoundCellReference>();
-    } else {
-      bound.dependencies.clear();
-    }
-    this.scope.assignments.set(bound.name, bound);
-    return bound;
+    const assigment = new BoundCellAssignment(reference, boundExpression, node.span);
+    this.scope.assignments.set(assigment.reference.name, assigment);
+    return assigment;
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
+    const name = node.text;
     var assignment: BoundCellAssignment;
-    if (this.scope.assignments.has(node.text)) {
-      assignment = this.scope.assignments.get(node.text) as BoundCellAssignment;
+    if (this.scope.assignments.has(name)) {
+      assignment = this.scope.assignments.get(name) as BoundCellAssignment;
     } else {
-      assignment = this.bindSyntaxCell(node, SyntaxToken.createFrom(node), false);
-      const report = assignment.expression instanceof BoundNone && !node.tree.configuration.autoDeclaration;
-      report && node.tree.diagnostics.undeclaredCell(node.text, node.span);
-      if (!report) return assignment;
+      assignment = this.bindSyntaxCell(node, SyntaxToken.Auto(node));
+      const report = !node.tree.configuration.autoDeclaration;
+      if (report) {
+        node.tree.diagnostics.undeclaredCell(name, node.span);
+      } else {
+        return assignment;
+      }
     }
-    const bound = new BoundCellReference(assignment, node.span);
-    this.references.add(bound);
+    const bound = new BoundCellReference(name, assignment, node.span);
     return bound;
   }
 

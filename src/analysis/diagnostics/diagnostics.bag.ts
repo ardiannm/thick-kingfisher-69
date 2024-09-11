@@ -39,7 +39,7 @@ export class DiagnosticsBag {
   }
 
   circularDependency(assignee: BoundCellAssignment, dependency: BoundCellReference) {
-    this.report(`Circular dependency '${dependency.cell.name}' detected while binding '${assignee.name}'.`, Severity.CantEvaluate, dependency.span);
+    this.report(`Circular dependency '${dependency.assignment.name}' detected while binding '${assignee.name}'.`, Severity.CantEvaluate, dependency.span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
