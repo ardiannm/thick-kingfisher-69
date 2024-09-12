@@ -20,24 +20,26 @@ import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
-import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { BoundKind } from "./binder/kind/bound.kind";
-import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { BoundExpression } from "./binder/bound.expression";
+import { SyntaxCellReference } from "./parser/syntax.cell.reference";
+import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { SyntaxExpression } from "./parser/syntax.expression";
 
 export class BoundCellReference extends BoundNode {
-  constructor(public name: string, public assignment: BoundCellAssignment, public override span: Span) {
+  constructor(public cell: BoundCell, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
 }
 
-export class Cell {
-  constructor(public name: string) {}
+export class BoundCell extends BoundNode {
+  constructor(public name: string, public expression: BoundExpression, public override span: Span) {
+    super(BoundKind.BoundCell, span);
+  }
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public reference: Cell, public expression: BoundExpression, public override span: Span) {
+  constructor(public assignee: BoundCell, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 }
@@ -64,41 +66,34 @@ export class Binder {
         return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
       case SyntaxNodeKind.SyntaxCellAssignment:
         return this.bindSyntaxCellAssignment(node as NodeType<SyntaxCellAssignment>);
-      case SyntaxNodeKind.Auto:
-        return new BoundNumericLiteral(0, node.span);
     }
     node.tree.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
-  private bindSyntaxCellAssignment(node: SyntaxCellAssignment): BoundNode {
-    return this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
+  private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
+    const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
+    return new BoundCellAssignment(assignee, node.span);
   }
 
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
-    var reference = this.scope.create(node.text);
+    const name = node.text;
     const boundExpression = this.bind(expression);
-    const assigment = new BoundCellAssignment(reference, boundExpression, node.span);
-    this.scope.assignments.set(assigment.reference.name, assigment);
-    return assigment;
+    const cell = new BoundCell(name, boundExpression, node.span);
+    this.scope.assignments.set(name, cell);
+    return cell;
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
     const name = node.text;
-    var assignment: BoundCellAssignment;
+    let expression: BoundCell;
     if (this.scope.assignments.has(name)) {
-      assignment = this.scope.assignments.get(name) as BoundCellAssignment;
+      expression = this.scope.assignments.get(name) as BoundCell;
     } else {
-      assignment = this.bindSyntaxCell(node, SyntaxToken.Auto(node));
-      const report = !node.tree.configuration.autoDeclaration;
-      if (report) {
-        node.tree.diagnostics.undeclaredCell(name, node.span);
-      } else {
-        return assignment;
-      }
+      const number = new SyntaxToken<SyntaxNodeKind.NumberToken>(node.tree, SyntaxNodeKind.NumberToken, node.span);
+      expression = this.bindSyntaxCell(node, number);
     }
-    const bound = new BoundCellReference(name, assignment, node.span);
-    return bound;
+    return new BoundCellReference(expression, node.span);
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {

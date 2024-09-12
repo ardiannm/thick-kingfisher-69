@@ -1,6 +1,6 @@
 import styles from "../styles/tree.module.scss";
 
-import { JSX, For, Show } from "solid-js";
+import { JSX, For } from "solid-js";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
 import { BoundCompilationUnit } from "../../../src/analysis/binder/bound.compilation.unit";
 import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
@@ -34,8 +34,8 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.Cell}>{node.reference.name}</div>
-        {this.render(node.expression)}
+        <div class={styles.Node}>{node.assignee.name}</div>
+        {this.render(node.assignee.expression)}
       </div>
     );
   }
@@ -43,7 +43,7 @@ export class MapTree {
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
     return (
       <div class={styles.BoundCellReference}>
-        {node.name}({node.assignment.span.line}){/* {this.render(node.cell)} */}
+        {node.cell.name} @line{node.cell.span.line}
       </div>
     );
   }
