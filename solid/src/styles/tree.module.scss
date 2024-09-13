@@ -5,16 +5,12 @@
   min-width: 31px;
   min-height: 31px;
   justify-content: center;
-  align-items: center;
-  border: 1px solid black;
-  margin-bottom: 0px;
-  margin: 0.5px;
   font-size: 14px;
-  border-radius: 4px;
   background-color: #f3f4f8;
-
-  min-width: fit-content;
   padding: 2px 10px;
+  min-width: 40px;
+  align-items: center;
+  height: fit-content;
 }
 
 .BoundCompilationUnit {
@@ -25,7 +21,7 @@
   position: absolute;
   cursor: pointer;
   justify-content: left;
-  align-items: left;
+
   user-select: none;
   padding: 1px;
 }
@@ -34,16 +30,20 @@
   @extend .Node;
   min-width: 100px;
   justify-content: left;
-  align-items: left;
   border: none;
-  margin: 0;
   padding: 0;
+  margin: 3px;
+  padding: 3px;
+
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  margin-bottom: 7px;
 }
 
 .BoundNumericLiteral {
   // border: 1px solid lightcoral;
   justify-content: center;
-  align-items: center;
+
   padding: 1px 7px;
   @extend .Node;
 }
@@ -51,10 +51,16 @@
 .BoundCellReference {
   flex-direction: row;
   @extend .Node;
+  background-color: #d0e73f;
+  margin-bottom: 2px;
+  margin-right: 2px;
 }
 
 .BoundCell {
   @extend .Node;
+  background-color: #5ab0cb;
+  margin-bottom: 2px;
+  margin-right: 2px;
 }
 
 .BoundCellAssignment {
@@ -65,9 +71,8 @@
 
 .BoundBinaryExpression {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
-  align-items: left;
 }
 
 .BoundUnaryExpression {
@@ -80,7 +85,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 }
 
 .BoundIdentifier {
@@ -96,4 +100,14 @@
 .Cell {
   @extend .Node;
   // background-color: #48fcfe;
+}
+
+.dependencies {
+  padding: 1px;
+  .BoundCellReference {
+    margin-bottom: 2px;
+    border: none;
+    background-color: #dbb196;
+    // background-color: #ffd800;
+  }
 }

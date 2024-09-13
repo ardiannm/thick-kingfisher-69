@@ -33,7 +33,7 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCell extends BoundNode {
-  constructor(public name: string, public expression: BoundExpression, public override span: Span) {
+  constructor(public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCell, span);
   }
 }
@@ -78,9 +78,11 @@ export class Binder {
 
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     const name = node.text;
+    this.scope.references.length = 0;
     const boundExpression = this.bind(expression);
-    const cell = new BoundCell(name, boundExpression, node.span);
+    const cell = new BoundCell(name, boundExpression, this.scope.references, node.span);
     this.scope.assignments.set(name, cell);
+    this.scope.references = new Array();
     return cell;
   }
 
@@ -92,8 +94,11 @@ export class Binder {
     } else {
       const number = new SyntaxToken<SyntaxNodeKind.NumberToken>(node.tree, SyntaxNodeKind.NumberToken, node.span);
       expression = this.bindSyntaxCell(node, number);
+      !node.tree.configuration.autoDeclaration && node.tree.diagnostics.undeclaredCell(name, node.span);
     }
-    return new BoundCellReference(expression, node.span);
+    const bound = new BoundCellReference(expression, node.span);
+    this.scope.references.push(bound);
+    return bound;
   }
 
   private bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {

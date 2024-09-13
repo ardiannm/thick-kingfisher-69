@@ -1,6 +1,6 @@
 import styles from "../styles/tree.module.scss";
 
-import { JSX, For } from "solid-js";
+import { JSX, For, Show } from "solid-js";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
 import { BoundCompilationUnit } from "../../../src/analysis/binder/bound.compilation.unit";
 import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
@@ -34,18 +34,19 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.Node}>{node.assignee.name}</div>
+        <div class={styles.BoundCell}>{node.assignee.name}</div>
         {this.render(node.assignee.expression)}
+        <Show when={node.assignee.dependencies.length}>
+          <div class={styles.dependencies}>
+            <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
+          </div>
+        </Show>
       </div>
     );
   }
 
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return (
-      <div class={styles.BoundCellReference}>
-        {node.cell.name} @line{node.cell.span.line}
-      </div>
-    );
+    return <div class={styles.BoundCellReference}>{node.cell.name}</div>;
   }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {

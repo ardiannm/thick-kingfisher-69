@@ -5,22 +5,24 @@ import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { CompilerOptions } from "../../../src/compiler.options";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
-import { MapTree } from "./tree";
 import { BoundExpression } from "../../../src/analysis/binder/bound.expression";
+import { MapTree } from "./tree";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 3+A4`;
+var code = `A1 :: 1
+B1 :: A1
+C1 :: A1+B1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [auto] = createSignal(true);
+  const [auto] = createSignal(false);
   const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {
