@@ -76,13 +76,13 @@ export class Binder {
     return new BoundCellAssignment(assignee, node.span);
   }
 
-  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression, clear: boolean) {
+  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression, refresh: boolean) {
     const name = node.text;
-    if (clear) this.scope.references.length = 0;
+    if (refresh) this.scope.references.length = 0;
     const boundExpression = this.bind(expression);
     const cell = new BoundCell(name, boundExpression, this.scope.references, node.span);
-    if (clear) this.scope.assignments.set(name, cell);
-    if (clear) this.scope.references = new Array();
+    if (refresh) this.scope.assignments.set(name, cell);
+    if (refresh) this.scope.references = new Array();
     return cell;
   }
 
@@ -94,7 +94,7 @@ export class Binder {
     } else {
       const number = new SyntaxToken<SyntaxNodeKind.NumberToken>(node.tree, SyntaxNodeKind.NumberToken, node.span);
       expression = this.bindSyntaxCell(node, number, false);
-      !node.tree.configuration.autoDeclaration && node.tree.diagnostics.undeclaredCell(name, node.span);
+      node.tree.configuration.explicitDeclarations && node.tree.diagnostics.undeclaredCell(name, node.span);
     }
     const bound = new BoundCellReference(expression, node.span);
     this.scope.references.push(bound);

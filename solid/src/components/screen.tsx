@@ -23,11 +23,11 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [auto] = createSignal(false);
+  const [explicit] = createSignal(true);
   const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {
-    const tree = SyntaxTree.createFrom(text(), new CompilerOptions(auto()));
+    const tree = SyntaxTree.createFrom(text(), new CompilerOptions(explicit()));
     const value = tree.evaluate();
     const d = tree.diagnostics.getDiagnostics(5);
     setDiagnostics(d);
