@@ -40,20 +40,26 @@
   margin-bottom: 7px;
 }
 
+.margin {
+  margin-bottom: 2px;
+  margin-right: 2px;
+}
+
 .BoundNumericLiteral {
   // border: 1px solid lightcoral;
   justify-content: center;
 
   padding: 1px 7px;
   @extend .Node;
+  background-color: gainsboro;
+  @extend .margin;
 }
 
 .BoundCellReference {
   flex-direction: row;
   @extend .Node;
-  background-color: #d0e73f;
-  margin-bottom: 2px;
-  margin-right: 2px;
+  @extend .margin;
+  background-color: gainsboro;
 }
 
 .BoundCell {
@@ -65,8 +71,22 @@
 
 .BoundCellAssignment {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.BoundCellAssignmentTree {
+  display: flex;
   flex-direction: row;
   width: 100%;
+}
+
+.BoundCellAssignmentInfo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 1px 1px 1px 3px;
+  font-size: 70%;
 }
 
 .BoundBinaryExpression {

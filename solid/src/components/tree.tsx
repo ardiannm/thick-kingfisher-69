@@ -34,13 +34,21 @@ export class MapTree {
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
     return (
       <div class={styles.BoundCellAssignment}>
-        <div class={styles.BoundCell}>{node.assignee.name}</div>
-        {this.render(node.assignee.expression)}
-        <Show when={node.assignee.dependencies.length}>
-          <div class={styles.dependencies}>
-            <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
-          </div>
-        </Show>
+        <span class={styles.BoundCellAssignmentTree}>
+          <div class={styles.BoundCell}>{node.assignee.name}</div>
+          {this.render(node.assignee.expression)}
+          <Show when={node.assignee.dependencies.length}>
+            <div class={styles.dependencies}>
+              <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
+            </div>
+          </Show>
+        </span>
+        <span class={styles.BoundCellAssignmentInfo}>
+          <span>dependencies: {node.assignee.dependencies.length}</span>
+          <span>
+            location: {node.assignee.span.line}:{node.assignee.span.offset}
+          </span>
+        </span>
       </div>
     );
   }
