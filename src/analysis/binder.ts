@@ -82,18 +82,18 @@ export class Binder {
     }
     this.scope.references.length = 0;
     const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
+    this.scope.references.forEach((d) => d.cell.observers.set(name, assignee));
+    assignee.stack = observers;
+    observers.forEach((o) => assignee.observers.set(o.name, o));
     this.scope.assignments.set(name, assignee);
     this.scope.references = new Array();
-    assignee.stack = observers;
     return new BoundCellAssignment(assignee, node.span);
   }
 
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     const name = node.text;
     const boundExpression = this.bind(expression);
-    const cell = new BoundCell(name, boundExpression, this.scope.references, node.span);
-    this.scope.references.forEach((d) => d.cell.observers.set(cell.name, cell));
-    return cell;
+    return new BoundCell(name, boundExpression, this.scope.references, node.span);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {

@@ -13,14 +13,13 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 1
+var code = `A1 :: 0
 B1 :: A1
 C1 :: A1
 D1 :: B1+C1
-
 A1 :: E1
-
-A1 :: A2+A3`;
+B1 :: 0   # this should remove B1 from the next A1
+A1 :: F1+G1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
