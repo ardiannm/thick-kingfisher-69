@@ -6,7 +6,7 @@ import { createEffect, createSignal, For, Show, type Component } from "solid-js"
 import { CompilerOptions } from "../../../src/compiler.options";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
 import { BoundExpression } from "../../../src/analysis/binder/bound.expression";
-import { MapTree } from "./tree";
+import { Tree } from "./tree";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
@@ -18,7 +18,10 @@ B1 :: A1
 C1 :: A1
 D1 :: B1+C1
 A1 :: E1
-B1 :: 0   # this should remove B1 from the next A1
+
+# this should remove B1 from the next A1
+
+B1 :: 0
 A1 :: F1+G1`;
 
 const Input: Component = () => {
@@ -41,7 +44,7 @@ const Input: Component = () => {
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
-  const mapper = new MapTree();
+  const mapper = new Tree();
 
   return (
     <>

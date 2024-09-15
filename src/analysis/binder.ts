@@ -33,10 +33,17 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCell extends BoundNode {
+  public main = new Map<string, BoundCell>();
   public observers = new Map<string, BoundCell>();
-  public stack = new Map<string, BoundCell>();
   constructor(public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCell, span);
+  }
+
+  clear() {
+    this.dependencies.forEach((d) => {
+      d.cell.observers.delete(this.name);
+    });
+    this.dependencies.length = 0;
   }
 }
 
@@ -74,18 +81,15 @@ export class Binder {
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
-    const name = node.left.text;
-    const observers = new Map<string, BoundCell>();
-    if (this.scope.assignments.has(name)) {
-      const prevAssignment = this.scope.assignments.get(name) as BoundCell;
-      prevAssignment.observers.forEach((o) => observers.set(o.name, o));
-    }
     this.scope.references.length = 0;
     const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
-    this.scope.references.forEach((d) => d.cell.observers.set(name, assignee));
-    assignee.stack = observers;
-    observers.forEach((o) => assignee.observers.set(o.name, o));
-    this.scope.assignments.set(name, assignee);
+    if (this.scope.assignments.has(assignee.name)) {
+      const assignment = this.scope.assignments.get(assignee.name) as BoundCell;
+      assignment.observers.forEach((o) => assignee.observers.set(o.name, o));
+    }
+    assignee.dependencies.forEach((d) => d.cell.observers.set(assignee.name, assignee));
+    assignee.observers.forEach((o) => assignee.main.set(o.name, o));
+    this.scope.assignments.set(assignee.name, assignee);
     this.scope.references = new Array();
     return new BoundCellAssignment(assignee, node.span);
   }

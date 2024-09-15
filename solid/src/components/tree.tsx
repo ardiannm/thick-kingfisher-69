@@ -10,7 +10,7 @@ import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.e
 import { BoundCell, BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
 import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
 
-export class MapTree {
+export class Tree {
   render<Kind extends BoundNode>(node: Kind): JSX.Element {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
@@ -38,14 +38,19 @@ export class MapTree {
       <>
         <div class={styles.BoundCell}>{node.name}</div>
         {/* {this.render(node.expression)} */}
-        <Show when={node.dependencies.length}>
+        {/* <Show when={node.dependencies.length}>
           <div class={styles.Dependencies}>
             <For each={node.dependencies}>{(dependency) => this.render(dependency)}</For>
           </div>
-        </Show>
-        <Show when={node.stack.size}>
+        </Show> */}
+        {/* <Show when={node.observers.size}>
           <div class={styles.Observers}>
-            <For each={[...node.stack.values()]}>{(dependency) => <div class={styles.BoundCellReference}>{dependency.name}</div>}</For>
+            <For each={[...node.observers.values()]}>{(dependency) => <div class={styles.BoundCellReference}>{dependency.name}</div>}</For>
+          </div>
+        </Show> */}
+        <Show when={node.main.size}>
+          <div class={styles.Observers}>
+            <For each={[...node.main.values()]}>{(dependency) => <div class={styles.BoundNumericLiteral}>{dependency.name}</div>}</For>
           </div>
         </Show>
       </>
