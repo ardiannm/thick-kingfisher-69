@@ -44,7 +44,7 @@ export class BoundCell extends BoundNode {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public assignee: BoundCell, public override span: Span) {
+  constructor(public assignee: BoundCell, public observers: Map<string, BoundCell>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 }
@@ -77,8 +77,14 @@ export class Binder {
   }
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
+    const name = node.left.text;
+    const observers = new Map<string, BoundCell>();
+    if (this.scope.assignments.has(name)) {
+      const prev = this.scope.assignments.get(name) as BoundCell;
+      prev.observers.forEach((o) => observers.set(o.name, o));
+    }
     const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression, true);
-    return new BoundCellAssignment(assignee, node.span);
+    return new BoundCellAssignment(assignee, observers, node.span);
   }
 
   private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression, refresh: boolean) {

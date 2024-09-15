@@ -52,9 +52,14 @@ export class MapTree {
               <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
             </div>
           </Show>
-          <Show when={node.assignee.observers.size}>
+          {/* <Show when={node.assignee.observers.size}>
             <div class={styles.Observers}>
               <For each={[...node.assignee.observers.values()]}>{(dependency) => this.render(dependency)}</For>
+            </div>
+          </Show> */}
+          <Show when={node.observers.size}>
+            <div class={styles.Observers}>
+              <For each={[...node.observers.values()]}>{(dependency) => this.render(dependency)}</For>
             </div>
           </Show>
         </span>
