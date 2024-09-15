@@ -7,8 +7,7 @@ export enum BoundKind {
   BoundNumericLiteral = "BoundNumericLiteral",
   BoundScope = "BoundScope",
   BoundUnaryExpression = "BoundUnaryExpression",
-  BoundCell = "BoundCell",
   BoundDefaultZero = "BoundDefaultZero",
   BoundNone = "BoundNone",
-  BoundCellAssignment = "BoundCellAssignment"
+  BoundCellAssignment = "BoundCellAssignment",
 }

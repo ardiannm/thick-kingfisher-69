@@ -34,7 +34,6 @@
   padding: 0;
   margin: 3px;
   padding: 3px;
-
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   margin-bottom: 7px;
@@ -65,7 +64,9 @@
 .BoundCell {
   @extend .Node;
   // background-color: #5ab0cb;
-  background-color: #f3953e;
+  // background-color: #f3953e;
+  background-color: gray;
+  color: #0a0a0a;
   margin-bottom: 2px;
   margin-right: 2px;
 }
@@ -141,4 +142,12 @@
     // background-color: #dbb196;
     background-color: #ffd800;
   }
+}
+
+.Observer {
+  @extend .BoundNumericLiteral;
+}
+
+.Signals {
+  @extend .BoundNumericLiteral;
 }
