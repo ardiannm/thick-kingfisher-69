@@ -38,10 +38,6 @@ export class BoundCell extends BoundNode {
   constructor(public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCell, span);
   }
-
-  public register() {
-    this.dependencies.forEach((d) => d.cell.observers.set(this.name, this));
-  }
 }
 
 export class BoundCellAssignment extends BoundNode {
@@ -84,19 +80,19 @@ export class Binder {
       const prevAssignment = this.scope.assignments.get(name) as BoundCell;
       prevAssignment.observers.forEach((o) => observers.set(o.name, o));
     }
-    const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression, true);
+    this.scope.references.length = 0;
+    const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
+    this.scope.assignments.set(name, assignee);
+    this.scope.references = new Array();
     assignee.stack = observers;
     return new BoundCellAssignment(assignee, node.span);
   }
 
-  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression, refresh: boolean) {
+  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
     const name = node.text;
-    if (refresh) this.scope.references.length = 0;
     const boundExpression = this.bind(expression);
     const cell = new BoundCell(name, boundExpression, this.scope.references, node.span);
-    if (refresh) cell.register();
-    if (refresh) this.scope.assignments.set(name, cell);
-    if (refresh) this.scope.references = new Array();
+    this.scope.references.forEach((d) => d.cell.observers.set(cell.name, cell));
     return cell;
   }
 
@@ -107,7 +103,7 @@ export class Binder {
       expression = this.scope.assignments.get(name) as BoundCell;
     } else {
       const number = new SyntaxToken<SyntaxNodeKind.NumberToken>(node.tree, SyntaxNodeKind.NumberToken, node.span);
-      expression = this.bindSyntaxCell(node, number, false);
+      expression = this.bindSyntaxCell(node, number);
       node.tree.configuration.explicitDeclarations && node.tree.diagnostics.undeclaredCell(name, node.span);
     }
     const bound = new BoundCellReference(expression, node.span);

@@ -37,7 +37,7 @@ export class MapTree {
     return (
       <>
         <div class={styles.BoundCell}>{node.name}</div>
-        {this.render(node.expression)}
+        {/* {this.render(node.expression)} */}
         <Show when={node.dependencies.length}>
           <div class={styles.Dependencies}>
             <For each={node.dependencies}>{(dependency) => this.render(dependency)}</For>
