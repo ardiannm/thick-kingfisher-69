@@ -7,7 +7,7 @@ import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
 import { BoundBinaryExpression } from "../../../src/analysis/binder/binary.expression";
 import { BoundNumericLiteral } from "../../../src/analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.expression";
-import { BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
+import { BoundCell, BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
 import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
 
 export class MapTree {
@@ -26,9 +26,19 @@ export class MapTree {
         return this.renderBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
       case BoundKind.BoundCellAssignment:
         return this.renderBoundCellAssignment(node as NodeType<BoundCellAssignment>);
+      case BoundKind.BoundCell:
+        return this.renderBoundCell(node as NodeType<BoundCell>);
     }
     if (node instanceof BoundErrorExpression) return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).nodeKind}</div>;
     return <div class={styles.BoundErrorExpression}>{(node as NodeType<BoundErrorExpression>).kind}</div>;
+  }
+
+  private renderBoundCell(node: BoundCell): JSX.Element {
+    return (
+      <>
+        <div class={styles.BoundCellReference}>{node.name}</div>
+      </>
+    );
   }
 
   private renderBoundCellAssignment(node: BoundCellAssignment): JSX.Element {
@@ -36,10 +46,15 @@ export class MapTree {
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
           <div class={styles.BoundCell}>{node.assignee.name}</div>
-          {this.render(node.assignee.expression)}
+          {/* {this.render(node.assignee.expression)} */}
           <Show when={node.assignee.dependencies.length}>
-            <div class={styles.dependencies}>
+            <div class={styles.Dependencies}>
               <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
+            </div>
+          </Show>
+          <Show when={node.assignee.observers.size}>
+            <div class={styles.Observers}>
+              <For each={[...node.assignee.observers.values()]}>{(dependency) => this.render(dependency)}</For>
             </div>
           </Show>
         </span>

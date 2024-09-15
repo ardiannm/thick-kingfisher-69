@@ -33,8 +33,13 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCell extends BoundNode {
+  observers = new Map<string, BoundCell>();
   constructor(public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCell, span);
+  }
+
+  public register() {
+    this.dependencies.forEach((d) => d.cell.observers.set(this.name, this));
   }
 }
 
@@ -81,6 +86,7 @@ export class Binder {
     if (refresh) this.scope.references.length = 0;
     const boundExpression = this.bind(expression);
     const cell = new BoundCell(name, boundExpression, this.scope.references, node.span);
+    if (refresh) cell.register();
     if (refresh) this.scope.assignments.set(name, cell);
     if (refresh) this.scope.references = new Array();
     return cell;

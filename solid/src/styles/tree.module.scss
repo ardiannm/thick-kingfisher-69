@@ -64,7 +64,8 @@
 
 .BoundCell {
   @extend .Node;
-  background-color: #5ab0cb;
+  // background-color: #5ab0cb;
+  background-color: #f3953e;
   margin-bottom: 2px;
   margin-right: 2px;
 }
@@ -122,12 +123,22 @@
   // background-color: #48fcfe;
 }
 
-.dependencies {
+.Dependencies {
   padding: 1px;
   .BoundCellReference {
     margin-bottom: 2px;
     border: none;
-    background-color: #dbb196;
+    background-color: #c8e645;
     // background-color: #ffd800;
+  }
+}
+
+.Observers {
+  padding: 1px;
+  .BoundCellReference {
+    margin-bottom: 2px;
+    border: none;
+    // background-color: #dbb196;
+    background-color: #ffd800;
   }
 }
