@@ -37,7 +37,6 @@ export class Tree {
     return (
       <>
         <div class={styles.BoundCell}>{node.name}</div>
-        {/* {this.render(node.expression)} */}
         {/* <Show when={node.dependencies.length}>
           <div class={styles.Dependencies}>
             <For each={node.dependencies}>{(dependency) => this.render(dependency)}</For>
@@ -48,11 +47,11 @@ export class Tree {
             <For each={[...node.observers.values()]}>{(dependency) => <div class={styles.BoundCellReference}>{dependency.name}</div>}</For>
           </div>
         </Show> */}
-        <Show when={node.main.size}>
+        {/* <Show when={node.main.size}>
           <div class={styles.Observers}>
             <For each={[...node.main.values()]}>{(dependency) => <div class={styles.BoundNumericLiteral}>{dependency.name}</div>}</For>
           </div>
-        </Show>
+        </Show> */}
       </>
     );
   }
@@ -67,9 +66,10 @@ export class Tree {
             </div>
           </Show> */}
           {this.render(node.assignee)}
+          {this.render(node.expression)}
         </span>
         <span class={styles.BoundCellAssignmentInfo}>
-          <span>dependencies: {node.assignee.dependencies.length}</span>
+          {/* <span>dependencies: {node.assignee.dependencies.length}</span> */}
           <span>
             location: {node.assignee.span.line}:{node.assignee.span.offset}
           </span>
@@ -79,7 +79,7 @@ export class Tree {
   }
 
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return <div class={styles.BoundCellReference}>{node.cell.name}</div>;
+    return <div class={styles.BoundCellReference}>{node.assignment.assignee.name}</div>;
   }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {

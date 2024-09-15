@@ -21,34 +21,24 @@ import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
 import { BoundKind } from "./binder/kind/bound.kind";
-import { BoundExpression } from "./binder/bound.expression";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
-import { SyntaxExpression } from "./parser/syntax.expression";
+import { BoundExpression } from "./binder/bound.expression";
 
 export class BoundCellReference extends BoundNode {
-  constructor(public cell: BoundCell, public override span: Span) {
+  constructor(public assignment: BoundCellAssignment, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
 }
 
 export class BoundCell extends BoundNode {
-  public main = new Map<string, BoundCell>();
-  public observers = new Map<string, BoundCell>();
-  constructor(public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
+  constructor(public name: string, public override span: Span) {
     super(BoundKind.BoundCell, span);
-  }
-
-  clear() {
-    this.dependencies.forEach((d) => {
-      d.cell.observers.delete(this.name);
-    });
-    this.dependencies.length = 0;
   }
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public assignee: BoundCell, public override span: Span) {
+  constructor(public assignee: BoundCell, public expression: BoundExpression, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
   }
 }
@@ -82,35 +72,40 @@ export class Binder {
 
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
     this.scope.references.length = 0;
-    const assignee = this.bindSyntaxCell(node.left as SyntaxCellReference, node.expression);
-    if (this.scope.assignments.has(assignee.name)) {
-      const assignment = this.scope.assignments.get(assignee.name) as BoundCell;
-      assignment.observers.forEach((o) => assignee.observers.set(o.name, o));
+    const expression = this.bind(node.expression);
+    let assignee: BoundCell;
+    const name = node.left.text;
+    if (this.scope.assignments.has(name)) {
+      assignee = (this.scope.assignments.get(name) as BoundCellAssignment).assignee;
+    } else {
+      assignee = this.bindSyntaxCell(node.left as SyntaxCellReference);
     }
-    assignee.dependencies.forEach((d) => d.cell.observers.set(assignee.name, assignee));
-    assignee.observers.forEach((o) => assignee.main.set(o.name, o));
-    this.scope.assignments.set(assignee.name, assignee);
-    this.scope.references = new Array();
-    return new BoundCellAssignment(assignee, node.span);
+    const bound = new BoundCellAssignment(assignee, expression, node.span);
+    this.scope.assignments.set(bound.assignee.name, bound);
+    this.scope.references = new Array<BoundCellReference>();
+    return bound;
   }
 
-  private bindSyntaxCell(node: SyntaxCellReference, expression: SyntaxExpression) {
+  private bindSyntaxCell(node: SyntaxCellReference) {
     const name = node.text;
-    const boundExpression = this.bind(expression);
-    return new BoundCell(name, boundExpression, this.scope.references, node.span);
+    if (this.scope.assignments.has(name)) {
+      return (this.scope.assignments.get(name) as BoundCellAssignment).assignee;
+    }
+    return new BoundCell(name, node.left.span);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
     const name = node.text;
-    let expression: BoundCell;
+    let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
-      expression = this.scope.assignments.get(name) as BoundCell;
+      assigment = this.scope.assignments.get(name) as BoundCellAssignment;
     } else {
-      const number = new SyntaxToken<SyntaxNodeKind.NumberToken>(node.tree, SyntaxNodeKind.NumberToken, node.span);
-      expression = this.bindSyntaxCell(node, number);
+      const assignee = this.bindSyntaxCell(node);
+      const number = new BoundNumericLiteral(0, node.span);
+      assigment = new BoundCellAssignment(assignee, number, node.span);
       node.tree.configuration.explicitDeclarations && node.tree.diagnostics.undeclaredCell(name, node.span);
     }
-    const bound = new BoundCellReference(expression, node.span);
+    const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
     return bound;
   }
