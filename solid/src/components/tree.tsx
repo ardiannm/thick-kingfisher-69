@@ -36,7 +36,18 @@ export class MapTree {
   private renderBoundCell(node: BoundCell): JSX.Element {
     return (
       <>
-        <div class={styles.BoundCellReference}>{node.name}</div>
+        <div class={styles.BoundCell}>{node.name}</div>
+        {this.render(node.expression)}
+        <Show when={node.dependencies.length}>
+          <div class={styles.Dependencies}>
+            <For each={node.dependencies}>{(dependency) => this.render(dependency)}</For>
+          </div>
+        </Show>
+        <Show when={node.stack.size}>
+          <div class={styles.Observers}>
+            <For each={[...node.stack.values()]}>{(dependency) => <div class={styles.BoundCellReference}>{dependency.name}</div>}</For>
+          </div>
+        </Show>
       </>
     );
   }
@@ -45,23 +56,12 @@ export class MapTree {
     return (
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
-          <div class={styles.BoundCell}>{node.assignee.name}</div>
-          {/* {this.render(node.assignee.expression)} */}
-          <Show when={node.assignee.dependencies.length}>
-            <div class={styles.Dependencies}>
-              <For each={node.assignee.dependencies}>{(dependency) => this.render(dependency)}</For>
-            </div>
-          </Show>
           {/* <Show when={node.assignee.observers.size}>
             <div class={styles.Observers}>
               <For each={[...node.assignee.observers.values()]}>{(dependency) => this.render(dependency)}</For>
             </div>
           </Show> */}
-          <Show when={node.observers.size}>
-            <div class={styles.Observers}>
-              <For each={[...node.observers.values()]}>{(dependency) => this.render(dependency)}</For>
-            </div>
-          </Show>
+          {this.render(node.assignee)}
         </span>
         <span class={styles.BoundCellAssignmentInfo}>
           <span>dependencies: {node.assignee.dependencies.length}</span>
