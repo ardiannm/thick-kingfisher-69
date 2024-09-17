@@ -119,33 +119,22 @@
   border: none;
 }
 
-.Cell {
-  @extend .Node;
-  // background-color: #48fcfe;
-}
-
 .Dependencies {
   padding: 1px;
   .BoundCellReference {
     margin-bottom: 2px;
     border: none;
     background-color: #c8e645;
-    // background-color: #ffd800;
   }
 }
 
 .Observers {
   padding: 1px;
-  .BoundCellReference {
-    margin-bottom: 2px;
-    border: none;
-    // background-color: #dbb196;
-    background-color: #ffd800;
-  }
 }
 
 .Observer {
   @extend .BoundNumericLiteral;
+  background-color: #ffd800;
 }
 
 .Signals {

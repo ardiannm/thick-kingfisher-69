@@ -17,7 +17,13 @@ var code = `A1 :: 0
 B1 :: A1
 C1 :: A1
 D1 :: B1+C1
-A1 :: 1`;
+A1 :: 1
+
+
+B1 :: 0
+
+
+A1 :: 3`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

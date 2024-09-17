@@ -32,16 +32,21 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  observers = new Map<string, BoundCellAssignment>();
-  signals = new Map<string, BoundCellAssignment>();
-  constructor(public scope: BoundScope, public name: string, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
+  public observers = new Map<string, BoundCellAssignment>();
+  public signals = new Map<string, BoundCellAssignment>();
+  public dependencies = new Map<string, BoundCellAssignment>();
+
+  constructor(public scope: BoundScope, public name: string, public expression: BoundExpression, dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
+    dependencies.forEach((r) => this.dependencies.set(r.assignment.name, r.assignment));
+
     if (this.scope.assignments.get(this.name)) {
       const prev = this.scope.assignments.get(this.name) as BoundCellAssignment;
       prev.observers.forEach((o) => this.observers.set(o.name, o));
+      
     }
     // register this node to its own dependencies as an observer
-    dependencies.forEach((dep) => dep.assignment.observers.set(this.name, this));
+    this.dependencies.forEach((dep) => dep.observers.set(this.name, this));
     // save observers as signals
     this.observers.forEach((o) => this.signals.set(o.name, o));
   }
@@ -79,8 +84,8 @@ export class Binder {
     const expression = this.bind(node.expression);
     const name = node.left.text;
     const bound = new BoundCellAssignment(this.scope, name, expression, this.scope.references, node.span);
-    this.scope.assignments.set(name, bound);
     this.scope.references = new Array<BoundCellReference>();
+    this.scope.assignments.set(name, bound);
     return bound;
   }
 

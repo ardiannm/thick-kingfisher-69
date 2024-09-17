@@ -36,9 +36,9 @@ export class Tree {
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
           <div class={styles.BoundCell}>{node.name}</div>
-          <Show when={node.dependencies.length}>
+          <Show when={node.dependencies.size}>
             <div class={styles.Dependencies}>
-              <For each={node.dependencies}>{(dependency) => this.render(dependency)}</For>
+              <For each={[...node.dependencies.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.name}</div>}</For>
             </div>
           </Show>
           {/* <Show when={node.observers.size}>
