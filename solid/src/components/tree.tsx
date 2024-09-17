@@ -41,16 +41,16 @@ export class Tree {
               <For each={[...node.dependencies.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.name}</div>}</For>
             </div>
           </Show>
-          {/* <Show when={node.observers.size}>
+          <Show when={node.observers.size}>
             <div class={styles.Observers}>
               <For each={[...node.observers.values()]}>{(observer) => <div class={styles.Observer}>{observer.name}</div>}</For>
             </div>
-          </Show> */}
-          <Show when={node.signals.size}>
+          </Show>
+          {/* <Show when={node.signals.size}>
             <div class={styles.Observers}>
               <For each={[...node.signals.values()]}>{(signal) => <div class={styles.Signals}>{signal.name}</div>}</For>
             </div>
-          </Show>
+          </Show> */}
           {/* {this.render(node.expression)} */}
         </span>
       </div>
