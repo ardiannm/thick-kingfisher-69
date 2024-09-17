@@ -32,20 +32,39 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class Cell {
-  private observers = new Map<string, BoundCellAssignment>();
-  private dependencies = new Map<string, BoundCellAssignment>();
+  observers = new Map<string, BoundCellAssignment>();
+  dependencies = new Map<string, BoundCellAssignment>();
 
   constructor(public name: string) {}
 
-  save(node: BoundCellReference) {
-    this.dependencies.set(node.assignment.reference.name, node.assignment);
+  clearTarget() {
+    this.dependencies.forEach((node) => node.target.observers.delete(this.name));
+    this.dependencies.clear();
   }
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, dependencies: Array<BoundCellReference>, public override span: Span) {
+  actions = new Map<string, BoundCellAssignment>();
+
+  constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
-    dependencies.forEach((node) => reference.save(node));
+
+    if (this.scope.assignments.has(this.target.name)) {
+      const prev = this.scope.assignments.get(this.target.name) as BoundCellAssignment;
+      prev.target.clearTarget();
+    }
+
+    references.forEach((node) => this.registerDependency(node));
+    this.saveActions();
+  }
+
+  private registerDependency(node: BoundCellReference) {
+    this.target.dependencies.set(node.assignment.target.name, node.assignment);
+    node.assignment.target.observers.set(this.target.name, this);
+  }
+
+  private saveActions() {
+    this.target.observers.forEach((node) => this.actions.set(node.target.name, node));
   }
 }
 
@@ -90,7 +109,7 @@ export class Binder {
   private bindCell(node: SyntaxCellReference): Cell {
     const name = node.text;
     if (this.scope.assignments.has(name)) {
-      return (this.scope.assignments.get(name) as BoundCellAssignment).reference;
+      return (this.scope.assignments.get(name) as BoundCellAssignment).target;
     }
     return new Cell(name);
   }

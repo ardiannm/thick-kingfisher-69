@@ -17,7 +17,14 @@ var code = `A1 :: 0
 B1 :: A1
 C1 :: A1
 D1 :: B1+C1
+E1 :: A1
+
+
+# next assignment operation should lead to D1 and E1 as the only observers; this can be achieved by implementing a backtracking machanism to the last observers
+
 A1 :: 1
+
+
 B1 :: 0
 A1 :: 3`;
 

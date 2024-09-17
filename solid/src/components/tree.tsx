@@ -35,10 +35,15 @@ export class Tree {
     return (
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
-          <div class={styles.BoundCell}>{node.reference.name}</div>
-          <Show when={node.reference.dependencies.size}>
+          <div class={styles.BoundCell}>{node.target.name}</div>
+          <Show when={node.references}>
             <div class={styles.Dependencies}>
-              <For each={[...node.reference.dependencies.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.reference.name}</div>}</For>
+              <For each={node.references}>{(node) => <div class={styles.BoundCellReference}>{node.assignment.target.name}</div>}</For>
+            </div>
+          </Show>
+          <Show when={node.actions.size}>
+            <div class={styles.Observers}>
+              <For each={[...node.actions.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.target.name}</div>}</For>
             </div>
           </Show>
         </span>
@@ -47,7 +52,7 @@ export class Tree {
   }
 
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return <div class={styles.BoundCellReference}>{node.assignment.reference.name}</div>;
+    return <div class={styles.BoundCellReference}>{node.assignment.target.name}</div>;
   }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {

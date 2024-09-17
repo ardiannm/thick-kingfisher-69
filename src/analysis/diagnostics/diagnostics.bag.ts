@@ -1,4 +1,5 @@
-import { BoundCellAssignment, BoundCellReference } from "../binder";
+import { BoundCellReference } from "../binder";
+import { BoundCellAssignment } from "../BoundCellAssignment";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -39,7 +40,7 @@ export class DiagnosticsBag {
   }
 
   circularDependency(assignee: BoundCellAssignment, dependency: BoundCellReference) {
-    this.report(`Circular dependency '${dependency.assignment.reference}' detected while binding '${assignee.reference}'.`, Severity.CantEvaluate, dependency.span);
+    this.report(`Circular dependency '${dependency.assignment.target}' detected while binding '${assignee.reference}'.`, Severity.CantEvaluate, dependency.span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
