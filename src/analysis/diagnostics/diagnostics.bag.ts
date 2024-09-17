@@ -1,5 +1,4 @@
-import { BoundCellReference } from "../binder";
-import { BoundCellAssignment } from "../BoundCellAssignment";
+import { BoundCellAssignment, BoundCellReference } from "../binder";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -19,8 +18,12 @@ export class DiagnosticsBag {
     return this.diagnostics.slice(0, limit);
   }
 
+  canParse() {
+    return !this.severity.has(Severity.CantParse);
+  }
+
   canBind() {
-    return !this.severity.has(Severity.CantBind);
+    return this.canParse() && !this.severity.has(Severity.CantBind);
   }
 
   canEvaluate() {
@@ -40,11 +43,19 @@ export class DiagnosticsBag {
   }
 
   circularDependency(assignee: BoundCellAssignment, dependency: BoundCellReference) {
-    this.report(`Circular dependency '${dependency.assignment.target}' detected while binding '${assignee.reference}'.`, Severity.CantEvaluate, dependency.span);
+    this.report(`Circular dependency '${dependency.assignment.target}' detected while binding '${assignee.target.name}'.`, Severity.CantEvaluate, dependency.span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
     this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
+  }
+
+  missingTripleQuotes(span: Span) {
+    this.report(
+      `Missing closing triple quotes ('''). It looks like the multi-line string was not properly closed. Please ensure you close the string after your intended text.`,
+      Severity.CantEvaluate,
+      span
+    );
   }
 
   undeclaredCell(name: string, span: Span) {

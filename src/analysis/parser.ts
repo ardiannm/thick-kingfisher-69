@@ -36,6 +36,7 @@ export class Parser {
   }
 
   public parseCompilationUnit() {
+    if (!this.tree.diagnostics.canParse()) return SyntaxCompilationUnit.createFrom(this.tree);
     const statements = new Array<SyntaxExpression>(this.parseBlock());
     while (this.hasMoreTokens()) {
       const startToken = this.peekToken();

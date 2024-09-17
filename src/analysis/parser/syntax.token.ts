@@ -18,6 +18,7 @@ export type TokenTextMapper = {
   [SyntaxNodeKind.CloseParenthesisToken]: ")";
   [SyntaxNodeKind.OpenBraceToken]: "{";
   [SyntaxNodeKind.CloseBraceToken]: "}";
+  [SyntaxNodeKind.SingleQuoteToken]: "*";
   [SyntaxNodeKind.DotToken]: ".";
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";

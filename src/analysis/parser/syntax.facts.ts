@@ -39,6 +39,8 @@ export class SyntaxFacts {
         return SyntaxBinaryOperatorKind.MinusToken;
       case "*":
         return SyntaxBinaryOperatorKind.StarToken;
+      case "'":
+        return SyntaxNodeKind.SingleQuoteToken;
       case "/":
         return SyntaxBinaryOperatorKind.SlashToken;
       case "^":
@@ -86,6 +88,7 @@ export class SyntaxFacts {
       case SyntaxTriviaKind.LineBreakTrivia:
       case SyntaxTriviaKind.SpaceTrivia:
       case SyntaxTriviaKind.CommentTrivia:
+      case SyntaxTriviaKind.MultilineCommentTrivia:
         return true;
       default:
         return false;

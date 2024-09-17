@@ -1,5 +1,7 @@
 export enum SyntaxNodeKind {
+  EndOfFileToken = "EOF",
   NumberToken = "NumberToken",
+  SingleQuoteToken = "SingleQuoteToken",
   ColonToken = "ColonToken",
   OpenParenthesisToken = "OpenParenthesisToken",
   CloseParenthesisToken = "CloseParenthesisToken",
@@ -8,7 +10,6 @@ export enum SyntaxNodeKind {
   HashToken = "HashToken",
   BinaryExpression = "SyntaxBinaryExpression",
   IdentifierToken = "IdentifierToken",
-  EndOfFileToken = "EndOfFileToken",
   BadToken = "BadToken",
   EqualsToken = "EqualsToken",
   OpenBraceToken = "OpenBraceToken",
@@ -19,5 +20,5 @@ export enum SyntaxNodeKind {
   SyntaxUnaryExpression = "SyntaxUnaryExpression",
   SyntaxParenthesis = "SyntaxParenthesizedExpression",
   SyntaxCellReference = "SyntaxCellReference",
-  SyntaxExpression = "SyntaxExpression",
+  SyntaxExpression = "Expression",
 }

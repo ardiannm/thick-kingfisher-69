@@ -13,20 +13,21 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 0
+var code = `A1 :: A5
 B1 :: A1
 C1 :: A1
-D1 :: B1+C1
-E1 :: A1
+D1 :: B1 + C1
+E1 :: A1+A5
 
-
-# next assignment operation should lead to D1 and E1 as the only observers; this can be achieved by implementing a backtracking machanism to the last observers
+''' next assignment operation should lead to D1 and E1 as the only observers; this can be achieved by implementing a backtracking machanism up to the last observers '''
 
 A1 :: 1
-
-
 B1 :: 0
-A1 :: 3`;
+A1 :: 3 + F2
+
+''' this one is not showing its observers '''
+
+A5 :: 1`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

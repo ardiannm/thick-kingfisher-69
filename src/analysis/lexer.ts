@@ -37,6 +37,12 @@ export class Lexer {
   private lexNextToken() {
     this.start = this.end;
     this.kind = SyntaxFacts.syntaxKind(this.char()) as keyof TokenTextMapper;
+    if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
+      return this.lexMultilineCommentToken();
+    }
+    if (this.match(SyntaxCompositeTokenKind.GreaterGreaterToken, SyntaxCompositeTokenKind.GreaterGreaterToken)) {
+      return this.lexGreaterGreaterToken();
+    }
     switch (this.kind) {
       case SyntaxNodeKind.BadToken:
         return this.lexBadToken();
@@ -44,8 +50,6 @@ export class Lexer {
         return this.lexCommentToken();
       case SyntaxBinaryOperatorKind.MinusToken:
         return this.lexMinusToken();
-      case SyntaxNodeKind.GreaterToken:
-        return this.lexGreaterGreaterToken();
       case SyntaxNodeKind.ColonToken:
         return this.lexColonColonToken();
     }
@@ -70,6 +74,23 @@ export class Lexer {
     return new SyntaxToken(this.tree, this.kind, span);
   }
 
+  private lexMultilineCommentToken() {
+    this.next();
+    this.next();
+    this.next();
+    while (!(this.match(SyntaxNodeKind.EndOfFileToken) || this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken))) {
+      this.next();
+    }
+    if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
+      this.next();
+      this.next();
+      this.next();
+    } else {
+      this.tree.diagnostics.missingTripleQuotes(this.createSpan());
+    }
+    return new SyntaxToken(this.tree, SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
+  }
+
   private lexCommentToken(): SyntaxToken<SyntaxKind> {
     do {
       this.next();
@@ -89,11 +110,8 @@ export class Lexer {
 
   private lexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
     this.next();
-    this.kind = SyntaxNodeKind.GreaterToken;
-    if (this.match(SyntaxNodeKind.GreaterToken)) {
-      this.next();
-      this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
-    }
+    this.next();
+    this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
     return new SyntaxToken(this.tree, this.kind, this.createSpan());
   }
 

@@ -37,7 +37,7 @@ export class Cell {
 
   constructor(public name: string) {}
 
-  clearTarget() {
+  clear() {
     this.dependencies.forEach((node) => node.target.observers.delete(this.name));
     this.dependencies.clear();
   }
@@ -51,14 +51,14 @@ export class BoundCellAssignment extends BoundNode {
 
     if (this.scope.assignments.has(this.target.name)) {
       const prev = this.scope.assignments.get(this.target.name) as BoundCellAssignment;
-      prev.target.clearTarget();
+      prev.target.clear();
     }
 
-    references.forEach((node) => this.registerDependency(node));
+    references.forEach((node) => this.saveDependency(node));
     this.saveActions();
   }
 
-  private registerDependency(node: BoundCellReference) {
+  private saveDependency(node: BoundCellReference) {
     this.target.dependencies.set(node.assignment.target.name, node.assignment);
     node.assignment.target.observers.set(this.target.name, this);
   }
