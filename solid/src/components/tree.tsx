@@ -35,30 +35,19 @@ export class Tree {
     return (
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
-          <div class={styles.BoundCell}>{node.name}</div>
-          <Show when={node.dependencies.size}>
+          <div class={styles.BoundCell}>{node.reference.name}</div>
+          <Show when={node.reference.dependencies.size}>
             <div class={styles.Dependencies}>
-              <For each={[...node.dependencies.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.name}</div>}</For>
+              <For each={[...node.reference.dependencies.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.reference.name}</div>}</For>
             </div>
           </Show>
-          <Show when={node.observers.size}>
-            <div class={styles.Observers}>
-              <For each={[...node.observers.values()]}>{(observer) => <div class={styles.Observer}>{observer.name}</div>}</For>
-            </div>
-          </Show>
-          {/* <Show when={node.signals.size}>
-            <div class={styles.Observers}>
-              <For each={[...node.signals.values()]}>{(signal) => <div class={styles.Signals}>{signal.name}</div>}</For>
-            </div>
-          </Show> */}
-          {/* {this.render(node.expression)} */}
         </span>
       </div>
     );
   }
 
   private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return <div class={styles.BoundCellReference}>{node.assignment.name}</div>;
+    return <div class={styles.BoundCellReference}>{node.assignment.reference.name}</div>;
   }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {
