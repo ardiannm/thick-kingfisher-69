@@ -46,18 +46,18 @@ export class Cell {
 export class BoundCellAssignment extends BoundNode {
   actions = new Map<string, BoundCellAssignment>();
 
-  constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
+  constructor(scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
-    if (this.scope.assignments.has(this.target.name)) {
-      const prev = this.scope.assignments.get(this.target.name) as BoundCellAssignment;
+    if (scope.assignments.has(this.target.name)) {
+      const prev = scope.assignments.get(this.target.name) as BoundCellAssignment;
       prev.target.clear();
     }
 
     references.forEach((node) => this.saveDependency(node));
     this.saveActions();
 
-    this.scope.assignments.set(this.target.name, this);
+    scope.assignments.set(this.target.name, this);
   }
 
   private saveDependency(node: BoundCellReference) {
