@@ -56,6 +56,8 @@ export class BoundCellAssignment extends BoundNode {
 
     references.forEach((node) => this.saveDependency(node));
     this.saveActions();
+
+    this.scope.assignments.set(this.target.name, this);
   }
 
   private saveDependency(node: BoundCellReference) {
@@ -98,11 +100,9 @@ export class Binder {
   private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
     this.scope.references.length = 0;
     const expression = this.bind(node.expression);
-    const name = node.left.text;
     const reference = this.bindCell(node.left as SyntaxCellReference);
     const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
     this.scope.references = new Array<BoundCellReference>();
-    this.scope.assignments.set(name, bound);
     return bound;
   }
 
@@ -125,7 +125,6 @@ export class Binder {
       const reference = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, reference, number, dependencies, node.span);
       if (node.tree.configuration.explicitDeclarations) node.tree.diagnostics.undeclaredCell(name, node.span);
-      this.scope.assignments.set(name, assigment);
     }
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
