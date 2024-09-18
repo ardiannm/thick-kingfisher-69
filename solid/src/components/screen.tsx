@@ -14,12 +14,10 @@ type Input = InputEvent & {
 };
 
 var code = `A1 :: 0
-B1 :: A1
-C1 :: A1
-D1 :: B1 + C1
-E1 :: A1
-
-''' next assignment operation should lead to D1 and E1 as the only observers; this can be achieved by implementing a backtracking machanism up to the last observers '''
+A2 :: A1
+A3 :: A1+A2
+A4 :: A1+A3
+A5 :: A2+A3+A4
 
 A1 :: 1`;
 
