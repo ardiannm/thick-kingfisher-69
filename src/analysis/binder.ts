@@ -55,8 +55,9 @@ export class BoundCellAssignment extends BoundNode {
     }
 
     references.forEach((node) => this.saveDependency(node));
-    this.saveActions();
-
+    console.log("processing assignment " + this.target.name);
+    this.saveActions(this.actions);
+    console.log("");
     scope.assignments.set(this.target.name, this);
   }
 
@@ -65,8 +66,15 @@ export class BoundCellAssignment extends BoundNode {
     node.assignment.target.observers.set(this.target.name, this);
   }
 
-  private saveActions() {
-    this.target.observers.forEach((node) => this.actions.set(node.target.name, node));
+  private saveActions(actions: Map<string, BoundCellAssignment>) {
+    console.log("storing actions for " + this.target.name);
+    this.target.observers.forEach((node) => {
+      if (node.target.observers.size) {
+        node.saveActions(actions);
+      } else {
+        actions.set(node.target.name, node);
+      }
+    });
   }
 }
 
