@@ -124,7 +124,8 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>();
       const reference = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, reference, number, dependencies, node.span);
-      node.tree.configuration.explicitDeclarations && node.tree.diagnostics.undeclaredCell(name, node.span);
+      if (node.tree.configuration.explicitDeclarations) node.tree.diagnostics.undeclaredCell(name, node.span);
+      this.scope.assignments.set(name, assigment);
     }
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
