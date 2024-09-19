@@ -44,12 +44,12 @@ export class Cell {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  static processings = 0;
+  // static processings = 0;
   actions = new Map<string, BoundCellAssignment>();
 
   constructor(scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
-    BoundCellAssignment.processings = 0;
+    // BoundCellAssignment.processings = 0;
 
     if (scope.assignments.has(this.target.name)) {
       const prev = scope.assignments.get(this.target.name) as BoundCellAssignment;
@@ -57,12 +57,12 @@ export class BoundCellAssignment extends BoundNode {
     }
 
     references.forEach((node) => this.saveDependency(node));
-    console.log("processing assignment " + this.target.name);
+    // console.log("processing assignment " + this.target.name);
     if (this.target.observers.size) {
       this.saveActions(this.actions);
     }
-    console.log("actions -> " + BoundCellAssignment.processings);
-    console.log("-----------------------------------------------");
+    // console.log("actions -> " + BoundCellAssignment.processings);
+    // console.log("-----------------------------------------------");
     scope.assignments.set(this.target.name, this);
   }
 
@@ -77,8 +77,8 @@ export class BoundCellAssignment extends BoundNode {
 
     while (stack.length > 0) {
       const node = stack.pop()!;
-      BoundCellAssignment.processings += 1;
-      console.log("saving actions for " + node.target.name);
+      // BoundCellAssignment.processings += 1;
+      // console.log("saving actions for " + node.target.name);
 
       if (node.target.observers.size) {
         node.target.observers.forEach((observerNode) => {
