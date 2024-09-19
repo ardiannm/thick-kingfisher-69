@@ -46,11 +46,11 @@ export class Cell {
 export class BoundCellAssignment extends BoundNode {
   actions = new Map<string, BoundCellAssignment>();
 
-  constructor(scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
+  constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
     if (scope.assignments.has(this.target.name)) {
-      const prev = scope.assignments.get(this.target.name) as BoundCellAssignment;
+      const prev = scope.assignments.get(this.target.name)!;
       prev.target.clear();
     }
 
@@ -70,9 +70,15 @@ export class BoundCellAssignment extends BoundNode {
 
   private saveActions(actions: Map<string, BoundCellAssignment>) {
     this.target.version += 1;
-    const stack: BoundCellAssignment[] = [this]; // start with the current node
+    const stack = new Array<BoundCellAssignment>(this); // start with the current node
 
     while (stack.length > 0) {
+      const last = stack[stack.length - 1];
+
+      if (last.target.observers.has(this.target.name)) {
+        console.log(stack.map((x) => `${x.target.name}(${x.span.line})`));
+      }
+
       const node = stack.pop()!;
       if (node.target.observers.size) {
         for (const observer of node.target.observers.values()) {
