@@ -35,7 +35,7 @@ export class Cell {
   observers = new Map<string, BoundCellAssignment>();
   dependencies = new Map<string, BoundCellAssignment>();
 
-  constructor(public name: string) {}
+  constructor(public name: string, public version: number) {}
 
   clear() {
     this.dependencies.forEach((node) => node.target.observers.delete(this.name));
@@ -58,9 +58,12 @@ export class BoundCellAssignment extends BoundNode {
 
     references.forEach((node) => this.saveDependency(node));
     console.log("processing assignment " + this.target.name);
-    this.saveActions(this.actions);
+    if (this.target.observers.size) {
+      this.target.version += 1;
+      this.saveActions(this.actions);
+    }
     console.log("actions -> " + BoundCellAssignment.processings);
-    console.log("");
+    console.log("-----------------------------------------------");
     scope.assignments.set(this.target.name, this);
   }
 
@@ -74,7 +77,7 @@ export class BoundCellAssignment extends BoundNode {
     console.log("saving actions for " + this.target.name);
     this.target.observers.forEach((node) => {
       if (node.target.observers.size) {
-        node.saveActions(actions);
+        if (this.target.version > node.target.version) node.saveActions(actions);
       } else {
         actions.set(node.target.name, node);
       }
@@ -123,7 +126,7 @@ export class Binder {
     if (this.scope.assignments.has(name)) {
       return (this.scope.assignments.get(name) as BoundCellAssignment).target;
     }
-    return new Cell(name);
+    return new Cell(name, 0);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
