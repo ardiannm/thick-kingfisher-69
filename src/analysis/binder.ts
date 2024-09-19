@@ -59,8 +59,7 @@ export class BoundCellAssignment extends BoundNode {
     references.forEach((node) => this.saveDependency(node));
     console.log("processing assignment " + this.target.name);
     if (this.target.observers.size) {
-      this.target.version += 1;
-      this.saveActionsIteratively(this.actions);
+      this.saveActions(this.actions);
     }
     console.log("actions -> " + BoundCellAssignment.processings);
     console.log("-----------------------------------------------");
@@ -73,19 +72,7 @@ export class BoundCellAssignment extends BoundNode {
   }
 
   private saveActions(actions: Map<string, BoundCellAssignment>) {
-    BoundCellAssignment.processings += 1;
-    console.log("saving actions for " + this.target.name);
-    this.target.observers.forEach((node) => {
-      if (node.target.observers.size) {
-        if (this.target.version > node.target.version) node.saveActions(actions);
-      } else {
-        actions.set(node.target.name, node);
-      }
-      node.target.version = this.target.version;
-    });
-  }
-
-  private saveActionsIteratively(actions: Map<string, BoundCellAssignment>) {
+    this.target.version += 1;
     const stack: BoundCellAssignment[] = [this]; // Start with the current node
 
     while (stack.length > 0) {
@@ -95,10 +82,9 @@ export class BoundCellAssignment extends BoundNode {
 
       if (node.target.observers.size) {
         node.target.observers.forEach((observerNode) => {
-          // Only process if the version is greater
           if (node.target.version > observerNode.target.version) {
             observerNode.target.version = node.target.version;
-            stack.push(observerNode); // Add to stack for further processing
+            stack.push(observerNode);
           }
         });
       } else {
