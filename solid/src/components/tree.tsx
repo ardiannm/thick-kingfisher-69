@@ -46,6 +46,7 @@ export class Tree {
               <For each={[...node.actions.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.target.name}</div>}</For>
             </div>
           </Show>
+          <div>{node.target.version}</div>
         </span>
       </div>
     );

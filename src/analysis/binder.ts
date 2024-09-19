@@ -60,7 +60,7 @@ export class BoundCellAssignment extends BoundNode {
     console.log("processing assignment " + this.target.name);
     if (this.target.observers.size) {
       this.target.version += 1;
-      this.saveActions(this.actions);
+      this.saveActionsIteratively(this.actions);
     }
     console.log("actions -> " + BoundCellAssignment.processings);
     console.log("-----------------------------------------------");
@@ -81,7 +81,31 @@ export class BoundCellAssignment extends BoundNode {
       } else {
         actions.set(node.target.name, node);
       }
+      node.target.version = this.target.version;
     });
+  }
+
+  private saveActionsIteratively(actions: Map<string, BoundCellAssignment>) {
+    const stack: BoundCellAssignment[] = [this]; // Start with the current node
+
+    while (stack.length > 0) {
+      const node = stack.pop()!;
+      BoundCellAssignment.processings += 1;
+      console.log("saving actions for " + node.target.name);
+
+      if (node.target.observers.size) {
+        node.target.observers.forEach((observerNode) => {
+          // Only process if the version is greater
+          if (node.target.version > observerNode.target.version) {
+            observerNode.target.version = node.target.version;
+            stack.push(observerNode); // Add to stack for further processing
+          }
+        });
+      } else {
+        // Add to actions only when there are no further observers (final edge)
+        actions.set(node.target.name, node);
+      }
+    }
   }
 }
 
