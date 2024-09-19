@@ -19,7 +19,7 @@ A3 :: A1+A2
 A4 :: A1+A3
 A5 :: A2+A3+A4
 
-A1 :: 1`;
+A1 :: A4`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

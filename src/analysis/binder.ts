@@ -70,22 +70,21 @@ export class BoundCellAssignment extends BoundNode {
 
   private saveActions(actions: Map<string, BoundCellAssignment>) {
     this.target.version += 1;
-    const stack: BoundCellAssignment[] = [this]; // Start with the current node
+    const stack: BoundCellAssignment[] = [this]; // start with the current node
 
     while (stack.length > 0) {
       const node = stack.pop()!;
-
       if (node.target.observers.size) {
-        node.target.observers.forEach((observerNode) => {
-          if (node.target.version > observerNode.target.version) {
-            observerNode.target.version = node.target.version;
-            stack.push(observerNode);
+        for (const observer of node.target.observers.values()) {
+          if (node.target.version > observer.target.version) {
+            observer.target.version = node.target.version;
+            stack.push(observer);
           }
-        });
-      } else {
-        // Add to actions only when there are no further observers (final edge)
-        actions.set(node.target.name, node);
+        }
+        continue;
       }
+      // add to actions only when there are no further observers (final edge)
+      actions.set(node.target.name, node);
     }
   }
 }
@@ -129,7 +128,7 @@ export class Binder {
   private bindCell(node: SyntaxCellReference): Cell {
     const name = node.text;
     if (this.scope.assignments.has(name)) {
-      return (this.scope.assignments.get(name) as BoundCellAssignment).target;
+      return this.scope.assignments.get(name)!.target;
     }
     return new Cell(name, 0);
   }
@@ -138,7 +137,7 @@ export class Binder {
     const name = node.text;
     let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
-      assigment = this.scope.assignments.get(name) as BoundCellAssignment;
+      assigment = this.scope.assignments.get(name)!;
     } else {
       const number = new BoundNumericLiteral(0, node.span);
       const dependencies = new Array<BoundCellReference>();
