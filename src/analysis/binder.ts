@@ -45,6 +45,7 @@ export class Cell {
 
 export class BoundCellAssignment extends BoundNode {
   actions = new Map<string, BoundCellAssignment>();
+  static stack = new Array<Object>();
 
   constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
@@ -57,10 +58,29 @@ export class BoundCellAssignment extends BoundNode {
     references.forEach((node) => this.saveDependency(node));
 
     if (this.target.observers.size) {
-      this.saveActions(this.actions);
+      this.saveActions();
     }
 
     scope.assignments.set(this.target.name, this);
+
+    const x = this.scope.report(this);
+    BoundCellAssignment.stack.push(x);
+  }
+
+  public report() {
+    const r = this.references.map((node) => node.assignment.target.name);
+    const o = [...this.target.observers.values()].map((node) => node.target.name);
+    const a = [...this.actions.values()].map((node) => node.target.name);
+
+    const data = {
+      line: this.span.line,
+      name: this.target.name,
+      dependencies: r,
+      observers: o,
+      actions: a,
+    };
+
+    return data;
   }
 
   private saveDependency(node: BoundCellReference) {
@@ -68,7 +88,7 @@ export class BoundCellAssignment extends BoundNode {
     node.assignment.target.observers.set(this.target.name, this);
   }
 
-  private saveActions(actions: Map<string, BoundCellAssignment>) {
+  private saveActions() {
     this.target.version += 1;
     const stack = new Array<BoundCellAssignment>(this);
     while (stack.length > 0) {
@@ -78,13 +98,10 @@ export class BoundCellAssignment extends BoundNode {
           if (node.target.version > observer.target.version) {
             observer.target.version = node.target.version;
             stack.push(observer);
-            // if (observer.target.observers.has(this.target.name)) {
-            //   console.log(stack.map((x) => `${x.target.name}(${x.span.line})`));
-            // }
           }
         });
       } else {
-        actions.set(node.target.name, node);
+        this.actions.set(node.target.name, node);
       }
     }
   }
@@ -156,6 +173,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
+    console.log(JSON.stringify(BoundCellAssignment.stack));
     return new BoundCompilationUnit(statements, node.span);
   }
 
