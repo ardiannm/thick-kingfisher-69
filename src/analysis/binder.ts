@@ -70,27 +70,22 @@ export class BoundCellAssignment extends BoundNode {
 
   private saveActions(actions: Map<string, BoundCellAssignment>) {
     this.target.version += 1;
-    const stack = new Array<BoundCellAssignment>(this); // start with the current node
-
+    const stack = new Array<BoundCellAssignment>(this);
     while (stack.length > 0) {
-      const last = stack[stack.length - 1];
-
-      if (last.target.observers.has(this.target.name)) {
-        console.log(stack.map((x) => `${x.target.name}(${x.span.line})`));
-      }
-
       const node = stack.pop()!;
       if (node.target.observers.size) {
-        for (const observer of node.target.observers.values()) {
+        node.target.observers.forEach((observer) => {
           if (node.target.version > observer.target.version) {
             observer.target.version = node.target.version;
             stack.push(observer);
+            // if (observer.target.observers.has(this.target.name)) {
+            //   console.log(stack.map((x) => `${x.target.name}(${x.span.line})`));
+            // }
           }
-        }
-        continue;
+        });
+      } else {
+        actions.set(node.target.name, node);
       }
-      // add to actions only when there are no further observers (final edge)
-      actions.set(node.target.name, node);
     }
   }
 }
