@@ -46,16 +46,20 @@ export class Cell {
 export class BoundCellAssignment extends BoundNode {
   actions = new Map<string, BoundCellAssignment>();
   static stack = new Array<Object>();
+  static version = 0;
 
   constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
+
+    BoundCellAssignment.version++;
+    this.target.version = BoundCellAssignment.version;
 
     if (scope.assignments.has(this.target.name)) {
       const prev = scope.assignments.get(this.target.name)!;
       prev.target.clear();
     }
 
-    references.forEach((node) => this.saveDependency(node));
+    references.forEach((node) => this.registerDependency(node));
 
     if (this.target.observers.size) {
       this.saveActions();
@@ -83,27 +87,49 @@ export class BoundCellAssignment extends BoundNode {
     return data;
   }
 
-  private saveDependency(node: BoundCellReference) {
+  private registerDependency(node: BoundCellReference) {
     this.target.dependencies.set(node.assignment.target.name, node.assignment);
     node.assignment.target.observers.set(this.target.name, this);
   }
 
   private saveActions() {
-    this.target.version += 1;
     const stack = new Array<BoundCellAssignment>(this);
+
+    const memo = new Array<Object>();
+    let iteration = 0;
+
     while (stack.length > 0) {
+      iteration++;
+      const struct = stack.map((node) => node.report());
       const node = stack.pop()!;
+      memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct });
+      memo.push({ message: `last node is "${node.target.name}", popping it out of the stack` });
+
+      // Check if the node has observers
       if (node.target.observers.size) {
+        memo.push({ message: "observers found now iterating through them" });
         node.target.observers.forEach((observer) => {
           if (node.target.version > observer.target.version) {
             observer.target.version = node.target.version;
+            memo.push({ message: `pushing "${observer.target.name}" to the stack` });
             stack.push(observer);
+          } else {
+            memo.push({ message: `node "${observer.target.name}" has been checked; skipping` });
           }
         });
       } else {
+        memo.push({ message: `found no further observers in "${node.target.name}", saving "${node.target.name}" to actions` });
+        // If no observers, just register the action
         this.actions.set(node.target.name, node);
       }
     }
+
+    console.log(
+      JSON.stringify({
+        assigning: this.report(),
+        stack: memo,
+      })
+    );
   }
 }
 
