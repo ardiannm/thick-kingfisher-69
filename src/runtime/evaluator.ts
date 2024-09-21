@@ -8,7 +8,7 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
-import { BoundCellAssignment, BoundCellReference } from "../analysis/binder";
+import { BoundCellAssignment } from "../analysis/binder";
 
 export class Evaluator {
   private value = 0;
@@ -24,8 +24,8 @@ export class Evaluator {
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
       case BoundKind.BoundCellAssignment:
         return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
-      case BoundKind.BoundCellReference:
-        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
+      // case BoundKind.BoundCellReference:
+      //   return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
@@ -48,15 +48,8 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
-    node.target.value = this.evaluate(node.expression);
-    node.actions.size && console.log(node.span.line + " " + node.target.name + " should notify " + [...node.actions.values()].map((n) => n.target.name));
-    node.actions.forEach((action) => this.evaluate(action));
-    return node.target.value;
-  }
-
-  private evaluateBoundCellReference(node: BoundCellReference): number {
-    node.assignment.target.value = this.evaluate(node.assignment);
-    return node.assignment.target.value;
+    const value = (node.node.value = this.evaluate(node.expression));
+    return value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {

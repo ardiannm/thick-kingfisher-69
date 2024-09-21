@@ -16,8 +16,8 @@ export class Tree {
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
         return this.renderBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
-      case BoundKind.BoundCellReference:
-        return this.renderBoundCellReference(node as NodeType<BoundCellReference>);
+      // case BoundKind.BoundCellReference:
+      //   return this.renderBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundBinaryExpression:
         return this.renderBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
@@ -35,26 +35,25 @@ export class Tree {
     return (
       <div class={styles.BoundCellAssignment}>
         <span class={styles.BoundCellAssignmentTree}>
-          <div class={styles.BoundCell}>{node.target.name}</div>
+          <div class={styles.BoundCell}>{node.node.name}</div>
           <Show when={node.references}>
             <div class={styles.Dependencies}>
-              <For each={node.references}>{(node) => <div class={styles.BoundCellReference}>{node.assignment.target.name}</div>}</For>
+              <For each={node.references}>{(node) => <div class={styles.BoundCellReference}>{node.node.name}</div>}</For>
             </div>
           </Show>
-          <Show when={node.actions.size}>
+          {/* <Show when={node.actions.size}>
             <div class={styles.Observers}>
               <For each={[...node.actions.values()]}>{(node) => <div class={styles.BoundCellReference}>{node.target.name}</div>}</For>
             </div>
-          </Show>
-          <div>{node.target.version}</div>
+          </Show> */}
         </span>
       </div>
     );
   }
 
-  private renderBoundCellReference(node: BoundCellReference): JSX.Element {
-    return <div class={styles.BoundCellReference}>{node.assignment.target.name}</div>;
-  }
+  // private renderBoundCellReference(node: BoundCellReference): JSX.Element {
+  //   return <div class={styles.BoundCellReference}>{node.assignment.reference.name}</div>;
+  // }
 
   private renderBoundUnaryExpression(node: BoundUnaryExpression): JSX.Element {
     return (

@@ -13,14 +13,7 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 0
-A2 :: A1+A7
-A3 :: A1
-A4 :: A1+A3
-A5 :: A3+A4
-A1 :: 3
-A5
-`;
+var code = `A2 :: A1+A7`;
 
 // var code = `A1 ::1
 // A2 :: 3+A1

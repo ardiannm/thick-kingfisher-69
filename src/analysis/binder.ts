@@ -26,111 +26,50 @@ import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { BoundExpression } from "./binder/bound.expression";
 
 export class BoundCellReference extends BoundNode {
-  constructor(public assignment: BoundCellAssignment, public override span: Span) {
+  constructor(public node: Cell, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
 }
 
 export class Cell {
-  observers = new Map<string, BoundCellAssignment>();
-  dependencies = new Map<string, BoundCellAssignment>();
+  observers = new Map<string, Cell>();
+  dependencies = new Map<string, Cell>();
 
-  constructor(public name: string, public value: number, public version: number) {}
+  constructor(public scope: BoundScope, public name: string, public value: number) {}
+
+  observe(node: Cell) {
+    this.dependencies.set(node.name, node);
+    node.observers.set(this.name, this);
+  }
 
   clear() {
-    this.dependencies.forEach((node) => node.target.observers.delete(this.name));
+    this.dependencies.forEach((dep) => dep.observers.delete(this.name));
     this.dependencies.clear();
+  }
+
+  report(span: Span) {
+    const observers = [...this.observers.keys()];
+    const dependencies = [...this.dependencies.keys()];
+    return {
+      node: this.name,
+      position: `${span.line}:${span.offset}`,
+      observers,
+      dependencies,
+    };
   }
 }
 
 export class BoundCellAssignment extends BoundNode {
-  actions = new Map<string, BoundCellAssignment>();
-  static stack = new Array<Object>();
-  static version = 0;
-
-  constructor(public scope: BoundScope, public target: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
+  constructor(public node: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
-    BoundCellAssignment.version++;
-    this.target.version = BoundCellAssignment.version;
-
-    if (scope.assignments.has(this.target.name)) {
-      const previous = scope.assignments.get(this.target.name)!;
-      previous.target.clear();
-      previous.expression = this.expression;
-    }
-
-    references.forEach((node) => this.registerDependency(node));
-
-    if (this.target.observers.size) {
-      this.saveActions();
-    }
-
-    scope.assignments.set(this.target.name, this);
-
-    // const x = this.scope.report(this); # debug
-    // BoundCellAssignment.stack.push(x); # debug
+    // observe the dependencies and register this node as a new assignment within this scope
+    this.references.forEach((reference) => this.node.observe(reference.node));
+    this.node.scope.assignments.set(this.node.name, this);
   }
 
-  // public report() {
-  //   const r = this.references.map((node) => node.assignment.target.name);
-  //   const o = [...this.target.observers.values()].map((node) => node.target.name);
-  //   const a = [...this.actions.values()].map((node) => node.target.name);
-
-  //   const data = {
-  //     name: this.target.name,
-  //     line: this.span.line,
-  //     dependencies: r,
-  //     observers: o,
-  //     actions: a,
-  //   };
-
-  //   return data;
-  // } # debug
-
-  private registerDependency(node: BoundCellReference) {
-    this.target.dependencies.set(node.assignment.target.name, node.assignment);
-    node.assignment.target.observers.set(this.target.name, this);
-  }
-
-  private saveActions() {
-    const stack = new Array<BoundCellAssignment>(this);
-
-    // const memo = new Array<Object>(); # debug
-    let iteration = 0;
-
-    while (stack.length > 0) {
-      iteration++;
-      // const struct = stack.map((node) => node.report()); # debug
-      const node = stack.pop()!;
-      // memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct }); # debug
-      // memo.push({ message: `last node is "${node.target.name}", popping it out of the stack` }); # debug
-
-      // Check if the node has observers
-      if (node.target.observers.size) {
-        // memo.push({ message: "observers found now iterating through them" }); # debug
-        node.target.observers.forEach((observer) => {
-          if (node.target.version > observer.target.version) {
-            observer.target.version = node.target.version;
-            // memo.push({ message: `pushing "${observer.target.name}" to the stack` }); # debug
-            stack.push(observer);
-          } else {
-            // memo.push({ message: `node "${observer.target.name}" has been checked, skipping this node` }); # debug
-          }
-        });
-      } else {
-        // memo.push({ message: `found no further observers in "${node.target.name}", saving "${node.target.name}" to actions` }); # debug
-        // If no observers, just register the action
-        this.actions.set(node.target.name, node);
-      }
-    }
-
-    // console.log(
-    //   JSON.stringify({
-    //     assigning: this.report(),
-    //     stack: memo,
-    //   })
-    // ); # debug
+  report() {
+    return this.node.report(this.span);
   }
 }
 
@@ -165,7 +104,13 @@ export class Binder {
     this.scope.references.length = 0;
     const expression = this.bind(node.expression);
     const reference = this.bindCell(node.left as SyntaxCellReference);
-    const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
+    const bound = new BoundCellAssignment(reference, expression, this.scope.references, node.span);
+    console.log(
+      JSON.stringify({
+        operation: `assigning node ${bound.node.name}`,
+        scope: this.scope.report(),
+      })
+    );
     this.scope.references = new Array<BoundCellReference>();
     return bound;
   }
@@ -173,9 +118,9 @@ export class Binder {
   private bindCell(node: SyntaxCellReference): Cell {
     const name = node.text;
     if (this.scope.assignments.has(name)) {
-      return this.scope.assignments.get(name)!.target;
+      return this.scope.assignments.get(name)!.node;
     }
-    return new Cell(name, 0, 0);
+    return new Cell(this.scope, name, 0);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {
@@ -186,11 +131,11 @@ export class Binder {
     } else {
       const number = new BoundNumericLiteral(0, node.span);
       const dependencies = new Array<BoundCellReference>();
-      const reference = this.bindCell(node);
-      assigment = new BoundCellAssignment(this.scope, reference, number, dependencies, node.span);
+      const value = this.bindCell(node);
+      assigment = new BoundCellAssignment(value, number, dependencies, node.span);
       if (node.tree.configuration.explicitDeclarations) node.tree.diagnostics.undeclaredCell(name, node.span);
     }
-    const bound = new BoundCellReference(assigment, node.span);
+    const bound = new BoundCellReference(assigment.node, node.span);
     this.scope.references.push(bound);
     return bound;
   }
@@ -200,7 +145,6 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
-    // console.log(JSON.stringify(BoundCellAssignment.stack)); # debug
     return new BoundCompilationUnit(statements, node.span);
   }
 
