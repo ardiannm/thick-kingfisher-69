@@ -57,6 +57,7 @@ export class BoundCellAssignment extends BoundNode {
     if (scope.assignments.has(this.target.name)) {
       const previous = scope.assignments.get(this.target.name)!;
       previous.target.clear();
+      previous.expression = this.expression;
     }
 
     references.forEach((node) => this.registerDependency(node));
