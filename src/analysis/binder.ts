@@ -67,25 +67,25 @@ export class BoundCellAssignment extends BoundNode {
 
     scope.assignments.set(this.target.name, this);
 
-    const x = this.scope.report(this);
-    BoundCellAssignment.stack.push(x);
+    // const x = this.scope.report(this); # debug
+    // BoundCellAssignment.stack.push(x); # debug
   }
 
-  public report() {
-    const r = this.references.map((node) => node.assignment.target.name);
-    const o = [...this.target.observers.values()].map((node) => node.target.name);
-    const a = [...this.actions.values()].map((node) => node.target.name);
+  // public report() {
+  //   const r = this.references.map((node) => node.assignment.target.name);
+  //   const o = [...this.target.observers.values()].map((node) => node.target.name);
+  //   const a = [...this.actions.values()].map((node) => node.target.name);
 
-    const data = {
-      name: this.target.name,
-      line: this.span.line,
-      dependencies: r,
-      observers: o,
-      actions: a,
-    };
+  //   const data = {
+  //     name: this.target.name,
+  //     line: this.span.line,
+  //     dependencies: r,
+  //     observers: o,
+  //     actions: a,
+  //   };
 
-    return data;
-  }
+  //   return data;
+  // } # debug
 
   private registerDependency(node: BoundCellReference) {
     this.target.dependencies.set(node.assignment.target.name, node.assignment);
@@ -95,41 +95,41 @@ export class BoundCellAssignment extends BoundNode {
   private saveActions() {
     const stack = new Array<BoundCellAssignment>(this);
 
-    const memo = new Array<Object>();
+    // const memo = new Array<Object>(); # debug
     let iteration = 0;
 
     while (stack.length > 0) {
       iteration++;
-      const struct = stack.map((node) => node.report());
+      // const struct = stack.map((node) => node.report()); # debug
       const node = stack.pop()!;
-      memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct });
-      memo.push({ message: `last node is "${node.target.name}", popping it out of the stack` });
+      // memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct }); # debug
+      // memo.push({ message: `last node is "${node.target.name}", popping it out of the stack` }); # debug
 
       // Check if the node has observers
       if (node.target.observers.size) {
-        memo.push({ message: "observers found now iterating through them" });
+        // memo.push({ message: "observers found now iterating through them" }); # debug
         node.target.observers.forEach((observer) => {
           if (node.target.version > observer.target.version) {
             observer.target.version = node.target.version;
-            memo.push({ message: `pushing "${observer.target.name}" to the stack` });
+            // memo.push({ message: `pushing "${observer.target.name}" to the stack` }); # debug
             stack.push(observer);
           } else {
-            memo.push({ message: `node "${observer.target.name}" has been checked, skipping this node` });
+            // memo.push({ message: `node "${observer.target.name}" has been checked, skipping this node` }); # debug
           }
         });
       } else {
-        memo.push({ message: `found no further observers in "${node.target.name}", saving "${node.target.name}" to actions` });
+        // memo.push({ message: `found no further observers in "${node.target.name}", saving "${node.target.name}" to actions` }); # debug
         // If no observers, just register the action
         this.actions.set(node.target.name, node);
       }
     }
 
-    console.log(
-      JSON.stringify({
-        assigning: this.report(),
-        stack: memo,
-      })
-    );
+    // console.log(
+    //   JSON.stringify({
+    //     assigning: this.report(),
+    //     stack: memo,
+    //   })
+    // ); # debug
   }
 }
 
@@ -199,7 +199,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
-    console.log(JSON.stringify(BoundCellAssignment.stack));
+    // console.log(JSON.stringify(BoundCellAssignment.stack)); # debug
     return new BoundCompilationUnit(statements, node.span);
   }
 
