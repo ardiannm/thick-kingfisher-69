@@ -52,7 +52,7 @@ export class BoundCellAssignment extends BoundNode {
     super(BoundKind.BoundCellAssignment, span);
 
     BoundCellAssignment.version++;
-    this.target.version = BoundCellAssignment.version;
+    this.target.version++;
 
     if (scope.assignments.has(this.target.name)) {
       const prev = scope.assignments.get(this.target.name)!;
@@ -77,8 +77,9 @@ export class BoundCellAssignment extends BoundNode {
     const a = [...this.actions.values()].map((node) => node.target.name);
 
     const data = {
-      line: this.span.line,
       name: this.target.name,
+      version: this.target.version,
+      line: this.span.line,
       dependencies: r,
       observers: o,
       actions: a,
@@ -102,7 +103,7 @@ export class BoundCellAssignment extends BoundNode {
       iteration++;
       const struct = stack.map((node) => node.report());
       const node = stack.pop()!;
-      memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct });
+      memo.push({ iteration, "number of nodes in the stack": struct.length, "processing node": node.target.name, stack: struct, version: node.target.version });
       memo.push({ message: `last node is "${node.target.name}", popping it out of the stack` });
 
       // Check if the node has observers
@@ -114,7 +115,9 @@ export class BoundCellAssignment extends BoundNode {
             memo.push({ message: `pushing "${observer.target.name}" to the stack` });
             stack.push(observer);
           } else {
-            memo.push({ message: `node "${observer.target.name}" has been checked; skipping` });
+            memo.push({ message: `node "${observer.target.name}" has been checked, skipping this node` });
+            observer.actions.forEach((a) => this.actions.set(a.target.name, a)); // making sure that in case that this node has already been checked then at least its actions are being inherited without walking up the observer tree
+            memo.push({ message: `using actions from node "${observer.target.name}"` });
           }
         });
       } else {
