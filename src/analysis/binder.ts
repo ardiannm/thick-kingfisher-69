@@ -33,17 +33,17 @@ export class BoundCellReference extends BoundNode {
 
 export class Cell {
   observers = new Map<string, Cell>();
-  dependencies = new Map<string, Cell>();
+  dependencies = new Map<string, BoundCellAssignment>();
 
   constructor(public scope: BoundScope, public name: string, public value: number) {}
 
-  observe(node: Cell) {
-    this.dependencies.set(node.name, node);
-    node.observers.set(this.name, this);
+  observe(node: BoundCellAssignment) {
+    this.dependencies.set(node.reference.name, node);
+    node.reference.observers.set(this.name, this);
   }
 
   clear() {
-    this.dependencies.forEach((dep) => dep.observers.delete(this.name));
+    this.dependencies.forEach((dep) => dep.reference.observers.delete(this.name));
     this.dependencies.clear();
   }
 
@@ -63,8 +63,10 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
+    this.reference.clear();
+
     // observe the dependencies and register this node as a new assignment within this scope
-    this.references.forEach((reference) => this.reference.observe(reference.assignment.reference));
+    this.references.forEach((reference) => this.reference.observe(reference.assignment));
     this.reference.scope.assignments.set(this.reference.name, this);
   }
 

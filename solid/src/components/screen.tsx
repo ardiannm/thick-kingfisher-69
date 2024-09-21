@@ -13,12 +13,11 @@ type Input = InputEvent & {
   target: HTMLTextAreaElement;
 };
 
-var code = `A2 :: A1+A7`;
-
-// var code = `A1 ::1
-// A2 :: 3+A1
-// A1 :: 4
-// A2`;
+var code = `A2 :: A1
+A3 :: A1+A2
+A4 :: A3
+A1 :: A4
+`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);

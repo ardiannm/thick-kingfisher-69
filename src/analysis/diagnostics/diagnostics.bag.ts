@@ -53,7 +53,7 @@ export class DiagnosticsBag {
   missingTripleQuotes(span: Span) {
     this.report(
       `Missing closing triple quotes ('''). It looks like the multi-line string was not properly closed. Please ensure you close the string after your intended text.`,
-      Severity.CantEvaluate,
+      Severity.CantBind,
       span
     );
   }
