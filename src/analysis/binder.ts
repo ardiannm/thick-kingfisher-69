@@ -26,7 +26,7 @@ import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
 import { BoundExpression } from "./binder/bound.expression";
 
 export class BoundCellReference extends BoundNode {
-  constructor(public node: Cell, public override span: Span) {
+  constructor(public assignment: BoundCellAssignment, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
 }
@@ -60,16 +60,16 @@ export class Cell {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public node: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
+  constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
     // observe the dependencies and register this node as a new assignment within this scope
-    this.references.forEach((reference) => this.node.observe(reference.node));
-    this.node.scope.assignments.set(this.node.name, this);
+    this.references.forEach((reference) => this.reference.observe(reference.assignment.reference));
+    this.reference.scope.assignments.set(this.reference.name, this);
   }
 
   report() {
-    return this.node.report(this.span);
+    return this.reference.report(this.span);
   }
 }
 
@@ -107,7 +107,7 @@ export class Binder {
     const bound = new BoundCellAssignment(reference, expression, this.scope.references, node.span);
     console.log(
       JSON.stringify({
-        operation: `assigning node ${bound.node.name}`,
+        operation: `assigning node ${bound.reference.name}`,
         scope: this.scope.report(),
       })
     );
@@ -118,7 +118,7 @@ export class Binder {
   private bindCell(node: SyntaxCellReference): Cell {
     const name = node.text;
     if (this.scope.assignments.has(name)) {
-      return this.scope.assignments.get(name)!.node;
+      return this.scope.assignments.get(name)!.reference;
     }
     return new Cell(this.scope, name, 0);
   }
@@ -135,7 +135,7 @@ export class Binder {
       assigment = new BoundCellAssignment(value, number, dependencies, node.span);
       if (node.tree.configuration.explicitDeclarations) node.tree.diagnostics.undeclaredCell(name, node.span);
     }
-    const bound = new BoundCellReference(assigment.node, node.span);
+    const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
     return bound;
   }
