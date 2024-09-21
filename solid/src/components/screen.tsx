@@ -22,12 +22,17 @@ A1 :: A7
 A8 :: A1
 A7 :: 1`;
 
+var code = `A1 ::1
+A2 :: 3+A1
+A1 :: 4
+A2`;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [explicit] = createSignal(true);
+  const [explicit] = createSignal(false);
   const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {

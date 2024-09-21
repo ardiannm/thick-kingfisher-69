@@ -35,7 +35,7 @@ export class Cell {
   observers = new Map<string, BoundCellAssignment>();
   dependencies = new Map<string, BoundCellAssignment>();
 
-  constructor(public name: string, public version: number) {}
+  constructor(public name: string, public value: number, public version: number) {}
 
   clear() {
     this.dependencies.forEach((node) => node.target.observers.delete(this.name));
@@ -174,7 +174,7 @@ export class Binder {
     if (this.scope.assignments.has(name)) {
       return this.scope.assignments.get(name)!.target;
     }
-    return new Cell(name, 0);
+    return new Cell(name, 0, 0);
   }
 
   private bindSyntaxCellReference(node: SyntaxCellReference) {

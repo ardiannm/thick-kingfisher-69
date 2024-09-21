@@ -8,6 +8,7 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
+import { BoundCellAssignment, BoundCellReference } from "../analysis/binder";
 
 export class Evaluator {
   private value = 0;
@@ -21,6 +22,10 @@ export class Evaluator {
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
       case BoundKind.BoundBlock:
         return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
+      case BoundKind.BoundCellAssignment:
+        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
+      case BoundKind.BoundCellReference:
+        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
       case BoundKind.BoundBinaryExpression:
         return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
       case BoundKind.BoundUnaryExpression:
@@ -32,6 +37,10 @@ export class Evaluator {
     return 0;
   }
 
+  private evaluateBoundCellReference(node: BoundCellReference): number {
+    return node.assignment.target.value;
+  }
+
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
@@ -40,6 +49,13 @@ export class Evaluator {
   private evaluateBoundBlock(node: BoundBlock): number {
     for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
+  }
+
+  private evaluateBoundCellAssignment(node: BoundCellAssignment) {
+    node.target.value = this.evaluate(node.expression);
+    console.log(node.target.name + " should notify " + [...node.actions.values()].map((n) => n.target.name));
+    node.actions.forEach((action) => this.evaluate(action));
+    return node.target.value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
