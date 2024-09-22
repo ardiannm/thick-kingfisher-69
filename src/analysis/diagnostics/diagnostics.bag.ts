@@ -1,4 +1,4 @@
-import { BoundCellAssignment, BoundCellReference } from "../binder";
+import { BoundCellReference } from "../binder";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -42,8 +42,16 @@ export class DiagnosticsBag {
     this.report(`Can't divide by zero.`, Severity.Warning, span);
   }
 
-  circularDependency(assignee: BoundCellAssignment, dependency: BoundCellReference) {
-    this.report(`Circular dependency '${dependency.assignment.reference}' detected while binding '${assignee.reference.name}'.`, Severity.CantEvaluate, dependency.span);
+  circularDependencyChain(from: BoundCellReference, to: BoundCellReference) {
+    this.report(
+      `Circular dependency detected: Cell '${to.assignment.reference.name}' (at ${to.span.line}:${to.span.offset}) is involved in a cyclic reference chain starting from cell '${from.assignment.reference.name}'.`,
+      Severity.CantEvaluate,
+      from.span
+    );
+  }
+
+  directDependency(name: string, span: Span) {
+    this.report(`Direct dependency '${name}'.`, Severity.CantBind, span);
   }
 
   cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
@@ -64,10 +72,6 @@ export class DiagnosticsBag {
 
   badFloatingPointNumber(span: Span) {
     this.report(`Wrong floating number format.`, Severity.CantBind, span);
-  }
-
-  usginBeforeDeclaration(name: string, span: Span) {
-    this.report(`Using '${name}' before its declaration.`, Severity.CantBind, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {

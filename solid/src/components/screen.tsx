@@ -19,6 +19,12 @@ A4 :: A3
 A1 :: A4
 `;
 
+var code = `A2 :: A1+A7
+A3 :: A1+A2
+A4 :: A3
+A1 :: A4+A1
+`;
+
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
