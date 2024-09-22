@@ -60,9 +60,13 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span, diagnostics: DiagnosticsBag) {
     super(BoundKind.BoundCellAssignment, span);
     this.reference.clearDependencies();
-    this.references.forEach((reference) => this.observeDependency(reference.assignment));
+    this.prepareDependencies();
     this.checkForCircularDependency(diagnostics);
     this.reference.scope.assignments.set(this.reference.name, this);
+  }
+
+  prepareDependencies() {
+    this.references.forEach((reference) => this.observeDependency(reference.assignment));
   }
 
   observeDependency(node: BoundCellAssignment) {

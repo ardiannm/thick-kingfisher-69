@@ -4,25 +4,17 @@ import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { CompilerOptions } from "../../../src/compiler.options";
-import { BoundNode } from "../../../src/analysis/binder/bound.node";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
   target: HTMLTextAreaElement;
 };
 
-var code = `''' A2 :: A1+A7
-A3 :: A1
-A4 :: A3
-A1 :: A4+A1 '''
-
-
-
-A1 :: 3
-A2 :: A1+1
+var code = `A1 :: 3
+A2 :: A1
+A3 :: A1+A2
 A1 :: 4
-A2
-
+A3
 `;
 
 const Input: Component = () => {
@@ -30,17 +22,14 @@ const Input: Component = () => {
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
-  const [explicit] = createSignal(false);
-  const [tree, setTree] = createSignal<BoundNode | null>(null);
 
   createEffect(() => {
-    const tree = SyntaxTree.createFrom(text(), new CompilerOptions(explicit()));
+    const tree = SyntaxTree.createFrom(text(), new CompilerOptions(true));
     const value = tree.evaluate();
     const d = tree.diagnostics.getDiagnostics(5);
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());
-    setTree(tree.bound);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
