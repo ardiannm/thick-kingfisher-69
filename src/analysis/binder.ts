@@ -50,7 +50,7 @@ export class Cell {
 
   constructor(public scope: BoundScope, public name: string, public value: number) {}
 
-  observe(node: BoundCellAssignment) {
+  observeDependency(node: BoundCellAssignment) {
     this.dependencies.set(node.reference.name, node);
     node.reference.observers.set(this.name, this);
   }
@@ -65,7 +65,7 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span, diagnostics: DiagnosticsBag) {
     super(BoundKind.BoundCellAssignment, span);
     this.reference.clearDependencies();
-    this.references.forEach((reference) => this.reference.observe(reference.assignment));
+    this.references.forEach((reference) => this.reference.observeDependency(reference.assignment));
     this.checkForCircularDependency(diagnostics);
     this.reference.scope.assignments.set(this.reference.name, this);
   }
@@ -158,7 +158,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
-    return new BoundCompilationUnit(statements, node.span);
+    return new BoundCompilationUnit(this.scope, statements, node.span);
   }
 
   private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
