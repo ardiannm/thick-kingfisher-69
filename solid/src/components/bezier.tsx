@@ -19,9 +19,9 @@ export const BezierCurve = (props: BezierCurveProps) => {
     const [point2] = props.point2;
 
     // Define control points to create a smooth curve
-    const controlX1 = point1().x + 150;
+    const controlX1 = point1().x + 120;
     const controlY1 = point1().y;
-    const controlX2 = point2().x - 150;
+    const controlX2 = point2().x - 120;
     const controlY2 = point2().y;
 
     // Return the SVG path for the Bezier curve
@@ -37,6 +37,7 @@ export const BezierCurve = (props: BezierCurveProps) => {
         width: "100%",
         height: "100%",
         "z-index": "100",
+        "pointer-events": "none",
       }}
     >
       <path d={curvePath()} stroke="black" fill="transparent" stroke-width="2" />

@@ -7,7 +7,7 @@ import { BoundKind } from "../../../src/analysis/binder/kind/bound.kind";
 import { BoundBinaryExpression } from "../../../src/analysis/binder/binary.expression";
 import { BoundNumericLiteral } from "../../../src/analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "../../../src/analysis/binder/bound.unary.expression";
-import { BoundCellAssignment, BoundCellReference } from "../../../src/analysis/binder";
+import { BoundCellAssignment } from "../../../src/analysis/binder";
 import { BoundErrorExpression } from "../../../src/analysis/binder/bound.error.expression";
 
 export class Tree {

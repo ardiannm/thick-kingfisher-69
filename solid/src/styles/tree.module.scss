@@ -11,6 +11,7 @@
   min-width: 40px;
   align-items: center;
   height: fit-content;
+  border-radius: 1px;
 }
 
 .BoundCompilationUnit {
@@ -65,8 +66,8 @@
   @extend .Node;
   // background-color: #5ab0cb;
   // background-color: #f3953e;
-  background-color: gray;
-  color: #0a0a0a;
+  background-color: #0a0a0a;
+  color: white;
   margin-bottom: 2px;
   margin-right: 2px;
 }
@@ -126,7 +127,7 @@
     border: none;
     // background-color: #c8e645;
     // background-color: #6fc7ba;
-    background-color: gainsboro;
+    background-color: #dee0e7;
   }
 }
 

@@ -1,30 +1,26 @@
 import styles from "./styles/app.module.scss";
 import Input from "./components/screen";
 
-import { type Component, Signal, createSignal } from "solid-js";
+import { type Component, createSignal } from "solid-js";
 import { BezierCurve, Position } from "./components/bezier";
+import Draggable from "./components/draggable";
 
-interface DotPosition {
-  position: Signal<Position>;
-}
-
-const Dot: Component<DotPosition> = (props: DotPosition) => {
+const Dot = () => {
   // Box positions for start and end points
 
   const size = 10;
-  const [pos] = props.position;
 
   return (
     <span
       style={{
-        position: "absolute",
-        left: `${pos().x - size / 2}px`,
-        top: `${pos().y - size / 2}px`,
-        width: `${size}px`,
+        position: "absolute", // Uncommented this line
+        left: `${-size / 2}px`,
+        top: `${-size / 2}px`,
         height: `${size}px`,
-        "border-radius": `50%`,
-        background: "black",
-        "z-index": "11",
+        width: `${size}px`, // Added width to make it circular
+        "border-radius": "50%",
+        "background-color": "black",
+        "z-index": "40",
         cursor: "pointer",
       }}
     ></span>
@@ -33,14 +29,19 @@ const Dot: Component<DotPosition> = (props: DotPosition) => {
 
 const App: Component = () => {
   // Box positions for start and end points
-  const start = createSignal<Position>({ x: 100, y: 100 });
-  const end = createSignal<Position>({ x: 300, y: 200 });
+  const start = createSignal<Position>({ x: 183, y: 618 });
+  const end = createSignal<Position>({ x: 343, y: 447 });
 
   return (
     <div class={styles.app}>
-      <Dot position={start}></Dot>
-      <BezierCurve point1={start} point2={end} />
+      <Draggable position={start}>
+        <Dot />
+      </Draggable>
+      <Draggable position={end}>
+        <Dot />
+      </Draggable>
       <Input />
+      <BezierCurve point1={start} point2={end} />
     </div>
   );
 };
