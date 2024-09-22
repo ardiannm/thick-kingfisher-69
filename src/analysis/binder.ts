@@ -30,6 +30,18 @@ export class BoundCellReference extends BoundNode {
   constructor(public assignment: BoundCellAssignment, public override span: Span) {
     super(BoundKind.BoundCellReference, span);
   }
+
+  public get dependencies() {
+    return this.assignment.references;
+  }
+
+  public refersToNode(node: BoundCellAssignment) {
+    return node.reference === this.assignment.reference;
+  }
+
+  public get name() {
+    return this.assignment.reference.name;
+  }
 }
 
 export class Cell {
@@ -43,46 +55,35 @@ export class Cell {
     node.reference.observers.set(this.name, this);
   }
 
-  clear() {
+  clearDependencies() {
     this.dependencies.forEach((dep) => dep.reference.observers.delete(this.name));
     this.dependencies.clear();
-  }
-
-  report(span: Span) {
-    const observers = [...this.observers.keys()];
-    const dependencies = [...this.dependencies.keys()];
-    return {
-      node: this.name,
-      position: `${span.line}:${span.offset}`,
-      observers,
-      dependencies,
-    };
   }
 }
 
 export class BoundCellAssignment extends BoundNode {
   constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span, diagnostics: DiagnosticsBag) {
     super(BoundKind.BoundCellAssignment, span);
-    this.reference.clear();
+    this.reference.clearDependencies();
     this.references.forEach((reference) => this.reference.observe(reference.assignment));
-    this.check(diagnostics);
+    this.checkForCircularDependency(diagnostics);
     this.reference.scope.assignments.set(this.reference.name, this);
   }
 
-  private check(diagnostics: DiagnosticsBag) {
+  private checkForCircularDependency(diagnostics: DiagnosticsBag) {
     const stack = new Array<BoundCellReference>();
-    this.references.forEach((from) => {
-      if (from.assignment.reference === this.reference) {
-        diagnostics.directDependency(from.assignment.reference.name, from.span);
+    this.references.forEach((reference) => {
+      if (reference.refersToNode(this)) {
+        diagnostics.directDependency(reference.name, reference.span);
       } else {
-        stack.push(from);
+        stack.push(reference);
         while (stack.length) {
           const node = stack.pop()!;
-          node.assignment.references.forEach((to) => {
-            if (to.assignment.reference === this.reference) {
-              diagnostics.circularDependencyChain(from, to);
+          node.dependencies.forEach((dependency) => {
+            if (dependency.refersToNode(this)) {
+              diagnostics.circularDependencyChain(reference, dependency);
             } else {
-              stack.push(to);
+              stack.push(dependency);
             }
           });
         }
