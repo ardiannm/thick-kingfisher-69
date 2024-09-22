@@ -72,7 +72,8 @@ export class BoundCellAssignment extends BoundNode {
 
   private checkForCircularDependency(diagnostics: DiagnosticsBag) {
     const stack = new Array<BoundCellReference>();
-    this.references.forEach((reference) => {
+
+    for (const reference of this.references) {
       if (reference.refersToNode(this)) {
         diagnostics.directDependency(reference.name, reference.span);
       } else {
@@ -88,7 +89,7 @@ export class BoundCellAssignment extends BoundNode {
           });
         }
       }
-    });
+    }
   }
 }
 
