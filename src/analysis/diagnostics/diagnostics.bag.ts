@@ -43,11 +43,7 @@ export class DiagnosticsBag {
   }
 
   circularDependencyChain(from: BoundCellReference, to: BoundCellReference) {
-    this.report(
-      `Circular dependency detected: Cell '${to.assignment.reference.name}' (at ${to.span.line}:${to.span.offset}) is involved in a cyclic reference chain starting from cell '${from.assignment.reference.name}'.`,
-      Severity.CantEvaluate,
-      from.span
-    );
+    this.report(`Circular dependency detected: Cell '${to.assignment.reference.name}' (at ${to.span.line}:${to.span.offset}).`, Severity.CantEvaluate, from.span);
   }
 
   directDependency(name: string, span: Span) {

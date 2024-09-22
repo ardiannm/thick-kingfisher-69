@@ -45,15 +45,10 @@ export class BoundCellReference extends BoundNode {
 }
 
 export class Cell {
-  observers = new Map<string, Cell>();
+  observers = new Map<string, BoundCellAssignment>();
   dependencies = new Map<string, BoundCellAssignment>();
 
   constructor(public scope: BoundScope, public name: string, public value: number) {}
-
-  observeDependency(node: BoundCellAssignment) {
-    this.dependencies.set(node.reference.name, node);
-    node.reference.observers.set(this.name, this);
-  }
 
   clearDependencies() {
     this.dependencies.forEach((dep) => dep.reference.observers.delete(this.name));
@@ -65,9 +60,14 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span, diagnostics: DiagnosticsBag) {
     super(BoundKind.BoundCellAssignment, span);
     this.reference.clearDependencies();
-    this.references.forEach((reference) => this.reference.observeDependency(reference.assignment));
+    this.references.forEach((reference) => this.observeDependency(reference.assignment));
     this.checkForCircularDependency(diagnostics);
     this.reference.scope.assignments.set(this.reference.name, this);
+  }
+
+  observeDependency(node: BoundCellAssignment) {
+    this.reference.dependencies.set(node.reference.name, node);
+    node.reference.observers.set(this.reference.name, this);
   }
 
   private checkForCircularDependency(diagnostics: DiagnosticsBag) {
@@ -80,11 +80,11 @@ export class BoundCellAssignment extends BoundNode {
         stack.push(reference);
         while (stack.length) {
           const node = stack.pop()!;
-          node.dependencies.forEach((dependency) => {
-            if (dependency.refersToNode(this)) {
-              diagnostics.circularDependencyChain(reference, dependency);
+          node.dependencies.forEach((dep) => {
+            if (dep.refersToNode(this)) {
+              diagnostics.circularDependencyChain(reference, dep);
             } else {
-              stack.push(dependency);
+              stack.push(dep);
             }
           });
         }

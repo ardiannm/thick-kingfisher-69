@@ -54,6 +54,7 @@ export class Evaluator {
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
     const value = (node.reference.value = this.evaluate(node.expression));
+    // node.reference.observers.forEach(o => this.evaluate(o))
     return value;
   }
 
