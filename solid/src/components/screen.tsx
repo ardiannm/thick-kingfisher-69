@@ -5,18 +5,24 @@ import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { CompilerOptions } from "../../../src/compiler.options";
 import { BoundNode } from "../../../src/analysis/binder/bound.node";
-import { BoundExpression } from "../../../src/analysis/binder/bound.expression";
-import { Tree } from "./tree";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
   target: HTMLTextAreaElement;
 };
 
-var code = `A2 :: A1+A7
+var code = `''' A2 :: A1+A7
 A3 :: A1
 A4 :: A3
-A1 :: A4+A1
+A1 :: A4+A1 '''
+
+
+
+A1 :: 3
+A2 :: A1+1
+A1 :: 4
+A2
+
 `;
 
 const Input: Component = () => {
@@ -38,8 +44,6 @@ const Input: Component = () => {
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
-
-  const mapper = new Tree();
 
   return (
     <>
@@ -66,7 +70,6 @@ const Input: Component = () => {
           </div>
         </Show>
       </div>
-      <Show when={tree()}>{mapper.render(tree() as BoundExpression)}</Show>
     </>
   );
 };
