@@ -10,17 +10,8 @@ import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
 import { BoundCellAssignment, BoundCellReference } from "../analysis/binder";
 
-class Execution {
-  private constructor(public line: number, public name: string, public numberOfExecutions: number, public afterExecuting?: Execution) {}
-
-  static report(node: BoundCellAssignment, count: number, afterExecuting?: Execution) {
-    return new Execution(node.span.line, node.reference.name, count, afterExecuting);
-  }
-}
-
 export class Evaluator {
   private value = 0;
-  private executions = new Array<Execution>();
 
   constructor(private diagnostics: DiagnosticsBag) {}
 
@@ -52,7 +43,6 @@ export class Evaluator {
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
-    console.log(JSON.stringify(this.executions));
     return this.value;
   }
 
@@ -61,13 +51,8 @@ export class Evaluator {
     return this.value;
   }
 
-  private evaluateBoundCellAssignment(node: BoundCellAssignment, afterExecuting?: Execution) {
-    node.prepareDependencies();
+  private evaluateBoundCellAssignment(node: BoundCellAssignment) {
     const value = (node.reference.value = this.evaluate(node.expression));
-    const execution = this.executions.find((e) => e.name === node.reference.name);
-    const count = execution?.numberOfExecutions;
-    this.executions.push(Execution.report(node, count ? count + 1 : 1, afterExecuting));
-    node.reference.observers.forEach((o) => this.evaluateBoundCellAssignment(o, execution));
     return value;
   }
 

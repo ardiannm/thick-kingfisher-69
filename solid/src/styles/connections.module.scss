@@ -1,0 +1,42 @@
+.connections {
+  position: absolute;
+  font-size: 15px;
+  left: 0;
+  margin: 20px;
+  border: 1px solid gold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-wrap: nowrap;
+  user-select: none;
+  justify-content: left;
+}
+
+.connection {
+  border: 1px solid lightseagreen;
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  align-items: center;
+  margin-right: auto;
+  padding-left: 7px;
+  width: 100%;
+  height: 25px;
+}
+
+.set {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid lightblue;
+  align-items: center;
+  width: fit-content;
+  margin-left: 7px;
+}
+
+.node {
+  display: flex;
+  margin: 3px;
+  align-items: center;
+  width: fit-content;
+  height: 100%;
+}

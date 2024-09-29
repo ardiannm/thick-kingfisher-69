@@ -4,6 +4,8 @@ import Input from "./components/screen";
 import { type Component, createSignal } from "solid-js";
 import { BezierCurve, Position } from "./components/bezier";
 import Draggable from "./components/draggable";
+import Connections from "./components/connections";
+import Graph from "./components/connections";
 
 const Dot = () => {
   // Box positions for start and end points
@@ -30,7 +32,7 @@ const Dot = () => {
 const App: Component = () => {
   // Box positions for start and end points
   const start = createSignal<Position>({ x: 183, y: 618 });
-  const end = createSignal<Position>({ x: 343, y: 447 });
+  const end = createSignal<Position>({ x: 367, y: 275 });
 
   return (
     <div class={styles.app}>

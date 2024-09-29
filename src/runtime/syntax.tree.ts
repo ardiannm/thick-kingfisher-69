@@ -6,12 +6,11 @@ import { CompilerOptions } from "../compiler.options";
 import { Evaluator } from "./evaluator";
 import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
 import { Binder } from "../analysis/binder";
-import { BoundNode } from "../analysis/binder/bound.node";
 
 export class SyntaxTree {
   protected root: SyntaxCompilationUnit;
   public readonly diagnostics = new DiagnosticsBag();
-  public bound: BoundNode | null = null;
+  public boundRoot: BoundCompilationUnit | null = null;
 
   private constructor(public text: SourceText, public configuration: CompilerOptions) {
     const parser = new Parser(this);
@@ -24,8 +23,8 @@ export class SyntaxTree {
 
   bind() {
     if (this.diagnostics.canBind()) {
-      const bound = new Binder().bind(this.root);
-      this.bound = bound;
+      const bound = new Binder().bindSyntaxCompilationUnit(this.root);
+      this.boundRoot = bound;
       return bound;
     }
     return this;

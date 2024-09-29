@@ -1,4 +1,3 @@
-import { BoundCellReference } from "../binder";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parser/kind/syntax.kind";
 import { Span } from "../text/span";
@@ -36,22 +35,6 @@ export class DiagnosticsBag {
 
   unexpectedTokenFound(matched: SyntaxKind, expecting: SyntaxKind, span: Span) {
     this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantBind, span);
-  }
-
-  cantDivideByZero(span: Span) {
-    this.report(`Can't divide by zero.`, Severity.Warning, span);
-  }
-
-  circularDependencyChain(from: BoundCellReference, to: BoundCellReference) {
-    this.report(`Circular dependency detected: Cell '${to.assignment.reference.name}' (at ${to.span.line}:${to.span.offset}).`, Severity.CantEvaluate, from.span);
-  }
-
-  directDependency(name: string, span: Span) {
-    this.report(`Direct dependency '${name}'.`, Severity.CantBind, span);
-  }
-
-  cantUseAsAReference(unexpected: SyntaxKind, span: Span) {
-    this.report(`'${unexpected}' is not assignable.`, Severity.CantEvaluate, span);
   }
 
   missingTripleQuotes(span: Span) {

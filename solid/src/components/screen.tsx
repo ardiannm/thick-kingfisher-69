@@ -4,24 +4,32 @@ import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { createEffect, createSignal, For, Show, type Component } from "solid-js";
 import { CompilerOptions } from "../../../src/compiler.options";
+import Graph from "./connections";
+import { BoundScope } from "../../../src/analysis/binder/bound.scope";
+
+import Draggable from "./draggable";
+import { Position } from "./bezier";
 
 type Input = InputEvent & {
   currentTarget: HTMLTextAreaElement;
   target: HTMLTextAreaElement;
 };
 
-var code = `A1 :: 3
+var code = `A1 :: A6
 A2 :: A1
-A3 :: A1+A2
-A1 :: 4
-A3
-`;
+A3 :: A1+A2+A4+A5
+A6 :: A1+A2+A5
+
+
+''' just show which reference is causing circular dependency
+that's all that matters '''`;
 
 const Input: Component = () => {
   const [text, setText] = createSignal(code);
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>(new Array());
   const [value, setValue] = createSignal(0);
   const [doEval, setDoEval] = createSignal(false);
+  const [scope, setScope] = createSignal<BoundScope | null>(null);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(text(), new CompilerOptions(true));
@@ -30,12 +38,18 @@ const Input: Component = () => {
     setDiagnostics(d);
     setValue(value as number);
     setDoEval(tree.diagnostics.canEvaluate());
+    tree.boundRoot && setScope(tree.boundRoot.scope);
   });
 
   const handleTextAreaInput = (e: Input) => setText(e.target.value);
 
+  const start = createSignal<Position>({ x: 345, y: 243 });
+
   return (
     <>
+      <Show when={scope()}>
+        <Draggable position={start}>{new Graph(scope()!).draw()}</Draggable>
+      </Show>
       <div class={styles.input}>
         <div class={styles.curve}></div>
         <div class={styles.buttonTop}></div>

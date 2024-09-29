@@ -18,7 +18,8 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "index.ts",
