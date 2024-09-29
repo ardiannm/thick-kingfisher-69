@@ -7,6 +7,5 @@ export class BoundScope {
 
   clearDependencies() {
     this.assignments.forEach((a) => a.reference.clearDependencies());
-    this.parent?.clearDependencies();
   }
 }

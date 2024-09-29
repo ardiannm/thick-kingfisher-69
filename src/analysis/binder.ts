@@ -163,6 +163,7 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
+    this.scope.clearDependencies();
     return new BoundCompilationUnit(this.scope, statements, node.span);
   }
 

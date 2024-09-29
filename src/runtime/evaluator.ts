@@ -51,7 +51,6 @@ export class Evaluator {
   }
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
-    node.scope.clearDependencies();
     for (const statement of node.root) this.value = this.evaluate(statement);
     console.log(JSON.stringify(this.executions));
     return this.value;
