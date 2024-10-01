@@ -1,21 +1,39 @@
-import { Component, JSXElement, Signal, createSignal, onCleanup } from "solid-js";
+import { Component, JSXElement, Signal, createSignal, onCleanup, onMount } from "solid-js";
 import { Position } from "./bezier.curve";
 
 interface Props {
-  position?: Signal<Position>;
+  position?: Signal<Position>; // Make position optional
   children: JSXElement;
 }
 
 const Draggable: Component<Props> = (props: Props) => {
-  const defaultPosition = createSignal({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  });
-
-  const [position, setPosition] = props.position ?? defaultPosition;
+  // If props.position is undefined, create a default signal with the center position
+  const [position, setPosition] = props.position ?? createSignal({ x: 0, y: 0 });
 
   const [isDragging, setIsDragging] = createSignal(false);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });
+
+  var element: HTMLDivElement | undefined;
+
+  // Function to calculate the center of the screen accounting for the element's dimensions
+  const centerElement = () => {
+    if (element) {
+      const elementWidth = element.offsetWidth;
+      const elementHeight = element.offsetHeight;
+
+      setPosition({
+        x: window.innerWidth / 2 - elementWidth / 2,
+        y: window.innerHeight / 2 - elementHeight / 2,
+      });
+    }
+  };
+
+  onMount(() => {
+    // Set initial position when the element is mounted
+    if (!props.position) {
+      centerElement();
+    }
+  });
 
   const handleMouseDown = (event: MouseEvent) => {
     setIsDragging(true);
@@ -47,6 +65,7 @@ const Draggable: Component<Props> = (props: Props) => {
 
   return (
     <div
+      ref={element} // Reference to the element for size calculations
       style={{
         position: "absolute",
         left: `${position().x}px`,
@@ -57,7 +76,6 @@ const Draggable: Component<Props> = (props: Props) => {
         "z-index": "140",
       }}
       onmousedown={handleMouseDown}
-      onclick={() => console.log(2)}
     >
       {props.children}
     </div>
