@@ -36,17 +36,7 @@ export const BezierCurve = (props: BezierCurveProps) => {
         <Dot position={props.startPosition}></Dot>
         <Dot position={props.endPosition}></Dot>
       </Show>
-      <svg
-        style={{
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          height: "100%",
-          "z-index": "100",
-          "pointer-events": "none",
-        }}
-      >
+      <svg style={{ position: "absolute", top: "0", left: "0", width: "100%", height: "100%", "z-index": "100", "pointer-events": "none" }}>
         <path d={curvePath()} stroke="black" fill="transparent" stroke-width="2" />
       </svg>
     </>

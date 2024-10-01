@@ -51,21 +51,22 @@ const Draggable: Component<Props> = (props: Props) => {
       });
     }
   };
-
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
   document.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("mouseup", handleMouseUp);
+
   onCleanup(() => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   });
 
   return (
-    <div
+    <span
       ref={element} // Reference to the element for size calculations
+      ondblclick={centerElement}
       style={{
         position: "absolute",
         left: `${position().x}px`,
@@ -73,12 +74,12 @@ const Draggable: Component<Props> = (props: Props) => {
         cursor: isDragging() ? "grabbing" : "grab",
         height: "fit-content",
         width: "fit-content",
-        "z-index": "140",
+        // "z-index": "140",
       }}
       onmousedown={handleMouseDown}
     >
       {props.children}
-    </div>
+    </span>
   );
 };
 

@@ -1,11 +1,14 @@
 import styles from "../styles/editor.module.scss";
-import { type Component, Signal } from "solid-js";
+import { type Component, Signal, Accessor, Show } from "solid-js";
 import Draggable from "./draggable";
 import { Position } from "./bezier.curve";
+import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
+import { Diagnostics } from "./diagnostics";
 
 export interface CodeEditorProps {
   code: Signal<string>;
   position?: Signal<Position>;
+  diagnostics?: Accessor<Array<Diagnostic>>;
 }
 
 export type Input = InputEvent & {
@@ -33,6 +36,9 @@ export const CodeEditor: Component<CodeEditorProps> = (props: CodeEditorProps) =
           autofocus={true}
         />
       </span>
+      <Show when={props.diagnostics}>
+        <Diagnostics bag={props.diagnostics!} />
+      </Show>
     </Draggable>
   );
 };

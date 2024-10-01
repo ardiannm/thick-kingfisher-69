@@ -1,8 +1,15 @@
-import styles from "./styles/app.module.scss";
+import styles from "./app.module.scss";
 
-import { type Component, createSignal } from "solid-js";
+import Graph from "./components/boud.scope";
+
+import { type Component, createSignal, createEffect } from "solid-js";
+
 import { BezierCurve, Position } from "./components/bezier.curve";
 import { CodeEditor } from "./components/code.editor";
+import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
+import { SyntaxTree } from "../../src/runtime/syntax.tree";
+import { CompilerOptions } from "../../src/compiler.options";
+import { BoundScope } from "../../src/analysis/binder/bound.scope";
 
 var defaultCode = `A1 :: A6
 A2 :: A1
@@ -17,10 +24,21 @@ const App: Component = () => {
   const end = createSignal<Position>({ x: 367, y: 275 });
   const textCode = createSignal<string>(defaultCode);
 
+  const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>([]);
+  const [scope, setScope] = createSignal<BoundScope>();
+
+  createEffect(() => {
+    const tree = SyntaxTree.createFrom(textCode[0](), new CompilerOptions(true));
+    tree.evaluate();
+    setDiagnostics(tree.diagnostics.getDiagnostics());
+    setScope(tree.boundRoot?.scope);
+  });
+
   return (
     <div class={styles.app}>
-      <CodeEditor code={textCode} />
-      {/* <BezierCurve startPosition={start} endPosition={end} dots /> */}
+      {scope() && new Graph(scope()!).draw()}
+      <CodeEditor code={textCode} diagnostics={diagnostics} />
+      <BezierCurve startPosition={start} endPosition={end} dots />
     </div>
   );
 };

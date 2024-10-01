@@ -1,5 +1,5 @@
 import { For } from "solid-js";
-import styles from "../styles/connections.module.scss";
+import styles from "../styles/bound.scope.module.scss";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
 import { BoundCellAssignment } from "../../../src/analysis/binder";
 

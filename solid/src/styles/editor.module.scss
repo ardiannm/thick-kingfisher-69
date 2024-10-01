@@ -1,6 +1,26 @@
+.shadow {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.codeEditor {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid purple;
+  width: fit-content;
+  height: fit-content;
+  padding: 4px;
+  @extend .shadow;
+}
+
+.moveBar {
+  display: flex;
+  height: 20px;
+  width: 100%;
+}
+
 .textArea {
   outline: none;
-  font-family: inherit;
   resize: none;
   cursor: pointer;
   border: none;
@@ -14,24 +34,34 @@
   margin-left: auto;
   margin-right: auto;
   display: flex;
-  font-size: 14px;
   background-color: #f3f4f8;
   height: 400px;
   width: 275px;
-  border: 1px solid goldenrod;
-}
-
-.codeEditor {
-  display: flex;
-  flex-direction: column;
   border: 1px solid lightseagreen;
-  width: fit-content;
-  height: fit-content;
-  padding: 3px;
 }
 
-.moveBar {
+.diagnostics {
+  margin-top: 40px;
+  border: 1px solid purple;
+  padding: 10px 4px;
+}
+
+.diagnostic {
   display: flex;
-  height: 20px;
-  width: 100%;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding-inline: 10px;
+  &:hover {
+    outline: 1px solid lightseagreen;
+  }
+}
+
+.position {
+  width: 27px;
+  padding: 1px 4px;
+  margin-right: 20px;
+}
+
+.message {
 }

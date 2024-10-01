@@ -13,8 +13,8 @@ export class DiagnosticsBag {
     this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
   }
 
-  getDiagnostics(limit: number) {
-    return this.diagnostics.slice(0, limit);
+  getDiagnostics(limit?: number) {
+    return limit ? this.diagnostics.slice(0, limit) : this.diagnostics;
   }
 
   canParse() {

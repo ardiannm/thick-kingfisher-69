@@ -4,25 +4,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #f3f4f8;
   font-size: 12px;
-  font-family: "Roboto";
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
 }
 
 * {
   box-sizing: border-box;
+  font-family: "Roboto";
+  font-size: 14px;
 }
 
 @mixin center {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-textarea {
-  font-size: 12px;
-  background-color: #f3f4f8;
 }
