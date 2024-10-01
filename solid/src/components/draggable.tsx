@@ -35,6 +35,9 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
     if (!props.position) {
       centerElement();
     }
+    if (props.index) {
+      setZIndex(getNextZIndex());
+    }
   });
 
   const handleMouseDown = (event: MouseEvent) => {
@@ -86,7 +89,6 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
       ref={element}
       tabIndex={0} // Make the element focusable
       class={styles.draggable}
-      ondblclick={centerElement}
       onfocus={handleFocus}
       onblur={handleBlur}
       onmousedown={handleMouseDown}
