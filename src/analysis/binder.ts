@@ -126,10 +126,12 @@ export class Binder {
   }
 
   private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
+    this.scope = new BoundScope(this.scope);
     const statements = new Array<BoundStatement>();
     for (const statement of node.statements) {
       statements.push(this.bind(statement));
     }
+    this.scope = this.scope.parent!;
     return new BoundBlock(statements, node.span);
   }
 

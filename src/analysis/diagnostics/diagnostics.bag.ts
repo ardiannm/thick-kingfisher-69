@@ -34,7 +34,7 @@ export class DiagnosticsBag {
   }
 
   unexpectedTokenFound(matched: SyntaxKind, expecting: SyntaxKind, span: Span) {
-    this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantBind, span);
+    this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantEvaluate, span);
   }
 
   missingTripleQuotes(span: Span) {
@@ -58,7 +58,7 @@ export class DiagnosticsBag {
   }
 
   emptyBlock(span: Span) {
-    this.report(`Expecting statements in the block.`, Severity.CantBind, span);
+    this.report(`Expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
   binderMethod(kind: SyntaxKind, span: Span) {

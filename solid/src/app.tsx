@@ -2,7 +2,7 @@ import styles from "./app.module.scss";
 
 import Graph from "./components/boud.scope";
 
-import { type Component, createSignal, createEffect } from "solid-js";
+import { type Component, createSignal, createEffect, Show } from "solid-js";
 
 import { BezierCurve, Position } from "./components/bezier.curve";
 import { CodeEditor } from "./components/code.editor";
@@ -38,9 +38,11 @@ const App: Component = () => {
 
   return (
     <div class={styles.app}>
-      <Draggable select position={scopePosition}>
-        {scope() && new Graph(scope()!).render()}
-      </Draggable>
+      <Show when={scope()}>
+        <Draggable select position={scopePosition}>
+          {scope() && new Graph(scope()!).render()}
+        </Draggable>
+      </Show>
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BezierCurve startPosition={start} endPosition={end} dots />
     </div>

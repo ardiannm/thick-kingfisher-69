@@ -39,6 +39,9 @@
   height: 400px;
   width: 275px;
   border: 1px solid lightseagreen;
+  &::selection {
+    background-color: #ffffff;
+  }
 }
 
 .diagnostics {
