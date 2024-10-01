@@ -6,17 +6,13 @@ import { BoundCellAssignment } from "../../../src/analysis/binder";
 export default class Graph {
   constructor(private scope: BoundScope) {}
 
-  drawNode(node: BoundCellAssignment) {
-    return <div class={styles.node}>{node.reference.name}</div>;
-  }
-
-  draw() {
+  render() {
     return (
-      <div class={styles.connections}>
+      <div class={styles.scope}>
         <For each={[...this.scope.observers.entries()]}>
           {([k, v]) => (
             <div class={styles.connection}>
-              {k} ◄ {this.drawSet(v)}
+              {k} ◄ {this.renderSet(v)}
             </div>
           )}
         </For>
@@ -24,10 +20,14 @@ export default class Graph {
     );
   }
 
-  drawSet(v: Set<BoundCellAssignment>) {
+  private renderNode(node: BoundCellAssignment) {
+    return <div class={styles.node}>{node.reference.name}</div>;
+  }
+
+  private renderSet(v: Set<BoundCellAssignment>) {
     return (
       <div class={styles.set}>
-        <For each={[...v]}>{(v) => this.drawNode(v)}</For>
+        <For each={[...v]}>{(v) => this.renderNode(v)}</For>
       </div>
     );
   }

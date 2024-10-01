@@ -1,5 +1,6 @@
 import { Component, JSXElement, Signal, createSignal, onCleanup, onMount } from "solid-js";
 import { Position } from "./bezier.curve";
+import styles from "../styles/draggable.module.scss";
 
 interface Props {
   position?: Signal<Position>; // Make position optional
@@ -7,15 +8,13 @@ interface Props {
 }
 
 const Draggable: Component<Props> = (props: Props) => {
-  // If props.position is undefined, create a default signal with the center position
   const [position, setPosition] = props.position ?? createSignal({ x: 0, y: 0 });
-
   const [isDragging, setIsDragging] = createSignal(false);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });
+  const [isFocused, setIsFocused] = createSignal(false);
 
   var element: HTMLDivElement | undefined;
 
-  // Function to calculate the center of the screen accounting for the element's dimensions
   const centerElement = () => {
     if (element) {
       const elementWidth = element.offsetWidth;
@@ -29,7 +28,6 @@ const Draggable: Component<Props> = (props: Props) => {
   };
 
   onMount(() => {
-    // Set initial position when the element is mounted
     if (!props.position) {
       centerElement();
     }
@@ -51,8 +49,17 @@ const Draggable: Component<Props> = (props: Props) => {
       });
     }
   };
+
   const handleMouseUp = () => {
     setIsDragging(false);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
   };
 
   document.addEventListener("mousemove", handleMouseMove);
@@ -65,8 +72,13 @@ const Draggable: Component<Props> = (props: Props) => {
 
   return (
     <span
-      ref={element} // Reference to the element for size calculations
+      ref={element}
+      tabIndex={0} // Make the element focusable
       ondblclick={centerElement}
+      onfocus={handleFocus}
+      onblur={handleBlur}
+      onmousedown={handleMouseDown}
+      class={styles.draggable}
       style={{
         position: "absolute",
         left: `${position().x}px`,
@@ -74,9 +86,8 @@ const Draggable: Component<Props> = (props: Props) => {
         cursor: isDragging() ? "grabbing" : "grab",
         height: "fit-content",
         width: "fit-content",
-        // "z-index": "140",
+        "z-index": isDragging() || isFocused() ? 4000 : "auto", // Set z-index to 4000 when dragging or focused
       }}
-      onmousedown={handleMouseDown}
     >
       {props.children}
     </span>

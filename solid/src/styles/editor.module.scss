@@ -11,6 +11,7 @@
   height: fit-content;
   padding: 4px;
   @extend .shadow;
+  background-color: #f3f4f8;
 }
 
 .moveBar {
@@ -44,6 +45,8 @@
   margin-top: 40px;
   border: 1px solid purple;
   padding: 10px 4px;
+  background-color: #f3f4f8;
+  @extend .shadow;
 }
 
 .diagnostic {
@@ -61,7 +64,4 @@
   width: 27px;
   padding: 1px 4px;
   margin-right: 20px;
-}
-
-.message {
 }

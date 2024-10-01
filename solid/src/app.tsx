@@ -10,6 +10,7 @@ import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
 import { SyntaxTree } from "../../src/runtime/syntax.tree";
 import { CompilerOptions } from "../../src/compiler.options";
 import { BoundScope } from "../../src/analysis/binder/bound.scope";
+import Draggable from "./components/draggable";
 
 var defaultCode = `A1 :: A6
 A2 :: A1
@@ -36,7 +37,7 @@ const App: Component = () => {
 
   return (
     <div class={styles.app}>
-      {scope() && new Graph(scope()!).draw()}
+      <Draggable>{scope() && new Graph(scope()!).render()}</Draggable>
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BezierCurve startPosition={start} endPosition={end} dots />
     </div>
