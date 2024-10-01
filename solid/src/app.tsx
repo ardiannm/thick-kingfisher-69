@@ -39,9 +39,7 @@ const App: Component = () => {
   return (
     <div class={styles.app}>
       <Show when={scope()}>
-        <Draggable select position={scopePosition}>
-          {scope() && new Graph(scope()!).render()}
-        </Draggable>
+        <Draggable position={scopePosition}>{scope() && new Graph(scope()!).render()}</Draggable>
       </Show>
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BezierCurve startPosition={start} endPosition={end} dots />

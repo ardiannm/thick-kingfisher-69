@@ -1,18 +1,21 @@
-import { Component, JSXElement, Show, Signal, createSignal, onCleanup, onMount } from "solid-js";
-import { Position } from "./bezier.curve";
+import { Component, JSXElement, Signal, createSignal, onCleanup, onMount } from "solid-js";
 import styles from "../styles/draggable.module.scss";
+
+import { Position } from "./bezier.curve";
+import { getNextZIndex } from "./helpers/zIndex";
 
 interface DraggableProps {
   position?: Signal<Position>; // Make position optional
   children?: JSXElement;
-  select?: boolean;
+  index?: Signal<number>;
 }
 
 const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
   const [position, setPosition] = props.position ?? createSignal({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = createSignal(false);
-  const [isFocused, setIsFocused] = createSignal(props.select ?? false);
+  const [isFocused, setIsFocused] = createSignal(false);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });
+  const [zIndex, setZIndex] = props.index ?? createSignal(getNextZIndex()); // Initialize zIndex using the global manager
 
   var element: HTMLDivElement | undefined;
 
@@ -35,6 +38,11 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
   });
 
   const handleMouseDown = (event: MouseEvent) => {
+    event.stopPropagation();
+    // Only increment zIndex if the component is not focused
+    if (!isFocused()) {
+      setZIndex(getNextZIndex()); // Update zIndex to the next global value
+    }
     setIsDragging(true);
     setOffset({
       x: event.clientX - position().x,
@@ -43,6 +51,7 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
   };
 
   const handleMouseMove = (event: MouseEvent) => {
+    event.stopPropagation();
     if (isDragging()) {
       setPosition({
         x: event.clientX - offset().x,
@@ -51,7 +60,8 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (event: MouseEvent) => {
+    event.stopPropagation();
     setIsDragging(false);
   };
 
@@ -87,7 +97,7 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
         cursor: isDragging() ? "grabbing" : "grab",
         height: "fit-content",
         width: "fit-content",
-        "z-index": isDragging() || isFocused() ? 4000 : "auto",
+        "z-index": isDragging() || isFocused() ? 4000 : zIndex(),
         outline: isDragging() ? "1px solid lightcoral" : "none",
       }}
     >
