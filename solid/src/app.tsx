@@ -1,49 +1,26 @@
 import styles from "./styles/app.module.scss";
-import Input from "./components/screen";
 
 import { type Component, createSignal } from "solid-js";
-import { BezierCurve, Position } from "./components/bezier";
-import Draggable from "./components/draggable";
-import Connections from "./components/connections";
-import Graph from "./components/connections";
+import { BezierCurve, Position } from "./components/bezier.curve";
+import { CodeEditor } from "./components/code.editor";
 
-const Dot = () => {
-  // Box positions for start and end points
+var defaultCode = `A1 :: A6
+A2 :: A1
+A3 :: A1+A2+A4+A5
+A6 :: A1+A2+A5
 
-  const size = 10;
 
-  return (
-    <span
-      style={{
-        position: "absolute", // Uncommented this line
-        left: `${-size / 2}px`,
-        top: `${-size / 2}px`,
-        height: `${size}px`,
-        width: `${size}px`, // Added width to make it circular
-        "border-radius": "50%",
-        "background-color": "black",
-        "z-index": "40",
-        cursor: "pointer",
-      }}
-    ></span>
-  );
-};
+''' just show which reference is causing circular dependency that's all that matters '''`;
 
 const App: Component = () => {
-  // Box positions for start and end points
   const start = createSignal<Position>({ x: 183, y: 618 });
   const end = createSignal<Position>({ x: 367, y: 275 });
+  const textCode = createSignal<string>(defaultCode);
 
   return (
     <div class={styles.app}>
-      <Draggable position={start}>
-        <Dot />
-      </Draggable>
-      <Draggable position={end}>
-        <Dot />
-      </Draggable>
-      <Input />
-      <BezierCurve point1={start} point2={end} />
+      <CodeEditor code={textCode} />
+      {/* <BezierCurve startPosition={start} endPosition={end} dots /> */}
     </div>
   );
 };

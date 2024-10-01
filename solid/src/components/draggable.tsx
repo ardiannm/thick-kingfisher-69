@@ -1,13 +1,18 @@
 import { Component, JSXElement, Signal, createSignal, onCleanup } from "solid-js";
-import { Position } from "./bezier";
+import { Position } from "./bezier.curve";
 
 interface Props {
-  position: Signal<Position>;
+  position?: Signal<Position>;
   children: JSXElement;
 }
 
 const Draggable: Component<Props> = (props: Props) => {
-  const [position, setPosition] = props.position; // Assume position is a signal
+  const defaultPosition = createSignal({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
+
+  const [position, setPosition] = props.position ?? defaultPosition;
 
   const [isDragging, setIsDragging] = createSignal(false);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });

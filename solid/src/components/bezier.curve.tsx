@@ -1,4 +1,5 @@
-import { Signal } from "solid-js";
+import { Show, Signal } from "solid-js";
+import { Dot } from "./dot";
 
 // Define the type for position
 export interface Position {
@@ -8,15 +9,16 @@ export interface Position {
 
 // Props interface for the BezierCurve component
 interface BezierCurveProps {
-  point1: Signal<Position>;
-  point2: Signal<Position>;
+  startPosition: Signal<Position>;
+  endPosition: Signal<Position>;
+  dots?: boolean;
 }
 
 export const BezierCurve = (props: BezierCurveProps) => {
   // Function to generate the Bezier curve path based on the start and end positions
   const curvePath = () => {
-    const [point1] = props.point1;
-    const [point2] = props.point2;
+    const [point1] = props.startPosition;
+    const [point2] = props.endPosition;
 
     // Define control points to create a smooth curve
     const controlX1 = point1().x + 120;
@@ -29,18 +31,24 @@ export const BezierCurve = (props: BezierCurveProps) => {
   };
 
   return (
-    <svg
-      style={{
-        position: "absolute",
-        top: "0",
-        left: "0",
-        width: "100%",
-        height: "100%",
-        "z-index": "100",
-        "pointer-events": "none",
-      }}
-    >
-      <path d={curvePath()} stroke="black" fill="transparent" stroke-width="2" />
-    </svg>
+    <>
+      <Show when={props.dots}>
+        <Dot position={props.startPosition}></Dot>
+        <Dot position={props.endPosition}></Dot>
+      </Show>
+      <svg
+        style={{
+          position: "absolute",
+          top: "0",
+          left: "0",
+          width: "100%",
+          height: "100%",
+          "z-index": "100",
+          "pointer-events": "none",
+        }}
+      >
+        <path d={curvePath()} stroke="black" fill="transparent" stroke-width="2" />
+      </svg>
+    </>
   );
 };
