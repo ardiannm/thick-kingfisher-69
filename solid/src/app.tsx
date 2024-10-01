@@ -24,6 +24,7 @@ const App: Component = () => {
   const start = createSignal<Position>({ x: 183, y: 618 });
   const end = createSignal<Position>({ x: 367, y: 275 });
   const textCode = createSignal<string>(defaultCode);
+  const scopePosition = createSignal<Position>({ x: 1035, y: 450 });
 
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>([]);
   const [scope, setScope] = createSignal<BoundScope>();
@@ -37,7 +38,9 @@ const App: Component = () => {
 
   return (
     <div class={styles.app}>
-      <Draggable>{scope() && new Graph(scope()!).render()}</Draggable>
+      <Draggable select position={scopePosition}>
+        {scope() && new Graph(scope()!).render()}
+      </Draggable>
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BezierCurve startPosition={start} endPosition={end} dots />
     </div>

@@ -1,5 +1,5 @@
 import { Show, Signal } from "solid-js";
-import { Dot } from "./dot";
+import Draggable from "./draggable";
 
 // Define the type for position
 export interface Position {
@@ -33,8 +33,8 @@ export const BezierCurve = (props: BezierCurveProps) => {
   return (
     <>
       <Show when={props.dots}>
-        <Dot position={props.startPosition}></Dot>
-        <Dot position={props.endPosition}></Dot>
+        <Draggable position={props.startPosition}></Draggable>
+        <Draggable position={props.endPosition}></Draggable>
       </Show>
       <svg style={{ position: "absolute", top: "0", left: "0", width: "100%", height: "100%", "z-index": "100", "pointer-events": "none" }}>
         <path d={curvePath()} stroke="black" fill="transparent" stroke-width="2" />

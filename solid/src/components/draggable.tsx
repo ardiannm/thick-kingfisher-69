@@ -1,17 +1,18 @@
-import { Component, JSXElement, Signal, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, JSXElement, Show, Signal, createSignal, onCleanup, onMount } from "solid-js";
 import { Position } from "./bezier.curve";
 import styles from "../styles/draggable.module.scss";
 
-interface Props {
+interface DraggableProps {
   position?: Signal<Position>; // Make position optional
-  children: JSXElement;
+  children?: JSXElement;
+  select?: boolean;
 }
 
-const Draggable: Component<Props> = (props: Props) => {
+const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
   const [position, setPosition] = props.position ?? createSignal({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = createSignal(false);
+  const [isFocused, setIsFocused] = createSignal(props.select ?? false);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });
-  const [isFocused, setIsFocused] = createSignal(false);
 
   var element: HTMLDivElement | undefined;
 
@@ -74,11 +75,11 @@ const Draggable: Component<Props> = (props: Props) => {
     <span
       ref={element}
       tabIndex={0} // Make the element focusable
+      class={styles.draggable}
       ondblclick={centerElement}
       onfocus={handleFocus}
       onblur={handleBlur}
       onmousedown={handleMouseDown}
-      class={styles.draggable}
       style={{
         position: "absolute",
         left: `${position().x}px`,
@@ -86,9 +87,13 @@ const Draggable: Component<Props> = (props: Props) => {
         cursor: isDragging() ? "grabbing" : "grab",
         height: "fit-content",
         width: "fit-content",
-        "z-index": isDragging() || isFocused() ? 4000 : "auto", // Set z-index to 4000 when dragging or focused
+        "z-index": isDragging() || isFocused() ? 4000 : "auto",
+        outline: isDragging() ? "1px solid lightcoral" : "none",
       }}
     >
+      <div class={styles.coordinates}>
+        {Math.floor(position().x)}:{Math.floor(position().y)}
+      </div>
       {props.children}
     </span>
   );
