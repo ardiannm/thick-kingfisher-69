@@ -47,15 +47,33 @@ export class BoundCellAssignment extends BoundNode {
   }
 
   private connect(node: BoundCellReference) {
-    this.scope.getGraph(node.assignment).add(this);
+    var observers: Set<BoundCellAssignment>;
+    if (this.scope.observers.has(node.assignment.reference.name)) {
+      observers = this.scope.observers.get(node.assignment.reference.name)!;
+    } else {
+      observers = new Set<BoundCellAssignment>();
+      this.scope.observers.set(node.assignment.reference.name, observers);
+    }
+    observers.add(this);
   }
 
   private disconnect(node: BoundCellReference) {
-    this.scope.getGraph(node.assignment).delete(this);
+    if (this.scope.observers.has(node.assignment.reference.name)) {
+      const observersSet = this.scope.observers.get(node.assignment.reference.name)!;
+      observersSet.delete(this);
+      if (observersSet.size === 0) this.scope.observers.delete(node.assignment.reference.name);
+    }
   }
 
   count() {
     return this.scope.observers.get(this.reference.name)?.size ?? 0;
+  }
+
+  stackObservers() {
+    if (this.scope.observers.has(this.reference.name)) {
+      const observers = this.scope.observers.get(this.reference.name)!;
+      this.scope.stack.push([...observers.values()]);
+    }
   }
 }
 
