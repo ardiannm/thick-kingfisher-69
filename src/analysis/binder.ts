@@ -36,16 +36,21 @@ export class Cell {
 }
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public references: Array<BoundCellReference>, public override span: Span) {
+  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
     const previous = this.scope.assignments.get(this.reference.name);
-    previous?.references.forEach((node) => previous.disconnect(node));
+    previous?.dependencies.forEach((node) => previous.disconnect(node));
 
-    this.references.forEach((node) => this.connect(node));
+    this.dependencies.forEach((node) => this.connect(node));
     this.scope.assignments.set(this.reference.name, this);
-    this.scope.clearStack()
+    this.checkCircularDependencies();
     this.scope.stack.push(new Array<BoundCellAssignment>(this));
+  }
+
+  private checkCircularDependencies() {
+    this.scope.clearStack();
+    // the rest of the logic
   }
 
   private connect(node: BoundCellReference) {
@@ -74,7 +79,9 @@ export class BoundCellAssignment extends BoundNode {
   stackObservers() {
     if (this.scope.observers.has(this.reference.name)) {
       const observers = this.scope.observers.get(this.reference.name)!;
-      this.scope.stack.push([...observers.values()]);
+      const arr = new Array<BoundCellAssignment>();
+      observers.forEach((o) => arr.push(o));
+      this.scope.stack.push(arr);
     }
   }
 }

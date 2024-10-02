@@ -15,7 +15,6 @@ const BoudScopeComponent = (props: GraphProps) => {
   const scope = props.scope; // Destructure scope from props
   const [arr, setArr] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
   const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
-  const [lastNode, setLastNode] = createSignal<string>("");
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -44,8 +43,16 @@ const BoudScopeComponent = (props: GraphProps) => {
   };
 
   createEffect(() => {
-    setArr(scope().stack);
+    updateArr();
   });
+
+  const updateArr = () => setArr([...scope().stack]);
+
+  const loadObservers = () => {
+    const n = scope().peekStack();
+    n?.stackObservers();
+    updateArr();
+  };
 
   return (
     <>
@@ -64,10 +71,9 @@ const BoudScopeComponent = (props: GraphProps) => {
         {/* boundstack */}
         <Show when={arr().length && arr()[0].length}>
           <Draggable position={stackPosition}>
-            <div class={stackStyles.stack}>
+            <div class={stackStyles.stack} onmousedown={loadObservers}>
               <For each={arr()}>{(item) => <div>{renderArr(item)}</div>}</For>
             </div>
-            {lastNode()}
           </Draggable>
         </Show>
       </Show>

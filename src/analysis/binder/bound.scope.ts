@@ -10,7 +10,7 @@ export class BoundScope {
   constructor(public parent: BoundScope | null) {}
 
   clearDependencies() {
-    this.assignments.forEach((assignment) => (assignment.references.length = 0));
+    this.assignments.forEach((assignment) => (assignment.dependencies.length = 0));
     this.references.length = 0;
   }
 
@@ -18,14 +18,14 @@ export class BoundScope {
     return this.assignments.get(name)!;
   }
 
-  popStack() {
+  peekStack() {
     if (this.stack.length) {
       const observers = this.stack[this.stack.length - 1];
       if (observers.length) {
-        return observers[observers.length - 1].reference.name;
+        return observers[observers.length - 1];
       }
     }
-    return "";
+    return null;
   }
 
   clearStack() {
