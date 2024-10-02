@@ -17,4 +17,19 @@ export class BoundScope {
   getAssignmentNode(name: string) {
     return this.assignments.get(name)!;
   }
+
+  popStack() {
+    if (this.stack.length) {
+      const observers = this.stack[this.stack.length - 1];
+      if (observers.length) {
+        return observers[observers.length - 1].reference.name;
+      }
+    }
+    return "";
+  }
+
+  clearStack() {
+    this.stack.forEach((s) => (s.length = 0));
+    this.stack.length = 0;
+  }
 }

@@ -1,10 +1,10 @@
-import { Accessor, For, Show, Signal, createSignal } from "solid-js";
+import { Accessor, For, Show, Signal, createEffect, createSignal } from "solid-js";
 import styles from "../styles/bound.scope.module.scss";
+import stackStyles from "../styles/stack.module.scss";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
 import { BoundCellAssignment } from "../../../src/analysis/binder";
 import Draggable from "./draggable";
 import { Position } from "./bezier.curve";
-import { StackComponent } from "./stack";
 
 interface GraphProps {
   scope: Accessor<BoundScope>; // Define props for the functional component
@@ -15,6 +15,7 @@ const BoudScopeComponent = (props: GraphProps) => {
   const scope = props.scope; // Destructure scope from props
   const [arr, setArr] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
   const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
+  const [lastNode, setLastNode] = createSignal<string>("");
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -28,12 +29,23 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
-  const printPath = (k: string) => {
-    const s = scope();
-    const node = s.getAssignmentNode(k);
-    node.stackObservers();
-    setArr([...s.stack]);
+  const renderArr = (node: Array<BoundCellAssignment>) => {
+    return (
+      <div class={stackStyles.observers}>
+        <For each={node}>
+          {(assignment) => (
+            <div class={stackStyles.observer}>
+              {assignment.reference.name} [{assignment.count()}]
+            </div>
+          )}
+        </For>
+      </div>
+    );
   };
+
+  createEffect(() => {
+    setArr(scope().stack);
+  });
 
   return (
     <>
@@ -42,14 +54,22 @@ const BoudScopeComponent = (props: GraphProps) => {
           <div class={styles.scope}>
             <For each={[...scope().observers.entries()]}>
               {([k, v]) => (
-                <div class={styles.connection} onmousedown={() => printPath(k)}>
+                <div class={styles.connection}>
                   {k} ► {renderSet(v)}
                 </div>
               )}
             </For>
           </div>
         </Draggable>
-        <StackComponent stack={arr()} position={stackPosition}></StackComponent>
+        {/* boundstack */}
+        <Show when={arr().length && arr()[0].length}>
+          <Draggable position={stackPosition}>
+            <div class={stackStyles.stack}>
+              <For each={arr()}>{(item) => <div>{renderArr(item)}</div>}</For>
+            </div>
+            {lastNode()}
+          </Draggable>
+        </Show>
       </Show>
     </>
   );

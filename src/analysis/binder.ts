@@ -44,6 +44,8 @@ export class BoundCellAssignment extends BoundNode {
 
     this.references.forEach((node) => this.connect(node));
     this.scope.assignments.set(this.reference.name, this);
+    this.scope.clearStack()
+    this.scope.stack.push(new Array<BoundCellAssignment>(this));
   }
 
   private connect(node: BoundCellReference) {
