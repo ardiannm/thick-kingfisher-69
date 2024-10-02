@@ -1,4 +1,4 @@
-import { Accessor, For, Signal } from "solid-js";
+import { Accessor, For, Show, Signal } from "solid-js";
 import styles from "../styles/bound.scope.module.scss";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
 import { BoundCellAssignment } from "../../../src/analysis/binder";
@@ -25,18 +25,24 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
+  const printPath = (k: string) => {
+    // scope().depthFirstObserver(k);
+  };
+
   return (
-    <Draggable position={props.position}>
-      <div class={styles.scope}>
-        <For each={[...scope().observers.entries()]}>
-          {([k, v]) => (
-            <div class={styles.connection}>
-              {k} ◄ {renderSet(v)}
-            </div>
-          )}
-        </For>
-      </div>
-    </Draggable>
+    <Show when={scope().observers.size}>
+      <Draggable position={props.position}>
+        <div class={styles.scope}>
+          <For each={[...scope().observers.entries()]}>
+            {([k, v]) => (
+              <div class={styles.connection} onmousedown={() => printPath(k)}>
+                {k} ◄ {renderSet(v)}
+              </div>
+            )}
+          </For>
+        </div>
+      </Draggable>
+    </Show>
   );
 };
 
