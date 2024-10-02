@@ -2,19 +2,19 @@ import styles from "./app.module.scss";
 
 import BoudScopeComponent from "./components/boud.scope";
 
-import { type Component, createSignal, createEffect, Show, Accessor } from "solid-js";
+import { type Component, createSignal, createEffect } from "solid-js";
 
 import { BezierCurve, Position } from "./components/bezier.curve";
 import { CodeEditor } from "./components/code.editor";
 import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
 import { SyntaxTree } from "../../src/runtime/syntax.tree";
 import { BoundScope } from "../../src/analysis/binder/bound.scope";
-import { StackComponent } from "./components/stack";
 
-var defaultCode = `A1 :: A6
+var defaultCode = `A1 :: A5
 A2 :: A1
-A3 :: A1+A2+A4+A5
-A6 :: A1+A2+A5
+A3 :: A2+A1
+A4 :: A3+A2+A1
+A5 :: A4
 
 
 ''' just show which reference is causing circular dependency that's all that matters '''`;
@@ -37,7 +37,6 @@ const App: Component = () => {
 
   return (
     <div class={styles.app}>
-      {/* <Draggable position={scopePosition}>{scope() && new Graph(scope()!).render()}</Draggable> */}
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BoudScopeComponent position={scopePosition} scope={scope}></BoudScopeComponent>
       <BezierCurve startPosition={start} endPosition={end} dots />

@@ -14,6 +14,7 @@ interface GraphProps {
 const BoudScopeComponent = (props: GraphProps) => {
   const scope = props.scope; // Destructure scope from props
   const [arr, setArr] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
+  const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -28,10 +29,10 @@ const BoudScopeComponent = (props: GraphProps) => {
   };
 
   const printPath = (k: string) => {
-    scope().stack.length = 0;
-    const r = scope().stackNode(k);
-    setArr([...r]);
-    console.log(r);
+    const s = scope();
+    const node = s.getAssignmentNode(k);
+    node.stackObservers();
+    setArr([...s.stack]);
   };
 
   return (
@@ -42,13 +43,13 @@ const BoudScopeComponent = (props: GraphProps) => {
             <For each={[...scope().observers.entries()]}>
               {([k, v]) => (
                 <div class={styles.connection} onmousedown={() => printPath(k)}>
-                  {k} ◄ {renderSet(v)}
+                  {k} ► {renderSet(v)}
                 </div>
               )}
             </For>
           </div>
         </Draggable>
-        <StackComponent stack={arr()} position={createSignal<Position>({ x: 1249, y: 383 })}></StackComponent>
+        <StackComponent stack={arr()} position={stackPosition}></StackComponent>
       </Show>
     </>
   );
