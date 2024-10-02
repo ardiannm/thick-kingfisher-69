@@ -2,7 +2,17 @@ import { Component, JSXElement, Signal, createSignal, onCleanup, onMount } from 
 import styles from "../styles/draggable.module.scss";
 
 import { Position } from "./bezier.curve";
-import { getNextZIndex } from "./helpers/zIndex";
+
+export let currentZIndex = 0;
+
+export const getNextZIndex = () => {
+  currentZIndex += 1;
+  return currentZIndex;
+};
+
+export const resetZIndex = () => {
+  currentZIndex = 0;
+};
 
 interface DraggableProps {
   position?: Signal<Position>; // Make position optional
@@ -42,15 +52,11 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
 
   const handleMouseDown = (event: MouseEvent) => {
     event.stopPropagation();
-    // Only increment zIndex if the component is not focused
     if (!isFocused()) {
-      setZIndex(getNextZIndex()); // Update zIndex to the next global value
+      setZIndex(getNextZIndex());
     }
     setIsDragging(true);
-    setOffset({
-      x: event.clientX - position().x,
-      y: event.clientY - position().y,
-    });
+    setOffset({ x: event.clientX - position().x, y: event.clientY - position().y });
   };
 
   const handleMouseMove = (event: MouseEvent) => {
@@ -104,7 +110,7 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
       }}
     >
       <div class={styles.coordinates}>
-        {Math.floor(position().x)}:{Math.floor(position().y)}
+        {Math.round(position().x)}:{Math.round(position().y)}
       </div>
       {props.children}
     </span>
