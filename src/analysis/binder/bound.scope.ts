@@ -5,6 +5,8 @@ export class BoundScope {
   references = new Array<BoundCellReference>();
   assignments = new Map<string, BoundCellAssignment>();
 
+  stack = new Array<Array<BoundCellAssignment>>();
+
   constructor(public parent: BoundScope | null) {}
 
   getGraph(observer: BoundCellAssignment) {
@@ -21,5 +23,16 @@ export class BoundScope {
   clearDependencies() {
     this.assignments.forEach((assignment) => (assignment.references.length = 0));
     this.references.length = 0;
+  }
+
+  stackNode(name: string) {
+    if (this.observers.has(name)) {
+      const observers = this.observers.get(name)!;
+      const stack = new Array<BoundCellAssignment>();
+      observers.forEach((o) => stack.push(o));
+      this.stack.push(stack);
+    }
+    if (this.stack.length === 0) this.stack.push([]);
+    return this.stack;
   }
 }

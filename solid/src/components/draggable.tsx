@@ -105,7 +105,7 @@ const Draggable: Component<DraggableProps> = (props: DraggableProps) => {
         cursor: isDragging() ? "grabbing" : "grab",
         height: "fit-content",
         width: "fit-content",
-        "z-index": isDragging() || isFocused() ? 4000 : zIndex(),
+        "z-index": zIndex(),
         outline: isDragging() ? "1px solid lightcoral" : "none",
       }}
     >

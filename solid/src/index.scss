@@ -10,6 +10,7 @@ body {
   box-sizing: border-box;
   font-family: "Roboto";
   font-size: 14px;
+  user-select: none;
 }
 
 @mixin center {

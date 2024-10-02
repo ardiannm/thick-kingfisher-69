@@ -54,7 +54,9 @@ export class BoundCellAssignment extends BoundNode {
     this.scope.getGraph(node.assignment).delete(this);
   }
 
-  
+  count() {
+    return this.scope.observers.get(this.reference.name)?.size ?? 0;
+  }
 }
 
 export class Binder {

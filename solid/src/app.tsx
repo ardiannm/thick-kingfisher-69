@@ -9,6 +9,7 @@ import { CodeEditor } from "./components/code.editor";
 import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
 import { SyntaxTree } from "../../src/runtime/syntax.tree";
 import { BoundScope } from "../../src/analysis/binder/bound.scope";
+import { StackComponent } from "./components/stack";
 
 var defaultCode = `A1 :: A6
 A2 :: A1
@@ -26,6 +27,7 @@ const App: Component = () => {
 
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>([]);
   const [scope, setScope] = createSignal<BoundScope>(SyntaxTree.createFrom().boundRoot.scope);
+  const update = createSignal(true);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(textCode[0]());

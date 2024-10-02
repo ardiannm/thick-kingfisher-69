@@ -1,0 +1,30 @@
+.stack {
+  display: flex;
+  border: 1px solid purple;
+  flex-direction: row;
+  width: fit-content;
+  height: fit-content;
+  text-wrap: nowrap;
+  padding: 1px;
+}
+
+.observers {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: fit-content;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 3px;
+}
+
+.observer {
+  border: 1px solid lightblue;
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  padding: 2px 5px;
+  &:not(:last-child) {
+    margin-bottom: 1px;
+  }
+}
