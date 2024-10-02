@@ -28,6 +28,14 @@ export class BoundScope {
     return null;
   }
 
+  popStack() {
+    if (this.stack.length) {
+      const observers = this.stack[this.stack.length - 1];
+      observers.pop();
+      if (observers.length === 0) this.stack.pop();
+    }
+  }
+
   clearStack() {
     this.stack.forEach((s) => (s.length = 0));
     this.stack.length = 0;

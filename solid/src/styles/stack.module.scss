@@ -5,6 +5,7 @@
   width: fit-content;
   height: fit-content;
   text-wrap: nowrap;
+  background-color: #f3f4f8;
 }
 
 .observers {
@@ -26,4 +27,20 @@
   &:not(:last-child) {
     margin-bottom: 1px;
   }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.button {
+  display: flex;
+  padding: 2px 7px;
+  background-color: black;
+  color: white;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-right: 1px;
 }

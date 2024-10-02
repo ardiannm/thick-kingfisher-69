@@ -1,10 +1,10 @@
 import { Accessor, For, Show, Signal, createEffect, createSignal } from "solid-js";
 import styles from "../styles/bound.scope.module.scss";
-import stackStyles from "../styles/stack.module.scss";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
 import { BoundCellAssignment } from "../../../src/analysis/binder";
 import Draggable from "./draggable";
 import { Position } from "./bezier.curve";
+import stackStyles from "../styles/stack.module.scss";
 
 interface GraphProps {
   scope: Accessor<BoundScope>; // Define props for the functional component
@@ -43,14 +43,20 @@ const BoudScopeComponent = (props: GraphProps) => {
   };
 
   createEffect(() => {
-    updateArr();
+    loadObservers();
+    loadObservers();
   });
 
-  const updateArr = () => setArr([...scope().stack]);
+  const updateArr = () => setArr([...scope().stack.map((s) => [...s])]);
 
   const loadObservers = () => {
     const n = scope().peekStack();
     n?.stackObservers();
+    updateArr();
+  };
+
+  const unloadObservers = () => {
+    scope().popStack();
     updateArr();
   };
 
@@ -71,7 +77,15 @@ const BoudScopeComponent = (props: GraphProps) => {
         {/* boundstack */}
         <Show when={arr().length && arr()[0].length}>
           <Draggable position={stackPosition}>
-            <div class={stackStyles.stack} onmousedown={loadObservers}>
+            <div class={stackStyles.buttons}>
+              <div class={stackStyles.button} onmousedown={loadObservers}>
+                +
+              </div>
+              <div class={stackStyles.button} onmousedown={unloadObservers}>
+                -
+              </div>
+            </div>
+            <div class={stackStyles.stack}>
               <For each={arr()}>{(item) => <div>{renderArr(item)}</div>}</For>
             </div>
           </Draggable>
