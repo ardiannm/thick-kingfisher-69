@@ -7,14 +7,14 @@ import { Position } from "./bezier.curve";
 import stackStyles from "../styles/stack.module.scss";
 
 interface GraphProps {
-  scope: Accessor<BoundScope>; // Define props for the functional component
+  scope: Accessor<BoundScope>;
   position: Signal<Position>;
 }
 
 const BoudScopeComponent = (props: GraphProps) => {
-  const scope = props.scope; // Destructure scope from props
-  const [arr, setArr] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
+  const scope = props.scope;
   const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
+  const [stack, setStack] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -28,7 +28,7 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
-  const renderArr = (node: Array<BoundCellAssignment>) => {
+  const renderStack = (node: Array<BoundCellAssignment>) => {
     return (
       <div class={stackStyles.observers}>
         <For each={node}>
@@ -42,23 +42,9 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
-  createEffect(() => {
-    loadObservers();
-    loadObservers();
-  });
+  const updateArr = () => setStack([...scope().stack.map((s) => [...s])]);
 
-  const updateArr = () => setArr([...scope().stack.map((s) => [...s])]);
-
-  const loadObservers = () => {
-    const n = scope().peekStack();
-    n?.stackObservers();
-    updateArr();
-  };
-
-  const unloadObservers = () => {
-    scope().popStack();
-    updateArr();
-  };
+  createEffect(() => updateArr());
 
   return (
     <>
@@ -74,19 +60,18 @@ const BoudScopeComponent = (props: GraphProps) => {
             </For>
           </div>
         </Draggable>
-        {/* boundstack */}
-        <Show when={arr().length && arr()[0].length}>
+        <Show when={stack().length && stack()[0].length}>
           <Draggable position={stackPosition}>
             <div class={stackStyles.buttons}>
-              <div class={stackStyles.button} onmousedown={loadObservers}>
+              <div class={stackStyles.button} onmousedown={updateArr}>
                 +
               </div>
-              <div class={stackStyles.button} onmousedown={unloadObservers}>
+              <div class={stackStyles.button} onmousedown={updateArr}>
                 -
               </div>
             </div>
             <div class={stackStyles.stack}>
-              <For each={arr()}>{(item) => <div>{renderArr(item)}</div>}</For>
+              <For each={stack()}>{(item) => <div>{renderStack(item)}</div>}</For>
             </div>
           </Draggable>
         </Show>

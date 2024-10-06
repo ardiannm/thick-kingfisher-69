@@ -44,13 +44,6 @@ export class BoundCellAssignment extends BoundNode {
 
     this.dependencies.forEach((node) => this.connect(node));
     this.scope.assignments.set(this.reference.name, this);
-    this.checkCircularDependencies();
-    this.scope.stack.push(new Array<BoundCellAssignment>(this));
-  }
-
-  private checkCircularDependencies() {
-    this.scope.clearStack();
-    // the rest of the logic
   }
 
   private connect(node: BoundCellReference) {
@@ -74,15 +67,6 @@ export class BoundCellAssignment extends BoundNode {
 
   count() {
     return this.scope.observers.get(this.reference.name)?.size ?? 0;
-  }
-
-  stackObservers() {
-    if (this.scope.observers.has(this.reference.name)) {
-      const observers = this.scope.observers.get(this.reference.name)!;
-      const arr = new Array<BoundCellAssignment>();
-      observers.forEach((o) => arr.push(o));
-      this.scope.stack.push(arr);
-    }
   }
 }
 
@@ -152,7 +136,6 @@ export class Binder {
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
-    this.scope.clearDependencies();
     return new BoundCompilationUnit(this.scope, statements, node.span);
   }
 
