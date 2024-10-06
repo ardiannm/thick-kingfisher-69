@@ -1,4 +1,5 @@
-import { BoundCellAssignment, BoundCellReference } from "../binder";
+import { BoundCellReference } from "./bound.cell.reference";
+import { BoundCellAssignment } from "./bound.cell.assignment";
 
 export class BoundScope {
   references = new Array<BoundCellReference>();

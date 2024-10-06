@@ -1,4 +1,3 @@
-import { Span } from "./text/span";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./parser/kind/syntax.unary.operator.kind";
@@ -20,55 +19,11 @@ import { BoundStatement } from "./binder/bound.statement";
 import { SyntaxBlock } from "./parser/syntax.block";
 import { BoundBlock } from "./binder/bound.block";
 import { BoundScope } from "./binder/bound.scope";
-import { BoundKind } from "./binder/kind/bound.kind";
 import { SyntaxCellReference } from "./parser/syntax.cell.reference";
 import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
-import { BoundExpression } from "./binder/bound.expression";
-
-export class BoundCellReference extends BoundNode {
-  constructor(public assignment: BoundCellAssignment, public override span: Span) {
-    super(BoundKind.BoundCellReference, span);
-  }
-}
-
-export class Cell {
-  constructor(public name: string, public value: number) {}
-}
-
-export class BoundCellAssignment extends BoundNode {
-  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
-    super(BoundKind.BoundCellAssignment, span);
-
-    const previous = this.scope.assignments.get(this.reference.name);
-    previous?.dependencies.forEach((node) => previous.disconnect(node));
-
-    this.dependencies.forEach((node) => this.connect(node));
-    this.scope.assignments.set(this.reference.name, this);
-  }
-
-  private connect(node: BoundCellReference) {
-    var observers: Set<BoundCellAssignment>;
-    if (this.scope.observers.has(node.assignment.reference.name)) {
-      observers = this.scope.observers.get(node.assignment.reference.name)!;
-    } else {
-      observers = new Set<BoundCellAssignment>();
-      this.scope.observers.set(node.assignment.reference.name, observers);
-    }
-    observers.add(this);
-  }
-
-  private disconnect(node: BoundCellReference) {
-    if (this.scope.observers.has(node.assignment.reference.name)) {
-      const observersSet = this.scope.observers.get(node.assignment.reference.name)!;
-      observersSet.delete(this);
-      if (observersSet.size === 0) this.scope.observers.delete(node.assignment.reference.name);
-    }
-  }
-
-  count() {
-    return this.scope.observers.get(this.reference.name)?.size ?? 0;
-  }
-}
+import { BoundCellAssignment } from "./binder/bound.cell.assignment";
+import { Cell } from "./cell";
+import { BoundCellReference } from "./binder/bound.cell.reference";
 
 export class Binder {
   public scope = new BoundScope(null);

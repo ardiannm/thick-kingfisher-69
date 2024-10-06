@@ -1,10 +1,10 @@
 import { Accessor, For, Show, Signal, createEffect, createSignal } from "solid-js";
 import styles from "../styles/bound.scope.module.scss";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
-import { BoundCellAssignment } from "../../../src/analysis/binder";
 import Draggable from "./draggable";
 import { Position } from "./bezier.curve";
 import stackStyles from "../styles/stack.module.scss";
+import { BoundCellAssignment } from "../../../src/analysis/binder/bound.cell.assignment";
 
 interface GraphProps {
   scope: Accessor<BoundScope>;
@@ -14,7 +14,7 @@ interface GraphProps {
 const BoudScopeComponent = (props: GraphProps) => {
   const scope = props.scope;
   const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
-  const [stack, setStack] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
+  const [stack] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -42,7 +42,7 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
-  const updateArr = () => setStack([...scope().stack.map((s) => [...s])]);
+  const updateArr = () => {};
 
   createEffect(() => updateArr());
 

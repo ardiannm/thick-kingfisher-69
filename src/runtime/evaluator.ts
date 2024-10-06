@@ -8,7 +8,8 @@ import { BoundUnaryExpression } from "../analysis/binder/bound.unary.expression"
 import { BoundNode } from "../analysis/binder/bound.node";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { BoundBlock } from "../analysis/binder/bound.block";
-import { BoundCellAssignment, BoundCellReference } from "../analysis/binder";
+import { BoundCellReference } from "../analysis/binder/bound.cell.reference";
+import { BoundCellAssignment } from "../analysis/binder/bound.cell.assignment";
 
 export class Evaluator {
   private value = 0;
