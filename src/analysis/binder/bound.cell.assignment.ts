@@ -10,33 +10,34 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
-    const previous = this.scope.assignments.get(this.reference.name);
-    previous?.dependencies.forEach((node) => previous.disconnect(node));
+    if (this.scope.assignments.has(this.reference.name)) {
+      const existingNode = this.scope.assignments.get(this.reference.name)!;
 
-    this.dependencies.forEach((node) => this.connect(node));
+      existingNode.dependencies.forEach((dependency) => {
+        const observers = dependency.assignment.observers();
+
+        // remove the current node from the observers list
+        observers.delete(existingNode);
+
+        // if there are no more observers remove the assignment from the scope observers
+        if (observers.size === 0) {
+          this.scope.observers.delete(dependency.assignment.reference.name);
+        }
+      });
+    }
+
+    this.dependencies.forEach((node) => node.assignment.observers().add(this));
     this.scope.assignments.set(this.reference.name, this);
   }
 
-  private connect(node: BoundCellReference) {
+  observers() {
     var observers: Set<BoundCellAssignment>;
-    if (this.scope.observers.has(node.assignment.reference.name)) {
-      observers = this.scope.observers.get(node.assignment.reference.name)!;
+    if (this.scope.observers.has(this.reference.name)) {
+      observers = this.scope.observers.get(this.reference.name)!;
     } else {
       observers = new Set<BoundCellAssignment>();
-      this.scope.observers.set(node.assignment.reference.name, observers);
+      this.scope.observers.set(this.reference.name, observers);
     }
-    observers.add(this);
-  }
-
-  private disconnect(node: BoundCellReference) {
-    if (this.scope.observers.has(node.assignment.reference.name)) {
-      const observersSet = this.scope.observers.get(node.assignment.reference.name)!;
-      observersSet.delete(this);
-      if (observersSet.size === 0) this.scope.observers.delete(node.assignment.reference.name);
-    }
-  }
-
-  count() {
-    return this.scope.observers.get(this.reference.name)?.size ?? 0;
+    return observers;
   }
 }

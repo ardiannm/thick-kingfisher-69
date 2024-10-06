@@ -1,6 +1,6 @@
 import styles from "./app.module.scss";
 
-import BoudScopeComponent from "./components/boud.scope";
+import BoudScopeComponent from "./components/bound.scope";
 
 import { type Component, createSignal, createEffect } from "solid-js";
 
@@ -10,14 +10,7 @@ import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
 import { SyntaxTree } from "../../src/runtime/syntax.tree";
 import { BoundScope } from "../../src/analysis/binder/bound.scope";
 
-var defaultCode = `A1 :: A5
-A2 :: A1
-A3 :: A2+A1
-A4 :: A3+A2+A1
-A5 :: A4
-
-
-''' just show which reference is causing circular dependency that's all that matters '''`;
+var defaultCode = `A1 :: A2+A3`;
 
 const App: Component = () => {
   const start = createSignal<Position>({ x: 637, y: 643 });
@@ -27,7 +20,6 @@ const App: Component = () => {
 
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>([]);
   const [scope, setScope] = createSignal<BoundScope>(SyntaxTree.createFrom().boundRoot.scope);
-  const update = createSignal(true);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(textCode[0]());

@@ -14,7 +14,7 @@ interface GraphProps {
 const BoudScopeComponent = (props: GraphProps) => {
   const scope = props.scope;
   const stackPosition = createSignal<Position>({ x: 1249, y: 383 });
-  const [stack] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
+  const [stack, setStack] = createSignal<Array<Array<BoundCellAssignment>>>([[]]);
 
   const renderNode = (node: BoundCellAssignment) => {
     return <div class={styles.node}>{node.reference.name}</div>;
@@ -34,7 +34,8 @@ const BoudScopeComponent = (props: GraphProps) => {
         <For each={node}>
           {(assignment) => (
             <div class={stackStyles.observer}>
-              {assignment.reference.name} [{assignment.count()}]
+              {assignment.reference.name}
+              {/*  */}
             </div>
           )}
         </For>
@@ -42,9 +43,11 @@ const BoudScopeComponent = (props: GraphProps) => {
     );
   };
 
-  const updateArr = () => {};
+  const updateStack = () => {};
 
-  createEffect(() => updateArr());
+  createEffect(() => {
+    updateStack();
+  });
 
   return (
     <>
@@ -63,10 +66,10 @@ const BoudScopeComponent = (props: GraphProps) => {
         <Show when={stack().length && stack()[0].length}>
           <Draggable position={stackPosition}>
             <div class={stackStyles.buttons}>
-              <div class={stackStyles.button} onmousedown={updateArr}>
+              <div class={stackStyles.button} onmousedown={updateStack}>
                 +
               </div>
-              <div class={stackStyles.button} onmousedown={updateArr}>
+              <div class={stackStyles.button} onmousedown={updateStack}>
                 -
               </div>
             </div>

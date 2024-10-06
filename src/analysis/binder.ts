@@ -26,7 +26,7 @@ import { Cell } from "./cell";
 import { BoundCellReference } from "./binder/bound.cell.reference";
 
 export class Binder {
-  public scope = new BoundScope(null);
+  public scope = new BoundScope();
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
