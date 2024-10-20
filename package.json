@@ -21,6 +21,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
+    "@solidjs/router": "^0.14.10",
     "concurrently": "^8.2.2"
   }
 }

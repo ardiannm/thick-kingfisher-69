@@ -1,18 +1,16 @@
-import styles from "./app.module.scss";
-
-import BoudScopeComponent from "./components/bound.scope";
-
 import { type Component, createSignal, createEffect } from "solid-js";
 
-import { BezierCurve, Position } from "./components/bezier.curve";
-import { CodeEditor } from "./components/code.editor";
-import { Diagnostic } from "../../src/analysis/diagnostics/diagnostic";
-import { SyntaxTree } from "../../src/runtime/syntax.tree";
-import { BoundScope } from "../../src/analysis/binder/bound.scope";
+import BoudScopeComponent from "../components/bound.scope";
+import { BezierCurve, Position } from "../components/bezier.curve";
+import { BoundScope } from "../../../src/analysis/binder/bound.scope";
+import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
+import { SyntaxTree } from "../../../src/runtime/syntax.tree";
+import { CodeEditor } from "../components/code.editor";
+import MenuBarComponent from "./MenuBarComponent";
 
 var defaultCode = `A1 :: A2+A3`;
 
-const App: Component = () => {
+const ShowComponent: Component = () => {
   const start = createSignal<Position>({ x: 637, y: 643 });
   const end = createSignal<Position>({ x: 950, y: 470 });
   const textCode = createSignal<string>(defaultCode);
@@ -28,12 +26,12 @@ const App: Component = () => {
   });
 
   return (
-    <div class={styles.app}>
+    <MenuBarComponent>
       <CodeEditor code={textCode} diagnostics={diagnostics} />
       <BoudScopeComponent position={scopePosition} scope={scope}></BoudScopeComponent>
       <BezierCurve startPosition={start} endPosition={end} dots />
-    </div>
+    </MenuBarComponent>
   );
 };
 
-export default App;
+export default ShowComponent;
