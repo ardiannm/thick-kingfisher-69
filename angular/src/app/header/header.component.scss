@@ -6,7 +6,7 @@
   @include applyMaxSize;
   height: fit-content;
   padding-block: 21px;
-  background-color: #d7ddef;
+  border-bottom: 1px solid #d7ddef;
 }
 
 .buttons {
@@ -30,7 +30,7 @@
   min-width: 70px;
 
   &:active {
-    background-color: #6e7bae;
+    background-color: #dfe4f4;
     box-shadow: none;
   }
 

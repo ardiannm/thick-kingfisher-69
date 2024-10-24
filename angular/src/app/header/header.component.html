@@ -1,4 +1,16 @@
 <div class="buttons">
-  <a class="routing-button" routerLink="/">Home</a>
-  <a class="routing-button" routerLink="/editor">Editor</a>
+  <a
+    class="routing-button"
+    routerLink="/"
+    (mousedown)="navigateOnMouseDown('/')"
+  >
+    Home
+  </a>
+  <a
+    class="routing-button"
+    routerLink="/editor"
+    (mousedown)="navigateOnMouseDown('editor')"
+  >
+    Editor
+  </a>
 </div>
