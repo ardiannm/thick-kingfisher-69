@@ -8,24 +8,25 @@ import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit"
 import { Binder } from "../analysis/binder";
 
 export class SyntaxTree {
-  public root: SyntaxCompilationUnit;
+  public syntaxRoot: SyntaxCompilationUnit;
   public boundRoot: BoundCompilationUnit;
 
   public readonly diagnostics = new DiagnosticsBag();
 
-  private constructor(public text: SourceText, public configuration: CompilerOptions) {
+  private constructor(public sourceText: SourceText, public configuration: CompilerOptions) {
     const parser = new Parser(this);
-    this.root = parser.parseCompilationUnit();
-    this.boundRoot = BoundCompilationUnit.createFrom(this.root);
+    this.syntaxRoot = parser.parseCompilationUnit();
+    this.boundRoot = BoundCompilationUnit.createFrom(this.syntaxRoot);
   }
 
   public static createFrom(text: string = "", configuration: CompilerOptions = new CompilerOptions(true)) {
-    return new SyntaxTree(SourceText.createFrom(text), configuration);
+    const sourceText = SourceText.createFrom(text);
+    return new SyntaxTree(sourceText, configuration);
   }
 
   bind() {
     if (this.diagnostics.canBind()) {
-      const bound = new Binder().bindSyntaxCompilationUnit(this.root);
+      const bound = new Binder().bindSyntaxCompilationUnit(this.syntaxRoot);
       this.boundRoot = bound;
     }
     return this;

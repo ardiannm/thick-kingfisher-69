@@ -104,7 +104,7 @@ export class Parser {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
       const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      return new SyntaxParenthesis(this.tree, left, expression, right);
+      return new SyntaxParenthesis(this.tree, left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
     }
     return this.parseCellReference();
   }

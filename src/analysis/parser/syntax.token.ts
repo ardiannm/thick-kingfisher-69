@@ -54,19 +54,15 @@ export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
     return this.trivia.length > 0;
   }
 
-  override *getChildren(): Generator<SyntaxNode, any, unknown> {
-    yield this;
-  }
-
-  override getFirstChild(): SyntaxNode {
-    return this;
-  }
-
-  override getLastChild(): SyntaxNode {
-    return this;
-  }
-
   override get span() {
     return this.tokenSpan;
+  }
+
+  override getFirstChild() {
+    return this;
+  }
+
+  override getLastChild() {
+    return this;
   }
 }

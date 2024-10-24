@@ -123,7 +123,7 @@ export class Lexer {
   private lexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
-    const text = this.tree.text.get(span.start, span.end);
+    const text = this.tree.sourceText.get(span.start, span.end);
     return new SyntaxToken(this.tree, SyntaxFacts.isKeywordOrIdentifer(text), span);
   }
 
@@ -145,7 +145,7 @@ export class Lexer {
   }
 
   private createSpan() {
-    return Span.createFrom(this.tree.text, this.start, this.end);
+    return Span.createFrom(this.tree.sourceText, this.start, this.end);
   }
 
   private isSpace(): boolean {
@@ -164,7 +164,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.text.get(this.end + offset);
+    return this.tree.sourceText.get(this.end + offset);
   }
 
   private char() {

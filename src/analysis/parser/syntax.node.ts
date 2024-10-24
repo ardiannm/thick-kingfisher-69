@@ -1,38 +1,27 @@
-import { Span } from "../text/span";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxTree } from "../../runtime/syntax.tree";
+import { SyntaxToken } from "./syntax.token";
+import { Span } from "../text/span";
 
-export class SyntaxNode {
+export abstract class SyntaxNode {
   constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
 
-  *getChildren(): Generator<SyntaxNode> {
-    for (const data of Object.values(this)) {
-      if (Array.isArray(data)) for (const iteration of data) yield iteration;
-      if (data instanceof SyntaxNode) yield data;
-    }
+  abstract getFirstChild(): SyntaxToken<SyntaxKind>;
+  abstract getLastChild(): SyntaxToken<SyntaxKind>;
+
+  hasTrivia() {
+    this.getFirstChild().trivia.length > 0;
   }
 
-  getFirstChild(): SyntaxNode {
-    return this.getChildren().next().value as SyntaxNode;
+  get span() {
+    const startPosition = this.getFirstChild().span.start;
+    const endPosition = this.getLastChild().span.end;
+    return Span.createFrom(this.tree.sourceText, startPosition, endPosition);
   }
 
-  getLastChild(): SyntaxNode {
-    var lastNode: SyntaxNode = this.getFirstChild();
-    for (const node of this.getChildren()) lastNode = node;
-    return lastNode;
-  }
-
-  hasTrivia(): boolean {
-    return this.getFirstChild().hasTrivia();
-  }
-
-  get span(): Span {
-    return Span.createFrom(this.tree.text, this.getFirstChild().span.start, this.getLastChild().span.end);
-  }
-
-  get text(): string {
-    var text = "";
-    for (const child of this.getChildren()) text += this.tree.text.get(child.span.start, child.span.end);
-    return text;
+  get text() {
+    const startPosition = this.getFirstChild().span.start;
+    const endPosition = this.getLastChild().span.end;
+    return this.tree.sourceText.get(startPosition, endPosition);
   }
 }
