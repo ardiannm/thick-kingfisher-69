@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  white-space: pre;
+  flex-direction: column;
+  border: 1px solid #5d5d5d;
+  padding: 17px;
+  cursor: default;
+}
+
+.row {
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
