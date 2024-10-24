@@ -119,7 +119,7 @@ export class Parser {
       const right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
       const node = new SyntaxCellReference(this.tree, left, right);
       if (right.hasTrivia()) {
-        this.tree.diagnostics.requireCompactCellReference(node.text, node.span);
+        this.tree.diagnostics.requireCompactCellReference(left.text + right.text, node.span);
       }
       return node;
     }

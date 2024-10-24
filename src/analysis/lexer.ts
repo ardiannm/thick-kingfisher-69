@@ -1,7 +1,8 @@
 import { SyntaxKind } from "./parser/kind/syntax.kind";
 import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
-import { SyntaxToken, TokenTextMapper } from "./parser/syntax.token";
+import { SyntaxToken } from "./parser/syntax.token";
+import { TokenTextMapper } from "./parser/token.text.warpper";
 import { SyntaxFacts } from "./parser/syntax.facts";
 import { SyntaxCompositeTokenKind } from "./parser/kind/syntax.composite.token.kind";
 import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
