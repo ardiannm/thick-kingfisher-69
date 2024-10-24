@@ -5,4 +5,38 @@
   @include flexCenter;
   @include applyMaxSize;
   height: fit-content;
+  padding-block: 21px;
+  background-color: #d7ddef;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.routing-button {
+  user-select: none;
+  outline: none;
+  padding: 5px 7px;
+  border-radius: 3px;
+  @include flexCenter;
+  margin-right: 4px;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.1s ease, box-shadow 0.1s ease;
+  border: 1px solid #6e7bae;
+  min-width: 70px;
+
+  &:active {
+    background-color: #6e7bae;
+    box-shadow: none;
+  }
+
+  &:disabled {
+    background-color: #f0f0f0;
+    color: #999;
+    pointer-events: none;
+  }
 }

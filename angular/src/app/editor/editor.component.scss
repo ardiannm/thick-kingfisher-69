@@ -2,13 +2,19 @@
   display: flex;
   white-space: pre;
   flex-direction: column;
-  border: 1px solid #5d5d5d;
-  padding: 17px;
+  border: 1px solid #6e7bae;
   cursor: default;
+  padding: 21px;
+  border-radius: 4px;
 }
 
 .row {
-  height: 16px;
+  height: 17px;
+  padding-bottom: 1px;
   display: flex;
   align-items: center;
+  padding-inline: 17px;
+  &::selection {
+    background-color: #d7ddef;
+  }
 }
