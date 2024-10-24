@@ -75,16 +75,12 @@ export class Lexer {
   }
 
   private lexMultilineCommentToken() {
-    this.next();
-    this.next();
-    this.next();
+    this.next(3);
     while (!(this.match(SyntaxNodeKind.EndOfFileToken) || this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken))) {
       this.next();
     }
     if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
-      this.next();
-      this.next();
-      this.next();
+      this.next(3);
     } else {
       this.tree.diagnostics.missingTripleQuotes(this.createSpan());
     }
@@ -176,8 +172,8 @@ export class Lexer {
     return this.peek(0);
   }
 
-  private next() {
-    this.end = this.end + 1;
+  private next(n = 1) {
+    this.end = this.end + n;
   }
 
   private match(...kinds: Array<SyntaxKind>) {
