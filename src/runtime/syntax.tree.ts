@@ -27,15 +27,13 @@ export class SyntaxTree {
     if (this.diagnostics.canBind()) {
       const bound = new Binder().bindSyntaxCompilationUnit(this.root);
       this.boundRoot = bound;
-      return bound;
     }
     return this;
   }
 
   evaluate() {
-    const tree = this.bind();
     if (this.diagnostics.canEvaluate()) {
-      return new Evaluator(this.diagnostics).evaluate(tree as BoundCompilationUnit);
+      return new Evaluator(this.diagnostics).evaluate(this.boundRoot);
     }
     return this;
   }

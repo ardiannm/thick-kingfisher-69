@@ -105,8 +105,7 @@ export class Lexer {
   }
 
   private lexGreaterGreaterToken(): SyntaxToken<SyntaxKind> {
-    this.next();
-    this.next();
+    this.next(2);
     this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
     return new SyntaxToken(this.tree, this.kind, this.createSpan());
   }
@@ -172,8 +171,8 @@ export class Lexer {
     return this.peek(0);
   }
 
-  private next(n = 1) {
-    this.end = this.end + n;
+  private next(steps = 1) {
+    this.end = this.end + steps;
   }
 
   private match(...kinds: Array<SyntaxKind>) {
