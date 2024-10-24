@@ -52,7 +52,7 @@ export class SourceText {
   }
 
   public get(start: number, end?: number): string {
-    if (end === undefined) return this.text.charAt(start);
-    return this.text.substring(start, end);
+    if (end) return this.text.substring(start, end);
+    return this.text.charAt(start);
   }
 }

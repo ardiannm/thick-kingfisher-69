@@ -26,7 +26,7 @@ export class SyntaxNode {
     return this.getFirstChild().hasTrivia();
   }
 
-  public get span(): Span {
+  get span(): Span {
     return Span.createFrom(this.tree.text, this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
