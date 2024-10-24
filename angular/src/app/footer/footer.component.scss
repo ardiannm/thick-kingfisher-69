@@ -1,0 +1,9 @@
+@import "../../mixins.scss";
+
+:host {
+  margin-top: auto;
+  @include flexCenter;
+  border: 1px solid lightseagreen;
+  @include applyMaxSize;
+  height: fit-content;
+}

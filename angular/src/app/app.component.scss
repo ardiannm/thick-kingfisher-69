@@ -1,0 +1,13 @@
+@import "../mixins.scss";
+
+:host {
+  @include applyMaxSize;
+  @include flexCenter;
+  flex-direction: column;
+}
+
+.app-content {
+  border: 1px solid lightseagreen;
+  @include applyMaxSize;
+  @include flexCenter;
+}
