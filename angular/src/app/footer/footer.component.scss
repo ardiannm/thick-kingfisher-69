@@ -3,7 +3,6 @@
 :host {
   margin-top: auto;
   @include flexCenter;
-  border: 1px solid black;
   @include applyMaxSize;
   height: fit-content;
 }

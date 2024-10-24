@@ -7,7 +7,6 @@
 }
 
 .app-main {
-  border: 1px solid gainsboro;
   @include applyMaxSize;
   @include flexCenter;
 }

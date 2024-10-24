@@ -1,7 +1,6 @@
 @import "../../mixins.scss";
 
 :host {
-  border: 1px solid black;
   display: flex;
   @include applyMaxSize;
   @include flexCenter;
