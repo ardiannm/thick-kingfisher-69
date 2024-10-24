@@ -6,7 +6,8 @@
     "url": "https://github.com/ardiannm/Parser.git"
   },
   "scripts": {
-    "dev": "cd solid && npm run dev",
+    "solid": "cd solid && npm run dev",
+    "angular": "cd angular && npm run start",
     "build": "cd solid && npm run build",
     "serve": "nodemon",
     "test": "ts-node ./src/tests/index.ts"
@@ -21,6 +22,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
+    "@npmcli/package-json": "^6.0.1",
     "@solidjs/router": "^0.14.10",
     "concurrently": "^8.2.2"
   }
