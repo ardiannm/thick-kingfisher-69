@@ -14,8 +14,7 @@ export class SyntaxTree {
   public readonly diagnostics = new DiagnosticsBag();
 
   private constructor(public sourceText: SourceText, public configuration: CompilerOptions) {
-    const parser = new Parser(this);
-    this.syntaxRoot = parser.parseCompilationUnit();
+    this.syntaxRoot = Parser.parseSyntaxTree(this);
     this.boundRoot = BoundCompilationUnit.createFrom(this.syntaxRoot);
   }
 

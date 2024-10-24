@@ -25,7 +25,7 @@ export class Parser {
     return !this.match(SyntaxNodeKind.EndOfFileToken);
   }
 
-  constructor(public readonly tree: SyntaxTree) {
+  private constructor(public readonly tree: SyntaxTree) {
     const lexer = new Lexer(tree);
     var token: SyntaxToken<SyntaxKind>;
     do {
@@ -35,7 +35,11 @@ export class Parser {
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
-  public parseCompilationUnit() {
+  static parseSyntaxTree(tree: SyntaxTree) {
+    return new Parser(tree).parseCompilationUnit();
+  }
+
+  private parseCompilationUnit() {
     if (!this.tree.diagnostics.canParse()) return SyntaxCompilationUnit.createFrom(this.tree);
     const statements = new Array<SyntaxExpression>(this.parseBlock());
     while (this.hasMoreTokens()) {
