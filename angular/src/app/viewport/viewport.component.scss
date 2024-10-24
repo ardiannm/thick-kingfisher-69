@@ -1,9 +1,8 @@
 @import "../../mixins.scss";
 
 :host {
-  margin-bottom: auto;
   border: 1px solid black;
-  @include flexCenter;
+  display: flex;
   @include applyMaxSize;
-  height: fit-content;
+  @include flexCenter;
 }

@@ -2,8 +2,10 @@
 
 :host {
   margin-bottom: auto;
-  border: 1px solid black;
   @include flexCenter;
+  border: 1px solid black;
   @include applyMaxSize;
-  height: fit-content;
+  width: fit-content;
+  margin-right: auto;
+  min-width: 200px;
 }

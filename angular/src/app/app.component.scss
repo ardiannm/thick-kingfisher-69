@@ -6,8 +6,8 @@
   flex-direction: column;
 }
 
-.app-content {
-  border: 1px solid lightseagreen;
+.app-main {
+  border: 1px solid gainsboro;
   @include applyMaxSize;
   @include flexCenter;
 }
