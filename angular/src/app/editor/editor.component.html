@@ -1,3 +1,6 @@
-@for (row of rows(); track $index) {
-<div class="row">{{ row }}</div>
+@for (line of lines(); track $index) {
+<div class="row">{{ line.text }}</div>
 }
+
+<span> line: {{ line() }} </span>
+<span> position: {{ pos() }} </span>

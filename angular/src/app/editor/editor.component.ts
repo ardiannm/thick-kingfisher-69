@@ -1,6 +1,7 @@
-import { Component, Input, signal, computed } from '@angular/core';
+import { Component, Input, signal, computed, effect, HostListener } from '@angular/core';
+import { SourceText } from './source.tex';
 
-const txt = `import {Component} from '@angular/core';
+const text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
@@ -23,9 +24,30 @@ bootstrapApplication(PlaygroundComponent);
   styleUrl: './editor.component.scss',
 })
 export class EditorComponent {
-  @Input('codeInput') sourceText = txt;
+  @Input('codeInput') text = text;
+  code = signal(text);
+  sourceText = computed(() => SourceText.createFrom(this.code()));
+  lines = computed(() => this.sourceText().getLines());
+  pos = signal(0);
+  line = computed(() => this.sourceText().getLineIndex(this.pos()) + 1);
 
-  code = signal(txt);
+  @HostListener('window:keydown', ['$event'])
+  handleKey(event: KeyboardEvent) {
+    const input = event.key as string;
+    if (input === 'ArrowRight') {
+      this.moveCursorRight();
+    } else if (input == 'ArrowLeft') {
+      this.moveCursorLeft();
+    }
+  }
 
-  rows = computed(() => this.code().split('\n'));
+  constructor() {}
+
+  private moveCursorRight() {
+    if (this.pos() < this.text.length) this.pos.update((v) => v + 1);
+  }
+
+  private moveCursorLeft() {
+    if (this.pos() > 0) this.pos.update((v) => v - 1);
+  }
 }
