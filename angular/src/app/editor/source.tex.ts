@@ -47,6 +47,10 @@ export class SourceText {
     return lower - 1;
   }
 
+  getColumnIndex(position: number): number {
+    return position - this.getLineSpan(position).start;
+  }
+
   getLineSpan(position: number) {
     return this.lines[this.getLineIndex(position)];
   }

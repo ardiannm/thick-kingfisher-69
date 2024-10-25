@@ -8,7 +8,26 @@
   border-radius: 4px;
 }
 
-.row {
+.line-borders {
+  border-bottom: 1px solid #d7ddef;
+  border-inline: 1px solid #d7ddef;
+  &:first-child {
+    border-top: 1px solid #d7ddef;
+  }
+}
+
+.line {
+  display: flex;
+  flex-direction: row;
+  @extend .line-borders;
+}
+
+.line-number {
+  border-right: 1px solid #d7ddef;
+  min-width: 40px;
+}
+
+.line-text {
   height: 17px;
   padding-bottom: 1px;
   display: flex;
@@ -17,4 +36,10 @@
   &::selection {
     background-color: #d7ddef;
   }
+}
+
+.status-bar {
+  display: flex;
+  flex-direction: row;
+  margin-top: 14px;
 }

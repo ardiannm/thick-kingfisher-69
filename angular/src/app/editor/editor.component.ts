@@ -28,8 +28,10 @@ export class EditorComponent {
   code = signal(text);
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
-  pos = signal(0);
-  line = computed(() => this.sourceText().getLineIndex(this.pos()) + 1);
+  caret = signal(0);
+  pos = computed(() => this.caret() + 1);
+  line = computed(() => this.sourceText().getLineIndex(this.caret()) + 1);
+  column = computed(() => this.sourceText().getColumnIndex(this.caret()) + 1);
 
   @HostListener('window:keydown', ['$event'])
   handleKey(event: KeyboardEvent) {
@@ -44,10 +46,10 @@ export class EditorComponent {
   constructor() {}
 
   private moveCursorRight() {
-    if (this.pos() < this.text.length) this.pos.update((v) => v + 1);
+    if (this.caret() < this.text.length) this.caret.update((v) => v + 1);
   }
 
   private moveCursorLeft() {
-    if (this.pos() > 0) this.pos.update((v) => v - 1);
+    if (this.caret() > 0) this.caret.update((v) => v - 1);
   }
 }

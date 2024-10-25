@@ -1,6 +1,16 @@
 @for (line of lines(); track $index) {
-<div class="row">{{ line.text }}</div>
+<div class="line">
+  <div class="line-number">
+    {{ $index + 1 }}
+  </div>
+  <div class="line-text">
+    {{ line.text }}
+  </div>
+</div>
 }
 
-<span> line: {{ line() }} </span>
-<span> position: {{ pos() }} </span>
+<div class="status-bar">
+  <span> line: {{ line() }} </span>
+  <span> column: {{ column() }} </span>
+  <span> position: {{ pos() }} </span>
+</div>
