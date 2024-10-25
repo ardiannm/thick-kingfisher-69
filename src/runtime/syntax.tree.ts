@@ -3,7 +3,6 @@ import { Parser } from "../analysis/parser";
 import { SyntaxCompilationUnit } from "../analysis/parser/syntax.compilation.unit";
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { CompilerOptions } from "../compiler.options";
-import { Evaluator } from "./evaluator";
 import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
 import { Binder } from "../analysis/binder";
 
@@ -21,19 +20,5 @@ export class SyntaxTree {
   static createFrom(text: string = "", configuration: CompilerOptions = new CompilerOptions(true)) {
     const sourceText = SourceText.createFrom(text);
     return new SyntaxTree(sourceText, configuration);
-  }
-
-  bind() {
-    if (this.diagnostics.canBind()) {
-      this.bound = Binder.bindCompilationUnit(this.syntaxRoot);
-    }
-    return this;
-  }
-
-  evaluate() {
-    if (this.diagnostics.canEvaluate()) {
-      return new Evaluator(this.diagnostics).evaluate(this.bound);
-    }
-    return 0;
   }
 }
