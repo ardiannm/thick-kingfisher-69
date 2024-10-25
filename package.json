@@ -1,9 +1,9 @@
 {
   "version": "3.9.5",
-  "description": "",
+  "description": "A TypeScript project implementing a lexer, parser, and interpreter",
   "repository": {
     "type": "github",
-    "url": "https://github.com/ardiannm/Parser.git"
+    "url": "https://github.com/ardiannm/parser.ts.git"
   },
   "scripts": {
     "solid": "cd solid && npm run dev",
