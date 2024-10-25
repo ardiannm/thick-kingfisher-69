@@ -40,10 +40,12 @@ export class EditorComponent {
       this.moveCursorRight();
     } else if (input == 'ArrowLeft') {
       this.moveCursorLeft();
+    } else if (input == 'Enter') {
+      this.insertCharacter();
+    } else if (input == 'Backspace') {
+      this.removeCharacter();
     }
   }
-
-  constructor() {}
 
   private moveCursorRight() {
     if (this.caret() < this.text.length) this.caret.update((v) => v + 1);
@@ -51,5 +53,19 @@ export class EditorComponent {
 
   private moveCursorLeft() {
     if (this.caret() > 0) this.caret.update((v) => v - 1);
+  }
+
+  private insertCharacter() {
+    const text = this.code();
+    const newText = text.slice(0, this.caret()) + '\n' + text.slice(this.caret());
+    this.code.set(newText);
+    this.caret.update((pos) => pos + 1);
+  }
+
+  private removeCharacter() {
+    const text = this.code();
+    const newText = text.slice(0, this.caret() - 1) + text.slice(this.caret());
+    this.code.update((v) => newText);
+    this.caret.update((pos) => pos - 1);
   }
 }
