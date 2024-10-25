@@ -1,4 +1,4 @@
-import { Component, Input, signal, computed, effect, HostListener } from '@angular/core';
+import { Component, Input, signal, computed, HostListener } from '@angular/core';
 import { SourceText } from './source.tex';
 
 const text = `import {Component} from '@angular/core';
@@ -14,6 +14,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
 export class PlaygroundComponent {}
 
 bootstrapApplication(PlaygroundComponent);
+
 `;
 
 @Component({
@@ -42,30 +43,41 @@ export class EditorComponent {
       this.moveCursorLeft();
     } else if (input == 'Enter') {
       this.insertCharacter();
+    } else if (input == 'Tab') {
+      event.preventDefault();
+      this.insertCharacter('\t');
     } else if (input == 'Backspace') {
       this.removeCharacter();
+      console.log(this.caret());
+    } else if (input == 'Delete') {
+      this.moveCursorRight();
+      this.removeCharacter();
+    } else {
+      if (input.length === 1 && !event.ctrlKey) this.insertCharacter(input);
     }
   }
 
   private moveCursorRight() {
-    if (this.caret() < this.text.length) this.caret.update((v) => v + 1);
+    if (this.caret() < this.text.length - 1) this.caret.update((v) => v + 1);
   }
 
   private moveCursorLeft() {
     if (this.caret() > 0) this.caret.update((v) => v - 1);
   }
 
-  private insertCharacter() {
+  private insertCharacter(charText: string = '\n') {
     const text = this.code();
-    const newText = text.slice(0, this.caret()) + '\n' + text.slice(this.caret());
+    const newText = text.slice(0, this.caret()) + charText + text.slice(this.caret());
     this.code.set(newText);
-    this.caret.update((pos) => pos + 1);
+    this.moveCursorRight();
   }
 
   private removeCharacter() {
-    const text = this.code();
-    const newText = text.slice(0, this.caret() - 1) + text.slice(this.caret());
-    this.code.update((v) => newText);
-    this.caret.update((pos) => pos - 1);
+    if (this.caret() > 0) {
+      const text = this.code();
+      const newText = text.slice(0, this.caret() - 1) + text.slice(this.caret());
+      this.code.set(newText);
+      this.moveCursorLeft();
+    }
   }
 }

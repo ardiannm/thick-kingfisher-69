@@ -6,6 +6,10 @@
   <div class="line-text">
     {{ line.text }}
   </div>
+  <span class="span">
+    {{ line.start }}
+    {{ line.end }}
+  </span>
 </div>
 }
 
@@ -13,4 +17,5 @@
   <span> line: {{ line() }} </span>
   <span> column: {{ column() }} </span>
   <span> position: {{ pos() }} </span>
+  <span> text: {{ code().length }} </span>
 </div>
