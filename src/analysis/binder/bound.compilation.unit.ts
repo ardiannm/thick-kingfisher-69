@@ -9,8 +9,4 @@ export class BoundCompilationUnit extends BoundStatement {
   constructor(public scope: BoundScope, public root: Array<BoundStatement>, public override span: Span) {
     super(BoundKind.BoundCompilationUnit, span);
   }
-
-  static createFrom(node: SyntaxCompilationUnit) {
-    return new Binder().bindSyntaxCompilationUnit(node);
-  }
 }

@@ -17,12 +17,12 @@ const ShowComponent: Component = () => {
   const scopePosition = createSignal<Position>({ x: 1035, y: 450 });
 
   const [diagnostics, setDiagnostics] = createSignal<Array<Diagnostic>>([]);
-  const [scope, setScope] = createSignal<BoundScope>(SyntaxTree.createFrom().boundRoot.scope);
+  const [scope, setScope] = createSignal<BoundScope>(SyntaxTree.createFrom().bound.scope);
 
   createEffect(() => {
     const tree = SyntaxTree.createFrom(textCode[0]());
     setDiagnostics(tree.diagnostics.getDiagnostics());
-    setScope(tree.boundRoot.scope);
+    setScope(tree.bound.scope);
   });
 
   return (

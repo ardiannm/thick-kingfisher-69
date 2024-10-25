@@ -3,7 +3,6 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 import { SyntaxTree } from "../../runtime/syntax.tree";
 import { SyntaxStatement } from "./sytax.statements";
-import { Span } from "../text/span";
 import { SyntaxKind } from "./kind/syntax.kind";
 
 export class SyntaxCompilationUnit extends SyntaxNode {
@@ -17,9 +16,5 @@ export class SyntaxCompilationUnit extends SyntaxNode {
 
   override getLastChild(): SyntaxToken<SyntaxKind> {
     return this.eof;
-  }
-
-  static createFrom(tree: SyntaxTree) {
-    return new SyntaxCompilationUnit(tree, [], new SyntaxToken<SyntaxNodeKind.EndOfFileToken>(tree, SyntaxNodeKind.EndOfFileToken, Span.createFrom(tree.sourceText, 0, 1)));
   }
 }

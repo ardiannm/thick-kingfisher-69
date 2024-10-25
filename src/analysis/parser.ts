@@ -35,12 +35,11 @@ export class Parser {
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
-  static parseSyntaxTree(tree: SyntaxTree) {
+  static parseCompilationUnit(tree: SyntaxTree) {
     return new Parser(tree).parseCompilationUnit();
   }
 
   private parseCompilationUnit() {
-    if (!this.tree.diagnostics.canParse()) return SyntaxCompilationUnit.createFrom(this.tree);
     const statements = new Array<SyntaxExpression>(this.parseBlock());
     while (this.hasMoreTokens()) {
       const startToken = this.peekToken();

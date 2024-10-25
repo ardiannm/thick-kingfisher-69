@@ -26,33 +26,55 @@ import { Cell } from "./cell";
 import { BoundCellReference } from "./binder/bound.cell.reference";
 
 export class Binder {
-  public scope = new BoundScope();
+  private constructor(private scope = new BoundScope()) {}
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
     switch (node.kind) {
       case SyntaxNodeKind.SyntaxCompilationUnit:
-        return this.bindSyntaxCompilationUnit(node as NodeType<SyntaxCompilationUnit>);
+        return this.bindCompilationUnit(node as NodeType<SyntaxCompilationUnit>);
       case SyntaxNodeKind.NumberToken:
-        return this.bindSyntaxNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
+        return this.bindNumber(node as NodeType<SyntaxToken<SyntaxNodeKind.NumberToken>>);
       case SyntaxNodeKind.SyntaxParenthesis:
-        return this.bindSyntaxParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
+        return this.bindParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxNodeKind.SyntaxUnaryExpression:
-        return this.bindSyntaxUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
+        return this.bindUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
       case SyntaxNodeKind.BinaryExpression:
         return this.bindSyntaxBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
       case SyntaxNodeKind.SyntaxBlock:
-        return this.bindSyntaxBlock(node as NodeType<SyntaxBlock>);
+        return this.bindBlock(node as NodeType<SyntaxBlock>);
       case SyntaxNodeKind.SyntaxCellReference:
-        return this.bindSyntaxCellReference(node as NodeType<SyntaxCellReference>);
+        return this.bindCellReference(node as NodeType<SyntaxCellReference>);
       case SyntaxNodeKind.SyntaxCellAssignment:
-        return this.bindSyntaxCellAssignment(node as NodeType<SyntaxCellAssignment>);
+        return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
     }
     node.tree.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
-  private bindSyntaxCellAssignment(node: SyntaxCellAssignment) {
+  static bindCompilationUnit(node: SyntaxCompilationUnit) {
+    return new Binder().bindCompilationUnit(node);
+  }
+
+  private bindCompilationUnit(node: SyntaxCompilationUnit) {
+    const statements = new Array<BoundStatement>();
+    for (const statement of node.root) {
+      statements.push(this.bind(statement));
+    }
+    return new BoundCompilationUnit(this.scope, statements, node.span);
+  }
+
+  private bindBlock(node: SyntaxBlock): BoundNode {
+    this.scope = new BoundScope(this.scope);
+    const statements = new Array<BoundStatement>();
+    for (const statement of node.statements) {
+      statements.push(this.bind(statement));
+    }
+    this.scope = this.scope.parent!;
+    return new BoundBlock(statements, node.span);
+  }
+
+  private bindCellAssignment(node: SyntaxCellAssignment) {
     this.scope.references.length = 0;
     const expression = this.bind(node.expression);
     const reference = this.bindCell(node.left as SyntaxCellReference);
@@ -69,7 +91,7 @@ export class Binder {
     return new Cell(name, 0);
   }
 
-  private bindSyntaxCellReference(node: SyntaxCellReference) {
+  private bindCellReference(node: SyntaxCellReference) {
     const name = node.text;
     let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
@@ -84,24 +106,6 @@ export class Binder {
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
     return bound;
-  }
-
-  bindSyntaxCompilationUnit(node: SyntaxCompilationUnit) {
-    const statements = new Array<BoundStatement>();
-    for (const statement of node.root) {
-      statements.push(this.bind(statement));
-    }
-    return new BoundCompilationUnit(this.scope, statements, node.span);
-  }
-
-  private bindSyntaxBlock(node: SyntaxBlock): BoundNode {
-    this.scope = new BoundScope(this.scope);
-    const statements = new Array<BoundStatement>();
-    for (const statement of node.statements) {
-      statements.push(this.bind(statement));
-    }
-    this.scope = this.scope.parent!;
-    return new BoundBlock(statements, node.span);
   }
 
   private bindSyntaxBinaryExpression(node: SyntaxBinaryExpression) {
@@ -126,7 +130,7 @@ export class Binder {
     }
   }
 
-  private bindSyntaxUnaryExpression(node: SyntaxUnaryExpression) {
+  private bindUnaryExpression(node: SyntaxUnaryExpression) {
     const right = this.bind(node.right);
     switch (node.operator.kind) {
       case SyntaxUnaryOperatorKind.MinusToken:
@@ -145,11 +149,11 @@ export class Binder {
     }
   }
 
-  private bindSyntaxParenthesizedExpression(node: SyntaxParenthesis) {
+  private bindParenthesizedExpression(node: SyntaxParenthesis) {
     return this.bind(node.expression);
   }
 
-  private bindSyntaxNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
+  private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
     const value = parseFloat(node.text);
     return new BoundNumericLiteral(value, node.span);
   }
