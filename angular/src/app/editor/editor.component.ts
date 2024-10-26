@@ -30,7 +30,7 @@ bootstrapApplication(PlaygroundComponent);
 export class EditorComponent {
   @Input('codeInput')
   text = text;
-  textLength = this.text.length;
+  length = this.text.length;
   code = signal(text);
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
@@ -44,9 +44,9 @@ export class EditorComponent {
     effect(
       () => {
         const current = this.code().length;
-        const change = current - this.textLength;
+        const change = current - this.length;
         this.caret.update((pos) => pos + change);
-        this.textLength = current;
+        this.length = current;
       },
       {
         allowSignalWrites: true,
@@ -69,6 +69,10 @@ export class EditorComponent {
     } else if (input == 'Backspace') {
       this.removeCharacter();
     } else if (input == 'Delete') {
+      if (this.caret() !== this.length) {
+        this.moveCaret(1);
+        this.removeCharacter();
+      }
     } else {
       if (input.length === 1 && !event.ctrlKey && !event.altKey) this.insertCharacter(input);
     }
@@ -89,6 +93,6 @@ export class EditorComponent {
   private moveCaret(steps: number) {
     const pos = this.caret();
     const newPos = pos + steps;
-    if (newPos >= 0 && newPos <= this.textLength) this.caret.set(newPos);
+    if (newPos >= 0 && newPos <= this.length) this.caret.set(newPos);
   }
 }
