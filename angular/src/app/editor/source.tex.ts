@@ -1,30 +1,19 @@
-import { Span } from './span';
+import { LineSpan } from './line.span';
 
 export class SourceText {
-  private lines = new Array<Span>();
+  lines = new Array<LineSpan>();
 
   private constructor(private text: string) {
     let start = 0;
     let position = 0;
     while (position < this.text.length) {
-      var lineBreakWidth = this.getLineBreakWidth(position);
-      if (lineBreakWidth === 0) {
-        position++;
-      } else {
-        this.lines.push(Span.createFrom(this, start, position));
-        position += lineBreakWidth;
+      const c = this.text[position];
+      position++;
+      if (c === '\n') {
+        this.lines.push(LineSpan.createFrom(this, start, position));
         start = position;
       }
     }
-    if (position >= start) this.lines.push(Span.createFrom(this, start, position));
-  }
-
-  private getLineBreakWidth(position: number): number {
-    const c = this.text[position];
-    const l = position + 1 >= this.text.length ? '' : this.text[position + 1];
-    if (c === '\r' && l === '\n') return 2;
-    if (c === '\r' || c === '\n') return 1;
-    return 0;
   }
 
   static createFrom(text: string): SourceText {

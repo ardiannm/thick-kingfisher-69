@@ -30,54 +30,24 @@ export class EditorComponent {
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
   caret = signal(0);
-  pos = computed(() => this.caret() + 1);
-  line = computed(() => this.sourceText().getLineIndex(this.caret()) + 1);
-  column = computed(() => this.sourceText().getColumnIndex(this.caret()) + 1);
 
   @HostListener('window:keydown', ['$event'])
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
     if (input === 'ArrowRight') {
-      this.moveCursorRight();
     } else if (input == 'ArrowLeft') {
-      this.moveCursorLeft();
     } else if (input == 'Enter') {
-      this.insertCharacter();
     } else if (input == 'Tab') {
-      event.preventDefault();
-      this.insertCharacter('\t');
     } else if (input == 'Backspace') {
-      this.removeCharacter();
-      console.log(this.caret());
     } else if (input == 'Delete') {
-      this.moveCursorRight();
-      this.removeCharacter();
     } else {
       if (input.length === 1 && !event.ctrlKey) this.insertCharacter(input);
     }
   }
 
-  private moveCursorRight() {
-    if (this.caret() < this.text.length - 1) this.caret.update((v) => v + 1);
-  }
-
-  private moveCursorLeft() {
-    if (this.caret() > 0) this.caret.update((v) => v - 1);
-  }
-
   private insertCharacter(charText: string = '\n') {
     const text = this.code();
-    const newText = text.slice(0, this.caret()) + charText + text.slice(this.caret());
+    const newText = text.substring(0, this.caret()) + charText + text.substring(this.caret());
     this.code.set(newText);
-    this.moveCursorRight();
-  }
-
-  private removeCharacter() {
-    if (this.caret() > 0) {
-      const text = this.code();
-      const newText = text.slice(0, this.caret() - 1) + text.slice(this.caret());
-      this.code.set(newText);
-      this.moveCursorLeft();
-    }
   }
 }

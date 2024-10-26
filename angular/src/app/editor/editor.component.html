@@ -14,8 +14,7 @@
 }
 
 <div class="status-bar">
-  <span> line: {{ line() }} </span>
-  <span> column: {{ column() }} </span>
-  <span> position: {{ pos() }} </span>
+  <span> caret: {{ caret() }} </span>
   <span> text: {{ code().length }} </span>
+  <span>character: {{ code()[caret()] }}</span>
 </div>

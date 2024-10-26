@@ -10,7 +10,8 @@
     "angular": "cd angular && npm run start",
     "build": "cd solid && npm run build",
     "serve": "nodemon",
-    "test": "ts-node ./src/tests/index.ts"
+    "test": "ts-node ./src/tests/index.ts",
+    "dev": "nodemon"
   },
   "license": "MIT",
   "devDependencies": {
