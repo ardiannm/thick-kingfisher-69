@@ -59,34 +59,34 @@ export class EditorComponent {
     const input = event.key as string;
     if (input === 'ArrowRight') {
       this.moveCaret(1);
-    } else if (input == 'ArrowLeft') {
+    } else if (input === 'ArrowLeft') {
       this.moveCaret(-1);
-    } else if (input == 'Enter') {
-      this.insertCharacter();
-    } else if (input == 'Tab') {
+    } else if (input === 'Enter') {
+      this.insertText();
+    } else if (input === 'Tab') {
       event.preventDefault();
-      this.insertCharacter('\t');
-    } else if (input == 'Backspace') {
-      this.removeCharacter();
-    } else if (input == 'Delete') {
-      if (this.caret() !== this.length) {
-        this.moveCaret(1);
-        this.removeCharacter();
-      }
-    } else {
-      if (input.length === 1 && !event.ctrlKey && !event.altKey) this.insertCharacter(input);
+      this.insertText('\t');
+    } else if (input === 'Backspace') {
+      this.removeText();
+    } else if (input === 'Delete' && this.caret() !== this.length) {
+      this.moveCaret(1);
+      this.removeText();
+    } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
+      this.insertText(input);
     }
   }
 
-  private insertCharacter(charText: string = '\n') {
+  private insertText(charText: string = '\n') {
     const text = this.code();
-    const newText = text.substring(0, this.caret()) + charText + text.substring(this.caret());
+    const pos = this.caret();
+    const newText = text.substring(0, pos) + charText + text.substring(pos);
     this.code.set(newText);
   }
 
-  private removeCharacter() {
+  private removeText() {
     const text = this.code();
-    const newText = text.substring(0, this.caret() - 1) + text.substring(this.caret());
+    const pos = this.caret();
+    const newText = text.substring(0, pos - 1) + text.substring(pos);
     this.code.set(newText);
   }
 

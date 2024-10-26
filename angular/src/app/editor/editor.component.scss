@@ -20,11 +20,12 @@
 .line {
   display: flex;
   flex-direction: row;
-  @extend .line-borders;
+  // @extend .line-borders;
 }
 
 .line-number {
   border-right: 1px solid #d7ddef;
+  margin-right: 10px;
   min-width: 40px;
 }
 
