@@ -14,7 +14,11 @@ import {bootstrapApplication} from '@angular/platform-browser';
 })
 export class PlaygroundComponent {}
 
-bootstrapApplication(PlaygroundComponent);`;
+bootstrapApplication(PlaygroundComponent);
+
+
+
+`;
 
 @Component({
   selector: 'app-editor',

@@ -14,4 +14,8 @@ export class LineSpan {
   get text(): string {
     return this.sourceText.getText(this.start, this.end - this.lineBreakLength);
   }
+
+  get length() {
+    return this.end - this.start;
+  }
 }
