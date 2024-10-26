@@ -1,5 +1,6 @@
 import { Component, Input, signal, computed, HostListener, effect } from '@angular/core';
 import { SourceText } from './source.text';
+import { CaretComponent } from './caret/caret.component';
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -20,7 +21,7 @@ bootstrapApplication(PlaygroundComponent);
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [],
+  imports: [CaretComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
