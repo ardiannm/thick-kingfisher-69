@@ -1,37 +1,28 @@
-import { Span } from "./span";
+import { LineSpan } from "./line.span";
 
 export class SourceText {
-  private lines = new Array<Span>();
+  private lines = new Array<LineSpan>();
 
   private constructor(private text: string) {
     let start = 0;
     let position = 0;
     while (position < this.text.length) {
-      var lineBreakWidth = this.getLineBreakWidth(position);
-      if (lineBreakWidth === 0) {
-        position++;
-      } else {
-        this.lines.push(Span.createFrom(this, start, position));
-        position += lineBreakWidth;
+      const c = this.text[position];
+      position++;
+      if (c === "\n") {
+        this.lines.push(LineSpan.createFrom(this, start, position, 1));
         start = position;
       }
     }
-    if (position >= start) this.lines.push(Span.createFrom(this, start, position));
+    this.lines.push(LineSpan.createFrom(this, start, position, 0));
+    start = position;
   }
 
-  private getLineBreakWidth(position: number): number {
-    const c = this.text[position];
-    const l = position + 1 >= this.text.length ? "" : this.text[position + 1];
-    if (c === "\r" && l === "\n") return 2;
-    if (c === "\r" || c === "\n") return 1;
-    return 0;
-  }
-
-  public static createFrom(text: string): SourceText {
+  static createFrom(text: string): SourceText {
     return new SourceText(text);
   }
 
-  public getLinePosition(position: number): number {
+  private getLinePosition(position: number): number {
     let lower = 0;
     let upper = this.lines.length - 1;
     while (lower <= upper) {
@@ -47,16 +38,20 @@ export class SourceText {
     return lower - 1;
   }
 
-  public getLine(position: number) {
+  getLine(position: number) {
     return this.getLinePosition(position) + 1;
   }
 
-  public getLineSpan(position: number) {
-    return this.lines[this.getLinePosition(position)];
+  getColumn(position: number): number {
+    const span = this.getLinePosition(position);
+    return position - this.lines[span].start;
   }
 
-  public get(start: number, end?: number): string {
-    if (end) return this.text.substring(start, end);
-    return this.text.charAt(start);
+  getLines() {
+    return this.lines;
+  }
+
+  getText(start: number, end: number): string {
+    return this.text.substring(start, end);
   }
 }

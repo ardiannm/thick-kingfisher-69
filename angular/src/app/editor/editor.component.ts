@@ -1,7 +1,7 @@
 import { Component, Input, signal, computed, HostListener, effect } from '@angular/core';
-import { SourceText } from './source.tex';
+import { SourceText } from './source.text';
 
-const text = `import {Component} from '@angular/core';
+var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
@@ -15,7 +15,7 @@ export class PlaygroundComponent {}
 
 bootstrapApplication(PlaygroundComponent);
 
-`;
+// what if line ends with no newline break`;
 
 @Component({
   selector: 'app-editor',
@@ -57,6 +57,8 @@ export class EditorComponent {
     } else if (input == 'Enter') {
       this.insertCharacter();
     } else if (input == 'Tab') {
+      event.preventDefault();
+      this.insertCharacter('\t');
     } else if (input == 'Backspace') {
       this.removeCharacter();
     } else if (input == 'Delete') {

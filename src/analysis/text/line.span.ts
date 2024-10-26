@@ -1,4 +1,4 @@
-import { SourceText } from './source.text';
+import { SourceText } from "./source.text";
 
 export class LineSpan {
   private constructor(private sourceText: SourceText, public start: number, public end: number, public lineBreakLength: number) {}

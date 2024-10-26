@@ -10,10 +10,12 @@ export class SourceText {
       const c = this.text[position];
       position++;
       if (c === '\n') {
-        this.lines.push(LineSpan.createFrom(this, start, position));
+        this.lines.push(LineSpan.createFrom(this, start, position, 1));
         start = position;
       }
     }
+    this.lines.push(LineSpan.createFrom(this, start, position, 0));
+    start = position;
   }
 
   static createFrom(text: string): SourceText {
