@@ -44,7 +44,7 @@ export class SourceText {
 
   getColumn(position: number): number {
     const span = this.getLinePosition(position);
-    return position - this.lines[span].start;
+    return position - this.lines[span].start + 1;
   }
 
   getLines() {

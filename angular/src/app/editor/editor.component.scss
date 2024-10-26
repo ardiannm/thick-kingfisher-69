@@ -45,5 +45,11 @@
 }
 
 .span {
+  display: flex;
   margin-left: auto;
+  .number {
+    display: flex;
+    justify-content: right;
+    min-width: 35px;
+  }
 }

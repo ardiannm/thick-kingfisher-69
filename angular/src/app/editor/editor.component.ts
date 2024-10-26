@@ -31,6 +31,8 @@ export class EditorComponent {
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
   caret = signal(this.text.length);
+  line = computed(() => this.sourceText().getLine(this.caret()));
+  column = computed(() => this.sourceText().getColumn(this.caret()));
   caretX = 500;
   caretY = 200;
 
