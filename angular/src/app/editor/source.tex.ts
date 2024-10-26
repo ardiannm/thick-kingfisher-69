@@ -1,7 +1,7 @@
 import { LineSpan } from './line.span';
 
 export class SourceText {
-  lines = new Array<LineSpan>();
+  private lines = new Array<LineSpan>();
 
   private constructor(private text: string) {
     let start = 0;
@@ -20,7 +20,7 @@ export class SourceText {
     return new SourceText(text);
   }
 
-  getLineIndex(position: number): number {
+  private getLinePosition(position: number): number {
     let lower = 0;
     let upper = this.lines.length - 1;
     while (lower <= upper) {
@@ -36,12 +36,13 @@ export class SourceText {
     return lower - 1;
   }
 
-  getColumnIndex(position: number): number {
-    return position - this.getLineSpan(position).start;
+  getLine(position: number) {
+    return this.getLinePosition(position) + 1;
   }
 
-  getLineSpan(position: number) {
-    return this.lines[this.getLineIndex(position)];
+  getColumn(position: number): number {
+    const span = this.getLinePosition(position);
+    return position - this.lines[span].start;
   }
 
   getLines() {
@@ -49,6 +50,6 @@ export class SourceText {
   }
 
   getText(start: number, end: number): string {
-    return this.text.slice(start, end);
+    return this.text.substring(start, end);
   }
 }

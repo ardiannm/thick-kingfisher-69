@@ -31,7 +31,7 @@ export class SourceText {
     return new SourceText(text);
   }
 
-  public getLineIndex(position: number): number {
+  public getLinePosition(position: number): number {
     let lower = 0;
     let upper = this.lines.length - 1;
     while (lower <= upper) {
@@ -47,8 +47,12 @@ export class SourceText {
     return lower - 1;
   }
 
+  public getLine(position: number) {
+    return this.getLinePosition(position) + 1;
+  }
+
   public getLineSpan(position: number) {
-    return this.lines[this.getLineIndex(position)];
+    return this.lines[this.getLinePosition(position)];
   }
 
   public get(start: number, end?: number): string {

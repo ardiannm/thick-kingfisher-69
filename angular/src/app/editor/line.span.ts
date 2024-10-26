@@ -8,7 +8,7 @@ export class LineSpan {
   }
 
   get line() {
-    return this.sourceText.getLineIndex(this.start) + 1;
+    return this.sourceText.getLine(this.start);
   }
 
   get text(): string {

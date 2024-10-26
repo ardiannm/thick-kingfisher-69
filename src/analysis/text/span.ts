@@ -8,7 +8,7 @@ export class Span {
   }
 
   public get line() {
-    return this.text.getLineIndex(this.start) + 1;
+    return this.text.getLine(this.start);
   }
 
   public get offset() {
