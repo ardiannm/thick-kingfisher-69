@@ -14,9 +14,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
 })
 export class PlaygroundComponent {}
 
-bootstrapApplication(PlaygroundComponent);
-
-// what if line ends with no newline break`;
+bootstrapApplication(PlaygroundComponent);`;
 
 @Component({
   selector: 'app-editor',
