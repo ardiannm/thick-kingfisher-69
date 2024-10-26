@@ -1,10 +1,10 @@
 :host {
   position: absolute;
-  width: 6px;
-  height: 19px; // Adjust to match font line height
-  background-color: #6e7bae;
-  transition: transform 0.1s ease-in-out; // Smooth transition for caret movement
-  animation: fade 1s ease-in-out infinite; // Smooth fade animation
+  width: 5px;
+  height: 19px;
+  background-color: #394269;
+  transition: transform 0.1s ease-in-out;
+  // animation: fade 1s ease-in-out infinite; // Smooth fade animation
 
   @keyframes fade {
     100% {

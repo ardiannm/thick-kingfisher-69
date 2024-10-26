@@ -30,7 +30,9 @@ export class EditorComponent {
   code = signal(text);
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
-  caret = signal(0);
+  caret = signal(this.text.length);
+  caretX = 500;
+  caretY = 200;
 
   constructor() {
     effect(

@@ -12,10 +12,8 @@
   </span>
 </div>
 }
-
 <div class="status-bar">
   <span> caret: {{ caret() }} </span>
   <span> length: {{ textLength }} </span>
 </div>
-
-<app-caret [style.left.px]="500" [style.top.px]="200"></app-caret>
+<app-caret [style.left.px]="caretX" [style.top.px]="caretY"></app-caret>
