@@ -1,3 +1,5 @@
+<app-caret [line]="caretX" [column]="caretY"></app-caret>
+
 @for (line of lines(); track $index) {
 <div class="line">
   <div class="line-number">
@@ -14,5 +16,3 @@
   <span> caret: {{ caret() }} </span>
   <span> length: {{ length }} </span>
 </div>
-<app-caret [style.left.px]="caretX" [style.top.px]="caretY"></app-caret>
-<ng-content></ng-content>

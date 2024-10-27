@@ -8,6 +8,6 @@ import { Component, HostBinding, Input } from '@angular/core';
   styleUrl: './caret.component.scss',
 })
 export class CaretComponent {
-  @HostBinding('left.px') @Input() left = 0;
-  @HostBinding('right.px') @Input() right = 0;
+  @HostBinding('line.px') @Input() line = 0;
+  @HostBinding('column.px') @Input() column = 0;
 }

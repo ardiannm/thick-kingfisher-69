@@ -37,8 +37,8 @@ export class EditorComponent {
   caret = signal(this.text.length);
   line = computed(() => this.sourceText().getLine(this.caret()));
   column = computed(() => this.sourceText().getColumn(this.caret()));
-  caretX = 500;
-  caretY = 200;
+  caretX = 0;
+  caretY = 0;
 
   constructor() {
     effect(
