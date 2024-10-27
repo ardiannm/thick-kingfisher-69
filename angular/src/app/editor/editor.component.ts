@@ -1,6 +1,7 @@
-import { Component, Input, signal, computed, HostListener, effect } from '@angular/core';
+import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from '@angular/core';
 import { SourceText } from './source.text';
 import { CaretComponent } from './caret/caret.component';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -30,7 +31,7 @@ bootstrapApplication(PlaygroundComponent);
 export class EditorComponent {
   @Input('codeInput')
   text = text;
-  length = this.text.length;
+  length = text.length;
   code = signal(text);
   sourceText = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
@@ -40,7 +41,7 @@ export class EditorComponent {
   caretX = 0;
   caretY = 0;
 
-  constructor() {
+  constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
       () => {
         const current = this.code().length;
@@ -52,6 +53,34 @@ export class EditorComponent {
         allowSignalWrites: true,
       }
     );
+    if (isPlatformBrowser(this.platformId)) {
+      effect(() => {
+        this.testFetch(this.line(), this.column());
+        console.log(`${this.line()}:${this.column()}`, Math.floor(this.caretY) + ' -> ' + Math.floor(this.caretX));
+      });
+    }
+  }
+
+  private testFetch(line: number, column: number) {
+    const element = this.document.getElementById(`row-${line}`)!;
+
+    if (element && element.childNodes.length > 0) {
+      // Assuming the third character is within the first child text node
+      const textNode = element.childNodes[0];
+
+      if (textNode.nodeType === Node.TEXT_NODE) {
+        const range = this.document.createRange();
+
+        range.setStart(textNode, column); // Start at the 3rd character (index 2)
+        range.setEnd(textNode, column + 1); // End after the 3rd character
+
+        const rect = range.getBoundingClientRect();
+        this.caretX = rect.x;
+        this.caretY = rect.y;
+        // Clean up the range to avoid memory leaks
+        range.detach();
+      }
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
