@@ -1,20 +1,20 @@
-import { SyntaxKind } from "./parser/kind/syntax.kind";
-import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
-import { SyntaxCompositeTokenKind } from "./parser/kind/syntax.composite.token.kind";
-import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
-import { SyntaxUnaryOperatorKind } from "./parser/kind/syntax.unary.operator.kind";
-import { SyntaxToken } from "./parser/syntax.token";
-import { SyntaxBinaryExpression } from "./parser/syntax.binary.expression";
-import { SyntaxUnaryExpression } from "./parser/syntax.unary.expression";
-import { SyntaxParenthesis } from "./parser/syntax.parenthesis";
-import { SyntaxCellReference } from "./parser/syntax.cell.reference";
-import { SyntaxFacts } from "./parser/syntax.facts";
-import { SyntaxExpression } from "./parser/syntax.expression";
-import { SyntaxCompilationUnit } from "./parser/syntax.compilation.unit";
-import { SyntaxCellAssignment } from "./parser/syntax.cell.assignment";
-import { SyntaxTree } from "../runtime/syntax.tree";
-import { Lexer } from "./lexer";
-import { SyntaxBlock } from "./parser/syntax.block";
+import { Lexer } from "../../lexing/lexer";
+import { SyntaxTree } from "../../syntax.tree";
+import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
+import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
+import { SyntaxKind } from "./kind/syntax.kind";
+import { SyntaxNodeKind } from "./kind/syntax.node.kind";
+import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
+import { SyntaxBinaryExpression } from "./syntax.binary.expression";
+import { SyntaxBlock } from "./syntax.block";
+import { SyntaxCellAssignment } from "./syntax.cell.assignment";
+import { SyntaxCellReference } from "./syntax.cell.reference";
+import { SyntaxCompilationUnit } from "./syntax.compilation.unit";
+import { SyntaxExpression } from "./syntax.expression";
+import { SyntaxFacts } from "./syntax.facts";
+import { SyntaxParenthesis } from "./syntax.parenthesis";
+import { SyntaxToken } from "./syntax.token";
+import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 
 export class Parser {
   private index = 0;

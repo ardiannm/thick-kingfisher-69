@@ -1,12 +1,13 @@
+import BoudScopeComponent from "../components/bound.scope";
+import MenuBarComponent from "./MenuBarComponent";
+
 import { type Component, createSignal, createEffect } from "solid-js";
 
-import BoudScopeComponent from "../components/bound.scope";
 import { BezierCurve, Position } from "../components/bezier.curve";
 import { BoundScope } from "../../../src/analysis/binder/bound.scope";
 import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
-import { SyntaxTree } from "../../../src/runtime/syntax.tree";
 import { CodeEditor } from "../components/code.editor";
-import MenuBarComponent from "./MenuBarComponent";
+import { SyntaxTree } from "../../../src/syntax.tree";
 
 var defaultCode = `A1 :: A2+A3`;
 

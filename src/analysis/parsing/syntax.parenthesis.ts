@@ -1,8 +1,8 @@
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxNode } from "./syntax.node";
-import { SyntaxExpression } from "./syntax.expression";
-import { SyntaxTree } from "../../runtime/syntax.tree";
+import { SyntaxTree } from "../../syntax.tree";
 import { SyntaxKind } from "./kind/syntax.kind";
+import { SyntaxNodeKind } from "./kind/syntax.node.kind";
+import { SyntaxExpression } from "./syntax.expression";
+import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxParenthesis extends SyntaxExpression {

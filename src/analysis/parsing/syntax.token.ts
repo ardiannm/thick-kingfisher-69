@@ -1,7 +1,7 @@
-import { SyntaxNode } from "./syntax.node";
+import { Span } from "../../lexing/span";
+import { SyntaxTree } from "../../syntax.tree";
 import { SyntaxKind } from "./kind/syntax.kind";
-import { Span } from "../text/span";
-import { SyntaxTree } from "../../runtime/syntax.tree";
+import { SyntaxNode } from "./syntax.node";
 import { TokenTextMapper } from "./token.text.warpper";
 
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;

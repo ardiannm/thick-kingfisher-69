@@ -1,9 +1,9 @@
+import { SyntaxTree } from "../../syntax.tree";
+import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
-import { SyntaxTree } from "../../runtime/syntax.tree";
 import { SyntaxStatement } from "./sytax.statements";
-import { SyntaxKind } from "./kind/syntax.kind";
 
 export class SyntaxCompilationUnit extends SyntaxNode {
   constructor(public override tree: SyntaxTree, public root: Array<SyntaxStatement>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {

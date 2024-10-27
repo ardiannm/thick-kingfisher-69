@@ -1,13 +1,13 @@
-import { SyntaxKind } from "./parser/kind/syntax.kind";
-import { SyntaxNodeKind } from "./parser/kind/syntax.node.kind";
-import { SyntaxBinaryOperatorKind } from "./parser/kind/syntax.binary.operator.kind";
-import { SyntaxToken } from "./parser/syntax.token";
-import { TokenTextMapper } from "./parser/token.text.warpper";
-import { SyntaxFacts } from "./parser/syntax.facts";
-import { SyntaxCompositeTokenKind } from "./parser/kind/syntax.composite.token.kind";
-import { SyntaxTriviaKind } from "./parser/kind/syntax.trivia.kind";
-import { SyntaxTree } from "../runtime/syntax.tree";
-import { Span } from "./text/span";
+import { SyntaxBinaryOperatorKind } from "../analysis/parsing/kind/syntax.binary.operator.kind";
+import { SyntaxCompositeTokenKind } from "../analysis/parsing/kind/syntax.composite.token.kind";
+import { SyntaxKind } from "../analysis/parsing/kind/syntax.kind";
+import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
+import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
+import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
+import { SyntaxToken } from "../analysis/parsing/syntax.token";
+import { TokenTextMapper } from "../analysis/parsing/token.text.warpper";
+import { SyntaxTree } from "../syntax.tree";
+import { Span } from "./span";
 
 export class Lexer {
   private kind: SyntaxKind;
@@ -124,7 +124,7 @@ export class Lexer {
   private lexIdentifier(): SyntaxToken<SyntaxKind> {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
-    const text = this.tree.sourceText.get(span.start, span.end);
+    const text = this.tree.sourceText.getText(span.start, span.end);
     return new SyntaxToken(this.tree, SyntaxFacts.isKeywordOrIdentifer(text), span);
   }
 
@@ -165,7 +165,8 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    return this.tree.sourceText.get(this.end + offset);
+    const start = this.end + offset;
+    return this.tree.sourceText.getText(start, start + 1);
   }
 
   private char() {

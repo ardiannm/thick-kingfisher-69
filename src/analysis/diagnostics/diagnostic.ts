@@ -1,5 +1,6 @@
-import { Span } from "../text/span";
+import { Span } from "../../lexing/span";
 import { Severity } from "./severity";
+
 
 export class Diagnostic {
   constructor(public severity: Severity, public message: string, public span: Span) {}

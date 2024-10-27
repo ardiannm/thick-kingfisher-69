@@ -1,7 +1,7 @@
+import { Span } from "../../lexing/span";
+import { SyntaxTree } from "../../syntax.tree";
 import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxTree } from "../../runtime/syntax.tree";
 import { SyntaxToken } from "./syntax.token";
-import { Span } from "../text/span";
 
 export abstract class SyntaxNode {
   constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
@@ -22,6 +22,6 @@ export abstract class SyntaxNode {
   get text() {
     const startPosition = this.getFirstChild().span.start;
     const endPosition = this.getLastChild().span.end;
-    return this.tree.sourceText.get(startPosition, endPosition);
+    return this.tree.sourceText.getText(startPosition, endPosition);
   }
 }

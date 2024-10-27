@@ -1,8 +1,9 @@
+import { Span } from "../../lexing/span";
 import { BoundKind } from "../binder/kind/bound.kind";
-import { SyntaxKind } from "../parser/kind/syntax.kind";
-import { Span } from "../text/span";
+import { SyntaxKind } from "../parsing/kind/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
+
 
 export class DiagnosticsBag {
   private diagnostics = new Array<Diagnostic>();

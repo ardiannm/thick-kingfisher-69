@@ -1,10 +1,13 @@
-import { SourceText } from "../analysis/text/source.text";
-import { Parser } from "../analysis/parser";
-import { SyntaxCompilationUnit } from "../analysis/parser/syntax.compilation.unit";
-import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
-import { CompilerOptions } from "../compiler.options";
-import { BoundCompilationUnit } from "../analysis/binder/bound.compilation.unit";
-import { Binder } from "../analysis/binder";
+import { Binder } from "./analysis/binder/binder";
+import { BoundCompilationUnit } from "./analysis/binder/bound.compilation.unit";
+import { DiagnosticsBag } from "./analysis/diagnostics/diagnostics.bag";
+import { Parser } from "./analysis/parsing/parser";
+import { SyntaxCompilationUnit } from "./analysis/parsing/syntax.compilation.unit";
+import { SourceText } from "./lexing/source.text";
+
+export class CompilerOptions {
+  constructor(public explicitDeclarations: boolean) {}
+}
 
 export class SyntaxTree {
   syntaxRoot: SyntaxCompilationUnit;

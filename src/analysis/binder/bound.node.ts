@@ -1,4 +1,4 @@
-import { Span } from "../text/span";
+import { Span } from "../../lexing/span";
 import { BoundKind } from "./kind/bound.kind";
 
 export class BoundNode {

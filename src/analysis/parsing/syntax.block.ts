@@ -1,9 +1,9 @@
+import { SyntaxTree } from "../../syntax.tree";
+import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
+import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 import { SyntaxStatement } from "./sytax.statements";
-import { SyntaxTree } from "../../runtime/syntax.tree";
-import { SyntaxNode } from "./syntax.node";
-import { SyntaxKind } from "./kind/syntax.kind";
 
 export class SyntaxBlock extends SyntaxNode {
   constructor(
