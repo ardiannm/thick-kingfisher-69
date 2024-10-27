@@ -55,8 +55,11 @@ export class EditorComponent {
     );
     if (isPlatformBrowser(this.platformId)) {
       effect(() => {
-        this.testFetch(this.line(), this.column());
-        console.log(`${this.line()}:${this.column()}`, Math.floor(this.caretY) + ' -> ' + Math.floor(this.caretX));
+        const ln = this.line();
+        const col = this.column();
+        setTimeout(() => {
+          this.testFetch(ln, col);
+        });
       });
     }
   }
