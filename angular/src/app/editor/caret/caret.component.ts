@@ -8,6 +8,9 @@ import { Component, HostBinding, Input } from '@angular/core';
   styleUrl: './caret.component.scss',
 })
 export class CaretComponent {
-  @HostBinding('style.left.px') @Input() line = 200;
-  @HostBinding('style.top.px') @Input() column = 100;
+  @HostBinding('style.left.px') @Input() column = 0;
+  @HostBinding('style.top.px') @Input() line = 0;
+  @HostBinding('style.width.px') @Input() width = 4;
+  @HostBinding('style.height.px') @Input() height = 19;
+  @HostBinding('style.animation') @Input() animation = 'fade 1.05s step-end infinite';
 }

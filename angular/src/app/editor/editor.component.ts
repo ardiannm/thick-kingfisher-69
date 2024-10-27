@@ -40,6 +40,7 @@ export class EditorComponent {
   column = computed(() => this.sourceText().getColumn(this.caret()));
   caretX = 0;
   caretY = 0;
+  caretWidth = 4;
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -55,31 +56,31 @@ export class EditorComponent {
     );
     if (isPlatformBrowser(this.platformId)) {
       effect(() => {
-        const ln = this.line();
-        const col = this.column();
-        setTimeout(() => {
-          this.testFetch(ln, col);
-        });
+        const line = this.line();
+        const column = this.column();
+        setTimeout(() => this.getCaretPosition(line, column));
       });
     }
   }
 
-  private testFetch(line: number, column: number) {
-    const element = this.document.getElementById(`row-${line}`)!;
+  private getCaretPosition(line: number, column: number) {
+    const element = this.document.getElementById('row-' + line)!;
 
     if (element && element.childNodes.length > 0) {
-      // Assuming the third character is within the first child text node
       const textNode = element.childNodes[0];
 
       if (textNode.nodeType === Node.TEXT_NODE) {
         const range = this.document.createRange();
 
-        range.setStart(textNode, column); // Start at the 3rd character (index 2)
-        range.setEnd(textNode, column + 1); // End after the 3rd character
+        range.setStart(textNode, column);
+        range.setEnd(textNode, column + 1);
 
         const rect = range.getBoundingClientRect();
+
         this.caretX = rect.x;
         this.caretY = rect.y;
+        // this.caretWidth = rect.width;
+
         // Clean up the range to avoid memory leaks
         range.detach();
       }
