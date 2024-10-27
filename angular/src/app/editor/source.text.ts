@@ -54,4 +54,11 @@ export class SourceText {
   getText(start: number, end: number): string {
     return this.text.substring(start, end);
   }
+
+  getPosition(line: number, column: number) {
+    const index = Math.min(Math.max(1, line), this.lines.length) - 1;
+    const span = this.lines[index];
+    const offset = Math.min(column - 1, span.length);
+    return span.start + offset;
+  }
 }

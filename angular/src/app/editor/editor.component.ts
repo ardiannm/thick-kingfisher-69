@@ -77,6 +77,8 @@ export class EditorComponent {
 
         const rect = range.getBoundingClientRect();
 
+        // TODO: Ensure caret position is dynamically updated when the window or document is scrolled or resized
+
         this.caretX = rect.x;
         this.caretY = rect.y;
         // this.caretWidth = rect.width;
@@ -91,9 +93,17 @@ export class EditorComponent {
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
     if (input === 'ArrowRight') {
-      this.moveCaret(1);
+      event.preventDefault();
+      this.tranformCaretX(+1);
     } else if (input === 'ArrowLeft') {
-      this.moveCaret(-1);
+      event.preventDefault();
+      this.tranformCaretX(-1);
+    } else if (input === 'ArrowUp') {
+      event.preventDefault();
+      this.transformCaretY(+1);
+    } else if (input === 'ArrowDown') {
+      event.preventDefault();
+      this.transformCaretY(-1);
     } else if (input === 'Enter') {
       this.insertText();
     } else if (input === 'Tab') {
@@ -102,7 +112,7 @@ export class EditorComponent {
     } else if (input === 'Backspace') {
       this.removeText();
     } else if (input === 'Delete' && this.caret() !== this.length) {
-      this.moveCaret(1);
+      this.tranformCaretX(+1);
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
       this.insertText(input);
@@ -123,9 +133,15 @@ export class EditorComponent {
     this.code.set(newText);
   }
 
-  private moveCaret(steps: number) {
+  private tranformCaretX(steps: number) {
     const pos = this.caret();
     const newPos = pos + steps;
     if (newPos >= 0 && newPos <= this.length) this.caret.set(newPos);
+  }
+
+  transformCaretY(steps: number) {
+    const prevLine = this.line() - steps;
+    const pos = this.sourceText().getPosition(prevLine, this.column());
+    this.caret.set(pos);
   }
 }

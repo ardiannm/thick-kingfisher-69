@@ -16,6 +16,10 @@ export class LineSpan {
   }
 
   get length() {
+    return this.end - this.start - this.lineBreakLength;
+  }
+
+  get fullLength() {
     return this.end - this.start;
   }
 }
