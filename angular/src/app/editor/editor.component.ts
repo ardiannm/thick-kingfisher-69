@@ -64,6 +64,14 @@ export class EditorComponent {
     }
   }
 
+  @HostListener('window:scroll')
+  @HostListener('window:resize')
+  onWindowChange() {
+    const line = this.line();
+    const column = this.column();
+    this.getCaretPosition(line, column);
+  }
+
   private getCaretPosition(line: number, column: number) {
     const element = this.document.getElementById('row-' + line)!;
 
@@ -78,11 +86,8 @@ export class EditorComponent {
 
         const rect = range.getBoundingClientRect();
 
-        // TODO: Ensure caret position is dynamically updated when the window or document is scrolled or resized
-
         this.caretX = rect.x;
         this.caretY = rect.y;
-        // this.caretWidth = rect.width;
 
         // Clean up the range to avoid memory leaks
         range.detach();

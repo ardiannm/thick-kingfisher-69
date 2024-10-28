@@ -12,5 +12,4 @@ export class CaretComponent {
   @HostBinding('style.top.px') @Input() line = 0;
   @HostBinding('style.width.px') @Input() width = 4;
   @HostBinding('style.height.px') @Input() height = 19;
-  @HostBinding('style.animation') @Input() animation = 'fade 1.05s step-end infinite';
 }
