@@ -1,10 +1,10 @@
-@for (line of lines(); track $index) {
-<div class="line">
+@for (lineSpan of lines(); track $index) {
+<div class="line" [ngClass]="{ active: $index + 1 === line() }">
   <div class="line-number">
     {{ $index + 1 }}
   </div>
   <div class="line-text" [id]="'row-' + ($index + 1)">
-    {{ line.text }}&nbsp;
+    {{ lineSpan.text }} &nbsp;
   </div>
 </div>
 }

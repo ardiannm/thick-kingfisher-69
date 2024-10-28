@@ -42,6 +42,10 @@
   }
 }
 
+.active {
+  outline: 1px solid #d7ddef;
+}
+
 .status-bar {
   display: flex;
   flex-direction: row;

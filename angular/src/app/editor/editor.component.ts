@@ -1,7 +1,7 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from '@angular/core';
 import { SourceText } from './source.text';
 import { CaretComponent } from './caret/caret.component';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -24,7 +24,7 @@ bootstrapApplication(PlaygroundComponent);
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [CaretComponent],
+  imports: [CaretComponent, NgClass],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
