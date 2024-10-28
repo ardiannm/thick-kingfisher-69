@@ -41,6 +41,7 @@ export class EditorComponent {
   caretX = 0;
   caretY = 0;
   caretWidth = 4;
+  prevColumn = this.line();
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -136,12 +137,15 @@ export class EditorComponent {
   private tranformCaretX(steps: number) {
     const pos = this.caret();
     const newPos = pos + steps;
-    if (newPos >= 0 && newPos <= this.length) this.caret.set(newPos);
+    if (newPos >= 0 && newPos <= this.length) {
+      this.caret.set(newPos);
+      this.prevColumn = this.column();
+    }
   }
 
   transformCaretY(steps: number) {
     const prevLine = this.line() - steps;
-    const pos = this.sourceText().getPosition(prevLine, this.column());
+    const pos = this.sourceText().getPosition(prevLine, this.prevColumn);
     this.caret.set(pos);
   }
 }
