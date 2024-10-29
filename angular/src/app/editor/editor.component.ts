@@ -121,6 +121,7 @@ export class EditorComponent {
       this.tranformCaretX(+1);
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
+      event.preventDefault()
       this.insertText(input);
     }
   }
