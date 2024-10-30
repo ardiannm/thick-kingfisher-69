@@ -1,17 +1,7 @@
-import { SourceText } from "./source.text";
-
 export class Span {
-  private constructor(private text: SourceText, public start: number, public end: number) {}
+  private constructor(public start: number, public end: number) {}
 
-  public static createFrom(text: SourceText, start: number, end: number) {
-    return new Span(text, start, end);
-  }
-
-  public get line() {
-    return this.text.getLine(this.start);
-  }
-
-  public get offset() {
-    return this.text.getColumn(this.start);
+  public static createFrom(start: number, end: number) {
+    return new Span(start, end);
   }
 }

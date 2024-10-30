@@ -16,7 +16,7 @@ export abstract class SyntaxNode {
   get span() {
     const startPosition = this.getFirstChild().span.start;
     const endPosition = this.getLastChild().span.end;
-    return Span.createFrom(this.tree.sourceText, startPosition, endPosition);
+    return Span.createFrom(startPosition, endPosition);
   }
 
   get text() {

@@ -1,20 +1,7 @@
-import * as fs from "fs";
-import * as path from "path";
+import { SyntaxTree } from "./src/syntax.tree";
 
-function printDirectoryTree(dirPath: string, indent: string = ""): void {
-  const items = fs.readdirSync(dirPath);
+const node = SyntaxTree.createFrom("A3 :: A1+A2");
 
-  items.forEach((item) => {
-    const itemPath = path.join(dirPath, item);
-    const stats = fs.statSync(itemPath);
-
-    if (stats.isDirectory()) {
-      console.log(`${indent}> ${item}`);
-      printDirectoryTree(itemPath, indent + "  ");
-    } else {
-      console.log(`${indent}- ${item}`);
-    }
-  });
-}
-
-printDirectoryTree("./src");
+node.diagnostics.getDiagnostics().forEach((d) => {
+  console.log(d.message);
+});
