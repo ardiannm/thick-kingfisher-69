@@ -1,4 +1,5 @@
 import { Cell } from "../../cell";
+import { CompilerOptions } from "../../syntax.tree";
 import { SyntaxBinaryOperatorKind } from "../parsing/kind/syntax.binary.operator.kind";
 import { SyntaxNodeKind } from "../parsing/kind/syntax.node.kind";
 import { SyntaxUnaryOperatorKind } from "../parsing/kind/syntax.unary.operator.kind";
@@ -26,7 +27,7 @@ import { BoundBinaryOperatorKind } from "./kind/bound.binary.operator.kind";
 import { BoundUnaryOperatorKind } from "./kind/bound.unary.operator.kind";
 
 export class Binder {
-  private constructor(private scope = new BoundScope()) {}
+  private constructor(private configuration: CompilerOptions, private scope = new BoundScope()) {}
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -48,12 +49,12 @@ export class Binder {
       case SyntaxNodeKind.SyntaxCellAssignment:
         return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
     }
-    node.tree.diagnostics.binderMethod(node.kind, node.span);
+    node.text.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
-  static bindCompilationUnit(node: SyntaxCompilationUnit) {
-    return new Binder().bindCompilationUnit(node);
+  static bindCompilationUnit(node: SyntaxCompilationUnit, configuration: CompilerOptions) {
+    return new Binder(configuration).bindCompilationUnit(node);
   }
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {
@@ -84,7 +85,7 @@ export class Binder {
   }
 
   private bindCell(node: SyntaxCellReference): Cell {
-    const name = node.text;
+    const name = node.getText;
     if (this.scope.assignments.has(name)) {
       return this.scope.assignments.get(name)!.reference;
     }
@@ -92,7 +93,7 @@ export class Binder {
   }
 
   private bindCellReference(node: SyntaxCellReference) {
-    const name = node.text;
+    const name = node.getText;
     let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
       assigment = this.scope.assignments.get(name)!;
@@ -101,7 +102,7 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>();
       const value = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span);
-      if (node.tree.configuration.explicitDeclarations) node.tree.diagnostics.undeclaredCell(name, node.span);
+      if (this.configuration.explicitDeclarations) node.text.diagnostics.undeclaredCell(name, node.span);
     }
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);
@@ -154,7 +155,7 @@ export class Binder {
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
-    const value = parseFloat(node.text);
+    const value = parseFloat(node.getText);
     return new BoundNumericLiteral(value, node.span);
   }
 }

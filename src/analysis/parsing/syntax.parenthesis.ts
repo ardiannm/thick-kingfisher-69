@@ -1,4 +1,4 @@
-import { SyntaxTree } from "../../syntax.tree";
+import { SourceText } from "../../lexing/source.text";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxExpression } from "./syntax.expression";
@@ -7,12 +7,12 @@ import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxParenthesis extends SyntaxExpression {
   constructor(
-    public override tree: SyntaxTree,
+    public override text: SourceText,
     public openParen: SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>,
     public expression: SyntaxNode,
     public closeParen: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>
   ) {
-    super(tree, SyntaxNodeKind.SyntaxParenthesis);
+    super(text, SyntaxNodeKind.SyntaxParenthesis);
   }
 
   override getFirstChild(): SyntaxToken<SyntaxKind> {

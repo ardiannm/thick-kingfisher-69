@@ -1,7 +1,9 @@
+import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { LineSpan } from "./line.span";
 
 export class SourceText {
   private spans = [] as LineSpan[];
+  readonly diagnostics = new DiagnosticsBag();
 
   private constructor(public source: string) {
     let start = 0;

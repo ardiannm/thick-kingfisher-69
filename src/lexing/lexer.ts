@@ -5,7 +5,7 @@ import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
 import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
 import { SyntaxToken } from "../analysis/parsing/syntax.token";
-import { SyntaxTree } from "../syntax.tree";
+import { SourceText } from "./source.text";
 import { Span } from "./span";
 
 export class Lexer {
@@ -13,7 +13,7 @@ export class Lexer {
   private start: number;
   private end: number;
 
-  constructor(private readonly tree: SyntaxTree) {
+  constructor(private readonly text: SourceText) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
     this.start = 0;
     this.end = this.start;
@@ -24,6 +24,8 @@ export class Lexer {
     let token: SyntaxToken;
     do {
       token = this.lexNextToken();
+      console.log(token);
+
       yield token;
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
@@ -48,7 +50,7 @@ export class Lexer {
         return this.lexColonColonToken();
     }
     this.next();
-    return new SyntaxToken(this.tree, this.kind, this.createSpan());
+    return new SyntaxToken(this.text, this.kind, this.createSpan());
   }
 
   private lexBadToken(): SyntaxToken {
@@ -64,8 +66,8 @@ export class Lexer {
     const character = this.char();
     this.next();
     const span = this.createSpan();
-    this.tree.diagnostics.badCharacterFound(character, span);
-    return new SyntaxToken(this.tree, this.kind, span);
+    this.text.diagnostics.badCharacterFound(character, span);
+    return new SyntaxToken(this.text, this.kind, span);
   }
 
   private lexMultilineCommentToken() {
@@ -76,16 +78,16 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
       this.next(3);
     } else {
-      this.tree.diagnostics.missingTripleQuotes(this.createSpan());
+      this.text.diagnostics.missingTripleQuotes(this.createSpan());
     }
-    return new SyntaxToken(this.tree, SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
+    return new SyntaxToken(this.text, SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
   }
 
   private lexCommentToken(): SyntaxToken {
     do {
       this.next();
     } while (!(this.match(SyntaxTriviaKind.LineBreakTrivia) || this.match(SyntaxNodeKind.EndOfFileToken)));
-    return new SyntaxToken(this.tree, SyntaxTriviaKind.CommentTrivia, this.createSpan());
+    return new SyntaxToken(this.text, SyntaxTriviaKind.CommentTrivia, this.createSpan());
   }
 
   private lexMinusToken(): SyntaxToken {
@@ -95,13 +97,13 @@ export class Lexer {
       this.next();
       this.kind = SyntaxCompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.tree, this.kind, this.createSpan());
+    return new SyntaxToken(this.text, this.kind, this.createSpan());
   }
 
   private lexGreaterGreaterToken(): SyntaxToken {
     this.next(2);
     this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
-    return new SyntaxToken(this.tree, this.kind, this.createSpan());
+    return new SyntaxToken(this.text, this.kind, this.createSpan());
   }
 
   private lexColonColonToken(): SyntaxToken {
@@ -111,19 +113,19 @@ export class Lexer {
       this.next();
       this.kind = SyntaxCompositeTokenKind.ColonColonToken;
     }
-    return new SyntaxToken(this.tree, this.kind, this.createSpan());
+    return new SyntaxToken(this.text, this.kind, this.createSpan());
   }
 
   private lexIdentifier(): SyntaxToken {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
-    const text = this.tree.text.source.substring(span.start, span.end);
-    return new SyntaxToken(this.tree, SyntaxToken.isKeywordOrIdentifer(text), span);
+    const text = this.text.source.substring(span.start, span.end);
+    return new SyntaxToken(this.text, SyntaxToken.isKeywordOrIdentifer(text), span);
   }
 
   private lexSpaceToken(): SyntaxToken {
     while (this.isSpace()) this.next();
-    return new SyntaxToken(this.tree, SyntaxTriviaKind.SpaceTrivia, this.createSpan());
+    return new SyntaxToken(this.text, SyntaxTriviaKind.SpaceTrivia, this.createSpan());
   }
 
   private lexNumberToken(): SyntaxToken {
@@ -131,11 +133,11 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.tree.diagnostics.badFloatingPointNumber(this.createSpan());
+        this.text.diagnostics.badFloatingPointNumber(this.createSpan());
       }
     }
     while (this.isDigit()) this.next();
-    return new SyntaxToken(this.tree, SyntaxNodeKind.NumberToken, this.createSpan());
+    return new SyntaxToken(this.text, SyntaxNodeKind.NumberToken, this.createSpan());
   }
 
   private createSpan() {
@@ -159,7 +161,7 @@ export class Lexer {
 
   private peek(offset: number): string {
     const start = this.end + offset;
-    return this.tree.text.source.substring(start, start + 1);
+    return this.text.source.substring(start, start + 1);
   }
 
   private char() {

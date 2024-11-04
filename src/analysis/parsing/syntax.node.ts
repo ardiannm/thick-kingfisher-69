@@ -1,10 +1,10 @@
+import { SourceText } from "../../lexing/source.text";
 import { Span } from "../../lexing/span";
-import { SyntaxTree } from "../../syntax.tree";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxToken } from "./syntax.token";
 
 export abstract class SyntaxNode {
-  constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
+  constructor(public text: SourceText, public kind: SyntaxKind) {}
 
   abstract getFirstChild(): SyntaxToken;
   abstract getLastChild(): SyntaxToken;
@@ -17,7 +17,7 @@ export abstract class SyntaxNode {
     return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
-  get text() {
-    return this.tree.text.source.substring(this.span.start, this.span.end);
+  get getText() {
+    return this.text.source.substring(this.span.start, this.span.end);
   }
 }

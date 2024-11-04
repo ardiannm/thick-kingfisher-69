@@ -1,5 +1,5 @@
 import { Lexer } from "../../lexing/lexer";
-import { SyntaxTree } from "../../syntax.tree";
+import { SourceText } from "../../lexing/source.text";
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
 import { SyntaxKind } from "./kind/syntax.kind";
@@ -22,8 +22,8 @@ export class Parser {
   private trivias = [] as SyntaxToken[];
   private recovering = false;
 
-  private constructor(public readonly tree: SyntaxTree) {
-    const lexer = new Lexer(tree);
+  private constructor(public readonly text: SourceText) {
+    const lexer = new Lexer(text);
     for (const token of lexer.lex()) {
       if (SyntaxToken.isTrivia(token.kind) || token.kind === SyntaxNodeKind.BadToken) {
         this.trivias.push(token);
@@ -35,7 +35,7 @@ export class Parser {
     }
   }
 
-  static parseCompilationUnit(tree: SyntaxTree) {
+  static parseCompilationUnit(tree: SourceText) {
     return new Parser(tree).parseCompilationUnit();
   }
 
@@ -46,7 +46,7 @@ export class Parser {
       statements.push(this.parseBlock());
       if (this.peekToken() === startToken) this.getNextToken();
     }
-    return new SyntaxCompilationUnit(this.tree, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
+    return new SyntaxCompilationUnit(this.text, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
 
   private parseBlock() {
@@ -59,9 +59,9 @@ export class Parser {
         if (this.peekToken() === startToken) this.getNextToken();
       }
       const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
-      const node = new SyntaxBlock(this.tree, openBrace, statements, closeBrace);
+      const node = new SyntaxBlock(this.text, openBrace, statements, closeBrace);
       if (closeBrace.kind === SyntaxNodeKind.CloseBraceToken && !statements.length) {
-        this.tree.diagnostics.emptyBlock(node.span);
+        this.text.diagnostics.emptyBlock(node.span);
       }
       return node;
     }
@@ -73,7 +73,7 @@ export class Parser {
     switch (this.peekToken().kind) {
       case SyntaxCompositeTokenKind.ColonColonToken:
         const keyword = this.getNextToken() as SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>;
-        return new SyntaxCellAssignment(this.tree, left, keyword, this.parseBinaryExpression());
+        return new SyntaxCellAssignment(this.text, left, keyword, this.parseBinaryExpression());
     }
     return left;
   }
@@ -87,7 +87,7 @@ export class Parser {
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
       const right = this.parseBinaryExpression(precedence);
-      left = new SyntaxBinaryExpression(this.tree, left, operator, right);
+      left = new SyntaxBinaryExpression(this.text, left, operator, right);
     }
     return left;
   }
@@ -97,7 +97,7 @@ export class Parser {
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
       const right = this.parseUnaryExpression();
-      return new SyntaxUnaryExpression(this.tree, operator, right);
+      return new SyntaxUnaryExpression(this.text, operator, right);
     }
     return this.parseParenthesis();
   }
@@ -107,7 +107,7 @@ export class Parser {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
       const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      return new SyntaxParenthesis(this.tree, left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
+      return new SyntaxParenthesis(this.text, left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
     }
     return this.parseCellReference();
   }
@@ -116,9 +116,9 @@ export class Parser {
     if (this.match(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
       const right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
-      const node = new SyntaxCellReference(this.tree, left, right);
+      const node = new SyntaxCellReference(this.text, left, right);
       if (right.hasTrivia()) {
-        this.tree.diagnostics.requireCompactCellReference(left.text + right.text, node.span);
+        this.text.diagnostics.requireCompactCellReference(left.getText + right.getText, node.span);
       }
       return node;
     }
@@ -173,7 +173,7 @@ export class Parser {
       return token;
     }
     this.recovering = true;
-    this.tree.diagnostics.unexpectedTokenFound(token.kind, kind, token.span);
+    this.text.diagnostics.unexpectedTokenFound(token.kind, kind, token.span);
     return token as SyntaxToken<Kind>;
   }
 }
