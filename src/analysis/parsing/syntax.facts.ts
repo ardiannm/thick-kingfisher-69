@@ -3,6 +3,7 @@ import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
+import { TokenTextMapper } from "./token.text";
 
 export class SyntaxFacts {
 
@@ -31,7 +32,7 @@ export class SyntaxFacts {
     }
   }
 
-  static getSyntaxKind(text: string): SyntaxKind {
+  static getSyntaxKind(text: string): keyof TokenTextMapper {
     switch (text) {
       case "+":
         return SyntaxBinaryOperatorKind.PlusToken;

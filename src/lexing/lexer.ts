@@ -5,9 +5,7 @@ import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
 import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
 import { SyntaxToken } from "../analysis/parsing/syntax.token";
-import { TokenTextMapper } from "../analysis/parsing/token.text";
 import { SyntaxTree } from "../syntax.tree";
-import { SourceText } from "./source.text";
 import { Span } from "./span";
 
 export class Lexer {
@@ -15,20 +13,24 @@ export class Lexer {
   private start: number;
   private end: number;
 
-  private constructor(private readonly tree: SyntaxTree) {
+  constructor(private readonly tree: SyntaxTree) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
     this.start = 0;
     this.end = this.start;
   }
 
-  static createFrom(text: SourceText | SyntaxTree) {
-    const tree = text instanceof SyntaxTree ? text : SyntaxTree.createFrom(text.source);
-    return new Lexer(tree);
+  // Generator function that calls lexNextToken and yields each token
+  *lex(): Generator<SyntaxToken> {
+    let token: SyntaxToken;
+    do {
+      token = this.lexNextToken();
+      yield token;
+    } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
-  lexNextToken() {
+  private lexNextToken() {
     this.start = this.end;
-    this.kind = SyntaxFacts.getSyntaxKind(this.char()) as keyof TokenTextMapper;
+    this.kind = SyntaxFacts.getSyntaxKind(this.char());
     if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
       return this.lexMultilineCommentToken();
     }
@@ -168,7 +170,7 @@ export class Lexer {
     this.end = this.end + steps;
   }
 
-  private match(...kinds: Array<SyntaxKind>) {
+  private match(...kinds: SyntaxKind[]) {
     let offset = 0;
     for (const kind of kinds) {
       if (kind !== SyntaxFacts.getSyntaxKind(this.peek(offset))) return false;

@@ -22,23 +22,17 @@ export class Parser {
   private trivias = [] as SyntaxToken[];
   private recovering = false;
 
-  private hasMoreTokens() {
-    return !this.match(SyntaxNodeKind.EndOfFileToken);
-  }
-
   private constructor(public readonly tree: SyntaxTree) {
-    const lexer = Lexer.createFrom(tree);
-    var token: SyntaxToken;
-    do {
-      token = lexer.lexNextToken();
-      if (SyntaxToken.isTrivia(token.kind)) {
+    const lexer = new Lexer(tree);
+    for (const token of lexer.lex()) {
+      if (SyntaxToken.isTrivia(token.kind) || token.kind === SyntaxNodeKind.BadToken) {
         this.trivias.push(token);
       } else {
         this.trivias.forEach((trivia) => token.trivias.push(trivia));
         this.tokens.push(token);
         this.trivias.length = 0;
       }
-    } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
+    }
   }
 
   static parseCompilationUnit(tree: SyntaxTree) {
@@ -47,7 +41,7 @@ export class Parser {
 
   private parseCompilationUnit() {
     const statements = new Array<SyntaxExpression>(this.parseBlock());
-    while (this.hasMoreTokens()) {
+    while (this.hasToken()) {
       const startToken = this.peekToken();
       statements.push(this.parseBlock());
       if (this.peekToken() === startToken) this.getNextToken();
@@ -59,7 +53,7 @@ export class Parser {
     if (this.match(SyntaxNodeKind.OpenBraceToken)) {
       const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
       const statements = new Array<SyntaxExpression>();
-      while (this.hasMoreTokens() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
+      while (this.hasToken() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
         if (this.peekToken() === startToken) this.getNextToken();
@@ -141,6 +135,10 @@ export class Parser {
         return this.getNextToken();
     }
     return this.expect(SyntaxNodeKind.SyntaxExpression);
+  }
+
+  private hasToken() {
+    return !this.match(SyntaxNodeKind.EndOfFileToken);
   }
 
   private peekToken(offset: number = 0) {

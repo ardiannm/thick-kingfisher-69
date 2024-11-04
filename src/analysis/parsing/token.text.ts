@@ -20,6 +20,7 @@ export type TokenTextMapper = {
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";
   [SyntaxNodeKind.ColonToken]: ":";
+  [SyntaxNodeKind.EqualsToken]: "=";
   [SyntaxCompositeTokenKind.GreaterGreaterToken]: ">>";
   [SyntaxCompositeTokenKind.ColonColonToken]: "::";
   [SyntaxCompositeTokenKind.PointerToken]: "->";

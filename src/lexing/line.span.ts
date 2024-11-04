@@ -1,3 +1,4 @@
+// import { Lexer } from "./lexer";
 import { SourceText } from "./source.text";
 
 export class LineSpan {
@@ -22,4 +23,9 @@ export class LineSpan {
   get fullLength() {
     return this.end - this.start;
   }
+
+  // get tokens() {
+  //   const tokens = Lexer.createFrom(this.sourceText)
+
+  // }
 }
