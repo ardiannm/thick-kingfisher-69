@@ -15,7 +15,7 @@ export class SyntaxTree {
 
   readonly diagnostics = new DiagnosticsBag();
 
-  private constructor(public sourceText: SourceText, public configuration: CompilerOptions) {
+  private constructor(public text: SourceText, public configuration: CompilerOptions) {
     this.syntaxRoot = Parser.parseCompilationUnit(this);
     this.bound = Binder.bindCompilationUnit(this.syntaxRoot);
   }

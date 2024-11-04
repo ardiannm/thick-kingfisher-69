@@ -7,6 +7,7 @@ import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
 import { SyntaxToken } from "../analysis/parsing/syntax.token";
 import { TokenTextMapper } from "../analysis/parsing/token.text";
 import { SyntaxTree } from "../syntax.tree";
+import { SourceText } from "./source.text";
 import { Span } from "./span";
 
 export class Lexer {
@@ -14,10 +15,15 @@ export class Lexer {
   private start: number;
   private end: number;
 
-  constructor(private readonly tree: SyntaxTree) {
+  private constructor(private readonly tree: SyntaxTree) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
     this.start = 0;
     this.end = this.start;
+  }
+
+  static createFrom(text: SourceText | SyntaxTree) {
+    const tree = text instanceof SyntaxTree ? text : SyntaxTree.createFrom(text.source);
+    return new Lexer(tree);
   }
 
   lexNextToken() {
@@ -109,7 +115,7 @@ export class Lexer {
   private lexIdentifier(): SyntaxToken {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
-    const text = this.tree.sourceText.getText(span.start, span.end);
+    const text = this.tree.text.source.substring(span.start, span.end);
     return new SyntaxToken(this.tree, SyntaxToken.isKeywordOrIdentifer(text), span);
   }
 
@@ -151,7 +157,7 @@ export class Lexer {
 
   private peek(offset: number): string {
     const start = this.end + offset;
-    return this.tree.sourceText.getText(start, start + 1);
+    return this.tree.text.source.substring(start, start + 1);
   }
 
   private char() {

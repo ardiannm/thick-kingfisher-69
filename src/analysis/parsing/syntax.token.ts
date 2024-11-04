@@ -7,14 +7,14 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { SyntaxNode } from "./syntax.node";
 
 export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
-  public trivia = [] as SyntaxToken[];
+  public trivias = [] as SyntaxToken[];
 
   constructor(public override tree: SyntaxTree, public override kind: T, private textSpan: Span) {
     super(tree, kind);
   }
 
   override hasTrivia(): boolean {
-    return this.trivia.length > 0;
+    return this.trivias.length > 0;
   }
 
   override get span() {

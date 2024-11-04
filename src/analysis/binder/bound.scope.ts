@@ -2,9 +2,9 @@ import { BoundCellReference } from "./bound.cell.reference";
 import { BoundCellAssignment } from "./bound.cell.assignment";
 
 export class BoundScope {
-  references = new Array<BoundCellReference>();
-  assignments = new Map<string, BoundCellAssignment>();
-  observers = new Map<string, Set<BoundCellAssignment>>();
+  observers = new Map() as Map<string, Set<BoundCellAssignment>>;
+  assignments = new Map() as Map<string, BoundCellAssignment>;
+  references = [] as BoundCellReference[];
 
   constructor(public parent?: BoundScope) {}
 }

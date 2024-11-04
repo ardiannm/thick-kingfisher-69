@@ -12,10 +12,14 @@ export class LineSpan {
   }
 
   get text(): string {
-    return this.sourceText.getText(this.start, this.end - this.lineBreakLength);
+    return this.sourceText.source.substring(this.start, this.end - this.lineBreakLength);
   }
 
   get length() {
+    return this.end - this.start - this.lineBreakLength;
+  }
+
+  get fullLength() {
     return this.end - this.start;
   }
 }

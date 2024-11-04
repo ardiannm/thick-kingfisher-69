@@ -6,22 +6,18 @@ import { SyntaxToken } from "./syntax.token";
 export abstract class SyntaxNode {
   constructor(public tree: SyntaxTree, public kind: SyntaxKind) {}
 
-  abstract getFirstChild(): SyntaxToken<SyntaxKind>;
-  abstract getLastChild(): SyntaxToken<SyntaxKind>;
+  abstract getFirstChild(): SyntaxToken;
+  abstract getLastChild(): SyntaxToken;
 
   hasTrivia() {
-    this.getFirstChild().trivia.length > 0;
+    this.getFirstChild().trivias.length > 0;
   }
 
   get span() {
-    const startPosition = this.getFirstChild().span.start;
-    const endPosition = this.getLastChild().span.end;
-    return Span.createFrom(startPosition, endPosition);
+    return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
   get text() {
-    const startPosition = this.getFirstChild().span.start;
-    const endPosition = this.getLastChild().span.end;
-    return this.tree.sourceText.getText(startPosition, endPosition);
+    return this.tree.text.source.substring(this.span.start, this.span.end);
   }
 }

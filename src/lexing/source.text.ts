@@ -1,13 +1,13 @@
 import { LineSpan } from "./line.span";
 
 export class SourceText {
-  private spans = new Array<LineSpan>();
+  private spans = [] as LineSpan[];
 
-  private constructor(private text: string) {
+  private constructor(public source: string) {
     let start = 0;
     let position = 0;
-    while (position < this.text.length) {
-      const c = this.text[position];
+    while (position < this.source.length) {
+      const c = this.source[position];
       position++;
       if (c === "\n") {
         this.spans.push(LineSpan.createFrom(this, start, position, 1));
@@ -49,10 +49,6 @@ export class SourceText {
 
   getLines() {
     return this.spans;
-  }
-
-  getText(start: number, end: number): string {
-    return this.text.substring(start, end);
   }
 
   getPosition(line: number, column: number) {

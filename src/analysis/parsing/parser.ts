@@ -18,8 +18,8 @@ import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 
 export class Parser {
   private index = 0;
-  private tokens = new Array<SyntaxToken>();
-  private trivias = new Array<SyntaxToken>();
+  private tokens = [] as SyntaxToken[];
+  private trivias = [] as SyntaxToken[];
   private recovering = false;
 
   private hasMoreTokens() {
@@ -27,14 +27,14 @@ export class Parser {
   }
 
   private constructor(public readonly tree: SyntaxTree) {
-    const lexer = new Lexer(tree);
+    const lexer = Lexer.createFrom(tree);
     var token: SyntaxToken;
     do {
       token = lexer.lexNextToken();
       if (SyntaxToken.isTrivia(token.kind)) {
         this.trivias.push(token);
       } else {
-        this.trivias.forEach((trivia) => token.trivia.push(trivia));
+        this.trivias.forEach((trivia) => token.trivias.push(trivia));
         this.tokens.push(token);
         this.trivias.length = 0;
       }
