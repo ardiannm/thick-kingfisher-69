@@ -18,7 +18,8 @@ import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 
 export class Parser {
   private index = 0;
-  private tokens = new Array<SyntaxToken<SyntaxKind>>();
+  private tokens = new Array<SyntaxToken>();
+  private trivias = new Array<SyntaxToken>();
   private recovering = false;
 
   private hasMoreTokens() {
@@ -27,11 +28,16 @@ export class Parser {
 
   private constructor(public readonly tree: SyntaxTree) {
     const lexer = new Lexer(tree);
-    var token: SyntaxToken<SyntaxKind>;
+    var token: SyntaxToken;
     do {
-      token = lexer.lex();
-      if (token.kind === SyntaxNodeKind.BadToken) continue;
-      this.tokens.push(token);
+      token = lexer.lexNextToken();
+      if (SyntaxToken.isTrivia(token.kind)) {
+        this.trivias.push(token);
+      } else {
+        this.trivias.forEach((trivia) => token.trivia.push(trivia));
+        this.tokens.push(token);
+        this.trivias.length = 0;
+      }
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }
 
@@ -81,7 +87,7 @@ export class Parser {
   private parseBinaryExpression(parentPrecedence = 0): SyntaxExpression {
     let left = this.parseUnaryExpression();
     while (true) {
-      const precedence = SyntaxFacts.binaryPrecedence(this.peekToken().kind);
+      const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
       if (precedence === 0 || precedence <= parentPrecedence) {
         break;
       }
@@ -93,7 +99,7 @@ export class Parser {
   }
 
   private parseUnaryExpression(): SyntaxExpression {
-    const precedence = SyntaxFacts.unaryPrecedence(this.peekToken().kind);
+    const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
       const right = this.parseUnaryExpression();

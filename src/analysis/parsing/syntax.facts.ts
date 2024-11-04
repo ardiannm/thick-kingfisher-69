@@ -2,11 +2,11 @@ import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
-import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 
 export class SyntaxFacts {
-  static unaryPrecedence(kind: SyntaxKind) {
+
+  static getUnaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxUnaryOperatorKind.PlusToken:
       case SyntaxUnaryOperatorKind.MinusToken:
@@ -16,7 +16,7 @@ export class SyntaxFacts {
     }
   }
 
-  static binaryPrecedence(kind: SyntaxKind) {
+  static getBinaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxBinaryOperatorKind.HatToken:
         return 3;
@@ -31,7 +31,7 @@ export class SyntaxFacts {
     }
   }
 
-  static syntaxKind(text: string): SyntaxKind {
+  static getSyntaxKind(text: string): SyntaxKind {
     switch (text) {
       case "+":
         return SyntaxBinaryOperatorKind.PlusToken;
@@ -69,29 +69,6 @@ export class SyntaxFacts {
         return SyntaxNodeKind.EndOfFileToken;
       default:
         return SyntaxNodeKind.BadToken;
-    }
-  }
-
-  static isKeywordOrIdentifer(text: string): SyntaxKind {
-    switch (text) {
-      case "true":
-        return SyntaxKeywordKind.TrueKeyword;
-      case "false":
-        return SyntaxKeywordKind.FalseKeyword;
-      default:
-        return SyntaxNodeKind.IdentifierToken;
-    }
-  }
-
-  static isTrivia(kind: SyntaxKind) {
-    switch (kind) {
-      case SyntaxTriviaKind.LineBreakTrivia:
-      case SyntaxTriviaKind.SpaceTrivia:
-      case SyntaxTriviaKind.CommentTrivia:
-      case SyntaxTriviaKind.MultilineCommentTrivia:
-        return true;
-      default:
-        return false;
     }
   }
 }

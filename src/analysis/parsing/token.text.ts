@@ -3,6 +3,7 @@ import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
+import { SyntaxKind } from "./kind/syntax.kind";
 
 export type TokenTextMapper = {
   [SyntaxBinaryOperatorKind.PlusToken]: "+";
@@ -32,3 +33,5 @@ export type TokenTextMapper = {
   [SyntaxTriviaKind.SpaceTrivia]: string;
   [SyntaxTriviaKind.CommentTrivia]: string;
 };
+
+export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
