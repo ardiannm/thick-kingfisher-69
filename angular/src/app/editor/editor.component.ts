@@ -106,10 +106,10 @@ export class EditorComponent {
       this.tranformCaretX(-1);
     } else if (input === 'ArrowUp') {
       event.preventDefault();
-      this.transformCaretY(+1);
+      this.transformCaretY(-1);
     } else if (input === 'ArrowDown') {
       event.preventDefault();
-      this.transformCaretY(-1);
+      this.transformCaretY(+1);
     } else if (input === 'Enter') {
       this.insertText();
     } else if (input === 'Tab') {
@@ -121,7 +121,7 @@ export class EditorComponent {
       this.tranformCaretX(+1);
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
-      event.preventDefault()
+      event.preventDefault();
       this.insertText(input);
     }
   }
@@ -150,8 +150,13 @@ export class EditorComponent {
   }
 
   transformCaretY(steps: number) {
-    const prevLine = this.line() - steps;
-    const pos = this.sourceText().getPosition(prevLine, this.prevColumn);
-    this.caret.set(pos);
+    const prevLine = this.line() + steps;
+    if (prevLine > 0) {
+      const pos = this.sourceText().getPosition(prevLine, this.prevColumn);
+      this.caret.set(pos);
+    } else {
+      this.prevColumn = 1;
+      this.caret.set(0);
+    }
   }
 }
