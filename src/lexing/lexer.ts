@@ -5,7 +5,7 @@ import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
 import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
 import { SyntaxToken } from "../analysis/parsing/syntax.token";
-import { TokenTextMapper } from "../analysis/parsing/token.text.warpper";
+import { TokenTextMapper } from "../analysis/parsing/token.text.mapper";
 import { SyntaxTree } from "../syntax.tree";
 import { Span } from "./span";
 
@@ -21,14 +21,15 @@ export class Lexer {
     this.end = this.start;
   }
 
-  public lex(): SyntaxToken<SyntaxKind> {
+  lex(): SyntaxToken<SyntaxKind> {
     var token: SyntaxToken<SyntaxKind>;
     do {
       token = this.lexNextToken();
       if (SyntaxFacts.isTrivia(token.kind)) {
         this.trivias.push(token);
       } else {
-        token.loadTrivias(this.trivias);
+        this.trivias.forEach((trivia) => token.trivia.push(trivia));
+        this.trivias.length = 0;
         return token;
       }
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);

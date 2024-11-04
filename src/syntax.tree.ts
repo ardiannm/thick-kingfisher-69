@@ -21,7 +21,6 @@ export class SyntaxTree {
   }
 
   static createFrom(text: string = "", configuration: CompilerOptions = new CompilerOptions(true)) {
-    const sourceText = SourceText.createFrom(text);
-    return new SyntaxTree(sourceText, configuration);
+    return new SyntaxTree(SourceText.createFrom(text), configuration);
   }
 }

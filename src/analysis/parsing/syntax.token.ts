@@ -2,19 +2,15 @@ import { Span } from "../../lexing/span";
 import { SyntaxTree } from "../../syntax.tree";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { TokenTextMapper } from "./token.text.warpper";
+import { TokenTextMapper } from "./token.text.mapper";
 
 export type TokenText<Kind extends SyntaxKind> = Kind extends keyof TokenTextMapper ? TokenTextMapper[Kind] : never;
 
 export class SyntaxToken<T extends SyntaxKind> extends SyntaxNode {
-  constructor(public override tree: SyntaxTree, public override kind: T, private tokenSpan: Span, public trivia = new Array<SyntaxToken<SyntaxKind>>()) {
-    super(tree, kind);
-  }
+  public trivia = new Array<SyntaxToken<SyntaxKind>>();
 
-  loadTrivias(trivias: Array<SyntaxToken<SyntaxKind>>): void {
-    while (trivias.length > 0) {
-      this.trivia.push(trivias.shift() as SyntaxToken<SyntaxKind>);
-    }
+  constructor(public override tree: SyntaxTree, public override kind: T, private tokenSpan: Span) {
+    super(tree, kind);
   }
 
   override hasTrivia(): boolean {
