@@ -19,13 +19,10 @@ export class Lexer {
     this.end = this.start;
   }
 
-  // Generator function that calls lexNextToken and yields each token
   *lex(): Generator<SyntaxToken> {
     let token: SyntaxToken;
     do {
       token = this.lexNextToken();
-      console.log(token);
-
       yield token;
     } while (token.kind !== SyntaxNodeKind.EndOfFileToken);
   }

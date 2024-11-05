@@ -1,7 +1,8 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from '@angular/core';
-import { SourceText } from './source.text';
 import { CaretComponent } from './caret/caret.component';
 import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
+
+import * as MyCustomParser from './source.text';
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -33,7 +34,7 @@ export class EditorComponent {
   text = text;
   length = text.length;
   code = signal(text);
-  sourceText = computed(() => SourceText.createFrom(this.code()));
+  sourceText = computed(() => MyCustomParser.SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
   caret = signal(this.text.length);
   line = computed(() => this.sourceText().getLine(this.caret()));
