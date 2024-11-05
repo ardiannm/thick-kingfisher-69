@@ -1,7 +1,9 @@
-export class Span {
-  private constructor(public start: number, public end: number) {}
+import { SourceText } from "./source.text";
 
-  public static createFrom(start: number, end: number) {
-    return new Span(start, end);
+export class Span {
+  private constructor(public start: number, public end: number, public text: SourceText) {}
+
+  public static createFrom(start: number, end: number, text: SourceText) {
+    return new Span(start, end, text);
   }
 }

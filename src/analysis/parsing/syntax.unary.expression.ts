@@ -1,4 +1,3 @@
-import { SourceText } from "../../lexing/source.text";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
@@ -7,8 +6,8 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxUnaryExpression extends SyntaxExpression {
-  constructor(public override text: SourceText, public operator: SyntaxToken<SyntaxUnaryOperatorKind>, public right: SyntaxNode) {
-    super(text, SyntaxNodeKind.SyntaxUnaryExpression);
+  constructor(public operator: SyntaxToken<SyntaxUnaryOperatorKind>, public right: SyntaxNode) {
+    super(SyntaxNodeKind.SyntaxUnaryExpression);
   }
 
   override getFirstChild(): SyntaxToken<SyntaxKind> {

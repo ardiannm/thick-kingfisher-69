@@ -1,4 +1,3 @@
-import { SourceText } from "../../lexing/source.text";
 import { Span } from "../../lexing/span";
 import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
 import { SyntaxKind } from "./kind/syntax.kind";
@@ -9,8 +8,8 @@ import { SyntaxNode } from "./syntax.node";
 export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
   public trivias = [] as SyntaxToken[];
 
-  constructor(public override text: SourceText, public override kind: T, private textSpan: Span) {
-    super(text, kind);
+  constructor(public override kind: T, private textSpan: Span) {
+    super(kind);
   }
 
   override hasTrivia(): boolean {

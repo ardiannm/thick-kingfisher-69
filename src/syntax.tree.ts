@@ -14,7 +14,7 @@ export class SyntaxTree {
 
   private constructor(public text: SourceText, public configuration: CompilerOptions) {
     this.syntaxRoot = Parser.parseCompilationUnit(text);
-    this.bound = Binder.bindCompilationUnit(this.syntaxRoot, configuration);
+    this.bound = Binder.bindCompilationUnit(this.syntaxRoot, this.text.diagnostics, configuration);
   }
 
   static createFrom(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {

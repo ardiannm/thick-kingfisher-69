@@ -46,7 +46,7 @@ export class Parser {
       statements.push(this.parseBlock());
       if (this.peekToken() === startToken) this.getNextToken();
     }
-    return new SyntaxCompilationUnit(this.text, statements, this.expect(SyntaxNodeKind.EndOfFileToken));
+    return new SyntaxCompilationUnit(statements, this.expect(SyntaxNodeKind.EndOfFileToken));
   }
 
   private parseBlock() {
@@ -59,7 +59,7 @@ export class Parser {
         if (this.peekToken() === startToken) this.getNextToken();
       }
       const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
-      const node = new SyntaxBlock(this.text, openBrace, statements, closeBrace);
+      const node = new SyntaxBlock(openBrace, statements, closeBrace);
       if (closeBrace.kind === SyntaxNodeKind.CloseBraceToken && !statements.length) {
         this.text.diagnostics.emptyBlock(node.span);
       }
@@ -73,7 +73,7 @@ export class Parser {
     switch (this.peekToken().kind) {
       case SyntaxCompositeTokenKind.ColonColonToken:
         const keyword = this.getNextToken() as SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>;
-        return new SyntaxCellAssignment(this.text, left, keyword, this.parseBinaryExpression());
+        return new SyntaxCellAssignment(left, keyword, this.parseBinaryExpression());
     }
     return left;
   }
@@ -87,7 +87,7 @@ export class Parser {
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
       const right = this.parseBinaryExpression(precedence);
-      left = new SyntaxBinaryExpression(this.text, left, operator, right);
+      left = new SyntaxBinaryExpression(left, operator, right);
     }
     return left;
   }
@@ -97,7 +97,7 @@ export class Parser {
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
       const right = this.parseUnaryExpression();
-      return new SyntaxUnaryExpression(this.text, operator, right);
+      return new SyntaxUnaryExpression(operator, right);
     }
     return this.parseParenthesis();
   }
@@ -107,7 +107,7 @@ export class Parser {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
       const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      return new SyntaxParenthesis(this.text, left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
+      return new SyntaxParenthesis(left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
     }
     return this.parseCellReference();
   }
@@ -116,9 +116,9 @@ export class Parser {
     if (this.match(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
       const right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
-      const node = new SyntaxCellReference(this.text, left, right);
+      const node = new SyntaxCellReference(left, right);
       if (right.hasTrivia()) {
-        this.text.diagnostics.requireCompactCellReference(left.getText + right.getText, node.span);
+        this.text.diagnostics.requireCompactCellReference(left.getText() + right.getText(), node.span);
       }
       return node;
     }
