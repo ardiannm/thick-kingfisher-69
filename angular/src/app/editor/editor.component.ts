@@ -2,7 +2,7 @@ import { Component, Input, signal, computed, HostListener, effect, Inject, PLATF
 import { CaretComponent } from './caret/caret.component';
 import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
 
-import * as MyCustomParser from './source.text';
+import * as MyCustomParser from '../../../../ng';
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
