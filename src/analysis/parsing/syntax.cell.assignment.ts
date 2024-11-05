@@ -1,12 +1,11 @@
 import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxExpression } from "./syntax.expression";
+import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
-import { SyntaxStatement } from "./sytax.statements";
 
-export class SyntaxCellAssignment extends SyntaxStatement {
-  constructor(public left: SyntaxExpression, public operator: SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>, public expression: SyntaxExpression) {
+export class SyntaxCellAssignment extends SyntaxNode {
+  constructor(public left: SyntaxNode, public operator: SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>, public expression: SyntaxNode) {
     super(SyntaxNodeKind.SyntaxCellAssignment);
   }
 

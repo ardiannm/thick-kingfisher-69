@@ -10,8 +10,8 @@ import { SyntaxBlock } from "./syntax.block";
 import { SyntaxCellAssignment } from "./syntax.cell.assignment";
 import { SyntaxCellReference } from "./syntax.cell.reference";
 import { SyntaxCompilationUnit } from "./syntax.compilation.unit";
-import { SyntaxExpression } from "./syntax.expression";
 import { SyntaxFacts } from "./syntax.facts";
+import { SyntaxNode } from "./syntax.node";
 import { SyntaxParenthesis } from "./syntax.parenthesis";
 import { SyntaxToken } from "./syntax.token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
@@ -40,7 +40,7 @@ export class Parser {
   }
 
   private parseCompilationUnit() {
-    const statements = new Array<SyntaxExpression>(this.parseBlock());
+    const statements = new Array<SyntaxNode>(this.parseBlock());
     while (this.hasToken()) {
       const startToken = this.peekToken();
       statements.push(this.parseBlock());
@@ -52,7 +52,7 @@ export class Parser {
   private parseBlock() {
     if (this.match(SyntaxNodeKind.OpenBraceToken)) {
       const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
-      const statements = new Array<SyntaxExpression>();
+      const statements = new Array<SyntaxNode>();
       while (this.hasToken() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
@@ -78,7 +78,7 @@ export class Parser {
     return left;
   }
 
-  private parseBinaryExpression(parentPrecedence = 0): SyntaxExpression {
+  private parseBinaryExpression(parentPrecedence = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
     while (true) {
       const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
@@ -92,7 +92,7 @@ export class Parser {
     return left;
   }
 
-  private parseUnaryExpression(): SyntaxExpression {
+  private parseUnaryExpression(): SyntaxNode {
     const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;

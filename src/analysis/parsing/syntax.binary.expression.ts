@@ -1,11 +1,10 @@
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxExpression } from "./syntax.expression";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
-export class SyntaxBinaryExpression extends SyntaxExpression {
+export class SyntaxBinaryExpression extends SyntaxNode {
   constructor(public left: SyntaxNode, public operator: SyntaxToken<SyntaxBinaryOperatorKind>, public right: SyntaxNode) {
     super(SyntaxNodeKind.BinaryExpression);
   }

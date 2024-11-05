@@ -2,10 +2,9 @@ import { SyntaxKind } from "./kind/syntax.kind";
 import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
-import { SyntaxStatement } from "./sytax.statements";
 
 export class SyntaxCompilationUnit extends SyntaxNode {
-  constructor(public root: Array<SyntaxStatement>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
+  constructor(public root: Array<SyntaxNode>, public eof: SyntaxToken<SyntaxNodeKind.EndOfFileToken>) {
     super(SyntaxNodeKind.SyntaxCompilationUnit);
   }
 
