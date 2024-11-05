@@ -1,15 +1,16 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { LineSpan } from "./line.span";
+import { Span } from "./span";
 
 export class SourceText {
   private spans = [] as LineSpan[];
-  readonly diagnostics = new DiagnosticsBag();
+  readonly diagnostics = new DiagnosticsBag(this);
 
-  private constructor(public source: string) {
+  private constructor(public text: string) {
     let start = 0;
     let position = 0;
-    while (position < this.source.length) {
-      const c = this.source[position];
+    while (position < this.text.length) {
+      const c = this.text[position];
       position++;
       if (c === "\n") {
         this.spans.push(LineSpan.createFrom(this, start, position, 1));
@@ -58,5 +59,9 @@ export class SourceText {
     const span = this.spans[index];
     const offset = Math.min(column - 1, span.length);
     return span.start + offset;
+  }
+
+  getText(span: Span) {
+    return this.text.substring(span.start, span.end);
   }
 }

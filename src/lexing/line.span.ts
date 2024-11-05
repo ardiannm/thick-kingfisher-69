@@ -13,7 +13,7 @@ export class LineSpan {
   }
 
   get text(): string {
-    return this.sourceText.source.substring(this.start, this.end - this.lineBreakLength);
+    return this.sourceText.text.substring(this.start, this.end - this.lineBreakLength);
   }
 
   get length() {

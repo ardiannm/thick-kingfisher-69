@@ -118,7 +118,8 @@ export class Parser {
       const right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
       const node = new SyntaxCellReference(left, right);
       if (right.hasTrivia()) {
-        this.text.diagnostics.requireCompactCellReference(left.getText() + right.getText(), node.span);
+        const name = this.text.getText(left.span) + this.text.getText(right.span);
+        this.text.diagnostics.requireCompactCellReference(name, node.span);
       }
       return node;
     }

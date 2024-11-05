@@ -1,13 +1,15 @@
+import { SourceText } from "../../lexing/source.text";
 import { Span } from "../../lexing/span";
 import { BoundKind } from "../binder/kind/bound.kind";
 import { SyntaxKind } from "../parsing/kind/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
-
 export class DiagnosticsBag {
-  private diagnostics = new Array<Diagnostic>();
-  private severity = new Set<Severity>();
+  private diagnostics = [] as Diagnostic[];
+  private severity = new Set() as Set<Severity>;
+
+  constructor(public readonly sourceText: SourceText) {}
 
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);

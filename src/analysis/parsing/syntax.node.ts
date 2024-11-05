@@ -13,12 +13,6 @@ export abstract class SyntaxNode {
   }
 
   get span() {
-    const start = this.getFirstChild();
-    const end = this.getLastChild();
-    return Span.createFrom(start.span.start, end.span.end, start.span.text);
-  }
-
-  getText() {
-    return this.span.text.source.substring(this.span.start, this.span.end);
+    return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 }

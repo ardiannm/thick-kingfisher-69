@@ -12,9 +12,9 @@ export class SyntaxTree {
   syntaxRoot: SyntaxCompilationUnit;
   bound: BoundCompilationUnit;
 
-  private constructor(public text: SourceText, public configuration: CompilerOptions) {
-    this.syntaxRoot = Parser.parseCompilationUnit(text);
-    this.bound = Binder.bindCompilationUnit(this.syntaxRoot, this.text.diagnostics, configuration);
+  private constructor(public sourceText: SourceText, public configuration: CompilerOptions) {
+    this.syntaxRoot = Parser.parseCompilationUnit(sourceText);
+    this.bound = Binder.bindCompilationUnit(this.syntaxRoot, this.sourceText.diagnostics, configuration);
   }
 
   static createFrom(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {
