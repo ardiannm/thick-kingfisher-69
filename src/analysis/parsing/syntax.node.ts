@@ -15,4 +15,8 @@ export abstract class SyntaxNode {
   get span() {
     return Span.createFrom(this.getFirstChild().span.start, this.getLastChild().span.end);
   }
+
+  get fullSpan() {
+    return Span.createFrom(this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
+  }
 }

@@ -20,6 +20,12 @@ export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
     return this.textSpan;
   }
 
+  override get fullSpan() {
+    const start = !!this.trivias.length ? this.trivias[0].span.start : this.span.start;
+    const end = this.span.end;
+    return Span.createFrom(start, end);
+  }
+
   override getFirstChild() {
     return this;
   }
