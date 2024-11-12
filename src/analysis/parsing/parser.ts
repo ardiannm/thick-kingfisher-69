@@ -34,8 +34,8 @@ export class Parser {
     }
   }
 
-  static parseCompilationUnit(tree: SourceText) {
-    return new Parser(tree).parseCompilationUnit();
+  static parseCompilationUnit(sourceText: SourceText) {
+    return new Parser(sourceText).parseCompilationUnit();
   }
 
   private parseCompilationUnit() {

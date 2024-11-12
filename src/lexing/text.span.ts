@@ -11,6 +11,10 @@ export class TextSpan {
     return this.sourceText.getLine(this.start);
   }
 
+  get column() {
+    return this.sourceText.getColumn(this.start);
+  }
+
   get text(): string {
     return this.sourceText.text.substring(this.start, this.end - this.lineBreakLength);
   }
