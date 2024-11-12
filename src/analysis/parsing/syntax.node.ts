@@ -9,7 +9,7 @@ export abstract class SyntaxNode {
   abstract getLastChild(): SyntaxToken;
 
   hasTrivia() {
-    this.getFirstChild().trivias.length > 0;
+    return this.getFirstChild().trivias.length > 0;
   }
 
   get span() {

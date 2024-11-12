@@ -1,15 +1,15 @@
 import { Span } from "../../lexing/span";
-import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
+import { Token } from "../../lexing/token";
 import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
 import { SyntaxNode } from "./syntax.node";
 
 export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
-  public trivias = [] as SyntaxToken[];
-
-  constructor(public override kind: T, private textSpan: Span) {
+  private constructor(public override kind: T, private textSpan: Span, public trivias: Token[]) {
     super(kind);
+  }
+
+  static createFrom(token: Token, trivias: Token[]) {
+    return new SyntaxToken(token.kind, token.span, trivias);
   }
 
   override hasTrivia(): boolean {
@@ -26,28 +26,5 @@ export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
 
   override getLastChild() {
     return this;
-  }
-
-  static isTrivia(kind: SyntaxKind) {
-    switch (kind) {
-      case SyntaxTriviaKind.LineBreakTrivia:
-      case SyntaxTriviaKind.SpaceTrivia:
-      case SyntaxTriviaKind.CommentTrivia:
-      case SyntaxTriviaKind.MultilineCommentTrivia:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  static isKeywordOrIdentifer(text: string): SyntaxKind {
-    switch (text) {
-      case "true":
-        return SyntaxKeywordKind.TrueKeyword;
-      case "false":
-        return SyntaxKeywordKind.FalseKeyword;
-      default:
-        return SyntaxNodeKind.IdentifierToken;
-    }
   }
 }

@@ -14,23 +14,24 @@ import { SyntaxFacts } from "./syntax.facts";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxParenthesis } from "./syntax.parenthesis";
 import { SyntaxToken } from "./syntax.token";
+import { Token } from "../../lexing/token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 
 export class Parser {
   private index = 0;
   private tokens = [] as SyntaxToken[];
-  private trivias = [] as SyntaxToken[];
   private recovering = false;
 
   private constructor(public readonly text: SourceText) {
     const lexer = new Lexer(text);
+    let trivias = [] as Token[];
     for (const token of lexer.lex()) {
-      if (SyntaxToken.isTrivia(token.kind) || token.kind === SyntaxNodeKind.BadToken) {
-        this.trivias.push(token);
+      if (Token.isTrivia(token.kind) || token.kind === SyntaxNodeKind.BadToken) {
+        trivias.push(token);
       } else {
-        this.trivias.forEach((trivia) => token.trivias.push(trivia));
-        this.tokens.push(token);
-        this.trivias.length = 0;
+        const syntaxToken = SyntaxToken.createFrom(token, trivias);
+        this.tokens.push(syntaxToken);
+        trivias = [];
       }
     }
   }

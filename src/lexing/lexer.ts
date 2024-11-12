@@ -4,7 +4,7 @@ import { SyntaxKind } from "../analysis/parsing/kind/syntax.kind";
 import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
 import { SyntaxFacts } from "../analysis/parsing/syntax.facts";
-import { SyntaxToken } from "../analysis/parsing/syntax.token";
+import { Token } from "./token";
 import { SourceText } from "./source.text";
 import { Span } from "./span";
 
@@ -19,8 +19,8 @@ export class Lexer {
     this.end = this.start;
   }
 
-  *lex(): Generator<SyntaxToken> {
-    let token: SyntaxToken;
+  *lex(): Generator<Token> {
+    let token: Token;
     do {
       token = this.lexNextToken();
       yield token;
@@ -47,10 +47,10 @@ export class Lexer {
         return this.lexColonColonToken();
     }
     this.next();
-    return new SyntaxToken(this.kind, this.createSpan());
+    return new Token(this.kind, this.createSpan());
   }
 
-  private lexBadToken(): SyntaxToken {
+  private lexBadToken(): Token {
     if (this.isLetter()) {
       return this.lexIdentifier();
     }
@@ -64,7 +64,7 @@ export class Lexer {
     this.next();
     const span = this.createSpan();
     this.text.diagnostics.badCharacterFound(character, span);
-    return new SyntaxToken(this.kind, span);
+    return new Token(this.kind, span);
   }
 
   private lexMultilineCommentToken() {
@@ -77,55 +77,55 @@ export class Lexer {
     } else {
       this.text.diagnostics.missingTripleQuotes(this.createSpan());
     }
-    return new SyntaxToken(SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
+    return new Token(SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
   }
 
-  private lexCommentToken(): SyntaxToken {
+  private lexCommentToken(): Token {
     do {
       this.next();
     } while (!(this.match(SyntaxTriviaKind.LineBreakTrivia) || this.match(SyntaxNodeKind.EndOfFileToken)));
-    return new SyntaxToken(SyntaxTriviaKind.CommentTrivia, this.createSpan());
+    return new Token(SyntaxTriviaKind.CommentTrivia, this.createSpan());
   }
 
-  private lexMinusToken(): SyntaxToken {
+  private lexMinusToken(): Token {
     this.next();
     this.kind = SyntaxBinaryOperatorKind.MinusToken;
     if (this.match(SyntaxNodeKind.GreaterToken)) {
       this.next();
       this.kind = SyntaxCompositeTokenKind.PointerToken;
     }
-    return new SyntaxToken(this.kind, this.createSpan());
+    return new Token(this.kind, this.createSpan());
   }
 
-  private lexGreaterGreaterToken(): SyntaxToken {
+  private lexGreaterGreaterToken(): Token {
     this.next(2);
     this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
-    return new SyntaxToken(this.kind, this.createSpan());
+    return new Token(this.kind, this.createSpan());
   }
 
-  private lexColonColonToken(): SyntaxToken {
+  private lexColonColonToken(): Token {
     this.next();
     this.kind = SyntaxNodeKind.ColonToken;
     if (this.match(SyntaxNodeKind.ColonToken)) {
       this.next();
       this.kind = SyntaxCompositeTokenKind.ColonColonToken;
     }
-    return new SyntaxToken(this.kind, this.createSpan());
+    return new Token(this.kind, this.createSpan());
   }
 
-  private lexIdentifier(): SyntaxToken {
+  private lexIdentifier(): Token {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
     const text = this.text.text.substring(span.start, span.end);
-    return new SyntaxToken(SyntaxToken.isKeywordOrIdentifer(text), span);
+    return new Token(Token.isKeywordOrIdentifer(text), span);
   }
 
-  private lexSpaceToken(): SyntaxToken {
+  private lexSpaceToken(): Token {
     while (this.isSpace()) this.next();
-    return new SyntaxToken(SyntaxTriviaKind.SpaceTrivia, this.createSpan());
+    return new Token(SyntaxTriviaKind.SpaceTrivia, this.createSpan());
   }
 
-  private lexNumberToken(): SyntaxToken {
+  private lexNumberToken(): Token {
     while (this.isDigit()) this.next();
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
@@ -134,7 +134,7 @@ export class Lexer {
       }
     }
     while (this.isDigit()) this.next();
-    return new SyntaxToken(SyntaxNodeKind.NumberToken, this.createSpan());
+    return new Token(SyntaxNodeKind.NumberToken, this.createSpan());
   }
 
   private createSpan() {
