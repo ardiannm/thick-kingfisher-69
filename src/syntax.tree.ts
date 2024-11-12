@@ -17,7 +17,8 @@ export class SyntaxTree {
     this.bound = Binder.bindCompilationUnit(this.syntaxRoot, this.sourceText.diagnostics, configuration);
   }
 
-  static createFrom(sourceText: SourceText = SourceText.createFrom(""), configuration: CompilerOptions = new CompilerOptions(true)) {
+  static createFrom(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {
+    const sourceText = text instanceof SourceText ? text : SourceText.createFrom(text);
     return new SyntaxTree(sourceText, configuration);
   }
 }

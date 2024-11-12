@@ -1,11 +1,10 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Lexer } from "./lexer";
-import { LineSpan } from "./line.span";
-import { Span } from "./span";
+import { TextSpan } from "./text.span";
 import { Token } from "./token";
 
 export class SourceText {
-  private spans = [] as LineSpan[];
+  private spans = [] as TextSpan[];
   readonly tokens = [] as Token[];
   readonly diagnostics = new DiagnosticsBag(this);
 
@@ -13,20 +12,17 @@ export class SourceText {
     let start = 0;
     let position = 0;
     while (position < this.text.length) {
-      const c = this.text[position];
+      const char = this.text[position];
       position++;
-      if (c === "\n") {
-        const span = LineSpan.createFrom(this, start, position, 1);
+      if (char === "\n") {
+        const span = TextSpan.createFrom(this, start, position, 1);
         this.spans.push(span);
         start = position;
       }
     }
-    const span = LineSpan.createFrom(this, start, position, 0);
+    const span = TextSpan.createFrom(this, start, position, 0);
     this.spans.push(span);
     start = position;
-  }
-
-  lex() {
     const lexer = Lexer.createFrom(this);
     for (const token of lexer.lex()) this.tokens.push(token);
   }
@@ -69,9 +65,5 @@ export class SourceText {
     const span = this.spans[index];
     const offset = Math.min(column - 1, span.length);
     return span.start + offset;
-  }
-
-  getText(span: Span) {
-    return this.text.substring(span.start, span.end);
   }
 }

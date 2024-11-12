@@ -1,9 +1,9 @@
-import { Span } from "../../lexing/span";
+import { TextSpan } from "../../lexing/text.span";
 import { BoundExpression } from "./bound.expression";
 import { BoundKind } from "./kind/bound.kind";
 
 export class BoundNumericLiteral extends BoundExpression {
-  constructor(public value: number, public override span: Span) {
+  constructor(public value: number, public override span: TextSpan) {
     super(BoundKind.BoundNumericLiteral, span);
   }
 }

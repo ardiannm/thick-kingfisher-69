@@ -86,15 +86,15 @@ export class Binder {
   }
 
   private bindCell(node: SyntaxCellReference): Cell {
-    const name = this.diagnostics.sourceText.getText(node.span);
+    const name = node.text;
     if (this.scope.assignments.has(name)) {
       return this.scope.assignments.get(name)!.reference;
     }
     return new Cell(name, 0);
   }
-  
+
   private bindCellReference(node: SyntaxCellReference) {
-    const name = this.diagnostics.sourceText.getText(node.span);
+    const name = node.text;
     let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
       assigment = this.scope.assignments.get(name)!;
@@ -156,7 +156,7 @@ export class Binder {
   }
 
   private bindNumber(node: SyntaxToken<SyntaxNodeKind.NumberToken>) {
-    const value = parseFloat(this.diagnostics.sourceText.getText(node.span));
+    const value = parseFloat(node.text);
     return new BoundNumericLiteral(value, node.span);
   }
 }

@@ -1,11 +1,10 @@
-// import { Lexer } from "./lexer";
 import { SourceText } from "./source.text";
 
-export class LineSpan {
+export class TextSpan {
   private constructor(private sourceText: SourceText, public start: number, public end: number, public lineBreakLength: number) {}
 
   static createFrom(sourceText: SourceText, start: number, end: number, lineBreakLength: number) {
-    return new LineSpan(sourceText, start, end, lineBreakLength);
+    return new TextSpan(sourceText, start, end, lineBreakLength);
   }
 
   get line() {

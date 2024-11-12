@@ -1,5 +1,5 @@
 import { Cell } from "../../cell";
-import { Span } from "../../lexing/span";
+import { TextSpan } from "../../lexing/text.span";
 import { BoundCellReference } from "./bound.cell.reference";
 import { BoundExpression } from "./bound.expression";
 import { BoundNode } from "./bound.node";
@@ -7,11 +7,11 @@ import { BoundScope } from "./bound.scope";
 import { BoundKind } from "./kind/bound.kind";
 
 export class BoundCellAssignment extends BoundNode {
-  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: Span) {
+  constructor(public scope: BoundScope, public reference: Cell, public expression: BoundExpression, public dependencies: Array<BoundCellReference>, public override span: TextSpan) {
     super(BoundKind.BoundCellAssignment, span);
 
     // TODO: track and report the path to circular dependency
-    
+
     if (this.scope.assignments.has(this.reference.name)) {
       const existingNode = this.scope.assignments.get(this.reference.name)!;
 

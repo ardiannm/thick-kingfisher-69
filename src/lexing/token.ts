@@ -1,11 +1,11 @@
-import { Span } from "./span";
 import { SyntaxKeywordKind } from "../analysis/parsing/kind/syntax.keyword.kind";
 import { SyntaxKind } from "../analysis/parsing/kind/syntax.kind";
 import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
 import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
+import { TextSpan } from "./text.span";
 
 export class Token<T extends SyntaxKind = SyntaxKind> {
-  constructor(public kind: T, public span: Span) {}
+  constructor(public kind: T, public span: TextSpan) {}
 
   static isTrivia(kind: SyntaxKind) {
     switch (kind) {
