@@ -1,9 +1,9 @@
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
-import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
-import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
-import { SyntaxKeywordKind } from "./kind/syntax.keyword.kind";
-import { SyntaxKind } from "./kind/syntax.kind";
+import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
+import { SyntaxTriviaKind } from "../analysis/parsing/kind/syntax.trivia.kind";
+import { SyntaxBinaryOperatorKind } from "../analysis/parsing/kind/syntax.binary.operator.kind";
+import { SyntaxCompositeTokenKind } from "../analysis/parsing/kind/syntax.composite.token.kind";
+import { SyntaxKeywordKind } from "../analysis/parsing/kind/syntax.keyword.kind";
+import { SyntaxKind } from "../analysis/parsing/kind/syntax.kind";
 
 export type TokenTextMapper = {
   [SyntaxBinaryOperatorKind.PlusToken]: "+";

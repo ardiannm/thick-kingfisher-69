@@ -3,10 +3,9 @@ import { SyntaxNodeKind } from "./kind/syntax.node.kind";
 import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
 import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
 import { SyntaxTriviaKind } from "./kind/syntax.trivia.kind";
-import { TokenTextMapper } from "./token.text";
+import { TokenTextMapper } from "../../lexing/token.text";
 
 export class SyntaxFacts {
-
   static getUnaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxUnaryOperatorKind.PlusToken:

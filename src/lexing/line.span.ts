@@ -23,9 +23,4 @@ export class LineSpan {
   get fullLength() {
     return this.end - this.start;
   }
-
-  // get tokens() {
-  //   const tokens = Lexer.createFrom(this.sourceText)
-
-  // }
 }

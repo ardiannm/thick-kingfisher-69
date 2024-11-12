@@ -13,10 +13,14 @@ export class Lexer {
   private start: number;
   private end: number;
 
-  constructor(private readonly text: SourceText) {
+  private constructor(private readonly sourceText: SourceText) {
     this.kind = SyntaxNodeKind.EndOfFileToken;
     this.start = 0;
     this.end = this.start;
+  }
+
+  static createFrom(text: SourceText) {
+    return new Lexer(text);
   }
 
   *lex(): Generator<Token> {
@@ -63,7 +67,7 @@ export class Lexer {
     const character = this.char();
     this.next();
     const span = this.createSpan();
-    this.text.diagnostics.badCharacterFound(character, span);
+    this.sourceText.diagnostics.badCharacterFound(character, span);
     return new Token(this.kind, span);
   }
 
@@ -75,7 +79,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
       this.next(3);
     } else {
-      this.text.diagnostics.missingTripleQuotes(this.createSpan());
+      this.sourceText.diagnostics.missingTripleQuotes(this.createSpan());
     }
     return new Token(SyntaxTriviaKind.MultilineCommentTrivia, this.createSpan());
   }
@@ -116,7 +120,7 @@ export class Lexer {
   private lexIdentifier(): Token {
     while (this.isLetter()) this.next();
     const span = this.createSpan();
-    const text = this.text.text.substring(span.start, span.end);
+    const text = this.sourceText.text.substring(span.start, span.end);
     return new Token(Token.isKeywordOrIdentifer(text), span);
   }
 
@@ -130,7 +134,7 @@ export class Lexer {
     if (this.match(SyntaxNodeKind.DotToken)) {
       this.next();
       if (!this.isDigit()) {
-        this.text.diagnostics.badFloatingPointNumber(this.createSpan());
+        this.sourceText.diagnostics.badFloatingPointNumber(this.createSpan());
       }
     }
     while (this.isDigit()) this.next();
@@ -158,7 +162,7 @@ export class Lexer {
 
   private peek(offset: number): string {
     const start = this.end + offset;
-    return this.text.text.substring(start, start + 1);
+    return this.sourceText.text.substring(start, start + 1);
   }
 
   private char() {
