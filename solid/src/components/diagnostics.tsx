@@ -13,9 +13,9 @@ export const Diagnostics: Component<DiagnosticsProps> = (props: DiagnosticsProps
         <For each={props.bag()}>
           {(diagnostic) => (
             <div class={styles.diagnostic}>
-              <div class={styles.position}>
-                {diagnostic.span.line}:{diagnostic.span.offset}
-              </div>
+              {/* <div class={styles.position}> */}
+              {/* {diagnostic.span.line}:{diagnostic.span.offset} */}
+              {/* </div> */}
               <div class={styles.message}>{diagnostic.message}</div>
             </div> // Single JSX element
           )}

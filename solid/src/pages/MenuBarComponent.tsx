@@ -1,4 +1,4 @@
-import { A, Route } from "@solidjs/router";
+import { A } from "@solidjs/router";
 import scss from "./MenuBarComponent.module.scss";
 
 import { Component, JSXElement } from "solid-js";
