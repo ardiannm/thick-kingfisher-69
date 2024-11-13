@@ -6,7 +6,7 @@
   @include applyMaxSize;
   height: fit-content;
   padding-block: 21px;
-  border-bottom: 1px solid #d7ddef;
+  border-bottom: 1px solid #dfe1e5;
 }
 
 .buttons {
@@ -26,17 +26,12 @@
   text-align: center;
   text-decoration: none;
   transition: background-color 0.1s ease, box-shadow 0.1s ease;
-  border: 1px solid #6e7bae;
+  border: 1px solid;
   min-width: 70px;
 
   &:active {
-    background-color: #dfe4f4;
+    background-color: #f8f9fa;
     box-shadow: none;
-  }
-
-  &:disabled {
-    background-color: #f0f0f0;
-    color: #999;
-    pointer-events: none;
+    color: black;
   }
 }

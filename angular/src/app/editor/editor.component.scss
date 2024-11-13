@@ -2,33 +2,31 @@
   display: flex;
   white-space: pre;
   flex-direction: column;
-  border: 1px solid #6e7bae;
+  border: 1px solid black;
   cursor: default;
   padding: 21px;
   border-radius: 4px;
   min-width: 700px;
   font-size: 14px;
-  font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console,
-    monospace;
+  font-family: monospace;
   user-select: none;
 }
 
 .line-borders {
-  border-bottom: 1px solid #d7ddef;
-  border-inline: 1px solid #d7ddef;
+  border-bottom: 1px solid #dfe1e5;
+  border-inline: 1px solid #dfe1e5;
   &:first-child {
-    border-top: 1px solid #d7ddef;
+    border-top: 1px solid #dfe1e5;
   }
 }
 
 .line {
   display: flex;
   flex-direction: row;
-  // @extend .line-borders;
 }
 
 .line-number {
-  border-right: 1px solid #d7ddef;
+  border-right: 1px solid #dfe1e5;
   margin-right: 10px;
   min-width: 40px;
 }
@@ -39,12 +37,12 @@
   display: flex;
   align-items: center;
   &::selection {
-    background-color: #d7ddef;
+    background-color: #dfe1e5;
   }
 }
 
 .active {
-  outline: 1px solid #d7ddef;
+  outline: 1px solid #dfe1e5;
 }
 
 .status-bar {
