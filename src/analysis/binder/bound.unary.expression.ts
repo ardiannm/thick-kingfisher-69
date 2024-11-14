@@ -1,10 +1,10 @@
-import { LineSpan } from "../../lexing/line.span";
-import { BoundExpression } from "./bound.expression";
+import { Span } from "../../lexing/span";
 import { BoundKind } from "./bound.kind";
 import { BoundUnaryOperatorKind } from "./bound.kind";
+import { BoundNode } from "./bound.node";
 
-export class BoundUnaryExpression extends BoundExpression {
-  constructor(public operatorKind: BoundUnaryOperatorKind, public right: BoundExpression, public override span: LineSpan) {
+export class BoundUnaryExpression extends BoundNode {
+  constructor(public operatorKind: BoundUnaryOperatorKind, public right: BoundNode, public override span: Span) {
     super(BoundKind.BoundUnaryExpression, span);
   }
 }

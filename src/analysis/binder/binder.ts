@@ -18,7 +18,6 @@ import { BoundErrorExpression } from "./bound.error.expression";
 import { BoundNode } from "./bound.node";
 import { BoundNumericLiteral } from "./bound.numeric.literal";
 import { BoundScope } from "./bound.scope";
-import { BoundStatement } from "./bound.statement";
 import { BoundUnaryExpression } from "./bound.unary.expression";
 import { BoundUnaryOperatorKind } from "./bound.kind";
 
@@ -52,7 +51,7 @@ export class Binder {
   }
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {
-    const statements = new Array<BoundStatement>();
+    const statements = new Array<BoundNode>();
     for (const statement of node.root) {
       statements.push(this.bind(statement));
     }
@@ -61,7 +60,7 @@ export class Binder {
 
   private bindBlock(node: SyntaxBlock): BoundNode {
     this.scope = new BoundScope(this.scope);
-    const statements = new Array<BoundStatement>();
+    const statements = new Array<BoundNode>();
     for (const statement of node.statements) {
       statements.push(this.bind(statement));
     }

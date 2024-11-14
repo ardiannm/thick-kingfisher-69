@@ -1,4 +1,4 @@
-import { BoundBinaryExpression } from "./analysis/binder/binary.expression";
+import { BoundBinaryExpression } from "./analysis/binder/bound.binary.expression";
 import { BoundBlock } from "./analysis/binder/bound.block";
 import { BoundCellAssignment } from "./analysis/binder/bound.cell.assignment";
 import { BoundCellReference } from "./analysis/binder/bound.cell.reference";
