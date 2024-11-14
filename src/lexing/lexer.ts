@@ -70,13 +70,12 @@ export class Lexer {
 
   private lexIdentifier(): Token {
     while (this.isLetter()) this.next();
-    const span = this.span;
-    return new Token(SyntaxKind.IdentifierToken, span);
+    return this.createNewToken(SyntaxKind.IdentifierToken);
   }
 
   private lexSpaceToken(): Token {
     while (this.isSpace()) this.next();
-    return new Token(SyntaxKind.SpaceTrivia, this.span);
+    return this.createNewToken(SyntaxKind.SpaceTrivia);
   }
 
   private lexNumberToken(): Token {
@@ -88,7 +87,7 @@ export class Lexer {
       }
     }
     while (this.isDigit()) this.next();
-    return new Token(SyntaxKind.NumberToken, this.span);
+    return this.createNewToken(SyntaxKind.NumberToken);
   }
 
   private lexCommentToken(): Token {
@@ -96,7 +95,7 @@ export class Lexer {
     while (this.char() !== '"' && this.hasNext()) {
       this.next();
     }
-    return new Token(SyntaxKind.CommentTrivia, this.span);
+    return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 
   private isSpace(): boolean {
