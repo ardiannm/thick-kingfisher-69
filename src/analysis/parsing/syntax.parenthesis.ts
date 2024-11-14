@@ -1,24 +1,23 @@
 import { SourceText } from "../../lexing/source.text";
-import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
+import { Kind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxParenthesis extends SyntaxNode {
   constructor(
     public override sourceText: SourceText,
-    public openParen: SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>,
+    public openParen: SyntaxToken<SyntaxKind.OpenParenthesisToken>,
     public expression: SyntaxNode,
-    public closeParen: SyntaxToken<SyntaxNodeKind.CloseParenthesisToken>
+    public closeParen: SyntaxToken<SyntaxKind.CloseParenthesisToken>
   ) {
-    super(sourceText, SyntaxNodeKind.SyntaxParenthesis);
+    super(sourceText, SyntaxKind.SyntaxParenthesis);
   }
 
-  override getFirstChild(): SyntaxToken<SyntaxKind> {
+  override getFirstChild(): SyntaxToken<Kind> {
     return this.openParen;
   }
 
-  override getLastChild(): SyntaxToken<SyntaxKind> {
+  override getLastChild(): SyntaxToken<Kind> {
     return this.closeParen;
   }
 }

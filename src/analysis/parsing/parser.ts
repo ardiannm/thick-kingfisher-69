@@ -1,9 +1,5 @@
 import { SourceText } from "../../lexing/source.text";
-import { SyntaxBinaryOperatorKind } from "./kind/syntax.binary.operator.kind";
-import { SyntaxCompositeTokenKind } from "./kind/syntax.composite.token.kind";
-import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
-import { SyntaxUnaryOperatorKind } from "./kind/syntax.unary.operator.kind";
+import { Kind, SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxBinaryExpression } from "./syntax.binary.expression";
 import { SyntaxBlock } from "./syntax.block";
 import { SyntaxCellAssignment } from "./syntax.cell.assignment";
@@ -24,7 +20,7 @@ export class Parser {
   private constructor(public readonly sourceText: SourceText) {
     let trivias = [] as Token[];
     for (const token of this.sourceText.tokens) {
-      if (Token.isTrivia(token.kind) || token.kind === SyntaxNodeKind.BadToken) {
+      if (Token.isTrivia(token.kind) || token.kind === SyntaxKind.BadToken) {
         trivias.push(token);
       } else {
         const syntaxToken = SyntaxToken.createFrom(this.sourceText, token, trivias);
@@ -45,22 +41,22 @@ export class Parser {
       statements.push(this.parseBlock());
       if (this.peekToken() === startToken) this.getNextToken();
     }
-    const endOfFileToken = this.expect(SyntaxNodeKind.EndOfFileToken);
+    const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken);
     return new SyntaxCompilationUnit(this.sourceText, statements, endOfFileToken);
   }
 
   private parseBlock() {
-    if (this.match(SyntaxNodeKind.OpenBraceToken)) {
-      const openBrace = this.expect(SyntaxNodeKind.OpenBraceToken);
+    if (this.match(SyntaxKind.OpenBraceToken)) {
+      const openBrace = this.expect(SyntaxKind.OpenBraceToken);
       const statements = new Array<SyntaxNode>();
-      while (this.hasToken() && !this.match(SyntaxNodeKind.CloseBraceToken)) {
+      while (this.hasToken() && !this.match(SyntaxKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
         if (this.peekToken() === startToken) this.getNextToken();
       }
-      const closeBrace = this.expect(SyntaxNodeKind.CloseBraceToken);
+      const closeBrace = this.expect(SyntaxKind.CloseBraceToken);
       const node = new SyntaxBlock(this.sourceText, openBrace, statements, closeBrace);
-      if (closeBrace.kind === SyntaxNodeKind.CloseBraceToken && !statements.length) {
+      if (closeBrace.kind === SyntaxKind.CloseBraceToken && !statements.length) {
         this.sourceText.diagnostics.emptyBlock(node.span);
       }
       return node;
@@ -71,8 +67,8 @@ export class Parser {
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
     switch (this.peekToken().kind) {
-      case SyntaxCompositeTokenKind.ColonColonToken:
-        const keyword = this.getNextToken() as SyntaxToken<SyntaxCompositeTokenKind.ColonColonToken>;
+      case SyntaxKind.ColonColonToken:
+        const keyword = this.getNextToken();
         return new SyntaxCellAssignment(this.sourceText, left, keyword, this.parseBinaryExpression());
     }
     return left;
@@ -103,19 +99,19 @@ export class Parser {
   }
 
   private parseParenthesis() {
-    if (this.match(SyntaxNodeKind.OpenParenthesisToken)) {
+    if (this.match(SyntaxKind.OpenParenthesisToken)) {
       const left = this.getNextToken();
       const expression = this.parseBinaryExpression();
-      const right = this.expect(SyntaxNodeKind.CloseParenthesisToken);
-      return new SyntaxParenthesis(this.sourceText, left as SyntaxToken<SyntaxNodeKind.OpenParenthesisToken>, expression, right);
+      const right = this.expect(SyntaxKind.CloseParenthesisToken);
+      return new SyntaxParenthesis(this.sourceText, left as SyntaxToken<SyntaxKind.OpenParenthesisToken>, expression, right);
     }
     return this.parseCellReference();
   }
 
   private parseCellReference() {
-    if (this.match(SyntaxNodeKind.IdentifierToken, SyntaxNodeKind.NumberToken)) {
-      const left = this.getNextToken() as SyntaxToken<SyntaxNodeKind.IdentifierToken>;
-      const right = this.getNextToken() as SyntaxToken<SyntaxNodeKind.NumberToken>;
+    if (this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
+      const left = this.getNextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
+      const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       const node = new SyntaxCellReference(this.sourceText, left, right);
       if (right.hasTrivia()) {
         const name = left.text + right.text;
@@ -129,15 +125,15 @@ export class Parser {
   private parseLiteral() {
     const token = this.peekToken();
     switch (token.kind) {
-      case SyntaxNodeKind.IdentifierToken:
-      case SyntaxNodeKind.NumberToken:
+      case SyntaxKind.IdentifierToken:
+      case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
-    return this.expect(SyntaxNodeKind.SyntaxExpression);
+    return this.expect(SyntaxKind.SyntaxExpression);
   }
 
   private hasToken() {
-    return !this.match(SyntaxNodeKind.EndOfFileToken);
+    return !this.match(SyntaxKind.EndOfFileToken);
   }
 
   private peekToken(offset: number = 0) {
@@ -153,7 +149,7 @@ export class Parser {
     return token;
   }
 
-  private match(...kinds: Array<SyntaxKind>) {
+  private match(...kinds: Array<Kind>) {
     let offset = 0;
     for (const kind of kinds) {
       if (kind !== this.peekToken(offset).kind) return false;
@@ -163,7 +159,7 @@ export class Parser {
     return true;
   }
 
-  private expect<Kind extends SyntaxKind>(kind: Kind): SyntaxToken<Kind> {
+  private expect<K extends Kind>(kind: K): SyntaxToken<Kind> {
     if (this.match(kind)) {
       return this.getNextToken() as SyntaxToken<Kind>;
     }

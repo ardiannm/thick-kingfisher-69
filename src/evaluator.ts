@@ -6,9 +6,9 @@ import { BoundCompilationUnit } from "./analysis/binder/bound.compilation.unit";
 import { BoundNode } from "./analysis/binder/bound.node";
 import { BoundNumericLiteral } from "./analysis/binder/bound.numeric.literal";
 import { BoundUnaryExpression } from "./analysis/binder/bound.unary.expression";
-import { BoundBinaryOperatorKind } from "./analysis/binder/kind/bound.binary.operator.kind";
-import { BoundKind } from "./analysis/binder/kind/bound.kind";
-import { BoundUnaryOperatorKind } from "./analysis/binder/kind/bound.unary.operator.kind";
+import { BoundBinaryOperatorKind } from "./analysis/binder/bound.kind";
+import { BoundKind } from "./analysis/binder/bound.kind";
+import { BoundUnaryOperatorKind } from "./analysis/binder/bound.kind";
 import { DiagnosticsBag } from "./analysis/diagnostics/diagnostics.bag";
 
 export class Evaluator {

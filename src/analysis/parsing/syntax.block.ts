@@ -1,24 +1,24 @@
 import { SourceText } from "../../lexing/source.text";
-import { SyntaxKind } from "./kind/syntax.kind";
-import { SyntaxNodeKind } from "./kind/syntax.node.kind";
+import { Kind } from "./syntax.kind";
+import { Kind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxBlock extends SyntaxNode {
   constructor(
     public override sourceText: SourceText,
-    public openBrace: SyntaxToken<SyntaxNodeKind.OpenBraceToken>,
+    public openBrace: SyntaxToken<SyntaxKind.OpenBraceToken>,
     public statements: Array<SyntaxNode>,
-    public closeBrace: SyntaxToken<SyntaxNodeKind.CloseBraceToken>
+    public closeBrace: SyntaxToken<SyntaxKind.CloseBraceToken>
   ) {
-    super(sourceText, SyntaxNodeKind.SyntaxBlock);
+    super(sourceText, SyntaxKind.SyntaxBlock);
   }
 
-  override getFirstChild(): SyntaxToken<SyntaxKind> {
+  override getFirstChild(): SyntaxToken<Kind> {
     return this.openBrace;
   }
 
-  override getLastChild(): SyntaxToken<SyntaxKind> {
+  override getLastChild(): SyntaxToken<Kind> {
     return this.closeBrace;
   }
 }

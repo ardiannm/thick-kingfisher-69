@@ -1,10 +1,10 @@
 import { TextSpan } from "../../lexing/text.span";
 import { SourceText } from "../../lexing/source.text";
-import { SyntaxKind } from "./kind/syntax.kind";
+import { Kind } from "./syntax.kind";
 import { SyntaxToken } from "./syntax.token";
 
 export abstract class SyntaxNode {
-  constructor(public sourceText: SourceText, public kind: SyntaxKind) {}
+  constructor(public sourceText: SourceText, public kind: Kind) {}
 
   abstract getFirstChild(): SyntaxToken;
   abstract getLastChild(): SyntaxToken;

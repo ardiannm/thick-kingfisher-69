@@ -1,7 +1,7 @@
 import { TextSpan } from "../../lexing/text.span";
 import { SourceText } from "../../lexing/source.text";
-import { BoundKind } from "../binder/kind/bound.kind";
-import { SyntaxKind } from "../parsing/kind/syntax.kind";
+import { BoundKind } from "../binder/bound.kind";
+import { Kind } from "../parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
@@ -36,7 +36,7 @@ export class DiagnosticsBag {
     this.report(`Illegal character '${text}' found.`, Severity.Warning, span);
   }
 
-  unexpectedTokenFound(matched: SyntaxKind, expecting: SyntaxKind, span: TextSpan) {
+  unexpectedTokenFound(matched: Kind, expecting: Kind, span: TextSpan) {
     this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantEvaluate, span);
   }
 
@@ -64,7 +64,7 @@ export class DiagnosticsBag {
     this.report(`Expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
-  binderMethod(kind: SyntaxKind, span: TextSpan) {
+  binderMethod(kind: Kind, span: TextSpan) {
     this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }
 

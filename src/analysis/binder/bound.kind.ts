@@ -11,3 +11,16 @@ export enum BoundKind {
   BoundNone = "BoundNone",
   BoundCellAssignment = "BoundCellAssignment",
 }
+
+export enum BoundBinaryOperatorKind {
+  Addition = "Addition",
+  Subtraction = "Subtraction",
+  Multiplication = "Multiplication",
+  Division = "Division",
+  Exponentiation = "Exponentiation",
+}
+
+export enum BoundUnaryOperatorKind {
+  Identity = "Identity",
+  Negation = "Negation",
+}

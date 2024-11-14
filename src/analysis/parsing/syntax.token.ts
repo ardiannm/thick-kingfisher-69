@@ -1,10 +1,10 @@
 import { TextSpan } from "../../lexing/text.span";
 import { Token } from "../../lexing/token";
-import { SyntaxKind } from "./kind/syntax.kind";
+import { Kind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SourceText } from "../../lexing/source.text";
 
-export class SyntaxToken<T extends SyntaxKind = SyntaxKind> extends SyntaxNode {
+export class SyntaxToken<T extends Kind = Kind> extends SyntaxNode {
   private constructor(public override sourceText: SourceText, public override kind: T, private textSpan: TextSpan, public trivias: Token[]) {
     super(sourceText, kind);
   }

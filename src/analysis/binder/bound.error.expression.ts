@@ -1,10 +1,10 @@
 import { TextSpan } from "../../lexing/text.span";
-import { SyntaxKind } from "../parsing/kind/syntax.kind";
+import { Kind } from "../parsing/syntax.kind";
 import { BoundNode } from "./bound.node";
-import { BoundKind } from "./kind/bound.kind";
+import { BoundKind } from "./bound.kind";
 
 export class BoundErrorExpression extends BoundNode {
-  constructor(public nodeKind: SyntaxKind, public override span: TextSpan) {
+  constructor(public nodeKind: Kind, public override span: TextSpan) {
     super(BoundKind.BoundErrorExpression, span);
   }
 }
