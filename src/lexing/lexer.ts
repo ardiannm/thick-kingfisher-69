@@ -9,7 +9,8 @@ export class Lexer {
 
   private constructor(private readonly sourceText: SourceText) {}
 
-  static createFrom(sourceText: SourceText) {
+  static createFrom(text: string | SourceText) {
+    const sourceText = text instanceof SourceText ? text : SourceText.createFrom(text);
     return new Lexer(sourceText);
   }
 
@@ -92,8 +93,14 @@ export class Lexer {
 
   private lexCommentToken(): Token {
     this.next();
-    while (this.char() !== '"' && this.hasNext()) {
+    while (this.hasNext()) {
       this.next();
+      if (this.char() === '"') break;
+    }
+    if (this.char() === '"') {
+      this.next();
+    } else {
+      this.sourceText.diagnostics.unexpectedTokenFound(SyntaxKind.EndOfFileToken, SyntaxKind.QuoteToken, this.span);
     }
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
@@ -128,5 +135,9 @@ export class Lexer {
 
   private hasNext() {
     return this.end < this.sourceText.text.length;
+  }
+
+  get diagnostics() {
+    return this.sourceText.diagnostics.getDiagnostics();
   }
 }

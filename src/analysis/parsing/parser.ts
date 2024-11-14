@@ -11,6 +11,7 @@ import { SyntaxParenthesis } from "./syntax.parenthesis";
 import { SyntaxToken } from "./syntax.token";
 import { Token } from "../../lexing/token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
+import { Lexer } from "../../lexing/lexer";
 
 export class Parser {
   private index = 0;
@@ -19,7 +20,8 @@ export class Parser {
 
   private constructor(public readonly sourceText: SourceText) {
     let trivias = [] as Token[];
-    for (const token of this.sourceText.tokens) {
+    const lexer = Lexer.createFrom(sourceText);
+    for (const token of lexer.lex()) {
       if (Token.isTrivia(token.kind) || token.kind === SyntaxKind.BadToken) {
         trivias.push(token);
       } else {

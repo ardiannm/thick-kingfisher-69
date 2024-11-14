@@ -1,11 +1,8 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
-import { Lexer } from "./lexer";
 import { TextSpan } from "./text.span";
-import { Token } from "./token";
 
 export class SourceText {
   private spans = [] as TextSpan[];
-  readonly tokens = [] as Token[];
   readonly diagnostics = new DiagnosticsBag(this);
 
   private constructor(public text: string) {
@@ -23,8 +20,6 @@ export class SourceText {
     const span = TextSpan.createFrom(this, start, position, 0);
     this.spans.push(span);
     start = position;
-    const lexer = Lexer.createFrom(this);
-    for (const token of lexer.lex()) this.tokens.push(token);
   }
 
   static createFrom(text: string): SourceText {

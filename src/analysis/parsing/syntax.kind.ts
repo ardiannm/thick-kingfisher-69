@@ -10,7 +10,6 @@ export enum SyntaxKind {
   BinaryExpression = "SyntaxBinaryExpression",
   IdentifierToken = "IdentifierToken",
   BadToken = "BadToken",
-  EqualsToken = "EqualsToken",
   OpenBraceToken = "OpenBraceToken",
   CloseBraceToken = "CloseBraceToken",
   SyntaxCompilationUnit = "SyntaxCompilationUnit",
@@ -29,6 +28,7 @@ export enum SyntaxKind {
   SpaceTrivia = "SpaceTrivia",
   ColonColonToken = "ColonColonToken",
   LineBreakTrivia = "LineBreakTrivia",
+  QuoteToken = "QuoteToken"
 }
 
 export enum SyntaxUnaryOperatorKind {
