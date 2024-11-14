@@ -104,9 +104,8 @@ export class Lexer {
 
   private lexCommentToken(): Token {
     this.next();
-    while (this.hasNext()) {
+    while (this.char() !== '"' && this.hasNext()) {
       this.next();
-      if (this.char() === '"') break;
     }
     if (this.char() === '"') {
       this.next();

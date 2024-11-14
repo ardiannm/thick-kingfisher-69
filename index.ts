@@ -16,6 +16,8 @@ export class PlaygroundComponent {}
 bootstrapApplication(PlaygroundComponent);
 `;
 
+text = `1 23345 parser.ts n ""    `;
+
 const lexer = Lexer.createFrom(text);
 
 const tokens = Array.from(lexer.lex());
