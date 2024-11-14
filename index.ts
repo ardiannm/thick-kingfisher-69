@@ -16,7 +16,7 @@ export class PlaygroundComponent {}
 bootstrapApplication(PlaygroundComponent);
 `;
 
-text = `1 23345 an " `;
+text = `1 23345 parser.ts " `;
 
 const lexer = Lexer.createFrom(text);
 

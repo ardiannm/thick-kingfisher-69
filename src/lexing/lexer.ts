@@ -45,6 +45,9 @@ export class Lexer {
       case ")":
         this.next();
         return this.createNewToken(SyntaxKind.CloseParenthesisToken);
+      case ".":
+        this.next();
+        return this.createNewToken(SyntaxKind.DotToken);
       case '"':
         return this.lexCommentToken();
       default:
@@ -119,8 +122,8 @@ export class Lexer {
   }
 
   private isLetter(): boolean {
-    const charCode = this.char().charCodeAt(0);
-    return (charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122);
+    const char = this.char();
+    return (char >= "A" && char <= "Z") || (char >= "a" && char <= "z");
   }
 
   private peek(offset: number): string {
