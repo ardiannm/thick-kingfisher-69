@@ -1,11 +1,11 @@
-import { TextSpan } from "../../lexing/text.span";
 import { Token } from "../../lexing/token";
 import { Kind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SourceText } from "../../lexing/source.text";
+import { Span } from "../../lexing/span";
 
 export class SyntaxToken<T extends Kind = Kind> extends SyntaxNode {
-  private constructor(public override sourceText: SourceText, public override kind: T, private textSpan: TextSpan, public trivias: Token[]) {
+  private constructor(public override sourceText: SourceText, public override kind: T, private textSpan: Span, public trivias: Token[]) {
     super(sourceText, kind);
   }
 
@@ -24,7 +24,7 @@ export class SyntaxToken<T extends Kind = Kind> extends SyntaxNode {
   override get fullSpan() {
     const start = !!this.trivias.length ? this.trivias[0].span.start : this.span.start;
     const end = this.span.end;
-    return TextSpan.createFrom(this.sourceText, start, end, 0);
+    return new Span(this.sourceText, start, end);
   }
 
   override getFirstChild() {

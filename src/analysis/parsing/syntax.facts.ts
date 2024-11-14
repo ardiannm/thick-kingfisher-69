@@ -1,4 +1,4 @@
-import { Kind } from "./syntax.kind";
+import { Kind, SyntaxKind } from "./syntax.kind";
 
 export class SyntaxFacts {
   static getUnaryPrecedence(kind: Kind) {

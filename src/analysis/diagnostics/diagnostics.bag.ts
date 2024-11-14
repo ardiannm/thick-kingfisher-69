@@ -1,5 +1,5 @@
-import { TextSpan } from "../../lexing/text.span";
 import { SourceText } from "../../lexing/source.text";
+import { Span } from "../../lexing/span";
 import { BoundKind } from "../binder/bound.kind";
 import { Kind } from "../parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
@@ -11,7 +11,7 @@ export class DiagnosticsBag {
 
   constructor(public readonly sourceText: SourceText) {}
 
-  private report(message: string, severity: Severity, span: TextSpan) {
+  private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
     this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
   }
@@ -32,15 +32,15 @@ export class DiagnosticsBag {
     return this.canBind() && !this.severity.has(Severity.CantEvaluate);
   }
 
-  badCharacterFound(text: string, span: TextSpan) {
+  badCharacterFound(text: string, span: Span) {
     this.report(`Illegal character '${text}' found.`, Severity.Warning, span);
   }
 
-  unexpectedTokenFound(matched: Kind, expecting: Kind, span: TextSpan) {
+  unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
     this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantEvaluate, span);
   }
 
-  missingTripleQuotes(span: TextSpan) {
+  missingTripleQuotes(span: Span) {
     this.report(
       `Missing closing triple quotes ('''). It looks like the multi-line string was not properly closed. Please ensure you close the string after your intended text.`,
       Severity.CantBind,
@@ -48,27 +48,27 @@ export class DiagnosticsBag {
     );
   }
 
-  undeclaredCell(name: string, span: TextSpan) {
+  undeclaredCell(name: string, span: Span) {
     this.report(`Cell reference '${name}' is undeclared.`, Severity.CantEvaluate, span);
   }
 
-  badFloatingPointNumber(span: TextSpan) {
+  badFloatingPointNumber(span: Span) {
     this.report(`Wrong floating number format.`, Severity.CantBind, span);
   }
 
-  requireCompactCellReference(correctName: string, span: TextSpan) {
+  requireCompactCellReference(correctName: string, span: Span) {
     this.report(`Did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
   }
 
-  emptyBlock(span: TextSpan) {
+  emptyBlock(span: Span) {
     this.report(`Expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
-  binderMethod(kind: Kind, span: TextSpan) {
+  binderMethod(kind: Kind, span: Span) {
     this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
   }
 
-  evaluatorMethod(kind: BoundKind, span: TextSpan) {
+  evaluatorMethod(kind: BoundKind, span: Span) {
     this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, span);
   }
 }

@@ -1,6 +1,5 @@
 import { SourceText } from "../../lexing/source.text";
-import { Kind } from "./syntax.kind";
-import { Kind } from "./syntax.kind";
+import { Kind, SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 

@@ -30,7 +30,7 @@ bootstrapApplication(PlaygroundComponent);
   styleUrl: './editor.component.scss',
 })
 export class EditorComponent {
-  @Input('codeInput')
+  @Input()
   text = text;
   length = text.length;
   code = signal(text);
@@ -75,22 +75,15 @@ export class EditorComponent {
 
   private getCaretPosition(line: number, column: number) {
     const element = this.document.getElementById('row-' + line)!;
-
     if (element && element.childNodes.length > 0) {
       const textNode = element.childNodes[0];
-
       if (textNode.nodeType === Node.TEXT_NODE) {
         const range = this.document.createRange();
-
         range.setStart(textNode, column);
         range.setEnd(textNode, column + 1);
-
         const rect = range.getBoundingClientRect();
-
         this.caretX = rect.x;
         this.caretY = rect.y;
-
-        // Clean up the range to avoid memory leaks
         range.detach();
       }
     }

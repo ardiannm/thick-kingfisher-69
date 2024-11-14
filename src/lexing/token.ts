@@ -1,8 +1,8 @@
 import { Kind, SyntaxKind } from "../analysis/parsing/syntax.kind";
-import { TextSpan } from "./text.span";
+import { Span } from "./span";
 
 export class Token<T extends Kind = Kind> {
-  constructor(public kind: T, public span: TextSpan) {}
+  constructor(public kind: T, public span: Span) {}
 
   static isTrivia(kind: Kind) {
     switch (kind) {

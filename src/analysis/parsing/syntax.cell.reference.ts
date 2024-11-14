@@ -1,5 +1,5 @@
 import { SourceText } from "../../lexing/source.text";
-import { Kind } from "./syntax.kind";
+import { SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
@@ -8,11 +8,11 @@ export class SyntaxCellReference extends SyntaxNode {
     super(sourceText, SyntaxKind.SyntaxCellReference);
   }
 
-  override getFirstChild(): SyntaxToken<Kind> {
+  override getFirstChild(): SyntaxToken {
     return this.left.getFirstChild();
   }
 
-  override getLastChild(): SyntaxToken<Kind> {
+  override getLastChild(): SyntaxToken {
     return this.right.getLastChild();
   }
 }

@@ -1,6 +1,6 @@
 import { Token } from "./token";
 import { SourceText } from "./source.text";
-import { TextSpan } from "./text.span";
+import { Span } from "./span";
 import { Kind, SyntaxKind } from "../analysis/parsing/syntax.kind";
 
 export class Lexer {
@@ -66,7 +66,7 @@ export class Lexer {
   }
 
   private get span() {
-    return TextSpan.createFrom(this.sourceText, this.start, this.end, 0);
+    return new Span(this.sourceText, this.start, this.end);
   }
 
   private lexIdentifier(): Token {
