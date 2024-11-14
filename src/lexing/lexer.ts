@@ -1,4 +1,3 @@
-import { SyntaxBinaryOperatorKind } from "../analysis/parsing/kind/syntax.binary.operator.kind";
 import { SyntaxCompositeTokenKind } from "../analysis/parsing/kind/syntax.composite.token.kind";
 import { SyntaxKind } from "../analysis/parsing/kind/syntax.kind";
 import { SyntaxNodeKind } from "../analysis/parsing/kind/syntax.node.kind";
@@ -34,19 +33,11 @@ export class Lexer {
   private lexNextToken() {
     this.start = this.end;
     this.kind = SyntaxFacts.getSyntaxKind(this.char());
-    if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
-      return this.lexMultilineCommentToken();
-    }
-    if (this.match(SyntaxCompositeTokenKind.GreaterGreaterToken, SyntaxCompositeTokenKind.GreaterGreaterToken)) {
-      return this.lexGreaterGreaterToken();
-    }
     switch (this.kind) {
       case SyntaxNodeKind.BadToken:
         return this.lexBadToken();
       case SyntaxNodeKind.HashToken:
         return this.lexCommentToken();
-      case SyntaxBinaryOperatorKind.MinusToken:
-        return this.lexMinusToken();
       case SyntaxNodeKind.ColonToken:
         return this.lexColonColonToken();
     }
@@ -71,40 +62,11 @@ export class Lexer {
     return new Token(this.kind, span);
   }
 
-  private lexMultilineCommentToken() {
-    this.next(3);
-    while (!(this.match(SyntaxNodeKind.EndOfFileToken) || this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken))) {
-      this.next();
-    }
-    if (this.match(SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken, SyntaxNodeKind.SingleQuoteToken)) {
-      this.next(3);
-    } else {
-      this.sourceText.diagnostics.missingTripleQuotes(this.createTextSpan());
-    }
-    return new Token(SyntaxTriviaKind.MultilineCommentTrivia, this.createTextSpan());
-  }
-
   private lexCommentToken(): Token {
     do {
       this.next();
     } while (!(this.match(SyntaxTriviaKind.LineBreakTrivia) || this.match(SyntaxNodeKind.EndOfFileToken)));
     return new Token(SyntaxTriviaKind.CommentTrivia, this.createTextSpan());
-  }
-
-  private lexMinusToken(): Token {
-    this.next();
-    this.kind = SyntaxBinaryOperatorKind.MinusToken;
-    if (this.match(SyntaxNodeKind.GreaterToken)) {
-      this.next();
-      this.kind = SyntaxCompositeTokenKind.PointerToken;
-    }
-    return new Token(this.kind, this.createTextSpan());
-  }
-
-  private lexGreaterGreaterToken(): Token {
-    this.next(2);
-    this.kind = SyntaxCompositeTokenKind.GreaterGreaterToken;
-    return new Token(this.kind, this.createTextSpan());
   }
 
   private lexColonColonToken(): Token {

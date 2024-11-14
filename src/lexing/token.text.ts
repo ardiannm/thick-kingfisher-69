@@ -15,15 +15,12 @@ export type TokenTextMapper = {
   [SyntaxNodeKind.CloseParenthesisToken]: ")";
   [SyntaxNodeKind.OpenBraceToken]: "{";
   [SyntaxNodeKind.CloseBraceToken]: "}";
-  [SyntaxNodeKind.SingleQuoteToken]: "*";
   [SyntaxNodeKind.DotToken]: ".";
   [SyntaxNodeKind.HashToken]: "#";
   [SyntaxNodeKind.GreaterToken]: ">";
   [SyntaxNodeKind.ColonToken]: ":";
   [SyntaxNodeKind.EqualsToken]: "=";
-  [SyntaxCompositeTokenKind.GreaterGreaterToken]: ">>";
   [SyntaxCompositeTokenKind.ColonColonToken]: "::";
-  [SyntaxCompositeTokenKind.PointerToken]: "->";
   [SyntaxKeywordKind.TrueKeyword]: "true";
   [SyntaxKeywordKind.FalseKeyword]: "false";
   [SyntaxNodeKind.EndOfFileToken]: "";

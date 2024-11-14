@@ -1,7 +1,6 @@
 export enum SyntaxNodeKind {
   EndOfFileToken = "EOF",
   NumberToken = "NumberToken",
-  SingleQuoteToken = "SingleQuoteToken",
   ColonToken = "ColonToken",
   OpenParenthesisToken = "OpenParenthesisToken",
   CloseParenthesisToken = "CloseParenthesisToken",

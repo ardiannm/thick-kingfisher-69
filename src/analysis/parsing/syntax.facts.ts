@@ -39,8 +39,6 @@ export class SyntaxFacts {
         return SyntaxBinaryOperatorKind.MinusToken;
       case "*":
         return SyntaxBinaryOperatorKind.StarToken;
-      case "'":
-        return SyntaxNodeKind.SingleQuoteToken;
       case "/":
         return SyntaxBinaryOperatorKind.SlashToken;
       case "^":
