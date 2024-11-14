@@ -17,10 +17,9 @@ export class PlaygroundComponent {}
 bootstrapApplication(PlaygroundComponent);
 `;
 
-text = `" name another one more value"`;
+text = `1 23345 an `;
 
 const lexer = Lexer.createFrom(SourceText.createFrom(text));
 
-for (const token of lexer.lex()) {
-  console.log(`(${token.span.text})\t\t` + token.kind);
-}
+// console.log([...lexer.lex()].map((token) => token.span.text));
+console.log([...lexer.lex()].map((token) => `${token.kind} -> ${token.span.start}, ${token.span.end} -> (${token.span.text})`));

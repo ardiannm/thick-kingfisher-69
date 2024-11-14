@@ -9,23 +9,19 @@ export class Lexer {
 
   private constructor(private readonly sourceText: SourceText) {}
 
-  static createFrom(text: SourceText) {
-    return new Lexer(text);
+  static createFrom(sourceText: SourceText) {
+    return new Lexer(sourceText);
   }
 
   *lex(): Generator<Token> {
-    let token: Token;
-    do {
-      token = this.lexNextToken();
-      yield token;
-    } while (this.hasNext());
+    while (this.hasNext()) yield this.lexNextToken();
+    yield this.lexNextToken();
   }
 
   private lexNextToken() {
     this.start = this.end;
     switch (this.char()) {
       case "":
-        this.next();
         return this.createNewToken(SyntaxKind.EndOfFileToken);
       case "+":
         this.next();

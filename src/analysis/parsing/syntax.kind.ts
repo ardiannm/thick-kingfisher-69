@@ -1,5 +1,5 @@
 export enum SyntaxKind {
-  EndOfFileToken = "EOF",
+  EndOfFileToken = "EndOfFileToken",
   NumberToken = "NumberToken",
   ColonToken = "ColonToken",
   OpenParenthesisToken = "OpenParenthesisToken",
