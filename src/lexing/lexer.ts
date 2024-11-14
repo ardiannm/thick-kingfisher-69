@@ -70,16 +70,19 @@ export class Lexer {
   }
 
   private lexIdentifier(): Token {
+    this.next();
     while (this.isLetter()) this.next();
     return this.createNewToken(SyntaxKind.IdentifierToken);
   }
 
   private lexSpaceToken(): Token {
+    this.next();
     while (this.isSpace()) this.next();
     return this.createNewToken(SyntaxKind.SpaceTrivia);
   }
 
   private lexNumberToken(): Token {
+    this.next();
     while (this.isDigit()) this.next();
     if (this.char() === ".") {
       this.next();
@@ -121,8 +124,11 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    const start = this.end + offset;
-    return this.sourceText.text.substring(start, start + 1);
+    const index = this.end + offset;
+    if (index >= this.sourceText.text.length) {
+      return "";
+    }
+    return this.sourceText.text[index];
   }
 
   private char() {

@@ -22,4 +22,4 @@ const lexer = Lexer.createFrom(text);
 
 const tokens = Array.from(lexer.lex());
 
-console.log(tokens.map((token) => `${token.kind} -> (${token.span.text})`));
+console.log(tokens.map((token) => `${token.kind} -> (${token.span.text}) -> (${token.span.start}, ${token.span.end})`));
