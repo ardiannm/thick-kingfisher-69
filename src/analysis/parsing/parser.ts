@@ -43,20 +43,20 @@ export class Parser {
       statements.push(this.parseBlock());
       if (this.peekToken() === startToken) this.getNextToken();
     }
-    const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken);
+    const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken) as SyntaxToken<SyntaxKind.EndOfFileToken>;
     return new SyntaxCompilationUnit(this.sourceText, statements, endOfFileToken);
   }
 
   private parseBlock() {
     if (this.match(SyntaxKind.OpenBraceToken)) {
-      const openBrace = this.expect(SyntaxKind.OpenBraceToken);
+      const openBrace = this.expect(SyntaxKind.OpenBraceToken) as SyntaxToken<SyntaxKind.OpenBraceToken>;
       const statements = new Array<SyntaxNode>();
       while (this.hasToken() && !this.match(SyntaxKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
         if (this.peekToken() === startToken) this.getNextToken();
       }
-      const closeBrace = this.expect(SyntaxKind.CloseBraceToken);
+      const closeBrace = this.expect(SyntaxKind.CloseBraceToken) as SyntaxToken<SyntaxKind.CloseBraceToken>;
       const node = new SyntaxBlock(this.sourceText, openBrace, statements, closeBrace);
       if (closeBrace.kind === SyntaxKind.CloseBraceToken && !statements.length) {
         this.sourceText.diagnostics.emptyBlock(node.span);
@@ -102,10 +102,10 @@ export class Parser {
 
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      const left = this.getNextToken();
+      const left = this.getNextToken() as SyntaxToken<SyntaxKind.OpenParenthesisToken>;
       const expression = this.parseBinaryExpression();
-      const right = this.expect(SyntaxKind.CloseParenthesisToken);
-      return new SyntaxParenthesis(this.sourceText, left as SyntaxToken<SyntaxKind.OpenParenthesisToken>, expression, right);
+      const right = this.expect(SyntaxKind.CloseParenthesisToken) as SyntaxToken<SyntaxKind.CloseParenthesisToken>;
+      return new SyntaxParenthesis(this.sourceText, left, expression, right);
     }
     return this.parseCellReference();
   }

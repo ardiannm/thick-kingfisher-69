@@ -48,8 +48,13 @@ export class Lexer {
       case ".":
         this.next();
         return this.createNewToken(SyntaxKind.DotToken);
+      case "\n":
+        this.next();
+        return this.createNewToken(SyntaxKind.LineBreakTrivia);
       case '"':
         return this.lexCommentToken();
+      case ":":
+        return this.lexColonColonToken();
       default:
         if (this.isLetter()) {
           return this.lexIdentifier();
@@ -109,6 +114,15 @@ export class Lexer {
       this.sourceText.diagnostics.unexpectedTokenFound(SyntaxKind.EndOfFileToken, SyntaxKind.QuoteToken, this.span);
     }
     return this.createNewToken(SyntaxKind.CommentTrivia);
+  }
+
+  private lexColonColonToken() {
+    this.next();
+    if (this.char() === ":") {
+      this.next();
+      return this.createNewToken(SyntaxKind.ColonColonToken);
+    }
+    return this.createNewToken(SyntaxKind.ColonToken);
   }
 
   private isSpace(): boolean {
