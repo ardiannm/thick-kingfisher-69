@@ -1,4 +1,4 @@
-import { Lexer } from "./src/lexing/lexer";
+import { SourceText } from "./src/lexing/source.text";
 
 var text = `import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -16,8 +16,6 @@ export class PlaygroundComponent {}
 bootstrapApplication(PlaygroundComponent);
 `;
 
-const lexer = Lexer.createFrom(text);
+const src = SourceText.createFrom(text);
 
-const tokens = Array.from(lexer.lex());
-
-console.log(tokens.map((token) => `${token.kind} -> ${token.span.text} -> ${token.span.start}, ${token.span.end}`));
+console.log(src.getLines().map((s) => s.text));

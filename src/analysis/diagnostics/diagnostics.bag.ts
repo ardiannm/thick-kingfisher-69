@@ -33,19 +33,11 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string, span: Span) {
-    this.report(`Illegal character '${text}' found.`, Severity.Warning, span);
+    this.report(`Bad character '${text}' found`, Severity.Warning, span);
   }
 
   unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
     this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantEvaluate, span);
-  }
-
-  missingTripleQuotes(span: Span) {
-    this.report(
-      `Missing closing triple quotes ('''). It looks like the multi-line string was not properly closed. Please ensure you close the string after your intended text.`,
-      Severity.CantBind,
-      span
-    );
   }
 
   undeclaredCell(name: string, span: Span) {
@@ -54,6 +46,10 @@ export class DiagnosticsBag {
 
   badFloatingPointNumber(span: Span) {
     this.report(`Wrong floating number format.`, Severity.CantBind, span);
+  }
+
+  missingClosingQuote(span: Span) {
+    this.report(`Comment is missing a closing '"'`, Severity.CantParse, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {

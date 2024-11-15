@@ -49,17 +49,24 @@ export class Lexer {
     }
     if (this.isLetter()) {
       return this.lexIdentifier();
-    } else if (this.isDigit()) {
-      return this.lexNumberToken();
-    } else if (this.isSpace()) {
-      return this.lexSpaceToken();
-    } else {
-      return this.advanceAndCreateNewToken(SyntaxKind.BadToken);
     }
+    if (this.isDigit()) {
+      return this.lexNumberToken();
+    }
+    if (this.isSpace()) {
+      return this.lexSpaceToken();
+    }
+    return this.lexBadToken();
+  }
+
+  private lexBadToken() {
+    this.sourceText.diagnostics.badCharacterFound(this.char(), this.span);
+    this.next();
+    return this.createNewToken(SyntaxKind.BadToken);
   }
 
   private advanceAndCreateNewToken(kind: Kind) {
-    this.advance();
+    this.next();
     return this.createNewToken(kind);
   }
 
@@ -72,47 +79,47 @@ export class Lexer {
   }
 
   private lexIdentifier(): Token {
-    this.advance();
-    while (this.isLetter()) this.advance();
+    this.next();
+    while (this.isLetter()) this.next();
     return this.createNewToken(SyntaxKind.IdentifierToken);
   }
 
   private lexSpaceToken(): Token {
-    this.advance();
-    while (this.isSpace()) this.advance();
+    this.next();
+    while (this.isSpace()) this.next();
     return this.createNewToken(SyntaxKind.SpaceTrivia);
   }
 
   private lexNumberToken(): Token {
-    this.advance();
-    while (this.isDigit()) this.advance();
+    this.next();
+    while (this.isDigit()) this.next();
     if (this.char() === ".") {
-      this.advance();
+      this.next();
       if (!this.isDigit()) {
         this.sourceText.diagnostics.badFloatingPointNumber(this.span);
       }
     }
-    while (this.isDigit()) this.advance();
+    while (this.isDigit()) this.next();
     return this.createNewToken(SyntaxKind.NumberToken);
   }
 
   private lexCommentToken(): Token {
-    this.advance();
+    this.next();
     while (this.char() !== '"' && this.hasNext()) {
-      this.advance();
+      this.next();
     }
     if (this.char() === '"') {
-      this.advance();
+      this.next();
     } else {
-      this.sourceText.diagnostics.unexpectedTokenFound(SyntaxKind.EndOfFileToken, SyntaxKind.QuoteToken, this.span);
+      this.sourceText.diagnostics.missingClosingQuote(this.span);
     }
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 
   private lexColonColonToken() {
-    this.advance();
+    this.next();
     if (this.char() === ":") {
-      this.advance();
+      this.next();
       return this.createNewToken(SyntaxKind.ColonColonToken);
     }
     return this.createNewToken(SyntaxKind.ColonToken);
@@ -145,8 +152,8 @@ export class Lexer {
     return this.peek(0);
   }
 
-  private advance(steps = 1) {
-    this.end = this.end + steps;
+  private next(steps = 1) {
+    this.end += steps;
   }
 
   private hasNext() {
