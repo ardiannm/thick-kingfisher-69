@@ -104,14 +104,14 @@ export class Lexer {
 
   private lexCommentToken(): Token {
     this.next();
-    while (this.char() !== '"' && this.hasNext()) {
+    while (this.hasNext()) {
+      if (this.char() === '"') {
+        this.next();
+        return this.createNewToken(SyntaxKind.CommentTrivia);
+      }
       this.next();
     }
-    if (this.char() === '"') {
-      this.next();
-    } else {
-      this.sourceText.diagnostics.missingClosingQuote(this.span);
-    }
+    this.sourceText.diagnostics.missingClosingQuote(this.span);
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 
