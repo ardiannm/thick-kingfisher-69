@@ -1,11 +1,24 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { Lexer } from "./lexer";
 import { LineSpan } from "./line.span";
+import { Token } from "./token";
 
 export class SourceText {
   private spans = [] as LineSpan[];
+  private tokens = [] as Token[];
   readonly diagnostics = new DiagnosticsBag(this);
 
   private constructor(public text: string) {
+    this.splitInLines();
+    this.tokenize();
+  }
+
+  private tokenize() {
+    const lexer = Lexer.createFrom(this);
+    for (const token of lexer.lex()) this.tokens.push(token);
+  }
+
+  private splitInLines() {
     let start = 0;
     let position = 0;
     while (position < this.text.length) {
@@ -40,6 +53,10 @@ export class SourceText {
       }
     }
     return lower - 1;
+  }
+
+  getTokens() {
+    return this.tokens;
   }
 
   getLine(position: number) {

@@ -9,6 +9,7 @@ export class Token<T extends Kind = Kind> {
       case SyntaxKind.LineBreakTrivia:
       case SyntaxKind.SpaceTrivia:
       case SyntaxKind.CommentTrivia:
+      case SyntaxKind.BadToken:
         return true;
       default:
         return false;

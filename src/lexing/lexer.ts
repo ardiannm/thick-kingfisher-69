@@ -9,8 +9,7 @@ export class Lexer {
 
   private constructor(private readonly sourceText: SourceText) {}
 
-  static createFrom(text: string | SourceText) {
-    const sourceText = text instanceof SourceText ? text : SourceText.createFrom(text);
+  static createFrom(sourceText: SourceText) {
     return new Lexer(sourceText);
   }
 
@@ -142,10 +141,7 @@ export class Lexer {
 
   private peek(offset: number): string {
     const index = this.end + offset;
-    if (index >= this.sourceText.text.length) {
-      return "";
-    }
-    return this.sourceText.text[index];
+    return index >= this.sourceText.text.length ? "" : this.sourceText.text[index];
   }
 
   private char() {

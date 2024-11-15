@@ -18,4 +18,4 @@ bootstrapApplication(PlaygroundComponent);
 
 const src = SourceText.createFrom(text);
 
-console.log(src.getLines().map((s) => s.text));
+console.log(src.getTokens().map((token) => [token.kind, token.span.start, token.span.end, token.span.text]));
