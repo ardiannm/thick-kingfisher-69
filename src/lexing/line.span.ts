@@ -14,6 +14,10 @@ export class LineSpan extends Span {
     return this.sourceText.text.substring(this.start, this.end - this.lineBreakLength);
   }
 
+  get fullText(): string {
+    return this.sourceText.text.substring(this.start, this.end);
+  }
+
   override get length() {
     return this.end - this.start - this.lineBreakLength;
   }
