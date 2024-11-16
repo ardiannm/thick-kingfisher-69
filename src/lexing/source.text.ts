@@ -39,20 +39,22 @@ export class SourceText {
     start = position;
   }
 
-  private getLineIndex(position: number): number {
+  private getLineIndex(position: number) {
     let left = 0;
     let right = this.spans.length - 1;
-    while (left <= right) {
-      var index = Math.floor(left + (right - left) / 2);
-      var start = this.spans[index].start;
-      if (position === start) return index;
-      if (start > position) {
-        right = index - 1;
-      } else {
+    let index;
+    do {
+      index = left + Math.floor((right - left) / 2);
+      const span = this.spans[index];
+      if (position >= span.end) {
         left = index + 1;
+      } else if (position < span.start) {
+        right = index;
+      } else {
+        break;
       }
-    }
-    return left - 1;
+    } while (left <= right);
+    return index;
   }
 
   getTokenIndex(position: number) {
@@ -86,8 +88,8 @@ export class SourceText {
   }
 
   getColumn(position: number): number {
-    const span = this.getLineIndex(position);
-    return position - this.spans[span].start + 1;
+    const index = this.getLineIndex(position);
+    return position - this.spans[index].start + 1;
   }
 
   getPosition(line: number, column: number) {

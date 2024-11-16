@@ -19,6 +19,6 @@ bootstrapApplication(PlaygroundComponent);
 const src = SourceText.createFrom(text);
 
 console.log(src.getTokens().map((token) => [token.span.line, token.kind, token.span.start, token.span.end, token.span.text]));
-console.log(src.getLines().map((span) => [span.line, span.start, span.end, span.text]));
+console.log(src.getLines().map((span) => [span.line, span.start, span.end, span.fullText]));
 
 src.getTokenIndex(311);
