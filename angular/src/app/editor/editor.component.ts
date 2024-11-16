@@ -1,5 +1,5 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from '@angular/core';
-import { CaretComponent } from './caret/caret.component';
+import { CursorComponent } from './cursor/cursor.component';
 import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
 
 import * as MyCustomParser from '../../../../ng';
@@ -25,7 +25,7 @@ bootstrapApplication(PlaygroundComponent);
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [CaretComponent, NgClass],
+  imports: [CursorComponent, NgClass],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
 })
@@ -36,11 +36,11 @@ export class EditorComponent {
   code = signal(text);
   sourceText = computed(() => MyCustomParser.SourceText.createFrom(this.code()));
   lines = computed(() => this.sourceText().getLines());
-  caret = signal(this.text.length);
-  line = computed(() => this.sourceText().getLine(this.caret()));
-  column = computed(() => this.sourceText().getColumn(this.caret()));
-  caretX = 0;
-  caretY = 0;
+  cursor = signal(this.text.length);
+  line = computed(() => this.sourceText().getLine(this.cursor()));
+  column = computed(() => this.sourceText().getColumn(this.cursor()));
+  cursorX = 0;
+  cursorY = 0;
   caretWidth = 4;
   prevColumn = this.line();
 
@@ -49,7 +49,7 @@ export class EditorComponent {
       () => {
         const current = this.code().length;
         const change = current - this.length;
-        this.caret.update((pos) => pos + change);
+        this.cursor.update((pos) => pos + change);
         this.length = current;
       },
       {
@@ -60,7 +60,7 @@ export class EditorComponent {
       effect(() => {
         const line = this.line();
         const column = this.column();
-        setTimeout(() => this.getCaretPosition(line, column));
+        setTimeout(() => this.getCursorPosition(line, column));
       });
     }
   }
@@ -70,10 +70,10 @@ export class EditorComponent {
   onWindowChange() {
     const line = this.line();
     const column = this.column();
-    this.getCaretPosition(line, column);
+    this.getCursorPosition(line, column);
   }
 
-  private getCaretPosition(line: number, column: number) {
+  private getCursorPosition(line: number, column: number) {
     const element = this.document.getElementById('row-' + line)!;
     if (element && element.childNodes.length > 0) {
       const textNode = element.childNodes[0];
@@ -82,8 +82,8 @@ export class EditorComponent {
         range.setStart(textNode, column);
         range.setEnd(textNode, column + 1);
         const rect = range.getBoundingClientRect();
-        this.caretX = rect.x;
-        this.caretY = rect.y;
+        this.cursorX = rect.x;
+        this.cursorY = rect.y;
         range.detach();
       }
     }
@@ -111,7 +111,7 @@ export class EditorComponent {
       this.insertText('\t');
     } else if (input === 'Backspace') {
       this.removeText();
-    } else if (input === 'Delete' && this.caret() !== this.length) {
+    } else if (input === 'Delete' && this.cursor() !== this.length) {
       this.tranformCaretX(+1);
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
@@ -122,23 +122,23 @@ export class EditorComponent {
 
   private insertText(charText: string = '\n') {
     const text = this.code();
-    const pos = this.caret();
+    const pos = this.cursor();
     const newText = text.substring(0, pos) + charText + text.substring(pos);
     this.code.set(newText);
   }
 
   private removeText() {
     const text = this.code();
-    const pos = this.caret();
+    const pos = this.cursor();
     const newText = text.substring(0, pos - 1) + text.substring(pos);
     this.code.set(newText);
   }
 
   private tranformCaretX(steps: number) {
-    const pos = this.caret();
+    const pos = this.cursor();
     const newPos = pos + steps;
     if (newPos >= 0 && newPos <= this.length) {
-      this.caret.set(newPos);
+      this.cursor.set(newPos);
       this.prevColumn = this.column();
     }
   }
@@ -146,11 +146,11 @@ export class EditorComponent {
   transformCaretY(steps: number) {
     const prevLine = this.line() + steps;
     if (prevLine > 0) {
-      const pos = this.sourceText().getPosition(prevLine, this.prevColumn);
-      this.caret.set(pos);
+      const pos = this.sourceText().getCursorPosition(prevLine, this.prevColumn);
+      this.cursor.set(pos);
     } else {
       this.prevColumn = 1;
-      this.caret.set(0);
+      this.cursor.set(0);
     }
   }
 }

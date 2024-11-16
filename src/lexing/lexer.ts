@@ -5,7 +5,7 @@ import { Kind, SyntaxKind } from "../analysis/parsing/syntax.kind";
 
 export class Lexer {
   private start: number = 0;
-  private end = this.start;
+  private cursor = this.start;
 
   private constructor(private readonly sourceText: SourceText) {}
 
@@ -19,7 +19,7 @@ export class Lexer {
   }
 
   private lexNextToken(): Token {
-    this.start = this.end;
+    this.start = this.cursor;
     switch (this.char()) {
       case "":
         return this.createNewToken(SyntaxKind.EndOfFileToken);
@@ -74,7 +74,7 @@ export class Lexer {
   }
 
   private get span() {
-    return new Span(this.sourceText, this.start, this.end);
+    return new Span(this.sourceText, this.start, this.cursor);
   }
 
   private lexIdentifier(): Token {
@@ -140,7 +140,7 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    const index = this.end + offset;
+    const index = this.cursor + offset;
     return index >= this.sourceText.text.length ? "" : this.sourceText.text[index];
   }
 
@@ -149,11 +149,11 @@ export class Lexer {
   }
 
   private next(steps = 1) {
-    this.end += steps;
+    this.cursor += steps;
   }
 
   private hasNext() {
-    return this.end < this.sourceText.text.length;
+    return this.cursor < this.sourceText.text.length;
   }
 
   get diagnostics() {

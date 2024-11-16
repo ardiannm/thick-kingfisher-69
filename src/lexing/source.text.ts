@@ -24,31 +24,31 @@ export class SourceText {
 
   private splitInLines() {
     let start = 0;
-    let position = 0;
-    while (position < this.text.length) {
-      const char = this.text[position];
-      position++;
+    let cursor = 0;
+    while (cursor < this.text.length) {
+      const char = this.text[cursor];
+      cursor++;
       if (char === "\n") {
-        const span = LineSpan.createFrom(this, start, position, 1);
+        const span = LineSpan.createFrom(this, start, cursor, 1);
         this.spans.push(span);
-        start = position;
+        start = cursor;
       }
     }
-    const span = LineSpan.createFrom(this, start, position, 0);
+    const span = LineSpan.createFrom(this, start, cursor, 0);
     this.spans.push(span);
-    start = position;
+    start = cursor;
   }
 
-  private getLineIndex(position: number) {
+  private getLineIndex(cursor: number) {
     let left = 0;
     let right = this.spans.length - 1;
     let index;
     do {
       index = left + Math.floor((right - left) / 2);
       const span = this.spans[index];
-      if (position >= span.end) {
+      if (cursor >= span.end) {
         left = index + 1;
-      } else if (position < span.start) {
+      } else if (cursor < span.start) {
         right = index;
       } else {
         break;
@@ -57,16 +57,16 @@ export class SourceText {
     return index;
   }
 
-  getTokenIndex(position: number) {
+  getTokenIndex(cursor: number) {
     let left = 0;
     let right = this.tokens.length - 1;
     let index;
     do {
       index = left + Math.floor((right - left) / 2);
       const token = this.tokens[index];
-      if (position >= token.span.end) {
+      if (cursor >= token.span.end) {
         left = index + 1;
-      } else if (position < token.span.start) {
+      } else if (cursor < token.span.start) {
         right = index;
       } else {
         break;
@@ -92,7 +92,7 @@ export class SourceText {
     return position - this.spans[index].start + 1;
   }
 
-  getPosition(line: number, column: number) {
+  getCursorPosition(line: number, column: number) {
     const index = Math.min(Math.max(1, line), this.spans.length) - 1;
     const span = this.spans[index];
     const offset = Math.min(column - 1, span.length);
