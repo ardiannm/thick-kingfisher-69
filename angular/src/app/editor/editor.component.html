@@ -1,4 +1,4 @@
-@for (lineSpan of lines(); track $index) {
+<!-- @for (lineSpan of lines(); track $index) {
 <div class="line" [ngClass]="{ active: $index + 1 === line() }">
   <div class="line-number">
     {{ $index + 1 }}
@@ -12,16 +12,27 @@
   <span> line: {{ line() }} </span>
   <span> column: {{ column() }} </span>
 </div>
+
+<br />
+<br />
+<br /> -->
+
 <app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="18"></app-cursor>
 
-<br />
-<br />
-<br />
-
-@for (line of lines(); track $index) {
-<div class="line">
-  @for (token of line.getTokens(); track $index) {
+<!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
+@for (lineSpan of lines(); track $index) {
+<div
+  class="line"
+  [id]="'row-' + ($index + 1)"
+  [ngClass]="{ active: $index + 1 === line() }"
+>
+  @for (token of lineSpan.getTokens(); track $index) {
   <span [class]="token.kind">{{ token.span.text }}</span>
-  }
+  } &nbsp;
 </div>
 }
+
+<div class="status-bar">
+  <span> line: {{ line() }} </span>
+  <span> column: {{ column() }} </span>
+</div>

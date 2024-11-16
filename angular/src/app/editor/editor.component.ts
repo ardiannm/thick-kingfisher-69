@@ -4,8 +4,8 @@ import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
 
 import * as MyCustomParser from '../../../../ng';
 
-var text = `import {Component} from '@angular/core';
-import {bootstrapApplication} from '@angular/platform-browser';
+var text = `"import {Component} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';"
 
 @Component({
   selector: 'app-root',

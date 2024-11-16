@@ -32,16 +32,6 @@
   min-width: 40px;
 }
 
-.line-text {
-  height: 17px;
-  padding-bottom: 1px;
-  display: flex;
-  align-items: center;
-  &::selection {
-    background-color: #dfe1e5;
-  }
-}
-
 .active {
   outline: 1px solid #dfe1e5;
 }
@@ -50,4 +40,16 @@
   display: flex;
   flex-direction: row;
   margin-top: 14px;
+}
+
+span {
+  box-sizing: border-box;
+}
+
+.IdentifierToken {
+  color: blue;
+}
+
+.CommentTrivia {
+  color: brown;
 }
