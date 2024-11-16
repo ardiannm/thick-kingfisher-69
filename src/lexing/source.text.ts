@@ -1,6 +1,7 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Lexer } from "./lexer";
 import { LineSpan } from "./line.span";
+import { Span } from "./span";
 import { Token } from "./token";
 
 export class SourceText {
@@ -39,20 +40,20 @@ export class SourceText {
     return new SourceText(text);
   }
 
-  private getLinePosition(position: number): number {
-    let lower = 0;
-    let upper = this.spans.length - 1;
-    while (lower <= upper) {
-      var index = Math.floor(lower + (upper - lower) / 2);
+  private getLineIndex(position: number): number {
+    let left = 0;
+    let right = this.spans.length - 1;
+    while (left <= right) {
+      var index = Math.floor(left + (right - left) / 2);
       var start = this.spans[index].start;
       if (position === start) return index;
       if (start > position) {
-        upper = index - 1;
+        right = index - 1;
       } else {
-        lower = index + 1;
+        left = index + 1;
       }
     }
-    return lower - 1;
+    return left - 1;
   }
 
   getTokens() {
@@ -60,11 +61,11 @@ export class SourceText {
   }
 
   getLine(position: number) {
-    return this.getLinePosition(position) + 1;
+    return this.getLineIndex(position) + 1;
   }
 
   getColumn(position: number): number {
-    const span = this.getLinePosition(position);
+    const span = this.getLineIndex(position);
     return position - this.spans[span].start + 1;
   }
 
@@ -77,5 +78,27 @@ export class SourceText {
     const span = this.spans[index];
     const offset = Math.min(column - 1, span.length);
     return span.start + offset;
+  }
+
+  getTokenIndex(position: number) {
+    let left = 0;
+    let right = this.tokens.length - 1;
+    let span: Span;
+    let index;
+    do {
+      index = left + Math.floor((right - left) / 2);
+      const token = this.tokens[index];
+      span = token.span;
+      const start = span.start;
+      const end = span.end;
+      if (position >= end) {
+        left = index + 1;
+      } else if (position < start) {
+        right = index;
+      } else {
+        break;
+      }
+    } while (left <= right);
+    return index;
   }
 }
