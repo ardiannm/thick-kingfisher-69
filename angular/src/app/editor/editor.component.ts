@@ -7,7 +7,9 @@ import * as MyCustomParser from '../../../../ng';
 var text = `"import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';"
 
-@Component({
+"
+
+"@Component({
   selector: 'app-root',
   standalone: true,
   template: \`

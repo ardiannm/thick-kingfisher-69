@@ -12,6 +12,10 @@ export class LineSpan extends Span {
     return new LineSpan(sourceText, start, end, lineBreakLength);
   }
 
+  get number() {
+    return this.sourceText.getLineNumber(this.start);
+  }
+
   override get text(): string {
     return this.sourceText.text.substring(this.start, this.end - this.lineBreakLength);
   }
@@ -20,22 +24,25 @@ export class LineSpan extends Span {
     return this.end - this.start - this.lineBreakLength;
   }
 
-  *getTokens() {
+  getTokens() {
     let index = this.sourceText.getTokenIndex(this.start);
     const tokens = this.sourceText.getTokens();
+    const lineTokens = [] as Token[];
     let token: Token;
     do {
       token = tokens[index];
-      if (token.kind === SyntaxKind.LineBreakTrivia || token.kind === SyntaxKind.EndOfFileToken) break;
-      if (token.span.start >= this.start && token.span.end <= this.end) {
-        yield token;
+      if (token.kind === SyntaxKind.LineBreakTrivia) break;
+      if (token.span.start >= this.start && token.span.end <= this.end - this.lineBreakLength) {
+        lineTokens.push(token);
       } else {
         const start = Math.max(this.start, token.span.start);
         const end = Math.min(this.end - this.lineBreakLength, token.span.end);
         const span = new Span(this.sourceText, start, end);
-        yield new Token(token.kind, span);
+        // TODO: make sure that these yielded tokens have valid spans where end >= start, currently there is a bug
+        lineTokens.push(new Token(token.kind, span));
       }
       index++;
     } while (index < tokens.length);
+    return lineTokens;
   }
 }
