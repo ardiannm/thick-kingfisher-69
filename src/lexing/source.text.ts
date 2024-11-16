@@ -13,6 +13,10 @@ export class SourceText {
     this.tokenize();
   }
 
+  static createFrom(text: string): SourceText {
+    return new SourceText(text);
+  }
+
   private tokenize() {
     const lexer = Lexer.createFrom(this);
     for (const token of lexer.lex()) this.tokens.push(token);
@@ -35,10 +39,6 @@ export class SourceText {
     start = position;
   }
 
-  static createFrom(text: string): SourceText {
-    return new SourceText(text);
-  }
-
   private getLineIndex(position: number): number {
     let left = 0;
     let right = this.spans.length - 1;
@@ -53,30 +53,6 @@ export class SourceText {
       }
     }
     return left - 1;
-  }
-
-  getTokens() {
-    return this.tokens;
-  }
-
-  getLine(position: number) {
-    return this.getLineIndex(position) + 1;
-  }
-
-  getColumn(position: number): number {
-    const span = this.getLineIndex(position);
-    return position - this.spans[span].start + 1;
-  }
-
-  getLines() {
-    return this.spans;
-  }
-
-  getPosition(line: number, column: number) {
-    const index = Math.min(Math.max(1, line), this.spans.length) - 1;
-    const span = this.spans[index];
-    const offset = Math.min(column - 1, span.length);
-    return span.start + offset;
   }
 
   getTokenIndex(position: number) {
@@ -95,5 +71,29 @@ export class SourceText {
       }
     } while (left <= right);
     return index;
+  }
+
+  getLines() {
+    return this.spans;
+  }
+
+  getTokens() {
+    return this.tokens;
+  }
+
+  getLine(position: number) {
+    return this.getLineIndex(position) + 1;
+  }
+
+  getColumn(position: number): number {
+    const span = this.getLineIndex(position);
+    return position - this.spans[span].start + 1;
+  }
+
+  getPosition(line: number, column: number) {
+    const index = Math.min(Math.max(1, line), this.spans.length) - 1;
+    const span = this.spans[index];
+    const offset = Math.min(column - 1, span.length);
+    return span.start + offset;
   }
 }
