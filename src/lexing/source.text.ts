@@ -75,7 +75,7 @@ export class SourceText {
     return index;
   }
 
-  getLines() {
+  getLineSpans() {
     return this.spans;
   }
 
@@ -83,13 +83,12 @@ export class SourceText {
     return this.tokens;
   }
 
-  getLine(position: number) {
-    return this.getLineIndex(position) + 1;
+  getLineNumber(cursor: number) {
+    return this.getLineIndex(cursor) + 1;
   }
 
-  getColumn(position: number): number {
-    const index = this.getLineIndex(position);
-    return position - this.spans[index].start + 1;
+  getColumnNumber(cursor: number): number {
+    return cursor - this.spans[this.getLineIndex(cursor)].start + 1;
   }
 
   getCursorPosition(line: number, column: number) {

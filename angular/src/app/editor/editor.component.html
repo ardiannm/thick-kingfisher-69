@@ -13,3 +13,15 @@
   <span> column: {{ column() }} </span>
 </div>
 <app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="18"></app-cursor>
+
+<br />
+<br />
+<br />
+
+@for (line of lines(); track $index) {
+<div class="line">
+  @for (token of line.getTokens(); track $index) {
+  <span [class]="token.kind">{{ token.span.text }}</span>
+  }
+</div>
+}

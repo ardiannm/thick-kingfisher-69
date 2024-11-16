@@ -35,10 +35,10 @@ export class EditorComponent {
   length = text.length;
   code = signal(text);
   sourceText = computed(() => MyCustomParser.SourceText.createFrom(this.code()));
-  lines = computed(() => this.sourceText().getLines());
+  lines = computed(() => this.sourceText().getLineSpans());
   cursor = signal(this.text.length);
-  line = computed(() => this.sourceText().getLine(this.cursor()));
-  column = computed(() => this.sourceText().getColumn(this.cursor()));
+  line = computed(() => this.sourceText().getLineNumber(this.cursor()));
+  column = computed(() => this.sourceText().getColumnNumber(this.cursor()));
   cursorX = 0;
   cursorY = 0;
   caretWidth = 4;
