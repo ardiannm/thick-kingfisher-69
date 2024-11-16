@@ -33,7 +33,6 @@ export class LineSpan extends Span {
         const start = Math.max(this.start, token.span.start);
         const end = Math.min(this.end - this.lineBreakLength, token.span.end);
         const span = new Span(this.sourceText, start, end);
-        console.log([this.sourceText.getLineNumber(this.start), start, end, span.text]);
         yield new Token(token.kind, span);
       }
       index++;
