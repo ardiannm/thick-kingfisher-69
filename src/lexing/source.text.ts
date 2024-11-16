@@ -1,7 +1,6 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Lexer } from "./lexer";
 import { LineSpan } from "./line.span";
-import { Span } from "./span";
 import { Token } from "./token";
 
 export class SourceText {
@@ -83,17 +82,13 @@ export class SourceText {
   getTokenIndex(position: number) {
     let left = 0;
     let right = this.tokens.length - 1;
-    let span: Span;
     let index;
     do {
       index = left + Math.floor((right - left) / 2);
       const token = this.tokens[index];
-      span = token.span;
-      const start = span.start;
-      const end = span.end;
-      if (position >= end) {
+      if (position >= token.span.end) {
         left = index + 1;
-      } else if (position < start) {
+      } else if (position < token.span.start) {
         right = index;
       } else {
         break;
