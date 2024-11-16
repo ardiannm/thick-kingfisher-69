@@ -26,13 +26,14 @@ export class LineSpan extends Span {
     let token: Token;
     do {
       token = tokens[index];
-      if (token.kind === SyntaxKind.LineBreakTrivia) break;
+      if (token.kind === SyntaxKind.LineBreakTrivia || token.kind === SyntaxKind.EndOfFileToken) break;
       if (token.span.start >= this.start && token.span.end <= this.end) {
         yield token;
       } else {
         const start = Math.max(this.start, token.span.start);
         const end = Math.min(this.end - this.lineBreakLength, token.span.end);
         const span = new Span(this.sourceText, start, end);
+        console.log([this.sourceText.getLineNumber(this.start), start, end, span.text]);
         yield new Token(token.kind, span);
       }
       index++;
