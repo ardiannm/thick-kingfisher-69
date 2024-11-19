@@ -1,10 +1,10 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Lexer } from "./lexer";
-import { LineSpan } from "./line.span";
+import { Line } from "./line";
 import { Token } from "./token";
 
 export class SourceText {
-  private spans = [] as LineSpan[];
+  private lines = [] as Line[];
   private tokens = [] as Token[];
   readonly diagnostics = new DiagnosticsBag(this);
 
@@ -29,54 +29,58 @@ export class SourceText {
       const char = this.text[cursor];
       cursor++;
       if (char === "\n") {
-        const span = LineSpan.createFrom(this, start, cursor, 1);
-        this.spans.push(span);
+        const span = Line.createFrom(this, start, cursor, 1);
+        this.lines.push(span);
         start = cursor;
       }
     }
-    const span = LineSpan.createFrom(this, start, cursor, 0);
-    this.spans.push(span);
+    const span = Line.createFrom(this, start, cursor, 0);
+    this.lines.push(span);
     start = cursor;
   }
 
   private getLineIndex(cursor: number) {
     let left = 0;
-    let right = this.spans.length - 1;
-    let index;
+    let right = this.lines.length - 1;
+    let mid;
     do {
-      index = left + Math.floor((right - left) / 2);
-      const span = this.spans[index];
-      if (cursor >= span.end) {
-        left = index + 1;
-      } else if (cursor < span.start) {
-        right = index;
+      mid = left + Math.floor((right - left) / 2);
+      const fullSpan = this.lines[mid].fullSpan;
+      if (cursor >= fullSpan.end) {
+        left = mid + 1;
+      } else if (cursor < fullSpan.start) {
+        right = mid;
       } else {
         break;
       }
     } while (left <= right);
-    return index;
+    return mid;
   }
 
   getTokenIndex(cursor: number) {
     let left = 0;
     let right = this.tokens.length - 1;
-    let index;
+    let mid;
     do {
-      index = left + Math.floor((right - left) / 2);
-      const token = this.tokens[index];
+      mid = left + Math.floor((right - left) / 2);
+      const token = this.tokens[mid];
       if (cursor >= token.span.end) {
-        left = index + 1;
+        left = mid + 1;
       } else if (cursor < token.span.start) {
-        right = index;
+        right = mid;
       } else {
         break;
       }
     } while (left <= right);
-    return index;
+    return mid;
   }
 
-  getLineSpans() {
-    return this.spans;
+  getLines() {
+    return this.lines;
+  }
+
+  getLine(number: number) {
+    return this.lines[number - 1];
   }
 
   getTokens() {
@@ -88,13 +92,13 @@ export class SourceText {
   }
 
   getColumnNumber(cursor: number): number {
-    return cursor - this.spans[this.getLineIndex(cursor)].start + 1;
+    return cursor - this.lines[this.getLineIndex(cursor)].fullSpan.start + 1;
   }
 
   getCursorPosition(line: number, column: number) {
-    const index = Math.min(Math.max(1, line), this.spans.length) - 1;
-    const span = this.spans[index];
-    const offset = Math.min(column - 1, span.length);
-    return span.start + offset;
+    const index = Math.min(Math.max(1, line), this.lines.length) - 1;
+    const fullSpan = this.lines[index].fullSpan;
+    const offset = Math.min(column - 1, fullSpan.length);
+    return fullSpan.start + offset;
   }
 }

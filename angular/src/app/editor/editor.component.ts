@@ -2,7 +2,7 @@ import { Component, Input, signal, computed, HostListener, effect, Inject, PLATF
 import { CursorComponent } from './cursor/cursor.component';
 import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
 
-import * as MyCustomParser from '../../../../ng';
+import { SourceText } from '../../../../ng';
 
 var text = `"import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';"
@@ -36,11 +36,11 @@ export class EditorComponent {
   text = text;
   length = text.length;
   code = signal(text);
-  sourceText = computed(() => MyCustomParser.SourceText.createFrom(this.code()));
-  lines = computed(() => this.sourceText().getLineSpans());
+  source = computed(() => SourceText.createFrom(this.code()));
+  lines = computed(() => this.source().getLines());
   cursor = signal(this.text.length);
-  line = computed(() => this.sourceText().getLineNumber(this.cursor()));
-  column = computed(() => this.sourceText().getColumnNumber(this.cursor()));
+  line = computed(() => this.source().getLineNumber(this.cursor()));
+  column = computed(() => this.source().getColumnNumber(this.cursor()));
   cursorX = 0;
   cursorY = 0;
   caretWidth = 4;
@@ -148,7 +148,7 @@ export class EditorComponent {
   transformCaretY(steps: number) {
     const prevLine = this.line() + steps;
     if (prevLine > 0) {
-      const pos = this.sourceText().getCursorPosition(prevLine, this.prevColumn);
+      const pos = this.source().getCursorPosition(prevLine, this.prevColumn);
       this.cursor.set(pos);
     } else {
       this.prevColumn = 1;

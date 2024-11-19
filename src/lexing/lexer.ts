@@ -74,7 +74,7 @@ export class Lexer {
   }
 
   private get span() {
-    return new Span(this.sourceText, this.start, this.cursor);
+    return Span.createFrom(this.sourceText, this.start, this.cursor);
   }
 
   private lexIdentifier(): Token {

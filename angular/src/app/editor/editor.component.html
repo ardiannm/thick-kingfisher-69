@@ -17,8 +17,6 @@
 <br />
 <br /> -->
 
-<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="18"></app-cursor>
-
 <!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
 @for (lineSpan of lines(); track $index) {
 <div
@@ -36,3 +34,5 @@
   <span> line: {{ line() }} </span>
   <span> column: {{ column() }} </span>
 </div>
+
+<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="18"></app-cursor>
