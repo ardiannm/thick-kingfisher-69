@@ -1,4 +1,3 @@
-import { SyntaxKind } from "../analysis/parsing/syntax.kind";
 import { SourceText } from "./source.text";
 import { Span } from "./span";
 import { Token } from "./token";
@@ -23,26 +22,16 @@ export class Line {
   }
 
   *getTokens(): Generator<Token> {
-    const tokens = this.source.getTokens(); // Assume tokens is sorted by position
-    const lineStart = this.span.start;
-    const lineEnd = this.span.end;
-
-    let index = this.source.getTokenIndex(lineStart);
-
-    while (index < tokens.length) {
-      const token = tokens[index];
-
-      // Stop if the token starts beyond the line's end
-      if (token.span.start >= lineEnd) break;
-
-      const overlappingToken = token.getOverlapWithLine(this);
-
-      // Yield only if there's an overlap and it's not a line break
-      if (overlappingToken && overlappingToken.kind !== SyntaxKind.LineBreakTrivia) {
-        yield overlappingToken;
+    const tokens = this.source.getTokens();
+    let start = this.source.getTokenIndex(this.start);
+    let end = this.source.getTokenIndex(this.end - this.lineBreakLength - 1);
+    while (start <= end) {
+      let token = tokens[start];
+      if (token.isMultiLine()) {
+        token = token.getOverlapWithLine(this)!;
       }
-
-      index++;
+      yield token;
+      start++;
     }
   }
 }

@@ -17,6 +17,15 @@ export class Token<T extends Kind = Kind> {
     }
   }
 
+  isMultiLine() {
+    switch (this.kind) {
+      case SyntaxKind.CommentTrivia:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   getOverlapWithLine(line: Line): Token | null {
     const tokenStart = this.span.start;
     const tokenEnd = this.span.end;
