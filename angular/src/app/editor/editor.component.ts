@@ -1,8 +1,8 @@
-import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from '@angular/core';
-import { CursorComponent } from './cursor/cursor.component';
-import { DOCUMENT, NgClass, isPlatformBrowser } from '@angular/common';
+import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from "@angular/core";
+import { CursorComponent } from "./cursor/cursor.component";
+import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
-import { SourceText } from '../../../../ng';
+import { SourceText } from "../../../../ng";
 
 var text = `"import {Component} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';"
@@ -25,11 +25,11 @@ bootstrapApplication(PlaygroundComponent);
 `;
 
 @Component({
-  selector: 'app-editor',
+  selector: "app-editor",
   standalone: true,
   imports: [CursorComponent, NgClass],
-  templateUrl: './editor.component.html',
-  styleUrl: './editor.component.scss',
+  templateUrl: "./editor.component.html",
+  styleUrl: "./editor.component.scss",
 })
 export class EditorComponent {
   @Input()
@@ -67,8 +67,8 @@ export class EditorComponent {
     }
   }
 
-  @HostListener('window:scroll')
-  @HostListener('window:resize')
+  @HostListener("window:scroll")
+  @HostListener("window:resize")
   onWindowChange() {
     const line = this.line();
     const column = this.column();
@@ -76,7 +76,7 @@ export class EditorComponent {
   }
 
   private getCursorPosition(line: number, column: number) {
-    const element = this.document.getElementById('row-' + line)!;
+    const element = this.document.getElementById("row-" + line)!;
     if (element && element.childNodes.length > 0) {
       const textNode = element.childNodes[0];
       if (textNode.nodeType === Node.TEXT_NODE) {
@@ -91,29 +91,29 @@ export class EditorComponent {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
+  @HostListener("window:keydown", ["$event"])
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
-    if (input === 'ArrowRight') {
+    if (input === "ArrowRight") {
       event.preventDefault();
       this.tranformCaretX(+1);
-    } else if (input === 'ArrowLeft') {
+    } else if (input === "ArrowLeft") {
       event.preventDefault();
       this.tranformCaretX(-1);
-    } else if (input === 'ArrowUp') {
+    } else if (input === "ArrowUp") {
       event.preventDefault();
       this.transformCaretY(-1);
-    } else if (input === 'ArrowDown') {
+    } else if (input === "ArrowDown") {
       event.preventDefault();
       this.transformCaretY(+1);
-    } else if (input === 'Enter') {
+    } else if (input === "Enter") {
       this.insertText();
-    } else if (input === 'Tab') {
+    } else if (input === "Tab") {
       event.preventDefault();
-      this.insertText('\t');
-    } else if (input === 'Backspace') {
+      this.insertText("\t");
+    } else if (input === "Backspace") {
       this.removeText();
-    } else if (input === 'Delete' && this.cursor() !== this.length) {
+    } else if (input === "Delete" && this.cursor() !== this.length) {
       this.tranformCaretX(+1);
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
@@ -122,7 +122,7 @@ export class EditorComponent {
     }
   }
 
-  private insertText(charText: string = '\n') {
+  private insertText(charText: string = "\n") {
     const text = this.code();
     const pos = this.cursor();
     const newText = text.substring(0, pos) + charText + text.substring(pos);

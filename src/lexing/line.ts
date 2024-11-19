@@ -4,7 +4,7 @@ import { Span } from "./span";
 import { Token } from "./token";
 
 export class Line {
-  private constructor(public source: SourceText, public start: number, public end: number, public lineBreakLength: number) {}
+  private constructor(public source: SourceText, private start: number, private end: number, public lineBreakLength: number) {}
 
   static createFrom(source: SourceText, start: number, end: number, lineBreakLength: number) {
     return new Line(source, start, end, lineBreakLength);
@@ -18,15 +18,31 @@ export class Line {
     return Span.createFrom(this.source, this.start, this.end);
   }
 
-  getTokens(): Token[] {
-    const tokens = this.source.getTokens();
-    const cursor = this.source.getTokenIndex(this.start);
-    let token = tokens[cursor];
-    if (token.span.start < this.start || token.span.end > this.end) {
-      const end = Math.min(this.end, token.span.end);
-      token = new Token(token.kind, Span.createFrom(this.source, this.start, end));
+  get text() {
+    return this.span.text;
+  }
+
+  *getTokens(): Generator<Token> {
+    const tokens = this.source.getTokens(); // Assume tokens is sorted by position
+    const lineStart = this.span.start;
+    const lineEnd = this.span.end;
+
+    let index = this.source.getTokenIndex(lineStart);
+
+    while (index < tokens.length) {
+      const token = tokens[index];
+
+      // Stop if the token starts beyond the line's end
+      if (token.span.start >= lineEnd) break;
+
+      const overlappingToken = token.getOverlapWithLine(this);
+
+      // Yield only if there's an overlap and it's not a line break
+      if (overlappingToken && overlappingToken.kind !== SyntaxKind.LineBreakTrivia) {
+        yield overlappingToken;
+      }
+
+      index++;
     }
-    if (token.kind === SyntaxKind.LineBreakTrivia) return [];
-    return [token];
   }
 }

@@ -22,5 +22,4 @@ console.log();
 console.log();
 console.log();
 
-const tokens = SourceText.createFrom(text).getLine(3).getTokens();
-console.log(tokens);
+SourceText.createFrom(text).getLine(7).getTokens();

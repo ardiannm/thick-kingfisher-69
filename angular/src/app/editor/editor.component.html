@@ -1,22 +1,3 @@
-<!-- @for (lineSpan of lines(); track $index) {
-<div class="line" [ngClass]="{ active: $index + 1 === line() }">
-  <div class="line-number">
-    {{ $index + 1 }}
-  </div>
-  <div class="line-text" [id]="'row-' + ($index + 1)">
-    {{ lineSpan.text }} &nbsp;
-  </div>
-</div>
-}
-<div class="status-bar">
-  <span> line: {{ line() }} </span>
-  <span> column: {{ column() }} </span>
-</div>
-
-<br />
-<br />
-<br /> -->
-
 <!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
 @for (lineSpan of lines(); track $index) {
 <div
@@ -26,7 +7,8 @@
 >
   @for (token of lineSpan.getTokens(); track $index) {
   <span [class]="token.kind">{{ token.span.text }}</span>
-  } &nbsp;
+  }
+  <!-- &nbsp; -->
 </div>
 }
 
