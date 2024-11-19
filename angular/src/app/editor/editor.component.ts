@@ -12,9 +12,9 @@ import {bootstrapApplication} from '@angular/platform-browser';"
 "@Component({
   selector: 'app-root',
   standalone: true,
-  template: \`
+  template: "
     Hello world!
-  \`,
+  ",
 })
 export class PlaygroundComponent {}
 
