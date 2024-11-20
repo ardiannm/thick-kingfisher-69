@@ -96,9 +96,20 @@ export class SourceText {
   }
 
   getCursorPosition(line: number, column: number) {
-    const index = Math.min(Math.max(1, line), this.lines.length) - 1;
+    let index = line;
+    if (line < 1) {
+      index = 1;
+    } else if (line > this.lines.length) {
+      index = this.lines.length;
+    }
+    index -= 1;
     const span = this.lines[index].span;
-    const offset = Math.min(column - 1, span.length);
+    let offset = column - 1;
+    if (offset > span.length) {
+      offset = span.length;
+    } else if (offset < 0) {
+      offset = 0;
+    }
     return span.start + offset;
   }
 }
