@@ -9,20 +9,20 @@ export class SourceText {
   readonly diagnostics = new DiagnosticsBag(this);
 
   private constructor(public text: string) {
-    this.splitInLines();
-    this.tokenize();
+    this.generateLines();
+    this.generateTokens();
   }
 
   static createFrom(text: string): SourceText {
     return new SourceText(text);
   }
 
-  private tokenize() {
+  private generateTokens() {
     const lexer = Lexer.createFrom(this);
     for (const token of lexer.lex()) this.tokens.push(token);
   }
 
-  private splitInLines() {
+  private generateLines() {
     let start = 0;
     let cursor = 0;
     while (cursor < this.text.length) {
