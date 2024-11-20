@@ -7,7 +7,6 @@ import { SourceText } from "../../../../ng";
 var text = `"import {Component} from '@angular/core';"
 "import {bootstrapApplication} from '@angular/platform-browser';"
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -18,9 +17,6 @@ var text = `"import {Component} from '@angular/core';"
 export class PlaygroundComponent {}
 
 bootstrapApplication(PlaygroundComponent);
-
-
-
 `;
 
 @Component({

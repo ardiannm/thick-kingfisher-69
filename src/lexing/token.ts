@@ -29,8 +29,8 @@ export class Token<T extends Kind = Kind> {
   getOverlapWithLine(line: Line): Token | null {
     const tokenStart = this.span.start;
     const tokenEnd = this.span.end;
-    const lineStart = line.span.start;
-    const lineEnd = line.span.end;
+    const lineStart = line.fullSpan.start;
+    const lineEnd = line.fullSpan.end;
     if (tokenStart >= lineStart && tokenEnd <= lineEnd) {
       return this;
     }
