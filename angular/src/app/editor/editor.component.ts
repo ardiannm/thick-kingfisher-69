@@ -4,12 +4,11 @@ import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
 
-var text = `"import {Component} from '@angular/core';
-import {bootstrapApplication} from '@angular/platform-browser';"
+var text = `"import {Component} from '@angular/core';"
+"import {bootstrapApplication} from '@angular/platform-browser';"
 
-"
 
-"@Component({
+@Component({
   selector: 'app-root',
   standalone: true,
   template: "
@@ -76,17 +75,66 @@ export class EditorComponent {
   }
 
   private getCursorPosition(line: number, column: number) {
-    const element = this.document.getElementById("row-" + line)!;
-    if (element && element.childNodes.length > 0) {
-      const textNode = element.childNodes[0];
-      if (textNode.nodeType === Node.TEXT_NODE) {
-        const range = this.document.createRange();
-        range.setStart(textNode, column);
-        range.setEnd(textNode, column + 1);
-        const rect = range.getBoundingClientRect();
-        this.cursorX = rect.x;
-        this.cursorY = rect.y;
-        range.detach();
+    const lineElement = this.document.getElementById("row-" + line)!;
+
+    column--;
+
+    if (lineElement) {
+      let charCount = 0;
+
+      // Iterate through the child nodes of the line
+      for (const child of Array.from(lineElement.childNodes)) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const span = child as HTMLElement;
+          const spanText = span.textContent || "";
+          const spanLength = spanText.length;
+
+          if (charCount + spanLength >= column) {
+            // Cursor is within this span
+            const offsetInSpan = column - charCount;
+
+            const range = this.document.createRange();
+            range.setStart(span.firstChild!, offsetInSpan);
+            range.setEnd(span.firstChild!, offsetInSpan);
+
+            const rect = range.getBoundingClientRect();
+            this.cursorX = rect.x + rect.width / 2; // Center the cursor
+            this.cursorY = rect.y;
+            range.detach();
+            return;
+          }
+
+          charCount += spanLength;
+        } else if (child.nodeType === Node.TEXT_NODE) {
+          const textNode = child as Text;
+          const textContent = textNode.textContent || "";
+          const textLength = textContent.length;
+
+          if (charCount + textLength >= column) {
+            // Cursor is within this text node
+            const offsetInText = column - charCount;
+
+            const range = this.document.createRange();
+            range.setStart(textNode, offsetInText);
+            range.setEnd(textNode, offsetInText);
+
+            const rect = range.getBoundingClientRect();
+            this.cursorX = rect.x + rect.width; // Center the cursor
+            this.cursorY = rect.y;
+            range.detach();
+            return;
+          }
+
+          charCount += textLength;
+        }
+      }
+
+      // If the cursor is at the end of the line
+      const lastElement = lineElement.lastElementChild as HTMLElement;
+      if (lastElement) {
+        const rect = lastElement.getBoundingClientRect();
+        this.cursorX = rect.right;
+        this.cursorY = rect.top;
       }
     }
   }
@@ -145,6 +193,7 @@ export class EditorComponent {
     }
   }
 
+  // TODO: SourceText.getCursorPosition is broken with the new Line.fullSpan implementations
   transformCaretY(steps: number) {
     const prevLine = this.line() + steps;
     if (prevLine > 0) {

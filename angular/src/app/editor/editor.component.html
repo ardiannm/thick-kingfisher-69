@@ -5,10 +5,11 @@
   [id]="'row-' + ($index + 1)"
   [ngClass]="{ active: $index + 1 === line() }"
 >
-  @for (token of lineSpan.getTokens(); track $index) {
+  <!-- {{ lineSpan.span.length }} -->
+  @if (lineSpan.span.length) { @for (token of lineSpan.getTokens(); track
+  $index) {
   <span [class]="token.kind">{{ token.span.text }}</span>
-  }
-  <!-- &nbsp; -->
+  } } @else {&nbsp;}
 </div>
 }
 
