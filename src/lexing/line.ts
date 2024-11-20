@@ -17,10 +17,6 @@ export class Line {
     return Span.createFrom(this.source, this.start, this.end);
   }
 
-  get text() {
-    return this.span.text;
-  }
-
   *getTokens(): Generator<Token> {
     const tokens = this.source.getTokens();
     let start = this.source.getTokenIndex(this.start);

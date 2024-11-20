@@ -6,8 +6,7 @@
   [ngClass]="{ active: $index + 1 === line() }"
 >
   <!-- {{ lineSpan.span.length }} -->
-  @if (lineSpan.span.length) { @for (token of lineSpan.getTokens(); track
-  $index) {
+  @if (lineSpan.span.length) { @for (token of lineSpan.getTokens(); track $index) {
   <span [class]="token.kind">{{ token.span.text }}</span>
   } } @else {&nbsp;}
 </div>

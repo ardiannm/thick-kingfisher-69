@@ -97,8 +97,8 @@ export class SourceText {
 
   getCursorPosition(line: number, column: number) {
     const index = Math.min(Math.max(1, line), this.lines.length) - 1;
-    const fullSpan = this.lines[index].fullSpan;
-    const offset = Math.min(column - 1, fullSpan.length);
-    return fullSpan.start + offset;
+    const span = this.lines[index].span;
+    const offset = Math.min(column - 1, span.length);
+    return span.start + offset;
   }
 }
