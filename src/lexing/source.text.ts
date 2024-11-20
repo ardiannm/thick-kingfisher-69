@@ -6,6 +6,7 @@ import { Token } from "./token";
 export class SourceText {
   private lines = [] as Line[];
   private tokens = [] as Token[];
+
   readonly diagnostics = new DiagnosticsBag(this);
 
   private constructor(public text: string) {
@@ -24,86 +25,83 @@ export class SourceText {
 
   private generateLines() {
     let start = 0;
-    let cursor = 0;
-    while (cursor < this.text.length) {
-      const char = this.text[cursor];
-      cursor++;
+    let position = 0;
+    while (position < this.text.length) {
+      const char = this.text[position];
+      position++;
       if (char === "\n") {
-        const span = Line.createFrom(this, start, cursor, 1);
+        const span = Line.createFrom(this, start, position, 1);
         this.lines.push(span);
-        start = cursor;
+        start = position;
       }
     }
-    const span = Line.createFrom(this, start, cursor, 0);
+    const span = Line.createFrom(this, start, position, 0);
     this.lines.push(span);
-    start = cursor;
+    start = position;
   }
 
-  private getLineIndex(cursor: number) {
+  private getLineAt(position: number) {
     let left = 0;
     let right = this.lines.length - 1;
-    let mid;
+    let middle;
     do {
-      mid = left + Math.floor((right - left) / 2);
-      const fullSpan = this.lines[mid].fullSpan;
-      if (cursor >= fullSpan.end) {
-        left = mid + 1;
-      } else if (cursor < fullSpan.start) {
-        right = mid;
+      middle = left + Math.floor((right - left) / 2);
+      const { start, end } = this.lines[middle].fullSpan;
+      if (position >= end) {
+        left = middle + 1;
+      } else if (position < start) {
+        right = middle;
       } else {
         break;
       }
     } while (left <= right);
-    return mid;
+    return middle;
   }
 
-  getTokenIndex(cursor: number) {
+  getTokenAt(position: number) {
     let left = 0;
     let right = this.tokens.length - 1;
-    let mid;
+    let middle;
     do {
-      mid = left + Math.floor((right - left) / 2);
-      const token = this.tokens[mid];
-      if (cursor >= token.span.end) {
-        left = mid + 1;
-      } else if (cursor < token.span.start) {
-        right = mid;
+      middle = left + Math.floor((right - left) / 2);
+      const { start, end } = this.tokens[middle].span;
+      if (position >= end) {
+        left = middle + 1;
+      } else if (position < start) {
+        right = middle;
       } else {
         break;
       }
     } while (left <= right);
-    return mid;
+    return middle;
   }
 
   getLines() {
     return this.lines;
   }
 
-  getLine(number: number) {
-    return this.lines[number - 1];
-  }
-
   getTokens() {
     return this.tokens;
   }
 
-  getLineNumber(cursor: number) {
-    return this.getLineIndex(cursor) + 1;
+  getLine(position: number) {
+    return this.getLineAt(position) + 1;
   }
 
-  getColumnNumber(cursor: number): number {
-    return cursor - this.lines[this.getLineIndex(cursor)].fullSpan.start + 1;
+  getColumn(position: number): number {
+    return position - this.lines[this.getLineAt(position)].fullSpan.start + 1;
   }
 
-  getCursorPosition(line: number, column: number) {
-    let index = line;
+  getPosition(line: number, column: number) {
+    let position = line;
+    const lines = this.lines.length;
     if (line < 1) {
-      index = 1;
-    } else if (line > this.lines.length) {
-      index = this.lines.length;
+      position = 1;
+    } else if (line > lines) {
+      position = lines;
     }
-    index -= 1;
-    const span = this.lines[index].span;
+    position -= 1;
+    const span = this.lines[position].span;
     let offset = column - 1;
     if (offset > span.length) {
       offset = span.length;

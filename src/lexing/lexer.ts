@@ -5,12 +5,12 @@ import { Kind, SyntaxKind } from "../analysis/parsing/syntax.kind";
 
 export class Lexer {
   private start: number = 0;
-  private cursor = this.start;
+  private position = this.start;
 
-  private constructor(private readonly sourceText: SourceText) {}
+  private constructor(private readonly source: SourceText) {}
 
-  static createFrom(sourceText: SourceText) {
-    return new Lexer(sourceText);
+  static createFrom(source: SourceText) {
+    return new Lexer(source);
   }
 
   *lex(): Generator<Token> {
@@ -19,7 +19,7 @@ export class Lexer {
   }
 
   private lexNextToken(): Token {
-    this.start = this.cursor;
+    this.start = this.position;
     switch (this.char()) {
       case "":
         return this.createNewToken(SyntaxKind.EndOfFileToken);
@@ -59,7 +59,7 @@ export class Lexer {
   }
 
   private lexBadToken() {
-    this.sourceText.diagnostics.badCharacterFound(this.char(), this.span);
+    this.source.diagnostics.badCharacterFound(this.char(), this.span);
     this.next();
     return this.createNewToken(SyntaxKind.BadToken);
   }
@@ -74,7 +74,7 @@ export class Lexer {
   }
 
   private get span() {
-    return Span.createFrom(this.sourceText, this.start, this.cursor);
+    return Span.createFrom(this.source, this.start, this.position);
   }
 
   private lexIdentifier(): Token {
@@ -95,7 +95,7 @@ export class Lexer {
     if (this.char() === ".") {
       this.next();
       if (!this.isDigit()) {
-        this.sourceText.diagnostics.badFloatingPointNumber(this.span);
+        this.source.diagnostics.badFloatingPointNumber(this.span);
       }
     }
     while (this.isDigit()) this.next();
@@ -111,7 +111,7 @@ export class Lexer {
       }
       this.next();
     }
-    this.sourceText.diagnostics.missingClosingQuote(this.span);
+    this.source.diagnostics.missingClosingQuote(this.span);
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 
@@ -140,8 +140,8 @@ export class Lexer {
   }
 
   private peek(offset: number): string {
-    const index = this.cursor + offset;
-    return index >= this.sourceText.text.length ? "" : this.sourceText.text[index];
+    const index = this.position + offset;
+    return index >= this.source.text.length ? "" : this.source.text[index];
   }
 
   private char() {
@@ -149,14 +149,14 @@ export class Lexer {
   }
 
   private next(steps = 1) {
-    this.cursor += steps;
+    this.position += steps;
   }
 
   private hasNext() {
-    return this.cursor < this.sourceText.text.length;
+    return this.position < this.source.text.length;
   }
 
   get diagnostics() {
-    return this.sourceText.diagnostics.getDiagnostics();
+    return this.source.diagnostics.getDiagnostics();
   }
 }

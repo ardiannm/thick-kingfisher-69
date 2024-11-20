@@ -38,8 +38,8 @@ export class EditorComponent {
   source = computed(() => SourceText.createFrom(this.code()));
   lines = computed(() => this.source().getLines());
   cursor = signal(this.text.length);
-  line = computed(() => this.source().getLineNumber(this.cursor()));
-  column = computed(() => this.source().getColumnNumber(this.cursor()));
+  line = computed(() => this.source().getLine(this.cursor()));
+  column = computed(() => this.source().getColumn(this.cursor()));
   cursorX = 0;
   cursorY = 0;
   caretWidth = 4;
@@ -61,7 +61,7 @@ export class EditorComponent {
       effect(() => {
         const line = this.line();
         const column = this.column();
-        setTimeout(() => this.getCursorPosition(line, column));
+        setTimeout(() => this.renderPosition(line, column));
       });
     }
   }
@@ -71,18 +71,14 @@ export class EditorComponent {
   onWindowChange() {
     const line = this.line();
     const column = this.column();
-    this.getCursorPosition(line, column);
+    this.renderPosition(line, column);
   }
 
-  private getCursorPosition(line: number, column: number) {
+  private renderPosition(line: number, column: number) {
     const lineElement = this.document.getElementById("row-" + line)!;
-
     column--;
-
     if (lineElement) {
       let charCount = 0;
-
-      // Iterate through the child nodes of the line
       for (const child of Array.from(lineElement.childNodes)) {
         if (child.nodeType === Node.ELEMENT_NODE) {
           const span = child as HTMLElement;
@@ -90,7 +86,6 @@ export class EditorComponent {
           const spanLength = spanText.length;
 
           if (charCount + spanLength >= column) {
-            // Cursor is within this span
             const offsetInSpan = column - charCount;
 
             const range = this.document.createRange();
@@ -98,12 +93,11 @@ export class EditorComponent {
             range.setEnd(span.firstChild!, offsetInSpan);
 
             const rect = range.getBoundingClientRect();
-            this.cursorX = rect.x + rect.width / 2; // Center the cursor
+            this.cursorX = rect.x + rect.width / 2;
             this.cursorY = rect.y;
             range.detach();
             return;
           }
-
           charCount += spanLength;
         } else if (child.nodeType === Node.TEXT_NODE) {
           const textNode = child as Text;
@@ -111,15 +105,12 @@ export class EditorComponent {
           const textLength = textContent.length;
 
           if (charCount + textLength >= column) {
-            // Cursor is within this text node
             const offsetInText = column - charCount;
-
             const range = this.document.createRange();
             range.setStart(textNode, offsetInText);
             range.setEnd(textNode, offsetInText);
-
             const rect = range.getBoundingClientRect();
-            this.cursorX = rect.x + rect.width; // Center the cursor
+            this.cursorX = rect.x + rect.width;
             this.cursorY = rect.y;
             range.detach();
             return;
@@ -193,11 +184,10 @@ export class EditorComponent {
     }
   }
 
-  // TODO: SourceText.getCursorPosition is broken with the new Line.fullSpan implementations
   transformCaretY(steps: number) {
     const prevLine = this.line() + steps;
     if (prevLine > 0) {
-      const pos = this.source().getCursorPosition(prevLine, this.prevColumn);
+      const pos = this.source().getPosition(prevLine, this.prevColumn);
       this.cursor.set(pos);
     } else {
       this.prevColumn = 1;

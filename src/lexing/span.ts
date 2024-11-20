@@ -8,11 +8,11 @@ export class Span {
   }
 
   get line() {
-    return this.source.getLineNumber(this.start);
+    return this.source.getLine(this.start);
   }
 
   get column() {
-    return this.source.getColumnNumber(this.start);
+    return this.source.getColumn(this.start);
   }
 
   get text(): string {

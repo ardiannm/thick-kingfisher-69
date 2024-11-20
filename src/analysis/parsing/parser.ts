@@ -13,9 +13,10 @@ import { Token } from "../../lexing/token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 
 export class Parser {
-  private index = 0;
-  private recovering = false;
   private syntaxTokens = [] as SyntaxToken[];
+  private recovering = false;
+
+  private position = 0;
 
   private constructor(public readonly sourceText: SourceText) {
     let trivias = [] as Token[];
@@ -114,8 +115,7 @@ export class Parser {
       const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       const node = new SyntaxCellReference(this.sourceText, left, right);
       if (right.hasTrivia()) {
-        const name = left.text + right.text;
-        this.sourceText.diagnostics.requireCompactCellReference(name, node.span);
+        this.sourceText.diagnostics.requireCompactCellReference(left.text + right.text, node.span);
       }
       return node;
     }
@@ -137,7 +137,7 @@ export class Parser {
   }
 
   private peekToken(offset: number = 0) {
-    const thisIndex = this.index + offset;
+    const thisIndex = this.position + offset;
     const lastIndex = this.syntaxTokens.length - 1;
     if (thisIndex > lastIndex) return this.syntaxTokens[lastIndex];
     return this.syntaxTokens[thisIndex];
@@ -145,7 +145,7 @@ export class Parser {
 
   private getNextToken() {
     const token = this.peekToken();
-    this.index++;
+    this.position++;
     return token;
   }
 
