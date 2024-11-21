@@ -16,7 +16,7 @@ export class Line {
   *getTokens(): Generator<Token> {
     const tokens = this.source.getTokens();
     const tokenStart = this.source.getTokenAt(this.span.start);
-    yield tokens[tokenStart].getOverlapWithLine(this)!;
+    yield this.trimToken(tokens[tokenStart]);
     if (!this.span.length) {
       return;
     }
@@ -25,7 +25,21 @@ export class Line {
       yield tokens[position];
     }
     if (tokenStart < tokenEnd) {
-      yield tokens[tokenEnd].getOverlapWithLine(this)!;
+      yield this.trimToken(tokens[tokenEnd]);
     }
+  }
+
+  private trimToken(token: Token) {
+    const lineStart = this.fullSpan.start;
+    const lineEnd = this.fullSpan.end;
+    if (token.span.start >= lineStart && token.span.end <= lineEnd) {
+      return token;
+    }
+    let tokenStart = token.span.start;
+    let tokenEnd = token.span.end;
+    if (tokenStart < lineStart) tokenStart = lineStart;
+    if (tokenEnd > lineEnd) tokenEnd = lineEnd;
+    const tokenSpan = Span.createFrom(this.source, tokenStart, tokenEnd);
+    return new Token(token.kind, tokenSpan);
   }
 }
