@@ -5,8 +5,8 @@ import { Span } from "./span";
 export class Token<T extends Kind = Kind> {
   constructor(public kind: T, public span: Span) {}
 
-  static isTrivia(kind: Kind) {
-    switch (kind) {
+  isTrivia() {
+    switch (this.kind) {
       case SyntaxKind.LineBreakTrivia:
       case SyntaxKind.SpaceTrivia:
       case SyntaxKind.CommentTrivia:

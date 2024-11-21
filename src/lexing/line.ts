@@ -3,7 +3,7 @@ import { Span } from "./span";
 import { Token } from "./token";
 
 export class Line {
-  private constructor(public source: SourceText, private start: number, private end: number, public lineBreakLength: number) {}
+  private constructor(public source: SourceText, private start: number, private end: number, private lineBreakLength: number) {}
 
   static createFrom(source: SourceText, start: number, end: number, lineBreakLength: number) {
     return new Line(source, start, end, lineBreakLength);
@@ -19,18 +19,14 @@ export class Line {
 
   *getTokens(): Generator<Token> {
     const tokens = this.source.getTokens();
-    let start = this.source.getTokenAt(this.start);
-
-    yield tokens[start].getOverlapWithLine(this)!;
-
-    const end = this.source.getTokenAt(Math.max(this.start, this.span.end));
-
-    for (let position = start + 1; position < end; position++) {
+    let tokenStart = this.source.getTokenAt(this.start);
+    yield tokens[tokenStart].getOverlapWithLine(this)!;
+    const tokenEnd = this.source.getTokenAt(Math.max(this.start, this.span.end));
+    for (let position = tokenStart + 1; position < tokenEnd; position++) {
       yield tokens[position];
     }
-
-    if (start < end) {
-      yield tokens[end].getOverlapWithLine(this)!;
+    if (tokenStart < tokenEnd) {
+      yield tokens[tokenEnd].getOverlapWithLine(this)!;
     }
   }
 }
