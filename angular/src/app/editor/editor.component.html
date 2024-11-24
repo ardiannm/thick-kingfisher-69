@@ -18,7 +18,7 @@
 
 <div class="diagnostics">
   @for (d of diagnostics(); track $index) {
-  <div>{{ d.message }} at position {{ d.span.line }}:{{ d.span.column }}</div>
+  <div>{{ d.message }} ({{ d.span.line }}:{{ d.span.column }}).</div>
   }
 </div>
 
