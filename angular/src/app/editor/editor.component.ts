@@ -40,6 +40,7 @@ export class EditorComponent {
   cursorY = 0;
   caretWidth = 4;
   prevColumn = this.line();
+  diagnostics = computed(() => this.source().diagnostics.getDiagnostics())
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
