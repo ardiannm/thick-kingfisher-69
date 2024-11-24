@@ -155,8 +155,4 @@ export class Lexer {
   private hasNext() {
     return this.position < this.source.text.length;
   }
-
-  get diagnostics() {
-    return this.source.diagnostics.getDiagnostics();
-  }
 }
