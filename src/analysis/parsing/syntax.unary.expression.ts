@@ -4,8 +4,8 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxUnaryExpression extends SyntaxNode {
-  constructor(public override sourceText: SourceText, public operator: SyntaxToken<SyntaxUnaryOperatorKind>, public right: SyntaxNode) {
-    super(sourceText, SyntaxKind.SyntaxUnaryExpression);
+  constructor(public override source: SourceText, public operator: SyntaxToken<SyntaxUnaryOperatorKind>, public right: SyntaxNode) {
+    super(source, SyntaxKind.SyntaxUnaryExpression);
   }
 
   override getFirstChild(): SyntaxToken {

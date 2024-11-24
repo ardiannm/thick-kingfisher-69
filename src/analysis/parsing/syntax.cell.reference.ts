@@ -4,8 +4,8 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxCellReference extends SyntaxNode {
-  constructor(public override sourceText: SourceText, public left: SyntaxToken<SyntaxKind.IdentifierToken>, public right: SyntaxToken<SyntaxKind.NumberToken>) {
-    super(sourceText, SyntaxKind.SyntaxCellReference);
+  constructor(public override source: SourceText, public left: SyntaxToken<SyntaxKind.IdentifierToken>, public right: SyntaxToken<SyntaxKind.NumberToken>) {
+    super(source, SyntaxKind.SyntaxCellReference);
   }
 
   override getFirstChild(): SyntaxToken {

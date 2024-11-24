@@ -1,22 +1,10 @@
-import { SourceText } from "./src/lexing/source.text";
+import { SyntaxTree } from "./src/syntax.tree";
 
-var text = `"import {Component} from '@angular/core';"
-"import {bootstrapApplication} from '@angular/platform-browser';"
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  template: "
-    Hello world!
-  ",
-})
-export class PlaygroundComponent {}
-
-bootstrapApplication(PlaygroundComponent);
+var text = `A1 :: A2 + A3
 `;
 
-console.log(
-  SourceText.createFrom(text)
-    .getLines()
-    .map((line) => Array.from(line.getTokens()).map((token) => token.span.text))
-);
+const tree = SyntaxTree.createFrom(text);
+
+console.log();
+console.log(tree.source.diagnostics.getDiagnostics().map((d) => d.message));
+console.log();

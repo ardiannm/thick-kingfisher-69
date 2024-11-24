@@ -5,12 +5,12 @@ import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxBlock extends SyntaxNode {
   constructor(
-    public override sourceText: SourceText,
+    public override source: SourceText,
     public openBrace: SyntaxToken<SyntaxKind.OpenBraceToken>,
     public statements: Array<SyntaxNode>,
     public closeBrace: SyntaxToken<SyntaxKind.CloseBraceToken>
   ) {
-    super(sourceText, SyntaxKind.SyntaxBlock);
+    super(source, SyntaxKind.SyntaxBlock);
   }
 
   override getFirstChild(): SyntaxToken<Kind> {

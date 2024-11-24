@@ -4,8 +4,8 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxCompilationUnit extends SyntaxNode {
-  constructor(public override sourceText: SourceText, public root: Array<SyntaxNode>, public eof: SyntaxToken<SyntaxKind.EndOfFileToken>) {
-    super(sourceText, SyntaxKind.SyntaxCompilationUnit);
+  constructor(public override source: SourceText, public root: Array<SyntaxNode>, public eof: SyntaxToken<SyntaxKind.EndOfFileToken>) {
+    super(source, SyntaxKind.SyntaxCompilationUnit);
   }
 
   override getFirstChild(): SyntaxToken<Kind> {

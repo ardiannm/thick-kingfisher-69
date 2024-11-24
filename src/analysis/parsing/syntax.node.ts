@@ -4,7 +4,7 @@ import { Kind } from "./syntax.kind";
 import { SyntaxToken } from "./syntax.token";
 
 export abstract class SyntaxNode {
-  constructor(public sourceText: SourceText, public kind: Kind) {}
+  constructor(public source: SourceText, public kind: Kind) {}
 
   abstract getFirstChild(): SyntaxToken;
   abstract getLastChild(): SyntaxToken;
@@ -14,14 +14,14 @@ export abstract class SyntaxNode {
   }
 
   get span() {
-    return new Span(this.sourceText, this.getFirstChild().span.start, this.getLastChild().span.end);
+    return Span.createFrom(this.source, this.getFirstChild().span.start, this.getLastChild().span.end);
   }
 
   get fullSpan() {
-    return new Span(this.sourceText, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
+    return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
   }
 
   get text() {
-    return this.sourceText.text.substring(this.span.start, this.span.end);
+    return this.source.text.substring(this.span.start, this.span.end);
   }
 }

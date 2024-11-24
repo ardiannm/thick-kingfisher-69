@@ -5,12 +5,12 @@ import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxParenthesis extends SyntaxNode {
   constructor(
-    public override sourceText: SourceText,
+    public override source: SourceText,
     public openParen: SyntaxToken<SyntaxKind.OpenParenthesisToken>,
     public expression: SyntaxNode,
     public closeParen: SyntaxToken<SyntaxKind.CloseParenthesisToken>
   ) {
-    super(sourceText, SyntaxKind.SyntaxParenthesis);
+    super(source, SyntaxKind.SyntaxParenthesis);
   }
 
   override getFirstChild(): SyntaxToken<Kind> {
