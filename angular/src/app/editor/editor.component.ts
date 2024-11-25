@@ -4,20 +4,7 @@ import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
 
-var text = `"import {Component} from '@angular/core';"
-"import {bootstrapApplication} from '@angular/platform-browser';"
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  template: "
-    Hello world!
-  ",
-})
-export class PlaygroundComponent {}
-
-bootstrapApplication(PlaygroundComponent);
-`;
+var text = ``;
 
 @Component({
   selector: "app-editor",
@@ -31,7 +18,7 @@ export class EditorComponent {
   text = text;
   length = text.length;
   code = signal(text);
-  source = computed(() => SourceText.createFrom(this.code()));
+  source = computed(() => SourceText.parse(this.code()));
   lines = computed(() => this.source().getLines());
   cursor = signal(this.text.length);
   line = computed(() => this.source().getLine(this.cursor()));

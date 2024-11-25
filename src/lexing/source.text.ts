@@ -1,4 +1,5 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { SyntaxTree } from "../syntax.tree";
 import { Lexer } from "./lexer";
 import { Line } from "./line";
 import { Token } from "./token";
@@ -16,6 +17,11 @@ export class SourceText {
 
   static createFrom(text: string): SourceText {
     return new SourceText(text);
+  }
+
+  static parse(text: string) {
+    const tree = SyntaxTree.createFrom(text);
+    return tree.source;
   }
 
   private generateTokens() {

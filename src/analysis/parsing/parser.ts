@@ -35,7 +35,7 @@ export class Parser {
   }
 
   private parseCompilationUnit() {
-    const statements = new Array<SyntaxNode>(this.parseBlock());
+    const statements = [] as SyntaxNode[];
     while (this.hasToken()) {
       const startToken = this.peekToken();
       statements.push(this.parseBlock());
@@ -48,7 +48,7 @@ export class Parser {
   private parseBlock() {
     if (this.match(SyntaxKind.OpenBraceToken)) {
       const openBrace = this.expect(SyntaxKind.OpenBraceToken) as SyntaxToken<SyntaxKind.OpenBraceToken>;
-      const statements = new Array<SyntaxNode>();
+      const statements = [] as SyntaxNode[];
       while (this.hasToken() && !this.match(SyntaxKind.CloseBraceToken)) {
         const startToken = this.peekToken();
         statements.push(this.parseBlock());
@@ -148,7 +148,7 @@ export class Parser {
     return token;
   }
 
-  private match(...kinds: Array<Kind>) {
+  private match(...kinds: Kind[]) {
     let offset = 0;
     for (const kind of kinds) {
       if (kind !== this.peekToken(offset).kind) return false;
