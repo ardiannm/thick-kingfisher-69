@@ -1,7 +1,7 @@
 import { Cell } from "../../cell";
 import { CompilerOptions } from "../../syntax.tree";
 import { DiagnosticsBag } from "../diagnostics/diagnostics.bag";
-import { SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind";
+import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind";
 import { SyntaxBlock } from "../parsing/syntax.block";
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment";
 import { SyntaxCellReference } from "../parsing/syntax.cell.reference";
@@ -19,7 +19,9 @@ import { BoundNode } from "./bound.node";
 import { BoundNumericLiteral } from "./bound.numeric.literal";
 import { BoundScope } from "./bound.scope";
 import { BoundUnaryExpression } from "./bound.unary.expression";
-import { BoundUnaryOperatorKind } from "./bound.kind";
+import { BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "./bound.kind";
+import { SyntaxBinaryExpression } from "../parsing/syntax.binary.expression";
+import { BoundBinaryExpression } from "./bound.binary.expression";
 
 export class Binder {
   private constructor(private configuration: CompilerOptions, private diagnostics: DiagnosticsBag, private scope = new BoundScope()) {}
@@ -35,6 +37,8 @@ export class Binder {
         return this.bindParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
       case SyntaxKind.SyntaxUnaryExpression:
         return this.bindUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
+      case SyntaxKind.SyntaxBinaryExpression:
+        return this.bindBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
       case SyntaxKind.SyntaxBlock:
         return this.bindBlock(node as NodeType<SyntaxBlock>);
       case SyntaxKind.SyntaxCellReference:
@@ -112,12 +116,34 @@ export class Binder {
     }
   }
 
+  private bindBinaryExpression(node: SyntaxBinaryExpression) {
+    const left = this.bind(node.left);
+    const operator = this.bindBinaryOperatorKind(node.operator.kind);
+    const right = this.bind(node.right);
+    return new BoundBinaryExpression(left, operator, right, node.span);
+  }
+
   private bindUnaryOperatorKind(kind: SyntaxUnaryOperatorKind): BoundUnaryOperatorKind {
     switch (kind) {
       case SyntaxUnaryOperatorKind.PlusToken:
         return BoundUnaryOperatorKind.Identity;
       case SyntaxUnaryOperatorKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
+    }
+  }
+
+  private bindBinaryOperatorKind(kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
+    switch (kind) {
+      case SyntaxBinaryOperatorKind.PlusToken:
+        return BoundBinaryOperatorKind.Addition;
+      case SyntaxBinaryOperatorKind.MinusToken:
+        return BoundBinaryOperatorKind.Subtraction;
+      case SyntaxBinaryOperatorKind.StarToken:
+        return BoundBinaryOperatorKind.Multiplication;
+      case SyntaxBinaryOperatorKind.SlashToken:
+        return BoundBinaryOperatorKind.Division;
+      case SyntaxBinaryOperatorKind.HatToken:
+        return BoundBinaryOperatorKind.Exponentiation;
     }
   }
 

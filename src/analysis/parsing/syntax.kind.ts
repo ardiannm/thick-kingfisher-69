@@ -28,7 +28,8 @@ export enum SyntaxKind {
   SpaceTrivia = "SpaceTrivia",
   ColonColonToken = "ColonColonToken",
   LineBreakTrivia = "LineBreakTrivia",
-  QuoteToken = "QuoteToken"
+  QuoteToken = "QuoteToken",
+  SyntaxBinaryExpression = "SyntaxBinaryExpression"
 }
 
 export enum SyntaxUnaryOperatorKind {
