@@ -1,28 +1,41 @@
 <!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
-<div class="button" (mousedown)="switchHighlight()">{{ highlight() ? "On" : "Off" }}</div>
-@for (lineSpan of lines(); track $index) {
-<div
-  class="line"
-  [id]="'row-' + ($index + 1)"
-  [ngClass]="{ active: $index + 1 === line() }"
->
-  @if (highlight()) { @for (token of lineSpan.getTokens(); track $index) {
-  <span [class]="token.kind">{{ token.span.text || "&nbsp;" }}</span>
-  } } @else {{{ lineSpan.span.text || "&nbsp;" }}
-  }
+<div style="display: flex; flex-direction: row">
+  <div class="line-numbers">
+    @for (lineSpan of lines(); track $index) {
+    <div class="line-number">{{ $index + 1 }}</div>
+    }
+  </div>
+  <div class="editor-space">
+    @for (lineSpan of lines(); track $index) {
+    <div
+      class="line"
+      [id]="'row-' + ($index + 1)"
+      [ngClass]="{ active: $index + 1 === line() }"
+    >
+      @if (highlight()) { @for (token of lineSpan.getTokens(); track $index) {
+      <span [class]="token.kind">{{ token.span.text || "&nbsp;" }}</span>
+      } } @else {{{ lineSpan.span.text || "&nbsp;" }}
+      }
+    </div>
+
+    }
+
+    <div class="status-bar">line: {{ line() }} column: {{ column() }}</div>
+
+    <div class="diagnostics">
+      @for (d of diagnostics(); track $index) {
+      <div>{{ d.message }} ({{ d.span.line }}:{{ d.span.column }}).</div>
+      }
+    </div>
+
+    <app-cursor
+      [x]="cursorX"
+      [y]="cursorY"
+      [width]="2"
+      [height]="18"
+    ></app-cursor>
+  </div>
 </div>
-
-}
-
-<div class="status-bar">
-  <span> line: {{ line() }} </span>
-  <span> column: {{ column() }} </span>
+<div class="button" (mousedown)="switchHighlight()">
+  {{ highlight() ? "On" : "Off" }}
 </div>
-
-<div class="diagnostics">
-  @for (d of diagnostics(); track $index) {
-  <div>{{ d.message }} ({{ d.span.line }}:{{ d.span.column }}).</div>
-  }
-</div>
-
-<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="18"></app-cursor>
