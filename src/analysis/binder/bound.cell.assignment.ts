@@ -13,7 +13,7 @@ export class BoundCellAssignment extends BoundNode {
       const existingNode = this.scope.assignments.get(this.reference.name)!;
 
       existingNode.dependencies.forEach((dependency) => {
-        const observers = dependency.assignment.observers();
+        const observers = dependency.assignment.observers;
 
         // remove the current node from the observers list
         observers.delete(existingNode);
@@ -25,11 +25,11 @@ export class BoundCellAssignment extends BoundNode {
       });
     }
 
-    this.dependencies.forEach((node) => node.assignment.observers().add(this));
+    this.dependencies.forEach((node) => node.assignment.observers.add(this));
     this.scope.assignments.set(this.reference.name, this);
   }
 
-  observers() {
+  get observers() {
     var observers: Set<BoundCellAssignment>;
     if (this.scope.observers.has(this.reference.name)) {
       observers = this.scope.observers.get(this.reference.name)!;
