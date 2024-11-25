@@ -9,8 +9,6 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
-    // TODO: track and report the path to circular dependency
-
     if (this.scope.assignments.has(this.reference.name)) {
       const existingNode = this.scope.assignments.get(this.reference.name)!;
 

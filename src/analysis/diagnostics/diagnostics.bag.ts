@@ -33,15 +33,15 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string, span: Span) {
-    this.report(`Bad character '${text}' found`, Severity.Warning, span);
+    this.report(`Bad character \`${text}\` found`, Severity.Warning, span);
   }
 
   unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
-    this.report(`Unexpected token found: '${matched}' expecting '${expecting}'.`, Severity.CantEvaluate, span);
+    this.report(`Unexpected token found: \`${matched}\` expecting \`${expecting}\`.`, Severity.CantEvaluate, span);
   }
 
   undeclaredCell(name: string, span: Span) {
-    this.report(`Cell reference '${name}' is undeclared.`, Severity.CantEvaluate, span);
+    this.report(`Cell reference \`${name}\` is undeclared.`, Severity.CantEvaluate, span);
   }
 
   badFloatingPointNumber(span: Span) {
@@ -49,7 +49,7 @@ export class DiagnosticsBag {
   }
 
   missingClosingQuote(span: Span) {
-    this.report(`Comment is missing a closing '"'`, Severity.CantParse, span);
+    this.report(`Comment is missing a closing \`"\``, Severity.CantParse, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
@@ -61,10 +61,10 @@ export class DiagnosticsBag {
   }
 
   binderMethod(kind: Kind, span: Span) {
-    this.report(`Method for binding '${kind}' is not implemented.`, Severity.CantBind, span);
+    this.report(`Method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
   }
 
   evaluatorMethod(kind: BoundKind, span: Span) {
-    this.report(`Method for evaluating '${kind}' is not implemented.`, Severity.CantEvaluate, span);
+    this.report(`Method for evaluating \`${kind}\` is not implemented.`, Severity.CantEvaluate, span);
   }
 }
