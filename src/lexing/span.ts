@@ -22,4 +22,8 @@ export class Span {
   get length() {
     return this.end - this.start;
   }
+
+  get location() {
+    return this.line + ":" + this.column;
+  }
 }
