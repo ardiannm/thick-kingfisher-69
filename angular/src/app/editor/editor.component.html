@@ -1,14 +1,17 @@
 <!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
+<div class="button" (mousedown)="switchHighlight()">{{ highlight() ? "On" : "Off" }}</div>
 @for (lineSpan of lines(); track $index) {
 <div
   class="line"
   [id]="'row-' + ($index + 1)"
   [ngClass]="{ active: $index + 1 === line() }"
 >
-  @for (token of lineSpan.getTokens(); track $index) {
+  @if (highlight()) { @for (token of lineSpan.getTokens(); track $index) {
   <span [class]="token.kind">{{ token.span.text || "&nbsp;" }}</span>
+  } } @else {{{ lineSpan.span.text || "&nbsp;" }}
   }
 </div>
+
 }
 
 <div class="status-bar">

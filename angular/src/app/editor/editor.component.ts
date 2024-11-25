@@ -4,7 +4,12 @@ import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
 
-var text = ``;
+var text = `
+A1 :: A3
+A2 :: A1+3
+A3 :: A2+5
+A4 :: A3+A1
+`;
 
 @Component({
   selector: "app-editor",
@@ -28,6 +33,7 @@ export class EditorComponent {
   caretWidth = 4;
   prevColumn = this.line();
   diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
+  highlight = signal(false);
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -112,6 +118,10 @@ export class EditorComponent {
         this.cursorY = rect.top;
       }
     }
+  }
+
+  protected switchHighlight() {
+    this.highlight.update((v) => !v);
   }
 
   @HostListener("window:keydown", ["$event"])
