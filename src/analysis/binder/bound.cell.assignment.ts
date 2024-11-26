@@ -11,7 +11,6 @@ export class BoundCellAssignment extends BoundNode {
 
     if (this.scope.assignments.has(this.reference.name)) {
       const existingNode = this.scope.assignments.get(this.reference.name)!;
-
       existingNode.dependencies.forEach((dependency) => {
         const observers = dependency.assignment.observers;
         // remove the current node from the observers list
@@ -20,12 +19,13 @@ export class BoundCellAssignment extends BoundNode {
         if (!observers.size) this.scope.observers.delete(dependency.assignment.reference.name);
       });
     }
-
     this.dependencies.forEach((node) => node.assignment.observers.add(this));
 
-    this.checkForCircularDependency();
-
-    this.scope.assignments.set(this.reference.name, this);
+    if (this.checkForCircularDependency()) {
+      this.dependencies.forEach((node) => node.assignment.observers.delete(this));
+    } else {
+      this.scope.assignments.set(this.reference.name, this);
+    }
   }
 
   get observers() {
@@ -39,7 +39,7 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
-  checkForCircularDependency() {
+  private checkForCircularDependency() {
     const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
 
     while (chain.length > 0) {
@@ -55,9 +55,10 @@ export class BoundCellAssignment extends BoundNode {
 
       if (this.reference.name === observer.reference.name) {
         this.scope.diagnostics.circularDependencyDetected(this.reference.name, this.span, chain);
-        break;
+        return true;
       }
     }
+    return false;
   }
 }
 
