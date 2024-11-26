@@ -1,6 +1,5 @@
 import { Cell } from "../../cell";
 import { CompilerOptions } from "../../syntax.tree";
-import { DiagnosticsBag } from "../diagnostics/diagnostics.bag";
 import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind";
 import { SyntaxBlock } from "../parsing/syntax.block";
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment";
@@ -24,7 +23,7 @@ import { SyntaxBinaryExpression } from "../parsing/syntax.binary.expression";
 import { BoundBinaryExpression } from "./bound.binary.expression";
 
 export class Binder {
-  private constructor(private configuration: CompilerOptions, private diagnostics: DiagnosticsBag, private scope = new BoundScope()) {}
+  private constructor(private configuration: CompilerOptions, private scope: BoundScope) {}
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     type NodeType<T> = Kind & T;
@@ -46,12 +45,12 @@ export class Binder {
       case SyntaxKind.SyntaxCellAssignment:
         return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
     }
-    this.diagnostics.binderMethod(node.kind, node.span);
+    this.scope.diagnostics.binderMethod(node.kind, node.span);
     return new BoundErrorExpression(node.kind, node.span);
   }
 
-  static bindCompilationUnit(node: SyntaxCompilationUnit, diagnostics: DiagnosticsBag, configuration: CompilerOptions) {
-    return new Binder(configuration, diagnostics).bindCompilationUnit(node);
+  static bindCompilationUnit(node: SyntaxCompilationUnit, scope: BoundScope, configuration: CompilerOptions) {
+    return new Binder(configuration, scope).bindCompilationUnit(node);
   }
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {
@@ -63,7 +62,7 @@ export class Binder {
   }
 
   private bindBlock(node: SyntaxBlock): BoundNode {
-    this.scope = new BoundScope(this.scope);
+    this.scope = new BoundScope(this.scope.diagnostics, this.scope);
     const statements = new Array<BoundNode>();
     for (const statement of node.statements) {
       statements.push(this.bind(statement));
@@ -99,7 +98,7 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>();
       const value = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span);
-      if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) this.diagnostics.undeclaredCell(name, node.span);
+      if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) this.scope.diagnostics.undeclaredCell(name, node.span);
     }
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);

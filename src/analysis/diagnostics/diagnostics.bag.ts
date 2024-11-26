@@ -1,5 +1,5 @@
-import { SourceText } from "../../lexing/source.text";
 import { Span } from "../../lexing/span";
+import { DependencyLink } from "../binder/bound.cell.assignment";
 import { BoundKind } from "../binder/bound.kind";
 import { Kind } from "../parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
@@ -8,8 +8,6 @@ import { Severity } from "./severity";
 export class DiagnosticsBag {
   private diagnostics = [] as Diagnostic[];
   private severity = new Set() as Set<Severity>;
-
-  constructor(public readonly sourceText: SourceText) {}
 
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
@@ -33,7 +31,7 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string, span: Span) {
-    this.report(`Bad character \`${text}\` found`, Severity.Warning, span);
+    this.report(`Bad character \`${text}\` found`, Severity.CantBind, span);
   }
 
   unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
@@ -58,6 +56,15 @@ export class DiagnosticsBag {
 
   emptyBlock(span: Span) {
     this.report(`Expecting statements in the block.`, Severity.CantEvaluate, span);
+  }
+
+  circularDependencyDetected(name: string, span: Span, path: DependencyLink[]) {
+    const text = path
+      .reverse()
+      .map((n) => `${n.node.reference.name}`)
+      .join(" > ");
+    const node = Diagnostic.createFrom(`Circular dependency detected for \`${name}\`.\n\t\t${text}`, Severity.CantEvaluate, span);
+    this.diagnostics.push(node);
   }
 
   binderMethod(kind: Kind, span: Span) {

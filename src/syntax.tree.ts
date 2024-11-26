@@ -1,5 +1,6 @@
 import { Binder } from "./analysis/binder/binder";
 import { BoundCompilationUnit } from "./analysis/binder/bound.compilation.unit";
+import { BoundScope } from "./analysis/binder/bound.scope";
 import { Parser } from "./analysis/parsing/parser";
 import { SyntaxCompilationUnit } from "./analysis/parsing/syntax.compilation.unit";
 import { SourceText } from "./lexing/source.text";
@@ -14,7 +15,8 @@ export class SyntaxTree {
 
   private constructor(public source: SourceText, public configuration: CompilerOptions) {
     this.root = Parser.parseCompilationUnit(source);
-    this.bound = Binder.bindCompilationUnit(this.root, this.source.diagnostics, configuration);
+    const scope = new BoundScope(source.diagnostics);
+    this.bound = Binder.bindCompilationUnit(this.root, scope, configuration);
   }
 
   static createFrom(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {

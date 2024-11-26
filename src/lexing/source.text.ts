@@ -8,15 +8,14 @@ export class SourceText {
   private lines = [] as Line[];
   private tokens = [] as Token[];
 
-  readonly diagnostics = new DiagnosticsBag(this);
-
-  private constructor(public text: string) {
+  private constructor(public text: string, public readonly diagnostics: DiagnosticsBag) {
     this.generateLines();
     this.generateTokens();
   }
 
   static createFrom(text: string): SourceText {
-    return new SourceText(text);
+    const diagnostics = new DiagnosticsBag();
+    return new SourceText(text, diagnostics);
   }
 
   static parse(text: string) {
