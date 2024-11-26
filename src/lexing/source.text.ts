@@ -98,6 +98,9 @@ export class SourceText {
   }
 
   getPosition(line: number, column: number) {
+    if (line > this.lines.length) {
+      return this.text.length;
+    }
     let position = line;
     const lines = this.lines.length;
     if (line < 1) {

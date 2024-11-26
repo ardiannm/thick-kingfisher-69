@@ -17,7 +17,9 @@ A2 :: A1+3
 A3 :: A2+5
 A4 :: A3+A1
 A3 :: 1
-`;
+
+
+"This is a comment and it doesn't affect the binding"`;
 
 @Component({
   selector: "app-editor",
