@@ -9,23 +9,41 @@ export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
-    if (this.scope.assignments.has(this.reference.name)) {
-      const existingNode = this.scope.assignments.get(this.reference.name)!;
-      existingNode.dependencies.forEach((dependency) => {
-        const observers = dependency.assignment.observers;
-        // remove the current node from the observers list
-        observers.delete(existingNode);
-        // if there are no more observers remove the set from the scope entirely
-        if (!observers.size) this.scope.observers.delete(dependency.assignment.reference.name);
-      });
-    }
-    this.dependencies.forEach((node) => node.assignment.observers.add(this));
+    this.cleanupExistingNode();
+    this.registerSelf();
 
     if (this.checkForCircularDependency()) {
-      this.dependencies.forEach((node) => node.assignment.observers.delete(this));
+      this.unregisterSelf();
     } else {
-      this.scope.assignments.set(this.reference.name, this);
+      this.storeNewAssignment();
     }
+  }
+
+  private cleanupExistingNode() {
+    const existingNode = this.scope.assignments.get(this.reference.name);
+
+    if (!existingNode) return;
+
+    existingNode.dependencies.forEach((dependency) => {
+      const observers = dependency.assignment.observers;
+      observers.delete(existingNode);
+
+      if (!observers.size) {
+        this.scope.observers.delete(dependency.assignment.reference.name);
+      }
+    });
+  }
+
+  private registerSelf() {
+    this.dependencies.forEach((node) => node.assignment.observers.add(this));
+  }
+
+  private unregisterSelf() {
+    this.dependencies.forEach((node) => node.assignment.observers.delete(this));
+  }
+
+  private storeNewAssignment() {
+    this.scope.assignments.set(this.reference.name, this);
   }
 
   get observers() {
