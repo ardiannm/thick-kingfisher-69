@@ -12,7 +12,7 @@
       [ngClass]="{ active: $index + 1 === line() }"
     >
       @if (highlight()) { @for (token of lineSpan.getTokens(); track $index) {
-      <span [class]="token.kind">{{ token.span.text || "&nbsp;" }}</span>
+      <span [class]="token.class">{{ token.span.text || "&nbsp;" }}</span>
       } } @else {{{ lineSpan.span.text || "&nbsp;" }}
       }
     </div>

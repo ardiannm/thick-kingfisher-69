@@ -24,4 +24,13 @@ export class Token<T extends Kind = Kind> {
         return false;
     }
   }
+
+  get class() {
+    return this.kind
+      .toString()
+      .replace(/([A-Z])/g, " $1")
+      .trim()
+      .replace(/\s/g, "-")
+      .toLowerCase();
+  }
 }
