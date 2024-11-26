@@ -5,7 +5,7 @@ import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxBinaryExpression extends SyntaxNode {
   constructor(public override source: SourceText, public left: SyntaxNode, public operator: SyntaxToken<SyntaxBinaryOperatorKind>, public right: SyntaxNode) {
-    super(source, SyntaxKind.BinaryExpression);
+    super(source, SyntaxKind.SyntaxBinaryExpression);
   }
 
   override getFirstChild(): SyntaxToken {

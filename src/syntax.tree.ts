@@ -1,6 +1,6 @@
-import { Binder } from "./analysis/binder/binder";
-import { BoundCompilationUnit } from "./analysis/binder/bound.compilation.unit";
-import { BoundScope } from "./analysis/binder/bound.scope";
+import { Binder } from "./analysis/binding/binder";
+import { BoundCompilationUnit } from "./analysis/binding/bound.compilation.unit";
+import { BoundScope } from "./analysis/binding/bound.scope";
 import { Parser } from "./analysis/parsing/parser";
 import { SyntaxCompilationUnit } from "./analysis/parsing/syntax.compilation.unit";
 import { SourceText } from "./lexing/source.text";

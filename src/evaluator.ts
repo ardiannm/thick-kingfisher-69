@@ -1,14 +1,14 @@
-import { BoundBinaryExpression } from "./analysis/binder/bound.binary.expression";
-import { BoundBlock } from "./analysis/binder/bound.block";
-import { BoundCellAssignment } from "./analysis/binder/bound.cell.assignment";
-import { BoundCellReference } from "./analysis/binder/bound.cell.reference";
-import { BoundCompilationUnit } from "./analysis/binder/bound.compilation.unit";
-import { BoundNode } from "./analysis/binder/bound.node";
-import { BoundNumericLiteral } from "./analysis/binder/bound.numeric.literal";
-import { BoundUnaryExpression } from "./analysis/binder/bound.unary.expression";
-import { BoundBinaryOperatorKind } from "./analysis/binder/bound.kind";
-import { BoundKind } from "./analysis/binder/bound.kind";
-import { BoundUnaryOperatorKind } from "./analysis/binder/bound.kind";
+import { BoundBinaryExpression } from "./analysis/binding/bound.binary.expression";
+import { BoundBlock } from "./analysis/binding/bound.block";
+import { BoundCellAssignment } from "./analysis/binding/bound.cell.assignment";
+import { BoundCellReference } from "./analysis/binding/bound.cell.reference";
+import { BoundCompilationUnit } from "./analysis/binding/bound.compilation.unit";
+import { BoundNode } from "./analysis/binding/bound.node";
+import { BoundNumericLiteral } from "./analysis/binding/bound.numeric.literal";
+import { BoundUnaryExpression } from "./analysis/binding/bound.unary.expression";
+import { BoundBinaryOperatorKind } from "./analysis/binding/bound.kind";
+import { BoundKind } from "./analysis/binding/bound.kind";
+import { BoundUnaryOperatorKind } from "./analysis/binding/bound.kind";
 import { DiagnosticsBag } from "./analysis/diagnostics/diagnostics.bag";
 
 export class Evaluator {

@@ -7,7 +7,7 @@ export enum SyntaxKind {
   DotToken = "DotToken",
   GreaterToken = "GreaterToken",
   HashToken = "HashToken",
-  BinaryExpression = "SyntaxBinaryExpression",
+  SyntaxBinaryExpression = "SyntaxBinaryExpression",
   IdentifierToken = "IdentifierToken",
   BadToken = "BadToken",
   OpenBraceToken = "OpenBraceToken",
@@ -29,7 +29,6 @@ export enum SyntaxKind {
   ColonColonToken = "ColonColonToken",
   LineBreakTrivia = "LineBreakTrivia",
   QuoteToken = "QuoteToken",
-  SyntaxBinaryExpression = "SyntaxBinaryExpression"
 }
 
 export enum SyntaxUnaryOperatorKind {

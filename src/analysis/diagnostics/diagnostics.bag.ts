@@ -1,6 +1,6 @@
 import { Span } from "../../lexing/span";
-import { DependencyLink } from "../binder/bound.cell.assignment";
-import { BoundKind } from "../binder/bound.kind";
+import { DependencyLink } from "../binding/bound.cell.assignment";
+import { BoundKind } from "../binding/bound.kind";
 import { Kind } from "../parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";

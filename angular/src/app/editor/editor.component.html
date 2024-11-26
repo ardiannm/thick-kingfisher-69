@@ -16,7 +16,6 @@
       } } @else {{{ lineSpan.span.text || "&nbsp;" }}
       }
     </div>
-
     }
     <div class="status-bar">line: {{ line() }} column: {{ column() }}</div>
     @if (diagnostics().length) {
@@ -25,7 +24,6 @@
       <div class="diagnostic" [textContent]="d.viewMessage()"></div>
       }
     </div>
-
     }
   </div>
 </div>
