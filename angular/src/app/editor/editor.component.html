@@ -1,4 +1,3 @@
-<!-- below is the case with tokenized text with split spans for each token, so how do I access the positions now -->
 <div style="display: flex; flex-direction: row">
   <div class="line-numbers">
     @for (lineSpan of lines(); track $index) {
@@ -19,23 +18,15 @@
     </div>
 
     }
-
     <div class="status-bar">line: {{ line() }} column: {{ column() }}</div>
-
     <div class="diagnostics">
       @for (d of diagnostics(); track $index) {
-      <div class="diagnostic">{{ d.span.line }}:{{ d.span.column }}{{ " ".repeat(4) }}{{ d.message }}</div>
+      <div class="diagnostic" [textContent]="d.viewMessage()"></div>
       }
     </div>
-
-    <app-cursor
-      [x]="cursorX"
-      [y]="cursorY"
-      [width]="2"
-      [height]="16"
-    ></app-cursor>
   </div>
 </div>
 <div class="button" (mousedown)="switchHighlight()">
   {{ highlight() ? "On" : "Off" }}
 </div>
+<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="16"></app-cursor>
