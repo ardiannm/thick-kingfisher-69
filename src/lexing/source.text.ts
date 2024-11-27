@@ -98,18 +98,12 @@ export class SourceText {
   }
 
   getPosition(line: number, column: number) {
-    if (line > this.lines.length) {
+    if (line < 1) {
+      line = 1;
+    } else if (line > this.lines.length) {
       return this.text.length;
     }
-    let position = line;
-    const lines = this.lines.length;
-    if (line < 1) {
-      position = 1;
-    } else if (line > lines) {
-      position = lines;
-    }
-    position -= 1;
-    const span = this.lines[position].span;
+    const span = this.lines[line - 1].span;
     let offset = column - 1;
     if (offset > span.length) {
       offset = span.length;
