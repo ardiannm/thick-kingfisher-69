@@ -1,13 +1,10 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
-import { Todo } from "../dev/todo";
 import { SyntaxTree } from "../syntax.tree";
 import { Lexer } from "./lexer";
 import { Line } from "./line";
 import { Token } from "./token";
 
-@Todo("Main text must always equal the concatenation of the text from all the lines.")
 export class SourceText {
-  @Todo("Each line must have the `end` property exactly equal to the `start` of the next line.")
   private lines = [] as Line[];
   private tokens = [] as Token[];
 
@@ -102,7 +99,7 @@ export class SourceText {
 
   getPosition(line: number, column: number) {
     if (line < 1) {
-      line = 1;
+      return 0;
     } else if (line > this.lines.length) {
       return this.text.length;
     }

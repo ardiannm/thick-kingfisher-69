@@ -14,18 +14,20 @@ class Environment {
 
 export function Todo(message: string): ClassDecorator & MethodDecorator & PropertyDecorator {
   return (_target: any, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
-    if (Environment.isNode()) {
-      const location = new Error().stack?.split("\n")[3]!.match(/\(([^)]+)\)/g)![0]! + ".";
-      // property
-      if (propertyKey && descriptor) {
-        Environment.report(message + location);
-        // method
-      } else if (propertyKey) {
-        Environment.report(message + location);
-        // class
-      } else {
-        Environment.report(message + location);
+    try {
+      if (Environment.isNode()) {
+        const location = new Error().stack?.split("\n")[3]!.match(/\(([^)]+)\)/g)![0]! + ".";
+        // property
+        if (propertyKey && descriptor) {
+          Environment.report(message + location);
+          // method
+        } else if (propertyKey) {
+          Environment.report(message + location);
+          // class
+        } else {
+          Environment.report(message + location);
+        }
       }
-    }
+    } catch (error) {}
   };
 }

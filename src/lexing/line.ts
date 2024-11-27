@@ -1,4 +1,3 @@
-import { Todo } from "../dev/todo";
 import { SourceText } from "./source.text";
 import { Span } from "./span";
 import { Token } from "./token";
@@ -14,7 +13,6 @@ export class Line {
     return Span.createFrom(this.source, this.fullSpan.start, this.fullSpan.end - this.lineBreakLength);
   }
 
-  @Todo("No generated token should include a newline character in the text.")
   *getTokens(): Generator<Token> {
     const tokens = this.source.getTokens();
     const tokenStart = this.source.getTokenAt(this.span.start);

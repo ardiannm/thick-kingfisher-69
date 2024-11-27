@@ -6,21 +6,19 @@
     "url": "https://github.com/ardiannm/parser.ts.git"
   },
   "scripts": {
+    "dev": "nodemon",
     "solid": "cd solid && npm run dev",
     "angular": "cd angular && npm run start",
-    "build": "cd solid && npm run build",
-    "serve": "nodemon",
-    "test": "ts-node ./src/tests/index.ts",
-    "dev": "nodemon"
+    "test": "vitest"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.6.0",
-    "@types/readline-sync": "^1.4.7",
     "fs": "^0.0.1-security",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "vitest": "^2.1.6"
   },
   "dependencies": {
     "@npmcli/package-json": "^6.0.1",
