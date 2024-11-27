@@ -14,9 +14,7 @@ export class BoundCellAssignment extends BoundNode {
     this.cleanupExistingNode();
     this.registerSelf();
 
-    if (this.checkForCircularDependency()) {
-      this.unregisterSelf();
-    } else {
+    if (!this.checkForCircularDependency()) {
       this.storeNewAssignment();
     }
   }
@@ -40,10 +38,6 @@ export class BoundCellAssignment extends BoundNode {
     this.dependencies.forEach((node) => node.assignment.observers.add(this));
   }
 
-  private unregisterSelf() {
-    this.dependencies.forEach((node) => node.assignment.observers.delete(this));
-  }
-
   private storeNewAssignment() {
     this.scope.assignments.set(this.reference.name, this);
   }
@@ -59,40 +53,47 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
-  @Todo("Traverse through dependencies instead of observers to find more than one path to circular dependency.")
   @Todo("Remove node from dependency chain after reporting to prevent infinite loops for proceeding assignments.")
   private checkForCircularDependency() {
-    const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
+    const genesisLink = DependencyLink.createFrom(this);
+    const chain: DependencyLink[] = [genesisLink];
 
-    while (chain.length > 0) {
+    let error = false;
+
+    let count = 0;
+    while (chain.length > 0 && count < 20) {
+      count++;
+
       const currentNode = chain[chain.length - 1];
-      const { done, value: observer } = currentNode.generator.next();
+      const { done, value: dependency } = currentNode.generator.next();
 
       if (done) {
         chain.pop();
         continue;
       }
 
-      chain.push(DependencyLink.createFrom(observer));
+      chain.push(DependencyLink.createFrom(dependency.assignment));
 
-      if (this === observer) {
+      if (this.reference.name === dependency.assignment.reference.name) {
         this.scope.diagnostics.circularDependencyDetected(this.reference.name, this.span, chain);
-        return true;
+        chain.length = 1;
+        error = true;
       }
     }
-    return false;
+
+    return error;
   }
 }
 
 export class DependencyLink {
-  private constructor(public node: BoundCellAssignment, public generator: Generator<BoundCellAssignment>) {}
+  private constructor(public node: BoundCellAssignment, public generator: Generator<BoundCellReference>) {}
 
   static createFrom(node: BoundCellAssignment) {
     const generator = (function* (set) {
       for (const item of set) {
         yield item;
       }
-    })(node.observers);
+    })(node.dependencies);
     return new DependencyLink(node, generator);
   }
 }
