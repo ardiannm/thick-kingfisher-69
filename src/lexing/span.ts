@@ -1,5 +1,7 @@
+import { Todo } from "../dev/todo";
 import { SourceText } from "./source.text";
 
+@Todo("Ensure that `end` is always greater than or equal to `start`")
 export class Span {
   private constructor(protected source: SourceText, public start: number, public end: number) {}
 

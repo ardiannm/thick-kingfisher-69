@@ -1,10 +1,13 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
+import { Todo } from "../dev/todo";
 import { SyntaxTree } from "../syntax.tree";
 import { Lexer } from "./lexer";
 import { Line } from "./line";
 import { Token } from "./token";
 
+@Todo("Main text must always equal the concatenation of the text from all the lines.")
 export class SourceText {
+  @Todo("Each line must have the `end` property exactly equal to the `start` of the next line.")
   private lines = [] as Line[];
   private tokens = [] as Token[];
 
