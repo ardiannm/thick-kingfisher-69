@@ -53,17 +53,13 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
-  @Todo("Remove node from dependency chain after reporting to prevent infinite loops for proceeding assignments.")
   private checkForCircularDependency() {
-    const genesisLink = DependencyLink.createFrom(this);
-    const chain: DependencyLink[] = [genesisLink];
+    const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
 
     let error = false;
+    let dep = 0;
 
-    let count = 0;
-    while (chain.length > 0 && count < 20) {
-      count++;
-
+    while (chain.length > 0) {
       const currentNode = chain[chain.length - 1];
       const { done, value: dependency } = currentNode.generator.next();
 
@@ -75,9 +71,10 @@ export class BoundCellAssignment extends BoundNode {
       chain.push(DependencyLink.createFrom(dependency.assignment));
 
       if (this.reference.name === dependency.assignment.reference.name) {
-        this.scope.diagnostics.circularDependencyDetected(this.reference.name, this.span, chain);
+        this.scope.diagnostics.circularDependencyDetected(this.reference.name, this.dependencies[dep].span, chain);
         chain.length = 1;
         error = true;
+        dep++;
       }
     }
 
