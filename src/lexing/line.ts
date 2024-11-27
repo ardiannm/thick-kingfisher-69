@@ -32,11 +32,11 @@ export class Line {
   private trimToken(token: Token) {
     const lineStart = this.fullSpan.start;
     const lineEnd = this.fullSpan.end;
-    if (token.span.start >= lineStart && token.span.end <= lineEnd) {
-      return token;
-    }
     let tokenStart = token.span.start;
     let tokenEnd = token.span.end;
+    if (tokenStart >= lineStart && tokenEnd <= lineEnd) {
+      return token;
+    }
     if (tokenStart < lineStart) tokenStart = lineStart;
     if (tokenEnd > lineEnd) tokenEnd = lineEnd;
     const tokenSpan = Span.createFrom(this.source, tokenStart, tokenEnd);
