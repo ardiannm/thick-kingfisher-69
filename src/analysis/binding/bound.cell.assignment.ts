@@ -59,6 +59,7 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
+  @Todo("Traverse through dependencies instead of observers to find more than one path to circular dependency.")
   @Todo("Remove node from dependency chain after reporting to prevent infinite loops for proceeding assignments.")
   private checkForCircularDependency() {
     const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
