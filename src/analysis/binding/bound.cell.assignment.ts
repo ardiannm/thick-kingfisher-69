@@ -8,32 +8,25 @@ import { Span } from "../../lexing/span";
 export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
-
     this.cleanupExistingNode();
     this.registerSelf();
-
     if (!this.checkForCircularDependency()) {
       this.storeNewAssignment();
     }
   }
 
-  private cleanupExistingNode() {
+  private cleanupExistingNode(): void {
     const existingNode = this.scope.assignments.get(this.reference.name);
-
     if (!existingNode) return;
-
-    existingNode.dependencies.forEach((dependency) => {
-      const observers = dependency.assignment.observers;
+    for (const dependency of existingNode.dependencies) {
+      const observers = dependency.observers;
       observers.delete(existingNode);
-
-      if (!observers.size) {
-        this.scope.observers.delete(dependency.assignment.reference.name);
-      }
-    });
+      if (observers.size === 0) this.scope.observers.delete(dependency.name);
+    }
   }
 
   private registerSelf() {
-    this.dependencies.forEach((node) => node.assignment.observers.add(this));
+    this.dependencies.forEach((node) => node.observers.add(this));
   }
 
   private storeNewAssignment() {
@@ -53,24 +46,19 @@ export class BoundCellAssignment extends BoundNode {
 
   private checkForCircularDependency() {
     const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
-
     let error = false;
     let dep = 0;
-
     while (chain.length > 0) {
       const currentNode = chain[chain.length - 1];
       const { done, value: dependency } = currentNode.generator.next();
-
       if (done) {
         chain.pop();
         continue;
       }
-
-      const depName = dependency.assignment.reference.name;
+      const depName = dependency.name;
       const dependencyAssignment = this.scope.assignments.get(depName)!;
-
-      chain.push(DependencyLink.createFrom(dependencyAssignment));
-
+      const node = DependencyLink.createFrom(dependencyAssignment);
+      chain.push(node);
       if (this.reference.name === depName) {
         this.scope.diagnostics.circularDependencyDetected(this.reference.name, this.dependencies[dep].span, chain);
         chain.length = 1;
@@ -78,7 +66,6 @@ export class BoundCellAssignment extends BoundNode {
         dep++;
       }
     }
-
     return error;
   }
 }

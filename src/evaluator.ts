@@ -39,7 +39,7 @@ export class Evaluator {
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    return node.assignment.reference.value;
+    return node.value;
   }
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
