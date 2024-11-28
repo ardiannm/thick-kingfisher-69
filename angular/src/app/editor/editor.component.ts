@@ -13,7 +13,7 @@ import { SourceText } from "../../../../ng";
 
 // this test case is problematic
 var text = `A1 :: A4
-A5 :: A4
+A5 :: A2
 A2 :: A1+3
 A3 :: A2+5
 A4 :: A3+A2+A5
