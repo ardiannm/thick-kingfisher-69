@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SourceText } from "../lexing/source.text";
 
-export class TestSourceText {
+export class SourceTextTest {
   private constructor() {}
 
   static run(text: string) {
@@ -58,7 +58,7 @@ export class TestSourceText {
   }
 }
 
-TestSourceText.run(`A1 :: A4
+SourceTextTest.run(`A1 :: A4
   A5 :: A4
   A2 :: A1+3
   A3 :: A2+5
