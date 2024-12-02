@@ -1,7 +1,7 @@
 <div class="space">
   <div class="numbers">
     @for (lineSpan of lines(); track $index) {
-    <div class="number" [ngClass]="{ 'active-number': $index + 1 === line() }">
+    <div class="number" [ngClass]="{ 'active-number': isActive($index) }">
       {{ $index + 1 }}
     </div>
     }
@@ -11,7 +11,7 @@
     <div
       class="line"
       [id]="'row-' + ($index + 1)"
-      [ngClass]="{ 'active-line': $index + 1 === line() }"
+      [ngClass]="{ 'active-line': isActive($index) }"
     >
       @for (token of lineSpan.getTokens(); track $index) {
       <span [class]="token.class">{{ token.span.text || "&nbsp;" }}</span>
@@ -24,7 +24,7 @@
 @if (error()) {
 <div class="diagnotics">
   @for (d of diagnostics(); track $index) {
-  <div [textContent]="d.span.line + '\t'.repeat(1) + d.message"></div>
+  <div [textContent]="d.span.address + ' ' + d.message"></div>
   }
 </div>
 }

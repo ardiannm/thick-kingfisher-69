@@ -205,4 +205,8 @@ export class EditorComponent {
     const rect = range.getBoundingClientRect();
     return { cursorX: rect.x, cursorY: rect.y };
   }
+
+  protected isActive(ln: number): any {
+    return ln + 1 === this.line();
+  }
 }

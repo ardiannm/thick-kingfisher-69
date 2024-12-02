@@ -23,7 +23,7 @@ export class Span {
     return this.end - this.start;
   }
 
-  get adress() {
-    return this.source.getLine(this.start) + ":" + this.source.getColumn(this.start);
+  get address() {
+    return "(" + this.source.getLine(this.start) + ":" + this.source.getColumn(this.start) + ")";
   }
 }

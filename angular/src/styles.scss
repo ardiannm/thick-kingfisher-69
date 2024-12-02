@@ -12,10 +12,12 @@ body {
   @include flexCenter;
   font-size: 14px;
   font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
+  color: #060416;
+  background-color: #ffffff;
 }
 
 a {
   font-style: normal;
   text-decoration: none;
-  color: black;
+  color: #060416;
 }
