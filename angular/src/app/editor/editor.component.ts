@@ -73,59 +73,9 @@ export class EditorComponent {
   }
 
   private renderPosition(line: number, column: number) {
-    const lineElement = this.document.getElementById("row-" + line)!;
-    column--;
-    if (lineElement) {
-      let charCount = 0;
-      for (const child of Array.from(lineElement.childNodes)) {
-        if (child.nodeType === Node.ELEMENT_NODE) {
-          const span = child as HTMLElement;
-          const spanText = span.textContent || "";
-          const spanLength = spanText.length;
-
-          if (charCount + spanLength >= column) {
-            const offsetInSpan = column - charCount;
-
-            const range = this.document.createRange();
-            range.setStart(span.firstChild!, offsetInSpan);
-            range.setEnd(span.firstChild!, offsetInSpan);
-
-            const rect = range.getBoundingClientRect();
-            this.cursorX = rect.x + rect.width;
-            this.cursorY = rect.y;
-            range.detach();
-            return;
-          }
-          charCount += spanLength;
-        } else if (child.nodeType === Node.TEXT_NODE) {
-          const textNode = child as Text;
-          const textContent = textNode.textContent || "";
-          const textLength = textContent.length;
-
-          if (charCount + textLength >= column) {
-            const offsetInText = column - charCount;
-            const range = this.document.createRange();
-            range.setStart(textNode, offsetInText);
-            range.setEnd(textNode, offsetInText);
-            const rect = range.getBoundingClientRect();
-            this.cursorX = rect.x;
-            this.cursorY = rect.y;
-            range.detach();
-            return;
-          }
-
-          charCount += textLength;
-        }
-      }
-
-      // If the cursor is at the end of the line
-      const lastElement = lineElement.lastElementChild as HTMLElement;
-      if (lastElement) {
-        const rect = lastElement.getBoundingClientRect();
-        this.cursorX = rect.right;
-        this.cursorY = rect.top;
-      }
-    }
+    const pos = this.getPosition(line, column);
+    this.cursorX = pos.cursorX;
+    this.cursorY = pos.cursorY;
   }
 
   @HostListener("window:keydown", ["$event"])
@@ -191,5 +141,48 @@ export class EditorComponent {
       this.prevColumn = 1;
       this.cursor.set(0);
     }
+  }
+
+  private getPosition(line: number, column: number): { cursorX: number; cursorY: number } {
+    const lineElement = this.document.getElementById(`row-${line}`)!; // Non-null assertion.
+    let charCount = 0;
+    column--;
+    for (const child of Array.from(lineElement.childNodes)) {
+      const range = this.document.createRange();
+      try {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const span = child as HTMLElement;
+          const spanText = span.textContent || "";
+          const spanLength = spanText.length;
+          if (charCount + spanLength >= column) {
+            const offsetInSpan = column - charCount;
+            range.setStart(span.firstChild!, offsetInSpan);
+            range.setEnd(span.firstChild!, offsetInSpan);
+            return this.getCursorPositionFromRange(range);
+          }
+          charCount += spanLength;
+        } else if (child.nodeType === Node.TEXT_NODE) {
+          const textNode = child as Text;
+          const textLength = textNode.textContent?.length || 0;
+          if (charCount + textLength >= column) {
+            const offsetInText = column - charCount;
+            range.setStart(textNode, offsetInText);
+            range.setEnd(textNode, offsetInText);
+            return this.getCursorPositionFromRange(range);
+          }
+          charCount += textLength;
+        }
+      } finally {
+        range.detach();
+      }
+    }
+    const lastElement = lineElement.lastElementChild as HTMLElement;
+    const rect = lastElement.getBoundingClientRect();
+    return { cursorX: rect.right, cursorY: rect.top };
+  }
+
+  private getCursorPositionFromRange(range: Range): { cursorX: number; cursorY: number } {
+    const rect = range.getBoundingClientRect();
+    return { cursorX: rect.x, cursorY: rect.y };
   }
 }
