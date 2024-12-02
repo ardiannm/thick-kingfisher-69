@@ -43,12 +43,12 @@
 }
 
 .active-line {
-  border: 1px solid #d3d3d3;
+  // border: 1px solid #d3d3d3;
   border-left-color: transparent;
 }
 
 .active-number {
-  border: 1px solid #d3d3d3;
+  // border: 1px solid #d3d3d3;
   border-right-color: transparent;
 }
 
@@ -68,7 +68,7 @@
 
 .diagnotics {
   margin-top: 10px;
-  background-color: #f7f7f8;
+  background-color: #e2e7ea;
   padding: 7px 10px;
 }
 
@@ -77,9 +77,11 @@
 }
 
 .identifier-token {
+  // color: #006c7a;
 }
 
 .number-token {
+  // color: #006c7a;
 }
 
 .comment-trivia {

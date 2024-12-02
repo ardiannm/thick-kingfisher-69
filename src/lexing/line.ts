@@ -16,7 +16,8 @@ export class Line {
   *getTokens(): Generator<Token> {
     const tokens = this.source.getTokens();
     const tokenStart = this.source.getTokenAt(this.span.start);
-    yield this.trimToken(tokens[tokenStart]);
+    const token = tokens[tokenStart];
+    yield this.trimToken(token);
     if (!this.span.length) {
       return;
     }
@@ -25,7 +26,8 @@ export class Line {
       yield tokens[position];
     }
     if (tokenStart < tokenEnd) {
-      yield this.trimToken(tokens[tokenEnd]);
+      const token = tokens[tokenEnd];
+      yield this.trimToken(token);
     }
   }
 

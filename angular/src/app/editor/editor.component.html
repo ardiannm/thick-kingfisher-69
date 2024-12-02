@@ -24,8 +24,7 @@
 <div class="status">line {{ line() }} column {{ column() }}</div>
 <div class="diagnotics">
   @for (d of diagnostics(); track $index) {
-  <div [textContent]="d.viewMessage()"></div>
+  <div [textContent]="d.span.line + '\t'.repeat(1) + d.message"></div>
   }
 </div>
-
 <app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="16"></app-cursor>
