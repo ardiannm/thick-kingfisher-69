@@ -104,12 +104,16 @@ export class EditorComponent {
     } else if (input === "Backspace") {
       this.removeText();
     } else if (input === "Delete" && this.cursor() !== this.length) {
-      this.tranformCaretX();
-      this.removeText();
+      this.deleteText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
       event.preventDefault();
       this.insertText(input);
     }
+  }
+
+  private deleteText() {
+    this.tranformCaretX();
+    this.removeText();
   }
 
   private removeLine() {
@@ -118,6 +122,10 @@ export class EditorComponent {
       const line = this.lines()[ln];
       const text = this.code().slice(0, line.span.start) + this.code().slice(line.span.end);
       this.code.set(text);
+      setTimeout(() => {
+        this.cursor.set(line.span.start);
+        this.deleteText();
+      });
     }
   }
 

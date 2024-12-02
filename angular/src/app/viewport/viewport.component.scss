@@ -3,5 +3,5 @@
 :host {
   display: flex;
   @include applyMaxSize;
-  @include flexCenter;
+  // @include flexCenter;
 }
