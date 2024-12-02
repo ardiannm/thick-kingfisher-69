@@ -1,9 +1,17 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
-import { CurrencyPipe, DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
+import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
 
+// var text = `A1 :: A3
+//   A2 :: A1
+//    A3 :: A2
+// A4 :: A3
+//   A1 :: A4
+// `;
+
+// this test case is problematic
 var text = `A1 :: A4
 A5 :: A2
 A2 :: A1+3
@@ -29,14 +37,25 @@ export class EditorComponent {
   cursor = signal(this.text.length);
   line = computed(() => this.source().getLine(this.cursor()));
   column = computed(() => this.source().getColumn(this.cursor()));
-  prevColumn = this.line();
-  diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
-  error = computed(() => this.diagnostics().length);
   cursorX = 0;
   cursorY = 0;
   caretWidth = 4;
+  prevColumn = this.line();
+  diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
+  error = computed(() => this.diagnostics().length);
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
+    effect(
+      () => {
+        const current = this.code().length;
+        const change = current - this.length;
+        this.cursor.update((pos) => pos + change);
+        this.length = current;
+      },
+      {
+        allowSignalWrites: true,
+      }
+    );
     if (isPlatformBrowser(this.platformId)) {
       effect(() => {
         const line = this.line();
@@ -63,9 +82,7 @@ export class EditorComponent {
   @HostListener("window:keydown", ["$event"])
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
-    if (event.ctrlKey && input === "x") {
-      this.removeLine();
-    } else if (input === "ArrowRight") {
+    if (input === "ArrowRight") {
       event.preventDefault();
       this.tranformCaretX();
     } else if (input === "ArrowLeft") {
@@ -76,7 +93,7 @@ export class EditorComponent {
       this.transformCaretY(-1);
     } else if (input === "ArrowDown") {
       event.preventDefault();
-      this.transformCaretY(+1);
+      this.transformCaretY();
     } else if (input === "Enter") {
       this.insertText();
     } else if (input === "Tab") {
@@ -93,22 +110,11 @@ export class EditorComponent {
     }
   }
 
-  removeLine() {
-    const currentLine = this.line();
-    const line = this.lines()[currentLine - 1];
-    this.cursor.set(line.fullSpan.start);
-    const newText = this.code().slice(0, line.fullSpan.start) + this.code().substring(line.fullSpan.end);
-    this.code.set(newText);
-    this.tranformCaretX();
-    this.tranformCaretX(-1);
-  }
-
   private insertText(charText: string = "\n") {
     const text = this.code();
     const pos = this.cursor();
     const newText = text.substring(0, pos) + charText + text.substring(pos);
     this.code.set(newText);
-    this.cursor.update((pos) => pos + 1);
   }
 
   private removeText() {
@@ -116,7 +122,6 @@ export class EditorComponent {
     const pos = this.cursor();
     const newText = text.substring(0, pos - 1) + text.substring(pos);
     this.code.set(newText);
-    this.cursor.update((pos) => (pos > 0 ? pos - 1 : 0));
   }
 
   private tranformCaretX(steps: number = 1) {
@@ -128,7 +133,7 @@ export class EditorComponent {
     }
   }
 
-  transformCaretY(steps: number) {
+  transformCaretY(steps: number = 1) {
     const prevLine = this.line() + steps;
     if (prevLine > 0) {
       const pos = this.source().getPosition(prevLine, this.prevColumn);
