@@ -49,7 +49,7 @@ export class EditorComponent {
       () => {
         const current = this.code().length;
         const change = current - this.length;
-        this.cursor.update((pos) => pos + change);
+        this.cursor.update((pos) => (pos + change >= 0 ? pos + change : 0));
         this.length = current;
       },
       {
@@ -82,7 +82,9 @@ export class EditorComponent {
   @HostListener("window:keydown", ["$event"])
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
-    if (input === "ArrowRight") {
+    if (event.ctrlKey && input === "x") {
+      this.removeLine();
+    } else if (input === "ArrowRight") {
       event.preventDefault();
       this.tranformCaretX();
     } else if (input === "ArrowLeft") {
@@ -107,6 +109,15 @@ export class EditorComponent {
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
       event.preventDefault();
       this.insertText(input);
+    }
+  }
+
+  private removeLine() {
+    const ln = this.line() - 1;
+    if (ln >= 0) {
+      const line = this.lines()[ln];
+      const text = this.code().slice(0, line.span.start) + this.code().slice(line.span.end);
+      this.code.set(text);
     }
   }
 
