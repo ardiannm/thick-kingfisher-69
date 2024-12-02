@@ -42,7 +42,6 @@ export class EditorComponent {
   caretWidth = 4;
   prevColumn = this.line();
   diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
-  highlight = signal(false);
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -127,10 +126,6 @@ export class EditorComponent {
         this.cursorY = rect.top;
       }
     }
-  }
-
-  protected switchHighlight() {
-    this.highlight.update((v) => !v);
   }
 
   @HostListener("window:keydown", ["$event"])

@@ -10,9 +10,8 @@ body {
   padding: 0;
   box-sizing: border-box;
   @include flexCenter;
-  background-color: #f1f3f4;
-  font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
   font-size: 14px;
+  font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 }
 
 a {
