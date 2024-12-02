@@ -37,6 +37,10 @@ export class Lexer {
         return this.advanceAndCreateNewToken(SyntaxKind.OpenParenthesisToken);
       case ")":
         return this.advanceAndCreateNewToken(SyntaxKind.CloseParenthesisToken);
+      case "{":
+        return this.advanceAndCreateNewToken(SyntaxKind.OpenBraceToken);
+      case "}":
+        return this.advanceAndCreateNewToken(SyntaxKind.CloseBraceToken);
       case ".":
         return this.advanceAndCreateNewToken(SyntaxKind.DotToken);
       case "\n":
