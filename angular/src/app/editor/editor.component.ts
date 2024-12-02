@@ -1,6 +1,6 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
-import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
+import { CurrencyPipe, DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
 
@@ -29,11 +29,12 @@ export class EditorComponent {
   cursor = signal(this.text.length);
   line = computed(() => this.source().getLine(this.cursor()));
   column = computed(() => this.source().getColumn(this.cursor()));
+  prevColumn = this.line();
+  diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
+  error = computed(() => this.diagnostics().length);
   cursorX = 0;
   cursorY = 0;
   caretWidth = 4;
-  prevColumn = this.line();
-  diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
@@ -66,7 +67,7 @@ export class EditorComponent {
       this.removeLine();
     } else if (input === "ArrowRight") {
       event.preventDefault();
-      this.tranformCaretX(+1);
+      this.tranformCaretX();
     } else if (input === "ArrowLeft") {
       event.preventDefault();
       this.tranformCaretX(-1);
@@ -84,7 +85,7 @@ export class EditorComponent {
     } else if (input === "Backspace") {
       this.removeText();
     } else if (input === "Delete" && this.cursor() !== this.length) {
-      this.tranformCaretX(+1);
+      this.tranformCaretX();
       this.removeText();
     } else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
       event.preventDefault();
@@ -92,7 +93,15 @@ export class EditorComponent {
     }
   }
 
-  removeLine() {}
+  removeLine() {
+    const currentLine = this.line();
+    const line = this.lines()[currentLine - 1];
+    this.cursor.set(line.fullSpan.start);
+    const newText = this.code().slice(0, line.fullSpan.start) + this.code().substring(line.fullSpan.end);
+    this.code.set(newText);
+    this.tranformCaretX();
+    this.tranformCaretX(-1);
+  }
 
   private insertText(charText: string = "\n") {
     const text = this.code();
@@ -110,7 +119,7 @@ export class EditorComponent {
     this.cursor.update((pos) => (pos > 0 ? pos - 1 : 0));
   }
 
-  private tranformCaretX(steps: number) {
+  private tranformCaretX(steps: number = 1) {
     const pos = this.cursor();
     const newPos = pos + steps;
     if (newPos >= 0 && newPos <= this.length) {

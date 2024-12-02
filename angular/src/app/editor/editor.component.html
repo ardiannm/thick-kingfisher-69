@@ -21,11 +21,11 @@
   </div>
 </div>
 <div class="status">line {{ line() }} column {{ column() }}</div>
-@if (diagnostics().length) {
+@if (error()) {
 <div class="diagnotics">
   @for (d of diagnostics(); track $index) {
   <div [textContent]="d.span.line + '\t'.repeat(1) + d.message"></div>
   }
 </div>
 }
-<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="16"></app-cursor>
+<app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="15"></app-cursor>
