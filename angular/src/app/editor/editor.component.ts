@@ -36,17 +36,6 @@ export class EditorComponent {
   diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
-    effect(
-      () => {
-        const current = this.code().length;
-        const change = current - this.length;
-        this.cursor.update((pos) => pos + change);
-        this.length = current;
-      },
-      {
-        allowSignalWrites: true,
-      }
-    );
     if (isPlatformBrowser(this.platformId)) {
       effect(() => {
         const line = this.line();
@@ -73,7 +62,9 @@ export class EditorComponent {
   @HostListener("window:keydown", ["$event"])
   handleKey(event: KeyboardEvent) {
     const input = event.key as string;
-    if (input === "ArrowRight") {
+    if (event.ctrlKey && input === "x") {
+      this.removeLine();
+    } else if (input === "ArrowRight") {
       event.preventDefault();
       this.tranformCaretX(+1);
     } else if (input === "ArrowLeft") {
@@ -101,11 +92,14 @@ export class EditorComponent {
     }
   }
 
+  removeLine() {}
+
   private insertText(charText: string = "\n") {
     const text = this.code();
     const pos = this.cursor();
     const newText = text.substring(0, pos) + charText + text.substring(pos);
     this.code.set(newText);
+    this.cursor.update((pos) => pos + 1);
   }
 
   private removeText() {
@@ -113,6 +107,7 @@ export class EditorComponent {
     const pos = this.cursor();
     const newText = text.substring(0, pos - 1) + text.substring(pos);
     this.code.set(newText);
+    this.cursor.update((pos) => (pos > 0 ? pos - 1 : 0));
   }
 
   private tranformCaretX(steps: number) {
