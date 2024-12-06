@@ -1,10 +1,8 @@
-import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID, AfterViewInit } from "@angular/core";
+import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID, Output, EventEmitter, AfterViewInit } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
 import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
-import { DiagnosticComponent } from "./diagnostic/diagnostic.component";
-import { Diagnostic } from "../../../../src/analysis/diagnostics/diagnostic";
 
 // var text = `A1 :: A3
 //   A2 :: A1
@@ -26,17 +24,21 @@ export interface Position {
   x: number;
   y: number;
   height: number;
-  width: number;
+}
+
+export interface DiagnosticWithPosition {
+  from: Position;
+  to: Position;
 }
 
 @Component({
   selector: "app-editor",
   standalone: true,
-  imports: [CursorComponent, DiagnosticComponent, NgClass],
+  imports: [CursorComponent, NgClass],
   templateUrl: "./editor.component.html",
   styleUrl: "./editor.component.scss",
 })
-export class EditorComponent {
+export class EditorComponent implements AfterViewInit {
   @Input()
   text = text;
   length = text.length;
@@ -50,7 +52,8 @@ export class EditorComponent {
   cursorY = 0;
   caretWidth = 4;
   prevColumn = this.line();
-  diagnostics = signal(this.source().diagnosticsBag.diagnostics);
+  diagnostics = computed(() => this.source().diagnosticsBag.diagnostics);
+  @Output("diagnostics") emitDiagnosticsPositions = new EventEmitter<DiagnosticWithPosition[]>();
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -69,30 +72,35 @@ export class EditorComponent {
         const line = this.line();
         const column = this.column();
         setTimeout(() => this.renderPosition(line, column));
+        this.emitDiagnosticPositions();
       });
     }
-    effect(
-      () => {
-        this.diagnostics.set(this.source().diagnosticsBag.diagnostics);
-      },
-      {
-        allowSignalWrites: true,
-      }
-    );
   }
 
   @HostListener("window:scroll")
   @HostListener("window:resize")
   onWindowChange() {
-    const line = this.line();
-    const column = this.column();
-    this.renderPosition(line, column);
+    this.renderPosition(this.line(), this.column());
+    this.emitDiagnosticPositions();
   }
 
   private renderPosition(line: number, column: number) {
     const pos = this.getPosition(line, column);
     this.cursorX = pos.x;
     this.cursorY = pos.y;
+  }
+
+  emitDiagnosticPositions() {
+    setTimeout(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        const positions = this.diagnostics().map((d) => ({ from: this.getPosition(d.span.line, d.span.column), to: this.getPosition(d.span.line, d.span.column + d.span.length) }));
+        this.emitDiagnosticsPositions.emit(positions);
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.emitDiagnosticPositions();
   }
 
   @HostListener("window:keydown", ["$event"])
@@ -214,12 +222,12 @@ export class EditorComponent {
     }
     const lastElement = lineElement.lastElementChild as HTMLElement;
     const rect = lastElement.getBoundingClientRect();
-    return { x: rect.right, y: rect.top, height: rect.height, width: rect.width };
+    return { x: rect.right, y: rect.top, height: rect.height };
   }
 
   private getCursorPositionFromRange(range: Range): Position {
     const rect = range.getBoundingClientRect();
-    return { x: rect.x, y: rect.y, height: rect.height, width: rect.width };
+    return { x: rect.x, y: rect.y, height: rect.height };
   }
 
   protected isActive(ln: number): any {

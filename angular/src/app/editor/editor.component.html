@@ -24,10 +24,7 @@
 <div class="diagnotics">
   @for (d of diagnostics(); track $index) {
   <div [textContent]="d.span.address + ' ' + d.message"></div>
-  <app-diagnostic
-    [from]="getPosition(d.span.line, d.span.column)"
-    [to]="getPosition(d.span.line, d.span.column + d.span.length)"
-  />
   }
 </div>
+<ng-content></ng-content>
 <app-cursor [x]="cursorX" [y]="cursorY" [width]="2" [height]="15"></app-cursor>

@@ -9,8 +9,8 @@ import { Position } from "../editor.component";
   styleUrl: "./diagnostic.component.scss",
 })
 export class DiagnosticComponent implements OnInit {
-  @Input() from: Position = { x: 0, y: 0, height: 0, width: 0 };
-  @Input() to: Position = { x: 0, y: 0, height: 0, width: 0 };
+  @Input() from: Position = { x: 0, y: 0, height: 0 };
+  @Input() to: Position = { x: 0, y: 0, height: 0 };
   @HostBinding("style.left.px") x = this.from.x;
   @HostBinding("style.top.px") y = this.from.y;
   @HostBinding("style.width.px") width = 8;
@@ -20,6 +20,8 @@ export class DiagnosticComponent implements OnInit {
     this.x = this.from.x;
     this.y = this.from.y;
     this.width = this.to.x - this.from.x;
+    console.log(this.width);
+
     this.height = this.from.height - 2;
   }
 }

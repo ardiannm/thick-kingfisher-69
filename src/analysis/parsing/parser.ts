@@ -57,7 +57,7 @@ export class Parser {
       const closeBrace = this.expect(SyntaxKind.CloseBraceToken) as SyntaxToken<SyntaxKind.CloseBraceToken>;
       const node = new SyntaxBlock(this.source, openBrace, statements, closeBrace);
       if (closeBrace.kind === SyntaxKind.CloseBraceToken && !statements.length) {
-        this.source.diagnostics.emptyBlock(node.span);
+        this.source.diagnosticsBag.emptyBlock(node.span);
       }
       return node;
     }
@@ -114,7 +114,7 @@ export class Parser {
       const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       const node = new SyntaxCellReference(this.source, left, right);
       if (right.hasTrivia()) {
-        this.source.diagnostics.requireCompactCellReference(left.text + right.text, node.span);
+        this.source.diagnosticsBag.requireCompactCellReference(left.text + right.text, node.span);
       }
       return node;
     }
@@ -167,7 +167,7 @@ export class Parser {
       return token;
     }
     this.recovering = true;
-    this.source.diagnostics.unexpectedTokenFound(token.kind, kind, token.span);
+    this.source.diagnosticsBag.unexpectedTokenFound(token.kind, kind, token.span);
     return token as SyntaxToken<Kind>;
   }
 }

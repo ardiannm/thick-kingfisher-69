@@ -6,16 +6,12 @@ import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
-  private diagnostics = [] as Diagnostic[];
+  diagnostics = [] as Diagnostic[];
   private severity = new Set() as Set<Severity>;
 
   private report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
     this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
-  }
-
-  getDiagnostics(limit?: number) {
-    return limit ? this.diagnostics.slice(0, limit) : this.diagnostics;
   }
 
   canParse() {

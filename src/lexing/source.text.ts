@@ -8,7 +8,7 @@ export class SourceText {
   private lines = [] as Line[];
   private tokens = [] as Token[];
 
-  private constructor(public text: string, public readonly diagnostics: DiagnosticsBag) {
+  private constructor(public text: string, public readonly diagnosticsBag: DiagnosticsBag) {
     this.generateLines();
     this.generateTokens();
   }

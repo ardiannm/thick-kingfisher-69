@@ -1,0 +1,5 @@
+<app-editor (diagnostics)="renderDiagnostics($event)">
+  @for (d of diagnostics; track $index) {
+  <app-diagnostic [from]="d.from" [to]="d.to" />
+  }
+</app-editor>

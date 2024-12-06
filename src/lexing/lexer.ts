@@ -63,7 +63,7 @@ export class Lexer {
   }
 
   private lexBadToken() {
-    this.source.diagnostics.badCharacterFound(this.char(), this.span);
+    this.source.diagnosticsBag.badCharacterFound(this.char(), this.span);
     this.next();
     return this.createNewToken(SyntaxKind.BadToken);
   }
@@ -99,7 +99,7 @@ export class Lexer {
     if (this.char() === ".") {
       this.next();
       if (!this.isDigit()) {
-        this.source.diagnostics.badFloatingPointNumber(this.span);
+        this.source.diagnosticsBag.badFloatingPointNumber(this.span);
       }
     }
     while (this.isDigit()) this.next();
@@ -115,7 +115,7 @@ export class Lexer {
       }
       this.next();
     }
-    this.source.diagnostics.missingClosingQuote(this.span);
+    this.source.diagnosticsBag.missingClosingQuote(this.span);
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 

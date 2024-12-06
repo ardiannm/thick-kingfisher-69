@@ -15,7 +15,7 @@ export class SyntaxTree {
 
   private constructor(public source: SourceText, public configuration: CompilerOptions) {
     this.root = Parser.parseCompilationUnit(source);
-    const scope = new BoundScope(source.diagnostics);
+    const scope = new BoundScope(source.diagnosticsBag);
     this.bound = Binder.bindCompilationUnit(this.root, scope, configuration);
   }
 
