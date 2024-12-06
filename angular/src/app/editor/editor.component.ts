@@ -1,8 +1,10 @@
-import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID } from "@angular/core";
+import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID, AfterViewInit } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
 import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
 
 import { SourceText } from "../../../../ng";
+import { DiagnosticComponent } from "./diagnostic/diagnostic.component";
+import { Diagnostic } from "../../../../src/analysis/diagnostics/diagnostic";
 
 // var text = `A1 :: A3
 //   A2 :: A1
@@ -20,10 +22,17 @@ A4 :: A3+A2+A5
 A3 :: 1
 `;
 
+export interface Position {
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+}
+
 @Component({
   selector: "app-editor",
   standalone: true,
-  imports: [CursorComponent, NgClass],
+  imports: [CursorComponent, DiagnosticComponent, NgClass],
   templateUrl: "./editor.component.html",
   styleUrl: "./editor.component.scss",
 })
@@ -41,8 +50,7 @@ export class EditorComponent {
   cursorY = 0;
   caretWidth = 4;
   prevColumn = this.line();
-  diagnostics = computed(() => this.source().diagnostics.getDiagnostics());
-  error = computed(() => this.diagnostics().length);
+  diagnostics = signal(this.source().diagnosticsBag.diagnostics);
 
   constructor(@Inject(DOCUMENT) private document: Document, @Inject(PLATFORM_ID) private platformId: Object) {
     effect(
@@ -63,6 +71,14 @@ export class EditorComponent {
         setTimeout(() => this.renderPosition(line, column));
       });
     }
+    effect(
+      () => {
+        this.diagnostics.set(this.source().diagnosticsBag.diagnostics);
+      },
+      {
+        allowSignalWrites: true,
+      }
+    );
   }
 
   @HostListener("window:scroll")
@@ -75,8 +91,8 @@ export class EditorComponent {
 
   private renderPosition(line: number, column: number) {
     const pos = this.getPosition(line, column);
-    this.cursorX = pos.cursorX;
-    this.cursorY = pos.cursorY;
+    this.cursorX = pos.x;
+    this.cursorY = pos.y;
   }
 
   @HostListener("window:keydown", ["$event"])
@@ -163,7 +179,7 @@ export class EditorComponent {
     }
   }
 
-  private getPosition(line: number, column: number): { cursorX: number; cursorY: number } {
+  protected getPosition(line: number, column: number): Position {
     const lineElement = this.document.getElementById(`row-${line}`)!; // Non-null assertion.
     let charCount = 0;
     column--;
@@ -198,12 +214,12 @@ export class EditorComponent {
     }
     const lastElement = lineElement.lastElementChild as HTMLElement;
     const rect = lastElement.getBoundingClientRect();
-    return { cursorX: rect.right, cursorY: rect.top };
+    return { x: rect.right, y: rect.top, height: rect.height, width: rect.width };
   }
 
-  private getCursorPositionFromRange(range: Range): { cursorX: number; cursorY: number } {
+  private getCursorPositionFromRange(range: Range): Position {
     const rect = range.getBoundingClientRect();
-    return { cursorX: rect.x, cursorY: rect.y };
+    return { x: rect.x, y: rect.y, height: rect.height, width: rect.width };
   }
 
   protected isActive(ln: number): any {
