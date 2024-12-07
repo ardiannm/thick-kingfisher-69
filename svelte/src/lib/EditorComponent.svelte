@@ -137,12 +137,7 @@ A3 :: 1
 
 	{#if renderCursor}
 		{#each diagnostics as diagnostic}
-			<DiagnosticComponent
-				fromLine={diagnostic.span.line}
-				fromColumn={diagnostic.span.column}
-				toLine={diagnostic.span.line}
-				toColumn={diagnostic.span.column + diagnostic.span.length}
-			/>
+			<DiagnosticComponent {diagnostic} />
 		{/each}
 	{/if}
 </div>

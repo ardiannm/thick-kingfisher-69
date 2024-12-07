@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { getPosition } from './Position';
 
+	let { diagnostic } = $props();
 
-	let {fromLine, fromColumn, toLine, toColumn} = $props()
-	
+	let fromLine: number = $derived(diagnostic.span.line);
+	let toLine: number = $derived(diagnostic.span.line);
+	let fromColumn: number = $derived(diagnostic.span.column);
+	let toColumn: number = $derived(diagnostic.span.column + diagnostic.span.length);
+
 	let x: number = $state(0);
 	let y: number = $state(0);
 	let width: number = $state(0);
-	let height: number = 15;
-
-	onMount(renderUi);
 
 	function renderUi() {
 		const from = getPosition(fromLine, fromColumn);
@@ -19,8 +19,8 @@
 		y = from.y;
 		width = to.x - from.x + 1;
 	}
-	$effect(renderUi)
-	
+
+	$effect(renderUi);
 </script>
 
 <svelte:window on:resize={renderUi} on:scroll={renderUi} />
@@ -32,7 +32,7 @@
 		left: {x}px;
 		top: {y}px;
 		width: {width}px;
-		height: {height}px;
+		height: {15}px;
 	"
 ></span>
 
