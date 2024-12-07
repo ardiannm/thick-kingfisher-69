@@ -1,7 +1,10 @@
 <script lang="ts">
 	import CursorComponent from './CursorComponent.svelte';
+	import DiagnosticComponent from './DiagnosticComponent.svelte';
+
 	import { SourceText } from '../../../../parser/ng';
 	import { onMount } from 'svelte';
+	import type { Position } from './Position';
 
 	const code = `A1 :: A4
 A5 :: A2
@@ -65,12 +68,6 @@ A3 :: 1
 			prevColumn = 1;
 			cursor = 0;
 		}
-	}
-
-	interface Position {
-		x: number;
-		y: number;
-		height: number;
 	}
 
 	function getPosition(line: number, column: number): Position {
@@ -163,6 +160,15 @@ A3 :: 1
 			<span>{diagnostic.message}</span>
 		{/each}
 	</div>
+
+	{#if renderCursor}
+		{#each diagnostics as diagnostic}
+			<DiagnosticComponent
+				from={getPosition(diagnostic.span.line, diagnostic.span.column)}
+				to={getPosition(diagnostic.span.line, diagnostic.span.column + diagnostic.span.length)}
+			/>
+		{/each}
+	{/if}
 </div>
 
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
