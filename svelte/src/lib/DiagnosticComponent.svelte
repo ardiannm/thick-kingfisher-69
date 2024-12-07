@@ -36,10 +36,10 @@
 	"
 ></span>
 
-<style>
+<style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #4cdd973b;
+		background-color: #7e379462;
 		cursor: pointer;
 	}
 </style>

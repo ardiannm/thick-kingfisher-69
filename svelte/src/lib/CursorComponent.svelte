@@ -8,10 +8,10 @@
 <span
 	style="
 		position: absolute;
-		left: {x}px;
-		top: {y}px;
+		left: {x - 1}px;
+		top: {y - 2}px;
 		width: {width}px;
-		height: {height}px;
+		height: {height + 2}px;
 		background-color: black;
 	"
 ></span>

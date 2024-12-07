@@ -195,7 +195,7 @@ A3 :: 1
 	}
 	.checkmark {
 		display: flex;
-		background-color: #4cdd973b;
+		background-color: #7e379462;
 		width: 20px;
 		height: 20px;
 		justify-content: center;
