@@ -2,7 +2,7 @@
 	export let x: number = 0;
 	export let y: number = 0;
 	export let width: number = 3;
-	export let height: number = 18;
+	export let height: number = 17;
 </script>
 
 <span

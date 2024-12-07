@@ -4,7 +4,7 @@
 
 	import { SourceText } from '../../../../parser/ng';
 	import { onMount } from 'svelte';
-	import type { Position } from './Position';
+	import { getPosition } from './Position';
 
 	const code = `A1 :: A4
 A5 :: A2
@@ -14,13 +14,14 @@ A4 :: A3+A2+A5
 A3 :: 1
 `;
 
-	const text = $state(code);
+	let text = $state(code);
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
 
 	let renderCursor = $state(false);
-	let cursor = $state(0);
+	// svelte-ignore state_referenced_locally
+	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let x = $state(0);
@@ -42,6 +43,9 @@ A3 :: 1
 		} else if (input === 'ArrowUp') {
 			event.preventDefault();
 			tranformCaretY(-1);
+		} else if (input === 'Enter') {
+			event.preventDefault();
+			insertText();
 		}
 	}
 
@@ -70,47 +74,9 @@ A3 :: 1
 		}
 	}
 
-	function getPosition(line: number, column: number): Position {
-		const lineElement = document.getElementById(`line-${line}`)!;
-		let charCount = 0;
-		column--;
-		for (const child of Array.from(lineElement.childNodes)) {
-			const range = document.createRange();
-			try {
-				if (child.nodeType === Node.ELEMENT_NODE) {
-					const span = child as HTMLElement;
-					const spanText = span.textContent || '';
-					const spanLength = spanText.length;
-					if (charCount + spanLength >= column) {
-						const offsetInSpan = column - charCount;
-						range.setStart(span.firstChild!, offsetInSpan);
-						range.setEnd(span.firstChild!, offsetInSpan);
-						return getCursorPositionFromRange(range);
-					}
-					charCount += spanLength;
-				} else if (child.nodeType === Node.TEXT_NODE) {
-					const textNode = child as Text;
-					const textLength = textNode.textContent?.length || 0;
-					if (charCount + textLength >= column) {
-						const offsetInText = column - charCount;
-						range.setStart(textNode, offsetInText);
-						range.setEnd(textNode, offsetInText);
-						return getCursorPositionFromRange(range);
-					}
-					charCount += textLength;
-				}
-			} finally {
-				range.detach();
-			}
-		}
-		const lastElement = lineElement.lastElementChild as HTMLElement;
-		const rect = lastElement.getBoundingClientRect();
-		return { x: rect.right, y: rect.top, height: rect.height };
-	}
-
-	function getCursorPositionFromRange(range: Range): Position {
-		const rect = range.getBoundingClientRect();
-		return { x: rect.x, y: rect.y, height: rect.height };
+	function insertText(charText: string = '\n') {
+		text = text.substring(0, cursor) + charText + text.substring(cursor);
+		cursor += 1;
 	}
 
 	onMount(() => {
@@ -122,15 +88,23 @@ A3 :: 1
 
 <div class="editor">
 	<h2>Todo</h2>
-	✔ update position on window resize
-	<br />
-	✘ render diagnostic spans on top of the text
-	<br />
-	✘ edit text on keyboard event
-	<br />
-	✘ blinking cursor animation
-	<br />
+	<div class="todo">
+		<span class="checkmark"> ✔ </span> update position on window resize
+	</div>
+	<div class="todo">
+		<span class="checkmark"> ✔ </span> render diagnostic spans on top of the text
+	</div>
+	<div class="todo">
+		<span class="checkmark"> </span> edit text on keyboard event
+	</div>
+	<div class="todo">
+		<span class="checkmark"> </span> add line numbers
+	</div>
+	<div class="todo">
+		<span class="checkmark"> </span> blinking cursor animation
+	</div>
 
+	<br />
 	<br />
 
 	<div class="space">
@@ -157,15 +131,17 @@ A3 :: 1
 
 	<div class="diagnostics">
 		{#each diagnostics as diagnostic}
-			<span>{diagnostic.message}</span>
+			<span>{diagnostic.message} {diagnostic.span.address}</span>
 		{/each}
 	</div>
 
 	{#if renderCursor}
 		{#each diagnostics as diagnostic}
 			<DiagnosticComponent
-				from={getPosition(diagnostic.span.line, diagnostic.span.column)}
-				to={getPosition(diagnostic.span.line, diagnostic.span.column + diagnostic.span.length)}
+				fromLine={diagnostic.span.line}
+				fromColumn={diagnostic.span.column}
+				toLine={diagnostic.span.line}
+				toColumn={diagnostic.span.column + diagnostic.span.length}
 			/>
 		{/each}
 	{/if}
@@ -180,8 +156,6 @@ A3 :: 1
 		margin-top: auto;
 		flex-direction: column;
 		width: fit-content;
-		height: fit-content;
-		border: 1px solid lightseagreen;
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
@@ -192,8 +166,6 @@ A3 :: 1
 	.line {
 		display: flex;
 		flex-direction: row;
-		min-height: 16px;
-		border: 1px solid transparent;
 		box-sizing: border-box;
 	}
 	span {
@@ -204,9 +176,9 @@ A3 :: 1
 		padding: 0;
 		margin: 0;
 		min-width: 3px;
-		min-height: 17px;
 		box-sizing: border-box;
 		white-space: pre;
+		justify-content: center;
 	}
 	.end-of-file-token,
 	.line-break-trivia,
@@ -221,7 +193,18 @@ A3 :: 1
 	.diagnostics {
 		margin-top: 20px;
 	}
-	.space {
-		border: 1px solid lightseagreen;
+	.todo {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 1px;
+	}
+	.checkmark {
+		display: flex;
+		background-color: #4cdd973b;
+		width: 20px;
+		height: 20px;
+		justify-content: center;
+		align-items: center;
+		margin-right: 10px;
 	}
 </style>

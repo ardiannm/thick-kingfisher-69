@@ -1,18 +1,36 @@
 <script lang="ts">
-	import type { Position } from './Position';
+	import { onMount } from 'svelte';
+	import { getPosition } from './Position';
 
-	export let from: Position;
-	export let to: Position = from;
-	export let width: number = to.x - from.x;
-	export let height: number = 15;
+	export let fromLine: number;
+	export let fromColumn: number;
+	export let toLine: number;
+	export let toColumn: number;
+
+	let x: number;
+	let y: number;
+	let width: number;
+	let height: number = 15;
+
+	onMount(renderUi);
+
+	function renderUi() {
+		const from = getPosition(fromLine, fromColumn);
+		const to = getPosition(toLine, toColumn);
+		x = from.x - 1;
+		y = from.y;
+		width = to.x - from.x + 1;
+	}
 </script>
+
+<svelte:window on:resize={renderUi} on:scroll={renderUi} />
 
 <span
 	class="diagnostic"
 	style="
 		position: absolute;
-		left: {from.x}px;
-		top: {from.y}px;
+		left: {x}px;
+		top: {y}px;
 		width: {width}px;
 		height: {height}px;
 	"
@@ -21,8 +39,7 @@
 <style>
 	.diagnostic {
 		position: absolute;
-		border-bottom: 1px solid red;
-		background-color: rgba(255, 0, 0, 0.11);
+		background-color: #4cdd973b;
 		cursor: pointer;
 	}
 </style>
