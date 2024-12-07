@@ -2,14 +2,12 @@
 	import { onMount } from 'svelte';
 	import { getPosition } from './Position';
 
-	export let fromLine: number;
-	export let fromColumn: number;
-	export let toLine: number;
-	export let toColumn: number;
 
-	let x: number;
-	let y: number;
-	let width: number;
+	let {fromLine, fromColumn, toLine, toColumn} = $props()
+	
+	let x: number = $state(0);
+	let y: number = $state(0);
+	let width: number = $state(0);
 	let height: number = 15;
 
 	onMount(renderUi);
@@ -21,6 +19,8 @@
 		y = from.y;
 		width = to.x - from.x + 1;
 	}
+	$effect(renderUi)
+	
 </script>
 
 <svelte:window on:resize={renderUi} on:scroll={renderUi} />
