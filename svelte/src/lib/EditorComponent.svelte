@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CursorComponent from './CursorComponent.svelte';
 	import { SourceText } from '../../../../parser/ng';
+	import { onMount } from 'svelte';
 
 	const code = `A1 :: A4
 A5 :: A2
@@ -15,7 +16,7 @@ A3 :: 1
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
 
-	let renderCursor = $state(true);
+	let renderCursor = $state(false);
 	let cursor = $state(0);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
@@ -27,12 +28,16 @@ A3 :: 1
 	function handleKey(event: KeyboardEvent) {
 		const input = event.key;
 		if (input === 'ArrowRight') {
+			event.preventDefault();
 			tranformCaretX();
 		} else if (input === 'ArrowLeft') {
+			event.preventDefault();
 			tranformCaretX(-1);
 		} else if (input === 'ArrowDown') {
+			event.preventDefault();
 			tranformCaretY();
 		} else if (input === 'ArrowUp') {
+			event.preventDefault();
 			tranformCaretY(-1);
 		}
 	}
@@ -41,7 +46,6 @@ A3 :: 1
 		const pos = getPosition(line, column);
 		x = pos.x;
 		y = pos.y;
-		console.log(pos);
 	}
 
 	function tranformCaretX(step = 1) {
@@ -71,8 +75,6 @@ A3 :: 1
 
 	function getPosition(line: number, column: number): Position {
 		const lineElement = document.getElementById(`line-${line}`)!;
-		console.log(lineElement);
-
 		let charCount = 0;
 		column--;
 		for (const child of Array.from(lineElement.childNodes)) {
@@ -106,7 +108,6 @@ A3 :: 1
 		}
 		const lastElement = lineElement.lastElementChild as HTMLElement;
 		const rect = lastElement.getBoundingClientRect();
-
 		return { x: rect.right, y: rect.top, height: rect.height };
 	}
 
@@ -115,26 +116,37 @@ A3 :: 1
 		return { x: rect.x, y: rect.y, height: rect.height };
 	}
 
+	onMount(() => {
+		renderCursor = true;
+	});
+
 	$effect(() => updatePosition());
 </script>
 
 <div class="editor">
 	<h2>Todo</h2>
-	<ul>
-		<li>update position on window resize</li>
-	</ul>
+	✔ update position on window resize
+	<br />
+	✘ render diagnostic spans on top of the text
+	<br />
+	✘ edit text on keyboard event
+	<br />
+	✘ blinking cursor animation
+	<br />
+
+	<br />
 
 	<div class="space">
 		{#each lines as line, index}
 			<div id={`line-${index + 1}`} class="line">
 				{#each line.getTokens() as token}
-					<span class={token.class}>
-						{#if token.span.text}
+					{#if token.span.text}
+						<span class={token.class}>
 							{token.span.text}
-						{:else}
-							&nbsp;
-						{/if}
-					</span>
+						</span>
+					{:else}
+						<span class={token.class}> &nbsp; </span>
+					{/if}
 				{/each}
 			</div>
 		{/each}
@@ -143,8 +155,6 @@ A3 :: 1
 		{/if}
 	</div>
 	<div class="stats">
-		{cursor}
-		<br />
 		line {line} column {column}
 	</div>
 
@@ -155,7 +165,7 @@ A3 :: 1
 	</div>
 </div>
 
-<svelte:window on:keydown={handleKey} />
+<svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
 
 <style scoped>
 	.editor {
