@@ -1,16 +1,15 @@
 <script lang="ts">
 	import CursorComponent from './CursorComponent.svelte';
-	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
 	import { SourceText } from '../../../../parser/ng';
 	import { onMount } from 'svelte';
 	import { getPosition } from './Position';
 
 	const code = `A1 :: A4
-A5 :: A2
+A5 :: A2    
 A2 :: A1+3
 A3 :: A2+5
-A4 :: A3+A2+A5
+A4 :: A3+A2+       A5
 A3 :: 1
 `;
 
@@ -103,39 +102,41 @@ A3 :: 1
 </script>
 
 <div class="editor">
-	<h3>Todo</h3>
-	<div class="todo">
-		<span class="checkmark"> ✔ </span> update position on window resize
-	</div>
-	<div class="todo">
-		<span class="checkmark"> ✔ </span> render diagnostic spans on top of the text
-	</div>
-	<div class="todo">
-		<span class="checkmark"> </span> fix the issue with rendering spaces
-	</div>
-	<div class="todo">
-		<span class="checkmark"> </span> edit text on keyboard event
-	</div>
-	<div class="todo">
-		<span class="checkmark"> </span> add line numbers
-	</div>
-	<div class="todo">
-		<span class="checkmark"> </span> blinking cursor animation
+	<div class="todos">
+		<h3>Todo</h3>
+		<div class="todo">
+			<span class="checkmark"> ● </span> update position on window resize
+		</div>
+		<div class="todo">
+			<span class="checkmark"> ● </span> render diagnostic spans on top of the text
+		</div>
+		<div class="todo">
+			<span class="checkmark"> ● </span> fix the issue with rendering spaces
+		</div>
+		<div class="todo">
+			<span class="checkmark"> </span> edit text on keyboard event
+		</div>
+		<div class="todo">
+			<span class="checkmark"> </span> add line numbers
+		</div>
+		<div class="todo">
+			<span class="checkmark"> </span> blinking cursor animation
+		</div>
 	</div>
 
 	<br />
 	<br />
 
-	<div class="space">
+	<div class="space highlight">
 		{#each lines as line, index}
 			<div id={`line-${index + 1}`} class="line">
 				{#each line.getTokens() as token}
 					{#if token.span.length}
-						<span class={token.class}>
+						<span class="token {token.class}">
 							{token.span.text}
 						</span>
 					{:else}
-						<span class={token.class}>&nbsp;</span>
+						<span class="token {token.class}">&nbsp;</span>
 					{/if}
 				{/each}
 			</div>
@@ -148,17 +149,18 @@ A3 :: 1
 		line {line} column {column}
 	</div>
 
-	<div class="diagnostics">
+	<div class="diagnostics highlight">
 		{#each diagnostics as diagnostic}
-			<span class="diagnostic">
+			<div>
 				<span class="address">{diagnostic.span.address}</span>
-				{diagnostic.message}</span>
+				{diagnostic.message}
+			</div>
 		{/each}
 	</div>
-
+	<!-- 
 	{#each diagnostics as diagnostic}
 		<DiagnosticComponent {diagnostic} />
-	{/each}
+	{/each} -->
 
 	<br />
 	<br />
@@ -168,14 +170,20 @@ A3 :: 1
 
 	<div class="tokens">
 		{#each tree.getTokens() as token}
-			<span class="token">{token.span.text}</span>
+			<span class="token {token.class}">{token.span.text}</span>
 		{/each}
 	</div>
 </div>
 
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
 
-<style scoped>
+<style scoped lang="scss">
+	.highlight {
+		background-color: #f7f7f8;
+		outline: 1px solid #d9d9e3;
+		border-radius: 7px;
+		padding: 10px 20px;
+	}
 	.editor {
 		display: flex;
 		margin: auto;
@@ -188,25 +196,22 @@ A3 :: 1
 	}
 	.space {
 		width: 700px;
-		border: 1px solid gray;
-		padding: 7px;
 	}
 	.line {
-		display: flex;
+		display: block;
 		flex-direction: row;
 		box-sizing: border-box;
-	}
-	span {
-		box-sizing: border-box;
-		white-space: pre;
-		justify-content: center;
 	}
 	.end-of-file-token,
 	.line-break-trivia,
 	.space-trivia {
-		display: inline-block;
+		display: flex;
+		white-space: pre;
 		width: 1px;
 		height: 1em;
+	}
+	.space-trivia {
+		background-color: #ccbfee;
 	}
 	.stats {
 		margin-top: 20px;
@@ -216,14 +221,15 @@ A3 :: 1
 		flex-direction: column;
 		margin-top: 20px;
 	}
+	.todos {
+		padding: 7px;
+	}
 	.todo {
 		display: flex;
 		flex-direction: row;
-		margin-bottom: 1px;
 	}
 	.checkmark {
 		display: flex;
-		border: 1px solid gray;
 		width: 17px;
 		height: 17px;
 		justify-content: center;
@@ -236,15 +242,12 @@ A3 :: 1
 		flex-direction: row;
 	}
 	.token {
-		display: flex;
-		border: 1px solid gray;
-		min-width: 15px;
+		display: inline-block;
+		width: fit-content;
 		height: fit-content;
 		cursor: pointer;
 	}
 	.address {
-		border: 1px solid gray;
-		padding-inline: 4px;
-		margin-right: 6px;
+		margin: 6px;
 	}
 </style>
