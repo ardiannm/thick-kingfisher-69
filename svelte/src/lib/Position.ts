@@ -1,6 +1,7 @@
 export interface Position {
 	x: number;
 	y: number;
+	width: number;
 	height: number;
 }
 
@@ -39,10 +40,10 @@ export function getPosition(line: number, column: number): Position {
 	}
 	const lastElement = lineElement.lastElementChild as HTMLElement;
 	const rect = lastElement.getBoundingClientRect();
-	return { x: rect.right, y: rect.top, height: rect.height };
+	return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
 }
 
 function getCursorPositionFromRange(range: Range): Position {
 	const rect = range.getBoundingClientRect();
-	return { x: rect.x, y: rect.y, height: rect.height };
+	return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
 }

@@ -11,13 +11,15 @@
 	let x: number = $state(0);
 	let y: number = $state(0);
 	let width: number = $state(0);
+	let height: number = $state(0);
 
 	function renderUi() {
 		const from = getPosition(fromLine, fromColumn);
 		const to = getPosition(toLine, toColumn);
-		x = from.x - 1;
+		x = from.x;
 		y = from.y;
-		width = to.x - from.x + 1;
+		width = to.x - from.x;
+		height = from.height;
 	}
 
 	$effect(renderUi);
@@ -25,21 +27,21 @@
 
 <svelte:window on:resize={renderUi} on:scroll={renderUi} />
 
-<span
+<div
 	class="diagnostic"
 	style="
 		position: absolute;
 		left: {x}px;
 		top: {y}px;
 		width: {width}px;
-		height: {15}px;
+		height: {height}px;
 	"
-></span>
+></div>
 
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #7e379462;
+		outline: 1px solid gray;
 		cursor: pointer;
 	}
 </style>

@@ -24,6 +24,6 @@ export class Span {
   }
 
   get address() {
-    return "(" + this.source.getLine(this.start) + ":" + this.source.getColumn(this.start) + ")";
+    return this.source.getLine(this.start) + ":" + this.source.getColumn(this.start);
   }
 }

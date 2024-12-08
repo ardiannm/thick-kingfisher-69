@@ -46,6 +46,18 @@ A3 :: 1
 		} else if (input === 'Enter') {
 			event.preventDefault();
 			insertText();
+		} else if (input === 'Backspace') {
+			event.preventDefault();
+			removeText();
+			tranformCaretX(-1);
+		} else if (input === 'Delete') {
+			event.preventDefault();
+			tranformCaretX();
+			removeText();
+			tranformCaretX(-1);
+		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
+			event.preventDefault();
+			insertText(input);
 		}
 	}
 
@@ -79,6 +91,10 @@ A3 :: 1
 		cursor += 1;
 	}
 
+	function removeText() {
+		text = text.substring(0, cursor - 1) + text.substring(cursor);
+	}
+
 	onMount(() => {
 		renderCursor = true;
 	});
@@ -87,12 +103,15 @@ A3 :: 1
 </script>
 
 <div class="editor">
-	<h2>Todo</h2>
+	<h3>Todo</h3>
 	<div class="todo">
 		<span class="checkmark"> ✔ </span> update position on window resize
 	</div>
 	<div class="todo">
 		<span class="checkmark"> ✔ </span> render diagnostic spans on top of the text
+	</div>
+	<div class="todo">
+		<span class="checkmark"> </span> fix the issue with rendering spaces
 	</div>
 	<div class="todo">
 		<span class="checkmark"> </span> edit text on keyboard event
@@ -111,12 +130,12 @@ A3 :: 1
 		{#each lines as line, index}
 			<div id={`line-${index + 1}`} class="line">
 				{#each line.getTokens() as token}
-					{#if token.span.text}
+					{#if token.span.length}
 						<span class={token.class}>
 							{token.span.text}
 						</span>
 					{:else}
-						<span class={token.class}> &nbsp; </span>
+						<span class={token.class}>&nbsp;</span>
 					{/if}
 				{/each}
 			</div>
@@ -131,15 +150,27 @@ A3 :: 1
 
 	<div class="diagnostics">
 		{#each diagnostics as diagnostic}
-			<span>{diagnostic.message} {diagnostic.span.address}</span>
+			<span class="diagnostic">
+				<span class="address">{diagnostic.span.address}</span>
+				{diagnostic.message}</span>
 		{/each}
 	</div>
 
-	{#if renderCursor}
-		{#each diagnostics as diagnostic}
-			<DiagnosticComponent {diagnostic} />
+	{#each diagnostics as diagnostic}
+		<DiagnosticComponent {diagnostic} />
+	{/each}
+
+	<br />
+	<br />
+	<br />
+
+	<h3>Tokens</h3>
+
+	<div class="tokens">
+		{#each tree.getTokens() as token}
+			<span class="token">{token.span.text}</span>
 		{/each}
-	{/if}
+	</div>
 </div>
 
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
@@ -157,6 +188,8 @@ A3 :: 1
 	}
 	.space {
 		width: 700px;
+		border: 1px solid gray;
+		padding: 7px;
 	}
 	.line {
 		display: flex;
@@ -164,13 +197,6 @@ A3 :: 1
 		box-sizing: border-box;
 	}
 	span {
-		display: flex;
-		height: fit-content;
-		width: fit-content;
-		box-sizing: border-box;
-		padding: 0;
-		margin: 0;
-		min-width: 3px;
 		box-sizing: border-box;
 		white-space: pre;
 		justify-content: center;
@@ -186,6 +212,8 @@ A3 :: 1
 		margin-top: 20px;
 	}
 	.diagnostics {
+		display: flex;
+		flex-direction: column;
 		margin-top: 20px;
 	}
 	.todo {
@@ -195,11 +223,28 @@ A3 :: 1
 	}
 	.checkmark {
 		display: flex;
-		background-color: #7e379462;
-		width: 20px;
-		height: 20px;
+		border: 1px solid gray;
+		width: 17px;
+		height: 17px;
 		justify-content: center;
 		align-items: center;
 		margin-right: 10px;
+	}
+	.tokens {
+		width: fit-content;
+		display: flex;
+		flex-direction: row;
+	}
+	.token {
+		display: flex;
+		border: 1px solid gray;
+		min-width: 15px;
+		height: fit-content;
+		cursor: pointer;
+	}
+	.address {
+		border: 1px solid gray;
+		padding-inline: 4px;
+		margin-right: 6px;
 	}
 </style>
