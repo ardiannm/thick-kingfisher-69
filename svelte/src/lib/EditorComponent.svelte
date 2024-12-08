@@ -6,7 +6,7 @@
 	import { getPosition } from './Position';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
-	const code = `@A1 :: 4
+	const code = `A1 :: 4
 A5 :: 2    
 A2 :: A1+3
 A3 :: A2+5
@@ -95,9 +95,9 @@ A3 :: 1
 		text = text.substring(0, cursor - 1) + text.substring(cursor);
 	}
 
-	onMount(() => {
-		renderCursor = true;
-	});
+	const render = () => (renderCursor = !renderCursor);
+
+	onMount(render);
 
 	$effect(() => updatePosition());
 </script>
@@ -118,7 +118,7 @@ A3 :: 1
 			<span class="checkmark"> ● </span> edit text on keyboard event
 		</div>
 		<div class="todo">
-			<span class="checkmark"> </span> fix the issue with not rendering bad character diagnostics
+			<span class="checkmark"> ● </span> fix the issue with not rendering bad character diagnostics
 		</div>
 		<div class="todo">
 			<span class="checkmark"> </span> add line numbers
@@ -132,11 +132,11 @@ A3 :: 1
 	<br />
 
 	<div class="space highlight">
-		{#each lines as line, index}
-			<span id={`line-${index + 1}`} class="line">
-				{#each line.getTokens() as token, i}
+		{#each lines as line, i}
+			<span id={`line-${i + 1}`} class="line">
+				{#each line.getTokens() as token, j}
 					{#if token.span.length}
-						<span class="token token-{(i % 4) + 1} {token.class}">
+						<span class="token token-{(j % 4) + 1} {token.class}">
 							{token.span.text}
 						</span>
 					{:else}
@@ -158,17 +158,17 @@ A3 :: 1
 
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
-			{#each diagnostics as diagnostic}
+			{#each diagnostics as { message, span }}
 				<div class="diagnostic">
-					<span class="address">{diagnostic.span.address}</span>
-					{diagnostic.message}
+					<span class="address">{span.address}</span>
+					{message}
 				</div>
 			{/each}
 		</div>
 	{/if}
 
-	{#each diagnostics as diagnostic}
-		<DiagnosticComponent {diagnostic} />
+	{#each diagnostics as { span: { line, column, length } }}
+		<DiagnosticComponent {line} {column} {length} />
 	{/each}
 
 	<br />

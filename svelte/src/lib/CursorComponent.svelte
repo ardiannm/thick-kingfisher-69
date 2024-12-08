@@ -19,5 +19,6 @@
 	.cursor {
 		position: absolute;
 		background-color: black;
+		z-index: 1;
 	}
 </style>

@@ -1,28 +1,23 @@
 <script lang="ts">
 	import { getPosition } from './Position';
 
-	let { diagnostic } = $props();
-
-	let fromLine: number = $derived(diagnostic.span.line);
-	let toLine: number = $derived(diagnostic.span.line);
-	let fromColumn: number = $derived(diagnostic.span.column);
-	let toColumn: number = $derived(diagnostic.span.column + diagnostic.span.length);
+	let { line, column, length } = $props();
 
 	let x: number = $state(0);
 	let y: number = $state(0);
-	let width: number = $state(0);
-	let height: number = $state(0);
-
-	function renderUi() {
-		const from = getPosition(fromLine, fromColumn);
-		const to = getPosition(toLine, toColumn);
-		x = from.x;
-		y = from.y;
-		width = to.x - from.x;
-		height = from.height;
-	}
+	let w: number = $state(0);
+	let h: number = $state(0);
 
 	$effect(renderUi);
+
+	function renderUi() {
+		const p1 = getPosition(line, column);
+		const p2 = getPosition(line, column + (length || 1));
+		x = p1.x;
+		y = p1.y;
+		w = p2.x - p1.x;
+		h = p1.height;
+	}
 </script>
 
 <svelte:window on:resize={renderUi} on:scroll={renderUi} />
@@ -32,8 +27,8 @@
 	style="
 	left: {x}px;
 	top: {y}px;
-	width: {width}px;
-	height: {height}px;
+	width: {w}px;
+	height: {h}px;
 	"
 ></span>
 

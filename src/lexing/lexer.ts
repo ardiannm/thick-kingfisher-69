@@ -63,9 +63,9 @@ export class Lexer {
   }
 
   private lexBadToken() {
-    this.source.diagnosticsBag.badCharacterFound(this.char(), this.span);
-    this.next();
-    return this.createNewToken(SyntaxKind.BadToken);
+    const token = this.advanceAndCreateNewToken(SyntaxKind.BadToken);
+    this.source.diagnosticsBag.badCharacterFound(token.span.text, token.span);
+    return token;
   }
 
   private advanceAndCreateNewToken(kind: Kind) {
