@@ -27,21 +27,20 @@
 
 <svelte:window on:resize={renderUi} on:scroll={renderUi} />
 
-<div
+<span
 	class="diagnostic"
 	style="
-		position: absolute;
-		left: {x}px;
-		top: {y}px;
-		width: {width}px;
-		height: {height}px;
+	left: {x}px;
+	top: {y}px;
+	width: {width}px;
+	height: {height}px;
 	"
-></div>
-
-<style lang="scss">
-	.diagnostic {
-		position: absolute;
-		outline: 1px solid gray;
-		cursor: pointer;
+	></span>
+	
+	<style lang="scss">
+		.diagnostic {
+			position: absolute;
+			background-color: #ad90f744;
+			pointer-events: none;
 	}
 </style>

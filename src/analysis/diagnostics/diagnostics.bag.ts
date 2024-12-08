@@ -27,44 +27,44 @@ export class DiagnosticsBag {
   }
 
   badCharacterFound(text: string, span: Span) {
-    this.report(`Bad character \`${text}\` found`, Severity.CantBind, span);
+    this.report(`bad character \`${text}\` found`, Severity.CantBind, span);
   }
 
   unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
-    this.report(`Unexpected token found: \`${matched}\` expecting \`${expecting}\`.`, Severity.CantEvaluate, span);
+    this.report(`unexpected token found: \`${matched}\` expecting \`${expecting}\`.`, Severity.CantEvaluate, span);
   }
 
   undeclaredCell(name: string, span: Span) {
-    this.report(`Cell reference \`${name}\` is undeclared.`, Severity.CantEvaluate, span);
+    this.report(`cell reference \`${name}\` is undeclared.`, Severity.CantEvaluate, span);
   }
 
   badFloatingPointNumber(span: Span) {
-    this.report(`Wrong floating number format.`, Severity.CantBind, span);
+    this.report(`wrong floating number format.`, Severity.CantBind, span);
   }
 
   missingClosingQuote(span: Span) {
-    this.report(`Comment is missing a closing \`"\``, Severity.CantParse, span);
+    this.report(`comment is missing a closing \`"\``, Severity.CantParse, span);
   }
 
   requireCompactCellReference(correctName: string, span: Span) {
-    this.report(`Did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
+    this.report(`did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
   }
 
   emptyBlock(span: Span) {
-    this.report(`Expecting statements in the block.`, Severity.CantEvaluate, span);
+    this.report(`expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
-  circularDependencyDetected(name: string, span: Span, path: DependencyLink[]) {
+  circularDependencyDetected(span: Span, path: DependencyLink[]) {
     const text = path.map((n) => `${n.node.reference.name}`).join(" > ");
-    const node = Diagnostic.createFrom(`Circular dependency detected in \`${name}\`.\n\t\t${text}`, Severity.CantEvaluate, span);
+    const node = Diagnostic.createFrom(`circular dependency detected ${text}.`, Severity.CantEvaluate, span);
     this.diagnostics.push(node);
   }
 
   binderMethod(kind: Kind, span: Span) {
-    this.report(`Method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
+    this.report(`method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
   }
 
   evaluatorMethod(kind: BoundKind, span: Span) {
-    this.report(`Method for evaluating \`${kind}\` is not implemented.`, Severity.CantEvaluate, span);
+    this.report(`method for evaluating \`${kind}\` is not implemented.`, Severity.CantEvaluate, span);
   }
 }

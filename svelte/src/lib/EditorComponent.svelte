@@ -4,8 +4,9 @@
 	import { SourceText } from '../../../../parser/ng';
 	import { onMount } from 'svelte';
 	import { getPosition } from './Position';
+	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
-	const code = `A1 :: A4
+	const code = `@A1 :: A4
 A5 :: A2    
 A2 :: A1+3
 A3 :: A2+5
@@ -103,7 +104,7 @@ A3 :: 1
 
 <div class="editor">
 	<div class="todos">
-		<h3>Todo</h3>
+		<h4>todo</h4>
 		<div class="todo">
 			<span class="checkmark"> ● </span> update position on window resize
 		</div>
@@ -114,7 +115,10 @@ A3 :: 1
 			<span class="checkmark"> ● </span> fix the issue with rendering spaces
 		</div>
 		<div class="todo">
-			<span class="checkmark"> </span> edit text on keyboard event
+			<span class="checkmark"> ● </span> edit text on keyboard event
+		</div>
+		<div class="todo">
+			<span class="checkmark"> </span> fix the issue with not rendering bad character diagnostics
 		</div>
 		<div class="todo">
 			<span class="checkmark"> </span> add line numbers
@@ -129,48 +133,54 @@ A3 :: 1
 
 	<div class="space highlight">
 		{#each lines as line, index}
-			<div id={`line-${index + 1}`} class="line">
-				{#each line.getTokens() as token}
+			<span id={`line-${index + 1}`} class="line">
+				{#each line.getTokens() as token, i}
 					{#if token.span.length}
-						<span class="token {token.class}">
+						<span class="token token-{i % 4 + 1} {token.class}">
 							{token.span.text}
 						</span>
 					{:else}
 						<span class="token {token.class}">&nbsp;</span>
 					{/if}
 				{/each}
-			</div>
+			</span>
 		{/each}
 		{#if renderCursor}
 			<CursorComponent {x} {y} />
 		{/if}
 	</div>
+
+	<br />
+
 	<div class="stats">
 		line {line} column {column}
 	</div>
 
-	<div class="diagnostics highlight">
-		{#each diagnostics as diagnostic}
-			<div>
-				<span class="address">{diagnostic.span.address}</span>
-				{diagnostic.message}
-			</div>
-		{/each}
-	</div>
-	<!-- 
+
+	{#if diagnostics.length}
+		<div class="diagnostics highlight">
+			{#each diagnostics as diagnostic}
+				<div class="diagnostic">
+					<span class="address">{diagnostic.span.address}</span>
+					{diagnostic.message}
+				</div>
+			{/each}
+		</div>
+	{/if}
+
 	{#each diagnostics as diagnostic}
 		<DiagnosticComponent {diagnostic} />
-	{/each} -->
+	{/each}
 
 	<br />
 	<br />
 	<br />
 
-	<h3>Tokens</h3>
+	<h4>tokens</h4>
 
 	<div class="tokens">
-		{#each tree.getTokens() as token}
-			<span class="token {token.class}">{token.span.text}</span>
+		{#each tree.getTokens() as token, i}
+			<span class="token token-{i % 4 + 1} {token.class}">{token.span.text}</span>
 		{/each}
 	</div>
 </div>
@@ -210,7 +220,7 @@ A3 :: 1
 		width: 1px;
 		height: 1em;
 	}
-	.space-trivia {
+	.tokens .space-trivia {
 		background-color: #ccbfee;
 	}
 	.stats {
@@ -220,6 +230,9 @@ A3 :: 1
 		display: flex;
 		flex-direction: column;
 		margin-top: 20px;
+	}
+	.diagnostic {
+		white-space: pre;
 	}
 	.todos {
 		padding: 7px;
@@ -245,7 +258,6 @@ A3 :: 1
 		display: inline-block;
 		width: fit-content;
 		height: fit-content;
-		cursor: pointer;
 	}
 	.address {
 		margin: 6px;
