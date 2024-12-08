@@ -35,12 +35,12 @@
 	width: {width}px;
 	height: {height}px;
 	"
-	></span>
-	
-	<style lang="scss">
-		.diagnostic {
-			position: absolute;
-			background-color: #ad90f744;
-			pointer-events: none;
+></span>
+
+<style lang="scss">
+	.diagnostic {
+		position: absolute;
+		background-color: #ad90f744;
+		pointer-events: none;
 	}
 </style>

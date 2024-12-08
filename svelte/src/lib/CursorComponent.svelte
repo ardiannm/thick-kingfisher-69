@@ -6,12 +6,18 @@
 </script>
 
 <span
+	class="cursor"
 	style="
-		position: absolute;
-		left: {x}px;
-		top: {y}px;
-		width: {width}px;
-		height: {height}px;
-		background-color: black;
+	left: {x}px;
+	top: {y}px;
+	width: {width}px;
+	height: {height}px;
 	"
 ></span>
+
+<style scoped lang="scss">
+	.cursor {
+		position: absolute;
+		background-color: black;
+	}
+</style>

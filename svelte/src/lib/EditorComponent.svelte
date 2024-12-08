@@ -6,8 +6,8 @@
 	import { getPosition } from './Position';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
-	const code = `@A1 :: A4
-A5 :: A2    
+	const code = `@A1 :: 4
+A5 :: 2    
 A2 :: A1+3
 A3 :: A2+5
 A4 :: A3+A2+       A5
@@ -136,7 +136,7 @@ A3 :: 1
 			<span id={`line-${index + 1}`} class="line">
 				{#each line.getTokens() as token, i}
 					{#if token.span.length}
-						<span class="token token-{i % 4 + 1} {token.class}">
+						<span class="token token-{(i % 4) + 1} {token.class}">
 							{token.span.text}
 						</span>
 					{:else}
@@ -155,7 +155,6 @@ A3 :: 1
 	<div class="stats">
 		line {line} column {column}
 	</div>
-
 
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
@@ -180,7 +179,7 @@ A3 :: 1
 
 	<div class="tokens">
 		{#each tree.getTokens() as token, i}
-			<span class="token token-{i % 4 + 1} {token.class}">{token.span.text}</span>
+			<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 		{/each}
 	</div>
 </div>
