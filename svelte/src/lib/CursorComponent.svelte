@@ -8,11 +8,11 @@
 <span
 	class="cursor"
 	style="
-	left: {x}px;
-	top: {y}px;
-	width: {width}px;
-	height: {height}px;
-	"
+        left: {x}px;
+        top: {y}px;
+        width: {width}px;
+        height: {height}px;
+    "
 ></span>
 
 <style scoped lang="scss">
@@ -20,5 +20,15 @@
 		position: absolute;
 		background-color: black;
 		z-index: 1;
+		// animation: blink 1.05s step-end infinite;
+	}
+
+	@keyframes blink {
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
 	}
 </style>
