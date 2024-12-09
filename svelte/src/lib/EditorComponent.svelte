@@ -33,7 +33,9 @@ A3 :: 1
 	function handleKey(event: KeyboardEvent) {
 		renderCursor = true;
 		const input = event.key;
-		if (input === 'ArrowRight') {
+		if (input === 'x' && event.ctrlKey) {
+			removeLine();
+		} else if (input === 'ArrowRight') {
 			event.preventDefault();
 			tranformCaretX();
 		} else if (input === 'ArrowLeft') {
@@ -97,6 +99,16 @@ A3 :: 1
 		text = text.substring(0, cursor - 1) + text.substring(cursor);
 	}
 
+	function removeLine() {
+		const lines = tree.getLines()
+		if (line === lines.length) {
+			const span = lines[line - 2].fullSpan
+			cursor = span.start
+		}
+		const span = lines[line - 1].fullSpan;
+		text = text.slice(0, span.start) + text.slice(span.end);
+	}
+
 	$effect(updatePosition);
 	onMount(() => (renderCursor = true));
 </script>
@@ -132,7 +144,7 @@ A3 :: 1
 			<span class="check"> </span> diagnostic tooltips.
 		</div>
 		<div class="todo">
-			<span class="check"> </span> remove line on ctrl + x.
+			<span class="check"> ● </span> remove line on ctrl + x.
 		</div>
 		<div class="todo">
 			<span class="check"> </span> add selection capability.
