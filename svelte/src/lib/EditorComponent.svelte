@@ -147,6 +147,9 @@ A3 :: 1
 			<span class="check"> ● </span> remove line on ctrl + x.
 		</div>
 		<div class="todo">
+			<span class="check"> </span> move line up and down using alt + arrows.
+		</div>
+		<div class="todo">
 			<span class="check"> </span> add selection capability.
 		</div>
 		<div class="todo">

@@ -53,15 +53,15 @@ export class BoundCellAssignment extends BoundNode {
       const { done, value: dependency } = currentNode.generator.next();
       if (done) {
         chain.pop();
-        continue;
-      }
-      const node = DependencyLink.createFrom(dependency.assignment);
-      chain.push(node);
-      if (this.reference.name === dependency.name) {
-        this.scope.diagnostics.circularDependencyDetected(this.dependencies[dep].span, chain);
-        chain.length = 1;
-        error = true;
-        dep++;
+      } else {
+        const node = DependencyLink.createFrom(dependency.assignment);
+        chain.push(node);
+        if (this.reference.name === dependency.name) {
+          this.scope.diagnostics.circularDependencyDetected(this.dependencies[dep].span, chain);
+          chain.length = 1;
+          error = true;
+          dep++;
+        }
       }
     }
     return error;
