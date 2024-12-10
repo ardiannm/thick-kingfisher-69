@@ -160,9 +160,6 @@ A3 :: 1
 		<br />
 		
 		<div class="todo">
-			<span class="check"> </span> debug targeting the correct span that cause circular dependency in the chain.
-		</div>
-		<div class="todo">
 			<span class="check"> </span> do not register nodes in the scope.assignments if those are not in an entirely valid state already.
 		</div>
 	</div>
