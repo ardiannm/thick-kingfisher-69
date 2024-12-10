@@ -9,7 +9,7 @@
 	const code = `A1 :: A4
 A5 :: 2    
 A2 :: A1+3
-A3 :: A2+5
+A 3 :: A2+5
 A4 :: A3+A2+       A5
 A3 :: 1
 
@@ -39,6 +39,7 @@ A3 :: 1
 		renderCursor = true;
 		const input = event.key;
 		if (input === 'x' && event.ctrlKey) {
+			event.preventDefault()
 			removeLine();
 		} else if (input === 'ArrowRight') {
 			event.preventDefault();
@@ -125,11 +126,10 @@ A3 :: 1
 
 <div class="editor">
 	<div class="todos">
-
 		<div>frontend</div>
-		
+
 		<br />
-		
+
 		<div class="todo">
 			<span class="check"> </span> diagnostic tooltips.
 		</div>
@@ -150,17 +150,6 @@ A3 :: 1
 		</div>
 		<div class="todo">
 			<span class="check"> </span> blinking cursor animation.
-		</div>
-
-		<br />
-		<br />
-
-		<div>backend</div>
-		
-		<br />
-		
-		<div class="todo">
-			<span class="check"> </span> do not register nodes in the scope.assignments if those are not in an entirely valid state already.
 		</div>
 	</div>
 

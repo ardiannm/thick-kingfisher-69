@@ -76,6 +76,9 @@ export class Binder {
     const expression = this.bind(node.expression);
     const reference = this.bindCell(node.left as SyntaxCellReference);
     const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
+    if (node.left.right.hasTrivia()) {
+      this.scope.assignments.delete(bound.reference.name);
+    }
     this.scope.references = new Array<BoundCellReference>();
     return bound;
   }
