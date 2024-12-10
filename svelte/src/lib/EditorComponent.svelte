@@ -27,6 +27,7 @@ A3 :: 1
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
+	let tokens = $derived(tree.getTokens());
 
 	let x = $state(0);
 	let y = $state(0);
@@ -226,15 +227,15 @@ A3 :: 1
 	<br />
 	<br />
 
-	<div>tokens</div>
-
-	<br />
-
-	<div class="tokens highlight">
-		{#each tree.getTokens() as token, i}
-			<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
-		{/each}
-	</div>
+	{#if tokens.length > 1}
+		<div>tokens</div>
+		<br />
+		<div class="tokens highlight">
+			{#each tokens as token, i}
+				<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
