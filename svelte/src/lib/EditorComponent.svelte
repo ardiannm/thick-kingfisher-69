@@ -42,16 +42,16 @@ A3 :: 1
 			removeLine();
 		} else if (input === 'ArrowRight') {
 			event.preventDefault();
-			tranformCaretX();
+			moveCursorX();
 		} else if (input === 'ArrowLeft') {
 			event.preventDefault();
-			tranformCaretX(-1);
+			moveCursorX(-1);
 		} else if (input === 'ArrowDown') {
 			event.preventDefault();
-			tranformCaretY();
+			moveCursorY();
 		} else if (input === 'ArrowUp') {
 			event.preventDefault();
-			tranformCaretY(-1);
+			moveCursorY(-1);
 		} else if (input === 'Enter') {
 			event.preventDefault();
 			insertText();
@@ -60,9 +60,9 @@ A3 :: 1
 			backspace();
 		} else if (input === 'Delete') {
 			event.preventDefault();
-			tranformCaretX();
+			moveCursorX();
 			removeText();
-			tranformCaretX(-1);
+			moveCursorX(-1);
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault();
 			insertText(input);
@@ -71,7 +71,7 @@ A3 :: 1
 
 	function backspace() {
 		removeText();
-		tranformCaretX(-1);
+		moveCursorX(-1);
 	}
 
 	function updatePosition() {
@@ -80,7 +80,7 @@ A3 :: 1
 		y = pos.y;
 	}
 
-	function tranformCaretX(step = 1) {
+	function moveCursorX(step = 1) {
 		const newPos = cursor + step;
 		if (newPos >= 0 && newPos <= text.length) {
 			cursor = newPos;
@@ -88,7 +88,7 @@ A3 :: 1
 		}
 	}
 
-	function tranformCaretY(steps = 1) {
+	function moveCursorY(steps = 1) {
 		const prevLine = line + steps;
 		if (prevLine > 0) {
 			const pos = tree.getPosition(prevLine, prevColumn);
@@ -125,36 +125,13 @@ A3 :: 1
 
 <div class="editor">
 	<div class="todos">
-		<div>todo</div>
 
+		<div>frontend</div>
+		
 		<br />
-
-		<div class="todo">
-			<span class="check"> ● </span> update position on window resize.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> render diagnostic spans on top of the text.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> fix the issue with rendering spaces.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> edit text on keyboard event.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> fix the issue with not rendering bad character diagnostics.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> fix the issue with not rendering zero length tokens.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> render cursor on focus and remove on blur.
-		</div>
+		
 		<div class="todo">
 			<span class="check"> </span> diagnostic tooltips.
-		</div>
-		<div class="todo">
-			<span class="check"> ● </span> remove line on ctrl + x.
 		</div>
 		<div class="todo">
 			<span class="check"> </span> move line up and down using alt + arrows.
@@ -173,6 +150,20 @@ A3 :: 1
 		</div>
 		<div class="todo">
 			<span class="check"> </span> blinking cursor animation.
+		</div>
+
+		<br />
+		<br />
+
+		<div>backend</div>
+		
+		<br />
+		
+		<div class="todo">
+			<span class="check"> </span> debug targeting the correct span that cause circular dependency in the chain.
+		</div>
+		<div class="todo">
+			<span class="check"> </span> do not register nodes in the scope.assignments if those are not in an entirely valid state already.
 		</div>
 	</div>
 

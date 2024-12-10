@@ -49,12 +49,12 @@ export class BoundCellAssignment extends BoundNode {
 
   @Todo("dep index is not targetting the correct node that is causing the circular dependency")
   private checkForCircularDependency() {
-    const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
-    let error = false;
     let dep = 0;
+    let error = false;
+    const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
     while (chain.length > 0) {
       const currentNode = chain[chain.length - 1];
-      const { done, value: dependency } = currentNode.generator.next();
+      const { done, dependency } = currentNode.next();
       if (done) {
         chain.pop();
       } else {
@@ -73,7 +73,7 @@ export class BoundCellAssignment extends BoundNode {
 }
 
 export class DependencyLink {
-  private constructor(public node: BoundCellAssignment, public generator: Generator<BoundCellReference>) {}
+  private constructor(public node: BoundCellAssignment, private generator: Generator<BoundCellReference>) {}
 
   static createFrom(node: BoundCellAssignment) {
     const generator = (function* (set) {
@@ -82,5 +82,10 @@ export class DependencyLink {
       }
     })(node.dependencies);
     return new DependencyLink(node, generator);
+  }
+
+  next() {
+    const { done, value: dependency } = this.generator.next();
+    return { done, dependency };
   }
 }
