@@ -56,8 +56,7 @@ A3 :: 1
 			insertText();
 		} else if (input === 'Backspace') {
 			event.preventDefault();
-			removeText();
-			tranformCaretX(-1);
+			backspace();
 		} else if (input === 'Delete') {
 			event.preventDefault();
 			tranformCaretX();
@@ -67,6 +66,11 @@ A3 :: 1
 			event.preventDefault();
 			insertText(input);
 		}
+	}
+
+	function backspace() {
+		removeText();
+		tranformCaretX(-1);
 	}
 
 	function updatePosition() {
@@ -105,8 +109,12 @@ A3 :: 1
 
 	function removeLine() {
 		const span = currentLine.fullSpan;
-		text = text.slice(0, span.start) + text.slice(span.end);
-		cursor = span.start;
+		if (span.length === 0) {
+			backspace();
+		} else {
+			text = text.slice(0, span.start) + text.slice(span.end);
+			cursor = span.start;
+		}
 	}
 
 	$effect(updatePosition);
