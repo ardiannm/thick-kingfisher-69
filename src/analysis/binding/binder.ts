@@ -81,7 +81,7 @@ export class Binder {
   }
 
   private bindCell(node: SyntaxCellReference): Cell {
-    const name = node.text;
+    const name = node.name;
     if (this.scope.assignments.has(name)) {
       return this.scope.assignments.get(name)!.reference;
     }
@@ -89,7 +89,7 @@ export class Binder {
   }
 
   private bindCellReference(node: SyntaxCellReference) {
-    const name = node.text;
+    const name = node.name;
     let assigment: BoundCellAssignment;
     if (this.scope.assignments.has(name)) {
       assigment = this.scope.assignments.get(name)!;
@@ -98,7 +98,9 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>();
       const value = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span);
-      if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) this.scope.diagnostics.undeclaredCell(name, node.span);
+      if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) {
+        this.scope.diagnostics.undeclaredCell(name, node.span);
+      }
     }
     const bound = new BoundCellReference(assigment, node.span);
     this.scope.references.push(bound);

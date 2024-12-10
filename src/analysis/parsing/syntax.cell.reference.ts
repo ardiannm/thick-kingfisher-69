@@ -15,4 +15,8 @@ export class SyntaxCellReference extends SyntaxNode {
   override getLastChild(): SyntaxToken {
     return this.right.getLastChild();
   }
+
+  get name() {
+    return this.left.text + this.right.text;
+  }
 }

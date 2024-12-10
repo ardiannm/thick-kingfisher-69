@@ -8,8 +8,10 @@ import { Span } from "../../lexing/span";
 export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
+    
     this.cleanupExistingNode();
     this.registerSelf();
+
     if (!this.checkForCircularDependency()) {
       this.storeNewAssignment();
     }
