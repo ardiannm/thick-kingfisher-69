@@ -1,10 +1,10 @@
 <script lang="ts">
 	import CursorComponent from './CursorComponent.svelte';
+	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
 	import { SourceText } from '../../../../parser/ng';
 	import { onMount } from 'svelte';
 	import { getPosition } from './Position';
-	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
 	const code = `A1 :: A4
 A5 :: 2    
@@ -21,12 +21,16 @@ A3 :: 1
 	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
 
 	let renderCursor = $state(false);
+
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
+	let currentLine = $derived(tree.getLines()[line - 1]);
+
 	let x = $state(0);
 	let y = $state(0);
+
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
 
@@ -100,16 +104,13 @@ A3 :: 1
 	}
 
 	function removeLine() {
-		const lines = tree.getLines()
-		if (line === lines.length) {
-			const span = lines[line - 2].fullSpan
-			cursor = span.start
-		}
-		const span = lines[line - 1].fullSpan;
+		const span = currentLine.fullSpan;
 		text = text.slice(0, span.start) + text.slice(span.end);
+		cursor = span.start;
 	}
 
 	$effect(updatePosition);
+
 	onMount(() => (renderCursor = true));
 </script>
 
@@ -203,8 +204,8 @@ A3 :: 1
 		<div class="diagnostics highlight">
 			{#each diagnostics as { message, span }}
 				<div class="diagnostic">
-					<span class="address">{span.address}</span>
-					{message}
+					<div class="address">{span.address}</div>
+					<div>{message}</div>
 				</div>
 			{/each}
 		</div>
@@ -267,6 +268,9 @@ A3 :: 1
 		margin-top: 20px;
 	}
 	.diagnostic {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 		white-space: pre;
 	}
 	.todos {
@@ -297,6 +301,8 @@ A3 :: 1
 		white-space: pre;
 	}
 	.address {
-		margin: 6px;
+		width: fit-content;
+		min-width: 40px;
+		margin-right: 6px;
 	}
 </style>
