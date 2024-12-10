@@ -4,11 +4,12 @@ import { BoundNode } from "./bound.node";
 import { BoundScope } from "./bound.scope";
 import { BoundKind } from "./bound.kind";
 import { Span } from "../../lexing/span";
+import { Todo } from "../../dev/todo";
 
 export class BoundCellAssignment extends BoundNode {
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
-    
+
     this.cleanupExistingNode();
     this.registerSelf();
 
@@ -46,6 +47,7 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
+  @Todo("dep index is not targetting the correct node that is causing the circular dependency")
   private checkForCircularDependency() {
     const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
     let error = false;
