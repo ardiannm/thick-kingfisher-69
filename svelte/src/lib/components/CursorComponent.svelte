@@ -19,6 +19,7 @@
 	.cursor {
 		position: absolute;
 		background-color: black;
+		pointer-events: none;
 		z-index: 1;
 		// animation: blink 1.05s step-end infinite;
 	}

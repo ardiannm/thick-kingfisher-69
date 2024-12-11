@@ -2,9 +2,9 @@
 	import CursorComponent from './CursorComponent.svelte';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
-	import { SourceText } from '../../../../parser/ng';
+	import { SourceText } from '../../../../ng';
 	import { onMount } from 'svelte';
-	import { getPosition } from './Position';
+	import { getPosition } from '../Position';
 
 	const code = `A1 :: A4
 A5 :: 2    
@@ -146,12 +146,7 @@ A3 :: 1
 <div class="editor">
 	<div class="todos">
 		<div>frontend</div>
-
 		<br />
-
-		<div class="todo">
-			<span class="check"> </span> diagnostic tooltips.
-		</div>
 		<div class="todo">
 			<span class="check"> </span> add selection capability.
 		</div>
@@ -168,10 +163,8 @@ A3 :: 1
 			<span class="check"> </span> blinking cursor animation.
 		</div>
 	</div>
-
 	<br />
 	<br />
-
 	<div
 		class="space highlight"
 		onfocus={() => (renderCursor = true)}
@@ -195,13 +188,10 @@ A3 :: 1
 			<CursorComponent {x} {y} />
 		{/if}
 	</div>
-
 	<br />
-
 	<div class="stats">
 		line {line} column {column}
 	</div>
-
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
 			{#each diagnostics as { message, span }}
@@ -212,14 +202,11 @@ A3 :: 1
 			{/each}
 		</div>
 	{/if}
-
-	{#each diagnostics as { span: { line, column, length } }}
-		<DiagnosticComponent {line} {column} {length} />
+	{#each diagnostics as { span: { line, column, length }, message }}
+		<DiagnosticComponent {line} {column} {length} {message} />
 	{/each}
-
 	<br />
 	<br />
-
 	{#if tokens.length > 1}
 		<div>tokens</div>
 		<br />
@@ -230,9 +217,7 @@ A3 :: 1
 		</div>
 	{/if}
 </div>
-
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
-
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f7f7f8;
@@ -249,6 +234,7 @@ A3 :: 1
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
+		cursor: default;
 	}
 	.space {
 		width: 700px;
