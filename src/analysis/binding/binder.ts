@@ -106,7 +106,9 @@ export class Binder {
       }
     }
     const bound = new BoundCellReference(assigment, node.span);
-    this.scope.references.push(bound);
+    if (!node.right.hasTrivia()) {
+      this.scope.references.push(bound);
+    }
     return bound;
   }
 
