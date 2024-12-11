@@ -16,21 +16,22 @@ A3 :: 1
 `;
 
 	let text = $state(code);
+
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
-	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
-
-	let renderCursor = $state(false);
-
+	const diagnostics = $derived(tree.diagnosticsBag.diagnostics.sort((a,b) => a.span.start - b.span.start).sort((a,b) => a.span.start - b.span.start));
+	
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
-
+	
 	let x = $state(0);
 	let y = $state(0);
+	
+	let renderCursor = $state(false);
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
