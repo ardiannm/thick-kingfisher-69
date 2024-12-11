@@ -19,18 +19,22 @@ A3 :: 1
 
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
-	const diagnostics = $derived(tree.diagnosticsBag.diagnostics.sort((a,b) => a.span.start - b.span.start).sort((a,b) => a.span.start - b.span.start));
-	
+	const diagnostics = $derived(
+		tree.diagnosticsBag.diagnostics
+			.sort((a, b) => a.span.start - b.span.start)
+			.sort((a, b) => a.span.start - b.span.start)
+	);
+
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
-	
+
 	let x = $state(0);
 	let y = $state(0);
-	
+
 	let renderCursor = $state(false);
 
 	// svelte-ignore state_referenced_locally
@@ -39,18 +43,24 @@ A3 :: 1
 	function handleKey(event: KeyboardEvent) {
 		renderCursor = true;
 		const input = event.key;
-		if (input === 'x' && event.ctrlKey) {
-			event.preventDefault()
+		if (input === 'ArrowDown' && event.altKey) {
+			event.preventDefault();
+			moveLine(+1);
+		} else if (input === 'ArrowUp' && event.altKey) {
+			event.preventDefault();
+			moveLine(-1);
+		} else if (input === 'x' && event.ctrlKey) {
+			event.preventDefault();
 			removeLine();
 		} else if (input === 'ArrowRight') {
 			event.preventDefault();
-			moveCursorX();
+			moveCursorX(+1);
 		} else if (input === 'ArrowLeft') {
 			event.preventDefault();
 			moveCursorX(-1);
 		} else if (input === 'ArrowDown') {
 			event.preventDefault();
-			moveCursorY();
+			moveCursorY(+1);
 		} else if (input === 'ArrowUp') {
 			event.preventDefault();
 			moveCursorY(-1);
@@ -62,13 +72,21 @@ A3 :: 1
 			backspace();
 		} else if (input === 'Delete') {
 			event.preventDefault();
-			moveCursorX();
+			moveCursorX(+1);
 			removeText();
 			moveCursorX(-1);
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault();
 			insertText(input);
 		}
+	}
+
+	function moveLine(step: number) {
+		const nextLine = line + step;
+		const nextTree = tree.swapLines(line, nextLine);
+		if (!nextTree) return;
+		text = nextTree;
+		cursor = tree.getPosition(nextLine, prevColumn);
 	}
 
 	function backspace() {
@@ -82,7 +100,7 @@ A3 :: 1
 		y = pos.y;
 	}
 
-	function moveCursorX(step = 1) {
+	function moveCursorX(step: number) {
 		const newPos = cursor + step;
 		if (newPos >= 0 && newPos <= text.length) {
 			cursor = newPos;
@@ -90,7 +108,7 @@ A3 :: 1
 		}
 	}
 
-	function moveCursorY(steps = 1) {
+	function moveCursorY(steps: number) {
 		const prevLine = line + steps;
 		if (prevLine > 0) {
 			const pos = tree.getPosition(prevLine, prevColumn);
@@ -133,9 +151,6 @@ A3 :: 1
 
 		<div class="todo">
 			<span class="check"> </span> diagnostic tooltips.
-		</div>
-		<div class="todo">
-			<span class="check"> </span> move line up and down using alt + arrows.
 		</div>
 		<div class="todo">
 			<span class="check"> </span> add selection capability.

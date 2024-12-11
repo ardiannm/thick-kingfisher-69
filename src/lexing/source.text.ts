@@ -112,4 +112,25 @@ export class SourceText {
     }
     return span.start + offset;
   }
+
+  swapLines(a: number, b: number) {
+    a--;
+    b--;
+    if (a < 0 || b < 0 || a >= this.lines.length || b >= this.lines.length) {
+      return null;
+    }
+    let n = 0;
+    const text = [];
+    while (n < this.lines.length) {
+      if (n === b) {
+        text.push(this.lines[a].span.text);
+      } else if (n === a) {
+        text.push(this.lines[b].span.text);
+      } else {
+        text.push(this.lines[n].span.text);
+      }
+      n++;
+    }
+    return text.join("\n");
+  }
 }
