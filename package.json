@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "solid": "cd solid && npm run dev",
-    "angular": "cd angular && npm run start",
+    "solid": "cd ui/solid && npm run dev",
+    "angular": "cd ui/angular && npm run start",
     "test": "vitest"
   },
   "license": "MIT",

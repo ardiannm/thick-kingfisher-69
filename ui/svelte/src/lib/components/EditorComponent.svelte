@@ -1,10 +1,10 @@
 <script lang="ts">
-	import CursorComponent from './CursorComponent.svelte';
-	import DiagnosticComponent from './DiagnosticComponent.svelte';
-
-	import { SourceText } from '../../../../ng';
 	import { onMount } from 'svelte';
 	import { getPosition } from '../Position';
+	import { SourceText } from '../../../../../src/lexing/source.text';
+	
+	import CursorComponent from './CursorComponent.svelte';
+	import DiagnosticComponent from './DiagnosticComponent.svelte';
 
 	let { text } = $props();
 

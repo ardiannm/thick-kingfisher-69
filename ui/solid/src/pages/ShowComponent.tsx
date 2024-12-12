@@ -4,11 +4,12 @@ import MenuBarComponent from "./MenuBarComponent";
 import { type Component, createSignal, createEffect } from "solid-js";
 
 import { BezierCurve, Position } from "../components/bezier.curve";
-import { BoundScope } from "../../../src/analysis/binder/bound.scope";
-import { Diagnostic } from "../../../src/analysis/diagnostics/diagnostic";
 import { CodeEditor } from "../components/code.editor";
-import { SyntaxTree } from "../../../src/syntax.tree";
-import { SourceText } from "../../../src/lexing/source.text";
+
+import { SourceText } from "../../../../src/lexing/source.text";
+import { SyntaxTree } from "../../../../src/syntax.tree";
+import { BoundScope } from "../../../../src/analysis/binding/bound.scope";
+import { Diagnostic } from "../../../../src/analysis/diagnostics/diagnostic";
 
 var defaultCode = `A1 :: A2+A3`;
 
@@ -25,7 +26,7 @@ const ShowComponent: Component = () => {
     const text = textCode[0]();
     const sourceText = SourceText.createFrom(text);
     const tree = SyntaxTree.createFrom(sourceText);
-    setDiagnostics(sourceText.diagnostics.getDiagnostics());
+    setDiagnostics(sourceText.diagnosticsBag.diagnostics);
     setScope(tree.bound.scope);
   });
 

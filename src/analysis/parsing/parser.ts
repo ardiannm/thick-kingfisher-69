@@ -69,7 +69,7 @@ export class Parser {
     switch (this.peekToken().kind) {
       case SyntaxKind.ColonColonToken:
         const keyword = this.getNextToken();
-        return new SyntaxCellAssignment(this.source, left, keyword, this.parseBinaryExpression());
+        return new SyntaxCellAssignment(this.source, left as SyntaxCellReference, keyword, this.parseBinaryExpression());
     }
     return left;
   }

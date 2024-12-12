@@ -1,8 +1,7 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID, Output, EventEmitter, AfterViewInit } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
 import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
-
-import { SourceText } from "../../../../ng";
+import { SourceText } from "../../../../../src/lexing/source.text";
 
 // var text = `A1 :: A3
 //   A2 :: A1
