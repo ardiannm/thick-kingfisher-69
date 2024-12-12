@@ -207,7 +207,6 @@
 	{/if}
 </div>
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
-
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f6f8fa;

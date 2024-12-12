@@ -15,14 +15,16 @@
 	function renderUi() {
 		const p1 = getPosition(line, column);
 		const p2 = getPosition(line, column + (length || 1));
-		x = p1.x;
-		y = p1.y;
+		const scrollX = window.scrollX;
+		const scrollY = window.scrollY;
+		x = p1.x + scrollX;
+		y = p1.y + scrollY;
 		w = p2.x - p1.x;
 		h = p1.height;
 	}
 </script>
 
-<svelte:window onresize={renderUi} onscroll={renderUi} />
+<svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 
 <span
 	aria-hidden="true"
