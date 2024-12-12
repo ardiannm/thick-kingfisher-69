@@ -138,21 +138,17 @@
 	<div class="todos">
 		<div>frontend</div>
 		<br />
-		<div class="todo">
-			<span class="check"> </span> add selection capability.
-		</div>
-		<div class="todo">
-			<span class="check"> </span> render multiline diagnostic highlighters.
-		</div>
-		<div class="todo">
-			<span class="check"> </span> copy and paste text from the clipboard.
-		</div>
-		<div class="todo">
-			<span class="check"> </span> add line numbers.
-		</div>
-		<div class="todo">
-			<span class="check"> </span> blinking cursor animation.
-		</div>
+		<div class="todo">convert codebase into a flexible spreadsheet data frame.</div>
+		<div class="todo">add selection capability.</div>
+		<div class="todo">render multiline diagnostic highlighters.</div>
+		<div class="todo">copy and paste text from the clipboard.</div>
+		<div class="todo">add line numbers.</div>
+		<div class="todo">blinking cursor animation.</div>
+		<br />
+		<br />
+		<div>backend</div>
+		<br />
+		<div class="todo">evaluate reactive cell reference assigments.</div>
 	</div>
 	<br />
 	<br />
@@ -259,6 +255,7 @@
 	.todo {
 		display: flex;
 		flex-direction: row;
+		margin-left: 20px;
 	}
 	.check {
 		display: flex;
