@@ -6,16 +6,7 @@
 	import { onMount } from 'svelte';
 	import { getPosition } from '../Position';
 
-	const code = `A1 :: A4
-A5 :: 2    
-A2 :: A1+3
-A 3 :: A2+5
-A4 :: A3+A2+       A5
-A3 :: 1
-
-`;
-
-	let text = $state(code);
+	let { text } = $props();
 
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
@@ -249,7 +240,7 @@ A3 :: 1
 		pointer-events: none;
 	}
 	.tokens .space-trivia {
-		background-color: #d9d9e3;
+		background-color: #a9a1d3;
 	}
 	.stats {
 		margin-top: 20px;
