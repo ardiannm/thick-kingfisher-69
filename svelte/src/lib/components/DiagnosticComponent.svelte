@@ -39,10 +39,10 @@
 
 {#if show}
 	<span
-		class="message tooltip"
+		class="tooltip"
 		style="
 	left: {x + w}px;
-	top: {y - h - 6}px;
+	top: {y - h - 2.5}px;
 	">{message}</span
 	>
 {/if}
@@ -50,20 +50,17 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #e3dbf8;
+		background-color: #d9d9e3;
 	}
-	.message {
+	.tooltip {
 		position: absolute;
 		width: fit-content;
 		height: fit-content;
-		background-color: white;
 		z-index: 3;
-	}
-	.tooltip {
-		background-color: #f7f8fb;
-		padding: 3px 10px;
-		border-radius: 2px;
-		box-shadow: #0e1e251f 0px 2px 4px 0px, #0e1e2552 0px 2px 16px 0px;
-		border-bottom-left-radius: 0px;
+		padding: 1px 10px;
+		box-shadow:
+			0px 4px 8px -2px rgba(9, 30, 66, 0.25),
+			0px 0px 0px 1px #d9d9e3;
+		background-color: white;
 	}
 </style>

@@ -218,6 +218,7 @@ A3 :: 1
 	{/if}
 </div>
 <svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
+
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f7f7f8;
@@ -248,7 +249,7 @@ A3 :: 1
 		pointer-events: none;
 	}
 	.tokens .space-trivia {
-		background-color: #ccbfee;
+		background-color: #d9d9e3;
 	}
 	.stats {
 		margin-top: 20px;
