@@ -240,9 +240,12 @@ A3 :: 1
 		width: 700px;
 	}
 	.line {
-		display: block;
+		position: relative;
+		display: flex;
 		flex-direction: row;
 		box-sizing: border-box;
+		z-index: 1;
+		pointer-events: none;
 	}
 	.tokens .space-trivia {
 		background-color: #ccbfee;

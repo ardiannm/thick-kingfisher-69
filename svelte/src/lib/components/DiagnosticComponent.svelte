@@ -50,7 +50,7 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #ad90f744;
+		background-color: #e3dbf8;
 	}
 	.message {
 		position: absolute;
@@ -63,7 +63,7 @@
 		background-color: #f7f8fb;
 		padding: 3px 10px;
 		border-radius: 2px;
-		box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+		box-shadow: #0e1e251f 0px 2px 4px 0px, #0e1e2552 0px 2px 16px 0px;
 		border-bottom-left-radius: 0px;
 	}
 </style>
