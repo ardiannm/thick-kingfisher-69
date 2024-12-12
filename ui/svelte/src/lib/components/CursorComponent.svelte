@@ -1,20 +1,29 @@
 <script lang="ts">
-	export let x: number = 0;
-	export let y: number = 0;
-	export let width: number = 2;
-	export let height: number = 16;
+	import { getPosition } from "$lib/Position";
+	let { line, column } = $props();
+	let x: number = $state(0);
+	let y: number = $state(0);
+	let w: number = 2;
+	let h: number = 16;
+	$effect(renderUi);
+	function renderUi() {
+		const p1 = getPosition(line, column);
+		const scrollX = window.scrollX;
+		const scrollY = window.scrollY;
+		x = p1.x + scrollX;
+		y = p1.y + scrollY;
+	}
 </script>
-
+<svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 <span
 	class="cursor"
 	style="
         left: {x}px;
         top: {y}px;
-        width: {width}px;
-        height: {height}px;
+        width: {w}px;
+        height: {h}px;
     "
 ></span>
-
 <style scoped lang="scss">
 	.cursor {
 		position: absolute;
@@ -23,7 +32,6 @@
 		z-index: 1;
 		// animation: blink 1.05s step-end infinite;
 	}
-
 	@keyframes blink {
 		100% {
 			opacity: 1;

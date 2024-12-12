@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getPosition } from '../Position';
 	import { SourceText } from '../../../../../src/lexing/source.text';
-	
 	import CursorComponent from './CursorComponent.svelte';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
-
 	let { text } = $props();
-
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(
@@ -15,22 +11,15 @@
 			.sort((a, b) => a.span.start - b.span.start)
 			.sort((a, b) => a.span.start - b.span.start)
 	);
-
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
-
-	let x = $state(0);
-	let y = $state(0);
-
 	let renderCursor = $state(false);
-
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
-
 	function handleKey(event: KeyboardEvent) {
 		renderCursor = true;
 		const input = event.key;
@@ -71,7 +60,6 @@
 			insertText(input);
 		}
 	}
-
 	function moveLine(step: number) {
 		const nextLine = line + step;
 		const nextTree = tree.swapLines(line, nextLine);
@@ -79,18 +67,10 @@
 		text = nextTree;
 		cursor = tree.getPosition(nextLine, prevColumn);
 	}
-
 	function backspace() {
 		removeText();
 		moveCursorX(-1);
 	}
-
-	function updatePosition() {
-		const pos = getPosition(line, column);
-		x = pos.x;
-		y = pos.y;
-	}
-
 	function moveCursorX(step: number) {
 		const newPos = cursor + step;
 		if (newPos >= 0 && newPos <= text.length) {
@@ -98,7 +78,6 @@
 			prevColumn = column;
 		}
 	}
-
 	function moveCursorY(steps: number) {
 		const prevLine = line + steps;
 		if (prevLine > 0) {
@@ -109,16 +88,13 @@
 			cursor = 0;
 		}
 	}
-
 	function insertText(charText: string = '\n') {
 		text = text.substring(0, cursor) + charText + text.substring(cursor);
 		cursor += 1;
 	}
-
 	function removeText() {
 		text = text.substring(0, cursor - 1) + text.substring(cursor);
 	}
-
 	function removeLine() {
 		const span = currentLine.fullSpan;
 		if (span.length === 0) {
@@ -128,12 +104,8 @@
 			cursor = span.start;
 		}
 	}
-
-	$effect(updatePosition);
-
 	onMount(() => (renderCursor = true));
 </script>
-
 <div class="editor">
 	<div class="todos">
 		<div>frontend tasks</div>
@@ -158,8 +130,6 @@
 	<br />
 	<div
 		class="space highlight"
-		onfocus={() => (renderCursor = true)}
-		onblur={() => (renderCursor = false)}
 		tabindex="-1"
 	>
 		{#each lines as line, i}
@@ -176,7 +146,7 @@
 			</span>
 		{/each}
 		{#if renderCursor}
-			<CursorComponent {x} {y} />
+			<CursorComponent {line} {column} />
 		{/if}
 	</div>
 	<br />
@@ -206,7 +176,7 @@
 		</div>
 	{/if}
 </div>
-<svelte:window on:keydown={handleKey} on:resize={updatePosition} on:scroll={updatePosition} />
+<svelte:window on:keydown={handleKey} />
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f6f8fa;
@@ -223,7 +193,8 @@
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
-		cursor: default;
+		cursor: text;
+		user-select: none;
 	}
 	.space {
 		width: 700px;
