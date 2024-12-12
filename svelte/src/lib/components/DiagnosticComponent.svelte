@@ -1,17 +1,12 @@
 <script lang="ts">
 	import { getPosition } from '../Position';
-
 	let { line, column, length, message } = $props();
-
 	let x: number = $state(0);
 	let y: number = $state(0);
 	let w: number = $state(0);
 	let h: number = $state(0);
-
 	let show = $state(false);
-
 	$effect(renderUi);
-
 	function renderUi() {
 		const p1 = getPosition(line, column);
 		const p2 = getPosition(line, column + (length || 1));
@@ -23,9 +18,7 @@
 		h = p1.height;
 	}
 </script>
-
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
-
 <span
 	aria-hidden="true"
 	onmouseenter={() => (show = true)}
@@ -38,7 +31,6 @@
 	height: {h}px;
 	"
 ></span>
-
 {#if show}
 	<span
 		class="tooltip"
@@ -48,7 +40,6 @@
 	">{message}</span
 	>
 {/if}
-
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
