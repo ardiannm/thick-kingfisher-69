@@ -50,7 +50,7 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #c9c3e6;
+		background-color: #a7d7ffa8;
 	}
 	.tooltip {
 		position: absolute;

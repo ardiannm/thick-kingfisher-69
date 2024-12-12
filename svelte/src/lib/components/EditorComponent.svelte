@@ -185,17 +185,15 @@
 	</div>
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
-			{#each diagnostics as { message, span }}
+			{#each diagnostics as { message, span: { line, column, length, address }}}
 				<div class="diagnostic">
-					<div class="address">{span.address}</div>
+					<div class="address">{address}</div>
 					<div>{message}</div>
 				</div>
+				<DiagnosticComponent {line} {column} {length} {message} />
 			{/each}
 		</div>
 	{/if}
-	{#each diagnostics as { span: { line, column, length }, message }}
-		<DiagnosticComponent {line} {column} {length} {message} />
-	{/each}
 	<br />
 	<br />
 	{#if tokens.length > 1}
@@ -212,8 +210,8 @@
 
 <style scoped lang="scss">
 	.highlight {
-		background-color: #f7f7f8;
-		outline: 1px solid #d9d9e3;
+		background-color: #f6f8fa;
+		outline: 1px solid #d1d9e0;
 		border-radius: 7px;
 		padding: 10px 20px;
 	}
@@ -240,7 +238,7 @@
 		pointer-events: none;
 	}
 	.tokens .space-trivia {
-		background-color: #a9a1d3;
+		background-color: #a7d8ff;
 	}
 	.stats {
 		margin-top: 20px;
