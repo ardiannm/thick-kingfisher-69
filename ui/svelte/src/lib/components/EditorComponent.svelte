@@ -136,19 +136,23 @@
 
 <div class="editor">
 	<div class="todos">
-		<div>frontend</div>
+		<div>frontend tasks</div>
 		<br />
-		<div class="todo">convert codebase into a flexible spreadsheet data frame.</div>
-		<div class="todo">add selection capability.</div>
-		<div class="todo">render multiline diagnostic highlighters.</div>
-		<div class="todo">copy and paste text from the clipboard.</div>
-		<div class="todo">add line numbers.</div>
-		<div class="todo">blinking cursor animation.</div>
+		<div class="todo">implement token deletion on ctrl+backspace.</div>
+		<div class="todo">transform the codebase into a flexible spreadsheet data frame.</div>
+		<div class="todo">add selection functionality.</div>
+		<div class="todo">implement rendering of multiline diagnostic highlighters.</div>
+		<div class="todo">enable clipboard text copy and paste functionality.</div>
+		<div class="todo">add line numbers to the editor.</div>
+		<div class="todo">create blinking cursor animation.</div>
+		<div class="todo">debug rendering of unexpected token found span, ensuring trivia are included.</div>
+		<div class="todo">debug rendering of missing quote in comments.</div>
 		<br />
 		<br />
-		<div>backend</div>
+		<div>backend tasks</div>
 		<br />
-		<div class="todo">evaluate reactive cell reference assigments.</div>
+		<div class="todo">evaluate reactive assignments of cell references.</div>
+		<div class="todo">rewrite lexer tokens efficiently when new characters are inserted.</div>
 	</div>
 	<br />
 	<br />

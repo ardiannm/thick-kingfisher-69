@@ -47,15 +47,11 @@
 	}
 	.tooltip {
 		position: absolute;
-		display: flex;
 		width: fit-content;
 		height: fit-content;
 		z-index: 3;
-		padding: 1px 10px;
+		padding: 1px 7px;
 		background-color: white;
-		background-color: #212121;
-		color: white;
-		align-items: center;
-		box-shadow: 0px 4px 8px -2px rgba(9, 30, 66, 0.25), 0px 0px 0px 1px rgba(9, 30, 66, 0.08);
+		box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
 	}
 </style>
