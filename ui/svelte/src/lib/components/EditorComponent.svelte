@@ -155,12 +155,12 @@
 	</div>
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
-			{#each diagnostics as { message, span: { line, column, length, address } }}
+			{#each diagnostics as diagnostic}
 				<div class="diagnostic">
-					<div class="address">{address}</div>
-					<div>{message}</div>
+					<div class="address">{diagnostic.span.address}</div>
+					<div>{diagnostic.message}</div>
 				</div>
-				<DiagnosticComponent {line} {column} {length} {message} />
+				<DiagnosticComponent {diagnostic} />
 			{/each}
 		</div>
 	{/if}
@@ -171,7 +171,7 @@
 		<br />
 		<div class="tokens highlight">
 			{#each tokens as token, i}
-				<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
+			<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 			{/each}
 		</div>
 	{/if}
