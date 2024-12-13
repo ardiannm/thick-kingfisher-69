@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Diagnostic } from '../../../../../src/analysis/diagnostics/diagnostic';
 	import { getPosition } from '../Position';
-	let { diagnostic }: {diagnostic: Diagnostic} = $props();
+	let { diagnostic }: { diagnostic: Diagnostic } = $props();
 	let x: number = $state(0);
 	let y: number = $state(0);
 	let w: number = $state(0);
@@ -10,7 +10,10 @@
 	$effect(renderUi);
 	function renderUi() {
 		const p1 = getPosition(diagnostic.span.line, diagnostic.span.column);
-		const p2 = getPosition(diagnostic.span.line, diagnostic.span.column + (diagnostic.span.length || 1));
+		const p2 = getPosition(
+			diagnostic.span.line,
+			diagnostic.span.column + (diagnostic.span.length || 1)
+		);
 		const scrollX = window.scrollX;
 		const scrollY = window.scrollY;
 		x = p1.x + scrollX;
@@ -19,9 +22,10 @@
 		h = p1.height;
 	}
 	function toggleShow() {
-		show = !show
+		show = !show;
 	}
 </script>
+
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 <span
 	aria-hidden="true"
@@ -44,6 +48,7 @@
 	">{diagnostic.message}</span
 	>
 {/if}
+
 <style lang="scss">
 	.diagnostic {
 		position: absolute;

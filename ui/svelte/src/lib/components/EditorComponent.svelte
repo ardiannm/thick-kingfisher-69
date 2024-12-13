@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { SourceText } from '../../../../../src/lexing/source.text';
 	import CursorComponent from './CursorComponent.svelte';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
+	import TooltipComponent from './TooltipComponent.svelte';
+	import { onMount } from 'svelte';
+	import { SourceText } from '../../../../../src/lexing/source.text';
 	let { text } = $props();
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
@@ -171,7 +172,9 @@
 		<br />
 		<div class="tokens highlight">
 			{#each tokens as token, i}
-			<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
+			<TooltipComponent title="({token.span.address}) {token.class}">
+				<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
+			</TooltipComponent>
 			{/each}
 		</div>
 	{/if}
