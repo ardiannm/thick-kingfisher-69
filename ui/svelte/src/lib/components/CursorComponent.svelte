@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getPosition } from "$lib/Position";
+	import { getPosition } from '$lib/Position';
 	let { line, column } = $props();
 	let x: number = $state(0);
 	let y: number = $state(0);
@@ -14,6 +14,7 @@
 		y = p1.y + scrollY;
 	}
 </script>
+
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 <span
 	class="cursor"
@@ -24,6 +25,7 @@
         height: {h}px;
     "
 ></span>
+
 <style scoped lang="scss">
 	.cursor {
 		position: absolute;

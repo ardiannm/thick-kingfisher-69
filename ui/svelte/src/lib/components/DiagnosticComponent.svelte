@@ -18,6 +18,7 @@
 		h = p1.height;
 	}
 </script>
+
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 <span
 	aria-hidden="true"
@@ -40,10 +41,11 @@
 	">{message}</span
 	>
 {/if}
+
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #a7d7ffa8;
+		background-color: #aec7e08a;
 	}
 	.tooltip {
 		position: absolute;
@@ -52,6 +54,6 @@
 		z-index: 3;
 		padding: 1px 7px;
 		background-color: white;
-		box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
+		box-shadow: 0px 3px 8px #0000003d;
 	}
 </style>

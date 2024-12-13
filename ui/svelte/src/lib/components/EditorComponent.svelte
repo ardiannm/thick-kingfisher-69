@@ -106,6 +106,7 @@
 	}
 	onMount(() => (renderCursor = true));
 </script>
+
 <div class="editor">
 	<div class="todos">
 		<div>frontend tasks</div>
@@ -117,7 +118,9 @@
 		<div class="todo">enable clipboard text copy and paste functionality.</div>
 		<div class="todo">add line numbers to the editor.</div>
 		<div class="todo">create blinking cursor animation.</div>
-		<div class="todo">debug rendering of unexpected token found span, ensuring trivia are included.</div>
+		<div class="todo">
+			debug rendering of unexpected token found span, ensuring trivia are included.
+		</div>
 		<div class="todo">debug rendering of missing quote in comments.</div>
 		<br />
 		<br />
@@ -128,10 +131,7 @@
 	</div>
 	<br />
 	<br />
-	<div
-		class="space highlight"
-		tabindex="-1"
-	>
+	<div class="space highlight" tabindex="-1">
 		{#each lines as line, i}
 			<span id={`line-${i + 1}`} class="line">
 				{#each line.getTokens() as token, j}
@@ -155,7 +155,7 @@
 	</div>
 	{#if diagnostics.length}
 		<div class="diagnostics highlight">
-			{#each diagnostics as { message, span: { line, column, length, address }}}
+			{#each diagnostics as { message, span: { line, column, length, address } }}
 				<div class="diagnostic">
 					<div class="address">{address}</div>
 					<div>{message}</div>
@@ -177,6 +177,7 @@
 	{/if}
 </div>
 <svelte:window on:keydown={handleKey} />
+
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f6f8fa;
@@ -206,9 +207,6 @@
 		box-sizing: border-box;
 		z-index: 1;
 		pointer-events: none;
-	}
-	.tokens .space-trivia {
-		background-color: #a7d8ff;
 	}
 	.stats {
 		margin-top: 20px;
@@ -256,5 +254,10 @@
 		width: fit-content;
 		min-width: 40px;
 		margin-right: 6px;
+	}
+	.tokens {
+		& .space-trivia {
+			background-color: #aec7e0;
+		}
 	}
 </style>
