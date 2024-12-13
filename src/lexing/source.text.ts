@@ -133,4 +133,18 @@ export class SourceText {
     }
     return text.join("\n");
   }
+
+  duplicateLine(line: number) {
+    line--;
+    let n = 0;
+    let text = [] as string[];
+    while (n < this.lines.length) {
+      text.push(this.lines[n].span.text);
+      if (n === line) {
+        text.push(this.lines[n].span.text);
+      }
+      n++;
+    }
+    return text.join("\n");
+  }
 }

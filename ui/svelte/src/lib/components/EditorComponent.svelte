@@ -245,14 +245,6 @@
 		flex-direction: row;
 		margin-left: 20px;
 	}
-	.check {
-		display: flex;
-		width: 17px;
-		height: 17px;
-		justify-content: center;
-		align-items: center;
-		margin-right: 10px;
-	}
 	.tokens {
 		display: flex;
 		flex-direction: row;
