@@ -18,13 +18,19 @@
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
-	let renderCursor = $state(false);
+	let showCursor = $state(false);
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
 	function handleKey(event: KeyboardEvent) {
-		renderCursor = true;
+		showCursor = true;
 		const input = event.key;
-		if (input === 'ArrowDown' && event.altKey) {
+		if (input === "ArrowUp" && event.shiftKey && event.altKey) {
+			event.preventDefault()
+			duplicateLine(0)
+		} else if (input === "ArrowDown" && event.shiftKey && event.altKey) {
+			event.preventDefault()
+			duplicateLine(+1)
+		} else if (input === 'ArrowDown' && event.altKey) {
 			event.preventDefault();
 			moveLine(+1);
 		} else if (input === 'ArrowUp' && event.altKey) {
@@ -105,9 +111,13 @@
 			cursor = span.start;
 		}
 	}
-	onMount(() => (renderCursor = true));
+	function duplicateLine(step: number) {
+		text = tree.duplicateLine(line)
+		const ln = line
+		cursor = tree.getPosition(ln + step, prevColumn)
+	}
+	onMount(() => (showCursor = true));
 </script>
-
 <div class="editor">
 	<div class="todos">
 		<div>frontend tasks</div>
@@ -146,7 +156,7 @@
 				{/each}
 			</span>
 		{/each}
-		{#if renderCursor}
+		{#if showCursor}
 			<CursorComponent {line} {column} />
 		{/if}
 	</div>
@@ -172,15 +182,17 @@
 		<br />
 		<div class="tokens highlight">
 			{#each tokens as token, i}
-			<TooltipComponent title="({token.span.address}) {token.class}">
-				<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
-			</TooltipComponent>
+				<TooltipComponent>
+					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
+					{#snippet message()}
+						{token.span.address}
+					{/snippet}
+				</TooltipComponent>
 			{/each}
 		</div>
 	{/if}
 </div>
 <svelte:window on:keydown={handleKey} />
-
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f6f8fa;
@@ -197,8 +209,8 @@
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
-		cursor: text;
 		user-select: none;
+		cursor: default;
 	}
 	.space {
 		width: 700px;
@@ -242,13 +254,18 @@
 		margin-right: 10px;
 	}
 	.tokens {
-		width: fit-content;
 		display: flex;
 		flex-direction: row;
+		& .space-trivia {
+			background-color: #aec7e0;
+		}
+		& .line-break-trivia {
+			background-color: #aec7e0;
+		}
 	}
 	.token {
 		display: inline-block;
-		width: fit-content;
+		width: auto;
 		height: fit-content;
 		min-width: 1px;
 		white-space: pre;
@@ -257,10 +274,5 @@
 		width: fit-content;
 		min-width: 40px;
 		margin-right: 6px;
-	}
-	.tokens {
-		& .space-trivia {
-			background-color: #aec7e0;
-		}
 	}
 </style>

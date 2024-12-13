@@ -7,14 +7,13 @@
 	let h: number = 16;
 	$effect(renderUi);
 	function renderUi() {
-		const p1 = getPosition(line, column);
+		const pos = getPosition(line, column);
 		const scrollX = window.scrollX;
 		const scrollY = window.scrollY;
-		x = p1.x + scrollX;
-		y = p1.y + scrollY;
+		x = pos.x + scrollX;
+		y = pos.y + scrollY;
 	}
 </script>
-
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 <span
 	class="cursor"
@@ -25,7 +24,6 @@
         height: {h}px;
     "
 ></span>
-
 <style scoped lang="scss">
 	.cursor {
 		position: absolute;
