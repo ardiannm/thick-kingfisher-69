@@ -10,12 +10,9 @@
 		show = true;
 	}
 </script>
+
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-<div 
-	aria-hidden="true" 
-	onmouseenter={renderUi} 
-	onmouseleave={() => show = false} 
->
+<div aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
 	{@render children()}
 </div>
 {#if show}
@@ -23,6 +20,7 @@
 		{@render message()}
 	</div>
 {/if}
+
 <style>
 	.tooltip {
 		position: absolute;
@@ -32,6 +30,9 @@
 		align-items: center;
 		z-index: 9999;
 		outline: 1px solid;
-		box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+		box-shadow:
+			rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+			rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+			rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
 	}
 </style>

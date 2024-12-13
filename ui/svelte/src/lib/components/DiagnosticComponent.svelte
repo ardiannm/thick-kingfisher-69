@@ -24,7 +24,9 @@
 		show = !show;
 	}
 </script>
+
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
+
 <TooltipComponent>
 	<span
 		role="tooltip"
@@ -42,6 +44,7 @@
 		{diagnostic.message}
 	{/snippet}
 </TooltipComponent>
+
 <style lang="scss">
 	.diagnostic {
 		position: absolute;

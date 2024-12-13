@@ -14,7 +14,9 @@
 		y = pos.y + scrollY;
 	}
 </script>
+
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
+
 <span
 	class="cursor"
 	style="
@@ -24,6 +26,7 @@
         height: {h}px;
     "
 ></span>
+
 <style scoped lang="scss">
 	.cursor {
 		position: absolute;

@@ -8,11 +8,8 @@
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(
-		tree.diagnosticsBag.diagnostics
-			.sort((a, b) => a.span.start - b.span.start)
-			.sort((a, b) => a.span.start - b.span.start)
+		tree.diagnosticsBag.diagnostics.sort((a, b) => a.span.start - b.span.start)
 	);
-	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
@@ -24,12 +21,12 @@
 	function handleKey(event: KeyboardEvent) {
 		showCursor = true;
 		const input = event.key;
-		if (input === "ArrowUp" && event.shiftKey && event.altKey) {
-			event.preventDefault()
-			duplicateLine(0)
-		} else if (input === "ArrowDown" && event.shiftKey && event.altKey) {
-			event.preventDefault()
-			duplicateLine(+1)
+		if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
+			event.preventDefault();
+			duplicateLine(0);
+		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
+			event.preventDefault();
+			duplicateLine(+1);
 		} else if (input === 'ArrowDown' && event.altKey) {
 			event.preventDefault();
 			moveLine(+1);
@@ -112,12 +109,15 @@
 		}
 	}
 	function duplicateLine(step: number) {
-		text = tree.duplicateLine(line)
-		const ln = line
-		cursor = tree.getPosition(ln + step, prevColumn)
+		text = tree.duplicateLine(line);
+		const ln = line;
+		cursor = tree.getPosition(ln + step, prevColumn);
 	}
 	onMount(() => (showCursor = true));
 </script>
+
+<svelte:window on:keydown={handleKey} />
+
 <div class="editor">
 	<div class="todos">
 		<div>frontend tasks</div>
@@ -159,6 +159,11 @@
 		{#if showCursor}
 			<CursorComponent {line} {column} />
 		{/if}
+		{#if diagnostics.length}
+			{#each diagnostics as diagnostic}
+				<DiagnosticComponent {diagnostic} />
+			{/each}
+		{/if}
 	</div>
 	<br />
 	<div class="stats">
@@ -171,7 +176,6 @@
 					<div class="address">{diagnostic.span.address}</div>
 					<div>{diagnostic.message}</div>
 				</div>
-				<DiagnosticComponent {diagnostic} />
 			{/each}
 		</div>
 	{/if}
@@ -192,13 +196,14 @@
 		</div>
 	{/if}
 </div>
-<svelte:window on:keydown={handleKey} />
+
 <style scoped lang="scss">
 	.highlight {
 		background-color: #f6f8fa;
 		outline: 1px solid #d1d9e0;
 		border-radius: 7px;
 		padding: 10px 20px;
+		user-select: none;
 	}
 	.editor {
 		display: flex;
@@ -209,8 +214,6 @@
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
-		user-select: none;
-		cursor: default;
 	}
 	.space {
 		width: 700px;
