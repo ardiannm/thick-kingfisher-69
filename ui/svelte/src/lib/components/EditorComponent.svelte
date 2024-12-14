@@ -133,7 +133,7 @@
 
 	function moveToPrevToken() {
 		const position = tree.getPosition(line, column);
-		let index = tree.getTokenAt(position - 1);
+		let index = tree.getTokenLocation(position - 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index--;
@@ -144,7 +144,7 @@
 
 	function moveToNextToken() {
 		const position = tree.getPosition(line, column);
-		let index = tree.getTokenAt(position + 1);
+		let index = tree.getTokenLocation(position + 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index++;
