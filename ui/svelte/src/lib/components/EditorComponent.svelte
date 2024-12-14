@@ -26,7 +26,11 @@
 	function handleKey(event: KeyboardEvent) {
 		showCursor = true;
 		const input = event.key;
-		if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
+		if (input === 'ArrowRight' && event.ctrlKey) {
+			moveToNextToken();
+		} else if (input === 'ArrowLeft' && event.ctrlKey) {
+			moveToPrevToken();
+		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
 			event.preventDefault();
 			duplicateLine(0);
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
@@ -125,6 +129,32 @@
 		text = tree.duplicateLine(line);
 		const ln = line;
 		cursor = tree.getPosition(ln + step, prevColumn);
+	}
+
+	function moveToPrevToken() {
+		const position = tree.getPosition(line, column);
+		let index = tree.getTokenAt(position - 1);
+		let token = tokens[index];
+		while (token && token.isPunctuation()) {
+			index--;
+			token = tokens[index];
+		}
+		cursor = token.span.start;
+	}
+
+	function moveToNextToken() {
+		const position = tree.getPosition(line, column);
+		let index = tree.getTokenAt(position + 1);
+		let token = tokens[index];
+		while (token && token.isPunctuation()) {
+			index++;
+			token = tokens[index];
+		}
+		if (token) {
+			cursor = token.span.end;
+		} else {
+			cursor = text.length;
+		}
 	}
 
 	onMount(() => (showCursor = true));

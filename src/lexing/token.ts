@@ -25,6 +25,26 @@ export class Token<T extends Kind = Kind> {
     }
   }
 
+  isPunctuation() {
+    switch (this.kind) {
+      case SyntaxKind.PlusToken:
+      case SyntaxKind.MinusToken:
+      case SyntaxKind.SlashToken:
+      case SyntaxKind.StarToken:
+      case SyntaxKind.HatToken:
+      case SyntaxKind.OpenParenthesisToken:
+      case SyntaxKind.CloseParenthesisToken:
+      case SyntaxKind.OpenBraceToken:
+      case SyntaxKind.CloseBraceToken:
+      case SyntaxKind.ColonColonToken:
+      case SyntaxKind.ColonToken:
+      case SyntaxKind.SpaceTrivia:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   get class() {
     return this.kind
       .toString()
