@@ -4,20 +4,25 @@
 	import TooltipComponent from './TooltipComponent.svelte';
 	import { onMount } from 'svelte';
 	import { SourceText } from '../../../../../src/lexing/source.text';
+
 	let { text } = $props();
+
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(
 		tree.diagnosticsBag.diagnostics.sort((a, b) => a.span.start - b.span.start)
 	);
+
 	let cursor = $state(text.length);
 	let line = $derived(tree.getLine(cursor));
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
 	let showCursor = $state(false);
+
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
+
 	function handleKey(event: KeyboardEvent) {
 		showCursor = true;
 		const input = event.key;
@@ -64,6 +69,7 @@
 			insertText(input);
 		}
 	}
+
 	function moveLine(step: number) {
 		const nextLine = line + step;
 		const nextTree = tree.swapLines(line, nextLine);
@@ -71,10 +77,12 @@
 		text = nextTree;
 		cursor = tree.getPosition(nextLine, prevColumn);
 	}
+
 	function backspace() {
 		removeText();
 		moveCursorX(-1);
 	}
+
 	function moveCursorX(step: number) {
 		const newPos = cursor + step;
 		if (newPos >= 0 && newPos <= text.length) {
@@ -82,6 +90,7 @@
 			prevColumn = column;
 		}
 	}
+
 	function moveCursorY(steps: number) {
 		const prevLine = line + steps;
 		if (prevLine > 0) {
@@ -92,13 +101,16 @@
 			cursor = 0;
 		}
 	}
+
 	function insertText(charText: string = '\n') {
 		text = text.substring(0, cursor) + charText + text.substring(cursor);
 		cursor += 1;
 	}
+
 	function removeText() {
 		text = text.substring(0, cursor - 1) + text.substring(cursor);
 	}
+
 	function removeLine() {
 		const span = currentLine.fullSpan;
 		if (span.length === 0) {
@@ -108,11 +120,13 @@
 			cursor = span.start;
 		}
 	}
+
 	function duplicateLine(step: number) {
 		text = tree.duplicateLine(line);
 		const ln = line;
 		cursor = tree.getPosition(ln + step, prevColumn);
 	}
+
 	onMount(() => (showCursor = true));
 </script>
 
@@ -120,25 +134,19 @@
 
 <div class="editor">
 	<div class="todos">
-		<div>frontend tasks</div>
 		<br />
-		<div class="todo">implement token deletion on ctrl+backspace.</div>
-		<div class="todo">transform the codebase into a flexible spreadsheet data frame.</div>
-		<div class="todo">add selection functionality.</div>
-		<div class="todo">implement rendering of multiline diagnostic highlighters.</div>
-		<div class="todo">enable clipboard text copy and paste functionality.</div>
-		<div class="todo">add line numbers to the editor.</div>
-		<div class="todo">create blinking cursor animation.</div>
+		<br />
+		<br />
+		<br />
+		<div>bugs</div>
+		<br />
 		<div class="todo">
-			debug rendering of unexpected token found span, ensuring trivia are included.
+			unexpected end-of-file-token diagnostic span does not include the trivia in the diagnostic
+			rendering.
 		</div>
-		<div class="todo">debug rendering of missing quote in comments.</div>
+		<div class="todo">rendering failure for the diagnostic missing quote on comments.</div>
 		<br />
 		<br />
-		<div>backend tasks</div>
-		<br />
-		<div class="todo">evaluate reactive assignments of cell references.</div>
-		<div class="todo">rewrite lexer tokens efficiently when new characters are inserted.</div>
 	</div>
 	<br />
 	<br />
@@ -251,11 +259,9 @@
 	.tokens {
 		display: flex;
 		flex-direction: row;
-		& .space-trivia {
-			background-color: #fafad2;
-		}
-		& .line-break-trivia {
-			background-color: #fafad2;
+		& .space-trivia,
+		.line-break-trivia {
+			background-color: #cbdaf5;
 		}
 	}
 	.token {

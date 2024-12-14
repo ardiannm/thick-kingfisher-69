@@ -1,9 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	let { message, children }: { message: Snippet; children: Snippet } = $props();
+
 	let x = $state(0);
 	let y = $state(0);
+
 	let show = $state(false);
+
 	function renderUi(event: MouseEvent) {
 		x = event.pageX + 5;
 		y = event.pageY - 20;

@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { getPosition } from '$lib/Position';
+
 	let { line, column } = $props();
+
 	let x: number = $state(0);
 	let y: number = $state(0);
 	let w: number = 2;
 	let h: number = 16;
-	$effect(renderUi);
+
 	function renderUi() {
 		const pos = getPosition(line, column);
 		const scrollX = window.scrollX;
@@ -13,6 +15,8 @@
 		x = pos.x + scrollX;
 		y = pos.y + scrollY;
 	}
+
+	$effect(renderUi);
 </script>
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />

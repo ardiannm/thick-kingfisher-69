@@ -4,6 +4,14 @@ export interface Position {
 	width: number;
 	height: number;
 }
+
+const positionFromRect = (rect: DOMRect): Position => ({
+	x: rect.x,
+	y: rect.y,
+	width: rect.width,
+	height: rect.height
+});
+
 export function getPosition(line: number, column: number): Position {
 	const div = document.getElementById(`line-${line}`)!;
 	let charCount = 0;
@@ -32,9 +40,3 @@ export function getPosition(line: number, column: number): Position {
 	const rect = lastElement.getBoundingClientRect();
 	return positionFromRect(rect);
 }
-const positionFromRect = (rect: DOMRect): Position => ({
-	x: rect.x,
-	y: rect.y,
-	width: rect.width,
-	height: rect.height
-});
