@@ -142,7 +142,7 @@
 	</div>
 	<br />
 	<br />
-	<div class="space highlight" tabindex="-1">
+	<div id="space" class="space highlight" tabindex="-1">
 		{#each lines as line, i}
 			<span id={`line-${i + 1}`} class="line">
 				{#each line.getTokens() as token, j}
@@ -252,10 +252,10 @@
 		display: flex;
 		flex-direction: row;
 		& .space-trivia {
-			background-color: #aec7e0;
+			background-color: #fafad2;
 		}
 		& .line-break-trivia {
-			background-color: #aec7e0;
+			background-color: #fafad2;
 		}
 	}
 	.token {

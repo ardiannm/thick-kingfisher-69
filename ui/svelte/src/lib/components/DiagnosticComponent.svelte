@@ -2,6 +2,7 @@
 	import TooltipComponent from './TooltipComponent.svelte';
 	import type { Diagnostic } from '../../../../../src/analysis/diagnostics/diagnostic';
 	import { getPosition } from '../Position';
+	import { onDestroy, onMount } from 'svelte';
 	let { diagnostic }: { diagnostic: Diagnostic } = $props();
 	let x: number = $state(0);
 	let y: number = $state(0);
@@ -24,6 +25,23 @@
 	function toggleShow() {
 		show = !show;
 	}
+	const handleScroll = () => renderUi();
+	onMount(() => {
+		if (typeof document !== 'undefined') {
+			const e = document.querySelector('#space');
+			if (e) {
+				e.addEventListener('scroll', handleScroll);
+			}
+		}
+	});
+	onDestroy(() => {
+		if (typeof document !== 'undefined') {
+			const e = document.querySelector('#space');
+			if (e) {
+				e.removeEventListener('scroll', handleScroll);
+			}
+		}
+	});
 </script>
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
@@ -49,6 +67,6 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #aec7e08a;
+		background-color: #fafad2;
 	}
 </style>
