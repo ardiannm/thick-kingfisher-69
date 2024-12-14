@@ -13,12 +13,13 @@
 		const line = diagnostic.span.line;
 		const column = diagnostic.span.column;
 		const length = diagnostic.span.length || 1;
-		const p1 = getPosition(line, column);
-		const p2 = getPosition(line, column + length);
-		x = p1.x + window.scrollX;
-		y = p1.y + window.scrollY;
-		w = p2.x - p1.x;
-		h = p1.height;
+		const upToColumn = column + length;
+		const pos1 = getPosition(line, column);
+		const pos2 = getPosition(line, upToColumn);
+		x = pos1.x + window.scrollX;
+		y = pos1.y + window.scrollY;
+		w = pos2.x - pos1.x;
+		h = pos1.height;
 	}
 	function toggleShow() {
 		show = !show;

@@ -60,6 +60,10 @@ export class DiagnosticsBag {
     this.diagnostics.push(node);
   }
 
+  cantAssignTo(kind: Kind, span: Span) {
+    this.report(`can't assign to \`${kind}\`.`, Severity.CantEvaluate, span);
+  }
+
   binderMethod(kind: Kind, span: Span) {
     this.report(`method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
   }

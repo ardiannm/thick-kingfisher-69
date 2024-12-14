@@ -72,15 +72,22 @@ export class Binder {
   }
 
   private bindCellAssignment(node: SyntaxCellAssignment) {
-    this.scope.references.length = 0;
-    const expression = this.bind(node.expression);
-    const reference = this.bindCell(node.left as SyntaxCellReference);
-    const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
-    if (node.left.right.hasTrivia()) {
-      this.scope.assignments.delete(bound.reference.name);
+    if (node.left.kind === SyntaxKind.SyntaxCellReference) {
+      this.scope.references.length = 0;
+      const expression = this.bind(node.expression);
+      const reference = this.bindCell(node.left);
+      const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
+      if (node.left.right.hasTrivia()) {
+        this.scope.assignments.delete(bound.reference.name);
+      }
+      this.scope.references = new Array<BoundCellReference>();
+      return bound;
+    } else {
+      this.bind(node.left);
+      this.bind(node.expression);
+      this.scope.diagnostics.cantAssignTo(node.left.kind, node.operator.span);
+      return new BoundErrorExpression(node.kind, node.span);
     }
-    this.scope.references = new Array<BoundCellReference>();
-    return bound;
   }
 
   private bindCell(node: SyntaxCellReference): Cell {
