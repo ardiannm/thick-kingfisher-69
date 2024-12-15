@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { DiagnosticWithPosition, EditorComponent, Position } from "../../editor/editor.component";
+import { DiagnosticWithPosition, EditorComponent } from "../../editor/editor.component";
 import { DiagnosticComponent } from "../../editor/diagnostic/diagnostic.component";
 
 @Component({
@@ -14,6 +14,5 @@ export class EditorPageComponent {
 
   renderDiagnostics(diagnostics: DiagnosticWithPosition[]) {
     this.diagnostics = diagnostics;
-    console.log(diagnostics[0]);
   }
 }

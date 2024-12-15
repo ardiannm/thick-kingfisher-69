@@ -20,8 +20,6 @@ export class DiagnosticComponent implements OnInit {
     this.x = this.from.x;
     this.y = this.from.y;
     this.width = this.to.x - this.from.x;
-    console.log(this.width);
-
     this.height = this.from.height - 2;
   }
 }
