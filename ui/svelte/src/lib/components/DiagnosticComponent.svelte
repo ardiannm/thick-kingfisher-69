@@ -55,6 +55,14 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #e2ebfc;
+		background-color: #c9c3e6d2;
+		opacity: 0.5;
+		&:hover {
+			opacity: 1;
+			outline: 1px solid #2a2a2a;
+			box-shadow:
+				rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+				rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+		}
 	}
 </style>

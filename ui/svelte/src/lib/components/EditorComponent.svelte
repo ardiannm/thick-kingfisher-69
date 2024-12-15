@@ -163,24 +163,25 @@
 <svelte:window on:keydown={handleKey} />
 
 <div class="editor">
-	<div class="todos">
-		<br />
-		<br />
-		<br />
-		<br />
-		<div>bugs</div>
-		<br />
-		<div class="todo">
-			unexpected end-of-file-token diagnostic span does not include the trivia in the diagnostic
-			rendering.
-		</div>
-		<div class="todo">rendering failure for the diagnostic missing quote on comments.</div>
-		<br />
-		<br />
+	<div class="highlight">
+		<ul>
+			<li>
+				unexpected end-of-file-token diagnostic span does not include the trivia in the diagnostic
+				rendering.
+			</li>
+			<li>rendering failure for the diagnostic missing quote on comments.</li>
+		</ul>
 	</div>
-	<br />
-	<br />
+	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
+		{#if showCursor}
+			<CursorComponent {line} {column} />
+		{/if}
+		{#if diagnostics.length}
+			{#each diagnostics as diagnostic}
+				<DiagnosticComponent {diagnostic} />
+			{/each}
+		{/if}
 		{#each lines as line, i}
 			<span id={`line-${i + 1}`} class="line">
 				{#each line.getTokens() as token, j}
@@ -194,34 +195,17 @@
 				{/each}
 			</span>
 		{/each}
-		{#if showCursor}
-			<CursorComponent {line} {column} />
-		{/if}
-		{#if diagnostics.length}
-			{#each diagnostics as diagnostic}
-				<DiagnosticComponent {diagnostic} />
-			{/each}
-		{/if}
 	</div>
-	<br />
-	<div class="stats">
-		line {line} column {column}
-	</div>
+	<div class="seperator">line {line} column {column}</div>
 	{#if diagnostics.length}
-		<div class="diagnostics highlight">
+		<div class="highlight diagnostics">
 			{#each diagnostics as diagnostic}
-				<div class="diagnostic">
-					<div class="address">{diagnostic.span.address}</div>
-					<div>{diagnostic.message}</div>
-				</div>
+				<div>{diagnostic.message}</div>
 			{/each}
 		</div>
 	{/if}
-	<br />
-	<br />
 	{#if tokens.length > 1}
-		<div>tokens</div>
-		<br />
+		<div class="seperator">tokens</div>
 		<div class="tokens highlight">
 			{#each tokens as token, i}
 				<TooltipComponent>
@@ -237,21 +221,24 @@
 
 <style scoped lang="scss">
 	.highlight {
-		background-color: #f6f8fa;
 		outline: 1px solid #d1d9e0;
-		border-radius: 7px;
 		padding: 10px 20px;
+		border-radius: 4px;
 		user-select: none;
+		background-color: #f7f8fb;
+	}
+	.seperator {
+		margin-block: 20px;
 	}
 	.editor {
 		display: flex;
 		margin: auto;
-		margin-top: auto;
 		flex-direction: column;
 		width: fit-content;
 		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
+		margin-top: 5%;
 	}
 	.space {
 		width: 700px;
@@ -264,34 +251,11 @@
 		z-index: 1;
 		pointer-events: none;
 	}
-	.stats {
-		margin-top: 20px;
-	}
-	.diagnostics {
-		display: flex;
-		flex-direction: column;
-		margin-top: 20px;
-	}
-	.diagnostic {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		white-space: pre;
-	}
-	.todos {
-		padding: 7px;
-	}
-	.todo {
-		display: flex;
-		flex-direction: row;
-		margin-left: 20px;
-	}
 	.tokens {
 		display: flex;
 		flex-direction: row;
-		& .space-trivia,
-		.line-break-trivia {
-			background-color: #cbdaf5;
+		& .space-trivia {
+			background-color: #c9c3e6;
 		}
 	}
 	.token {
@@ -301,9 +265,11 @@
 		min-width: 1px;
 		white-space: pre;
 	}
-	.address {
-		width: fit-content;
-		min-width: 40px;
-		margin-right: 6px;
+	ul {
+		margin: 0;
+	}
+	.diagnostics {
+		color: #bebec5;
+		background-color: #2a2a2a;
 	}
 </style>
