@@ -200,7 +200,7 @@
 			{#each diagnostics as diagnostic}
 				<div class="diagnostic">
 					{diagnostic.message}
-					<div class="address">{diagnostic.span.address}</div>
+					<div class="address">{diagnostic.span.from.address}</div>
 				</div>
 			{/each}
 		</div>
@@ -212,7 +212,7 @@
 				<TooltipComponent>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet message()}
-						{token.span.address}
+						{token.span.from.address}
 					{/snippet}
 				</TooltipComponent>
 			{/each}

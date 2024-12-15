@@ -82,7 +82,7 @@ export class Parser {
         break;
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
-      if (this.peekToken().span.line > operator.span.line) {
+      if (this.peekToken().span.from.line > operator.span.from.line) {
         return new SyntaxBinaryExpression(this.source, left, operator, this.expect());
       } else {
         left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
@@ -166,7 +166,7 @@ export class Parser {
       return this.getNextToken();
     }
     let peek = this.peekToken();
-    const trivia = peek.trivias?.length ? peek.trivias![0] : peek;
+    const trivia = peek.hasTrivia() ? peek.trivias![0] : peek;
     const returnToken = new SyntaxToken(this.source, SyntaxKind.SyntaxErrorExpression, trivia.span);
     if (this.recovering) {
       return returnToken;

@@ -92,7 +92,7 @@ export class EditorComponent implements AfterViewInit {
   emitDiagnosticPositions() {
     setTimeout(() => {
       if (isPlatformBrowser(this.platformId)) {
-        const positions = this.diagnostics().map((d) => ({ from: this.getPosition(d.span.line, d.span.column), to: this.getPosition(d.span.line, d.span.column + d.span.length) }));
+        const positions = this.diagnostics().map((d) => ({ from: this.getPosition(d.span.from.line, d.span.from.column), to: this.getPosition(d.span.from.line, d.span.from.column + d.span.length) }));
         this.emitDiagnosticsPositions.emit(positions);
       }
     });

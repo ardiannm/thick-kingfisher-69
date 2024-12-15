@@ -1,3 +1,4 @@
+import { Location } from "./locaation";
 import { SourceText } from "./source.text";
 
 export class Span {
@@ -5,14 +6,6 @@ export class Span {
 
   static createFrom(source: SourceText, start: number, end: number) {
     return new Span(source, start, end);
-  }
-
-  get line() {
-    return this.source.getLine(this.start).number;
-  }
-
-  get column() {
-    return this.source.getColumn(this.start);
   }
 
   get text(): string {
@@ -23,7 +16,11 @@ export class Span {
     return this.end - this.start;
   }
 
-  get address() {
-    return this.source.getLine(this.start).number + ":" + this.source.getColumn(this.start);
+  get from() {
+    return new Location(this.source.getLine(this.start).number, this.source.getColumn(this.start));
+  }
+
+  get to() {
+    return new Location(this.source.getLine(this.end).number, this.source.getColumn(this.end));
   }
 }

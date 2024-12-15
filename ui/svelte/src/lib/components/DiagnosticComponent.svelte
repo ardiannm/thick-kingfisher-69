@@ -15,8 +15,8 @@
 	$effect(renderUi);
 
 	function renderUi() {
-		const line = diagnostic.span.line;
-		const column = diagnostic.span.column;
+		const line = diagnostic.span.from.line;
+		const column = diagnostic.span.from.column;
 		const length = diagnostic.span.length || 1;
 		const upToColumn = column + length;
 		const pos1 = getPosition(line, column);
