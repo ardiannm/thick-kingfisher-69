@@ -3,10 +3,10 @@ import { Span } from "./span";
 import { Token } from "./token";
 
 export class Line {
-  private constructor(public source: SourceText, public fullSpan: Span, private lineBreakLength: number) {}
+  private constructor(public source: SourceText, public number: number, public fullSpan: Span, private lineBreakLength: number) {}
 
-  static createFrom(source: SourceText, start: number, end: number, lineBreakLength: number) {
-    return new Line(source, Span.createFrom(source, start, end), lineBreakLength);
+  static createFrom(source: SourceText, number: number, start: number, end: number, lineBreakLength: number) {
+    return new Line(source, number, Span.createFrom(source, start, end), lineBreakLength);
   }
 
   get span() {

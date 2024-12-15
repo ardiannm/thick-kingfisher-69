@@ -45,7 +45,7 @@ export class EditorComponent implements AfterViewInit {
   source = computed(() => SourceText.parse(this.code()));
   lines = computed(() => this.source().getLines());
   cursor = signal(this.text.length);
-  line = computed(() => this.source().getLine(this.cursor()));
+  line = computed(() => this.source().getLine(this.cursor()).number);
   column = computed(() => this.source().getColumn(this.cursor()));
   cursorX = 0;
   cursorY = 0;

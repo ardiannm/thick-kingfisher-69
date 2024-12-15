@@ -8,7 +8,7 @@ export class Span {
   }
 
   get line() {
-    return this.source.getLine(this.start);
+    return this.source.getLine(this.start).number;
   }
 
   get column() {
@@ -24,6 +24,6 @@ export class Span {
   }
 
   get address() {
-    return this.source.getLine(this.start) + ":" + this.source.getColumn(this.start);
+    return this.source.getLine(this.start).number + ":" + this.source.getColumn(this.start);
   }
 }

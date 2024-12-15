@@ -9,12 +9,10 @@
 
 	const tree = $derived(SourceText.parse(text));
 	const lines = $derived(tree.getLines());
-	const diagnostics = $derived(
-		tree.diagnosticsBag.diagnostics.sort((a, b) => a.span.start - b.span.start)
-	);
+	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
 
 	let cursor = $state(text.length);
-	let line = $derived(tree.getLine(cursor));
+	let line = $derived(tree.getLine(cursor).number);
 	let column = $derived(tree.getColumn(cursor));
 	let currentLine = $derived(tree.getLines()[line - 1]);
 	let tokens = $derived(tree.getTokens());
@@ -200,7 +198,10 @@
 	{#if diagnostics.length}
 		<div class="highlight diagnostics">
 			{#each diagnostics as diagnostic}
-				<div>{diagnostic.message}</div>
+				<div class="diagnostic">
+					{diagnostic.message}
+					<div class="address">{diagnostic.span.address}</div>
+				</div>
 			{/each}
 		</div>
 	{/if}
@@ -270,5 +271,12 @@
 	.diagnostics {
 		color: #bebec5;
 		background-color: #2a2a2a;
+	}
+	.diagnostic {
+		display: flex;
+		flex-direction: row;
+		.address {
+			margin-left: auto;
+		}
 	}
 </style>

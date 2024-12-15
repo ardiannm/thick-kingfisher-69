@@ -35,12 +35,12 @@ export class SourceText {
       const char = this.text[position];
       position++;
       if (char === "\n") {
-        const span = Line.createFrom(this, start, position, 1);
+        const span = Line.createFrom(this, this.lines.length + 1, start, position, 1);
         this.lines.push(span);
         start = position;
       }
     }
-    const span = Line.createFrom(this, start, position, 0);
+    const span = Line.createFrom(this, this.lines.length + 1, start, position, 0);
     this.lines.push(span);
     start = position;
   }
@@ -65,7 +65,7 @@ export class SourceText {
 
   getTokenLocation(position: number) {
     if (position < 0) return 0;
-    if (position > this.text.length) return this.tokens[this.tokens.length - 1].span.end;
+    if (position > this.text.length) return this.tokens.length - 1;
     let left = 0;
     let right = this.tokens.length - 1;
     let middle;
@@ -83,16 +83,16 @@ export class SourceText {
     return middle;
   }
 
-  getLines() {
-    return this.lines;
-  }
-
   getTokens() {
     return this.tokens;
   }
 
+  getLines() {
+    return this.lines;
+  }
+
   getLine(position: number) {
-    return this.getLineLocation(position) + 1;
+    return this.lines[this.getLineLocation(position)];
   }
 
   getColumn(position: number): number {
