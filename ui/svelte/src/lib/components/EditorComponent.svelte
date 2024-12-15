@@ -246,7 +246,7 @@
 		display: flex;
 		flex-direction: row;
 		box-sizing: border-box;
-		z-index: 1;
+		z-index: 1000;
 		pointer-events: none;
 	}
 	.tokens {

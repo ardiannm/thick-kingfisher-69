@@ -39,7 +39,9 @@ export class Parser {
     const statements = [] as SyntaxNode[];
     while (this.hasToken()) {
       const startToken = this.peekToken();
-      statements.push(this.parseBlock());
+      const statement = this.parseBlock();
+      statements.push(statement);
+      console.log(statement.kind, statement.text);
       if (this.peekToken() === startToken) this.getNextToken();
     }
     const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken, "expecting `EOF` token.") as SyntaxToken<SyntaxKind.EndOfFileToken>;
