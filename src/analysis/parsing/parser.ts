@@ -67,10 +67,9 @@ export class Parser {
 
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
-    switch (this.peekToken().kind) {
-      case SyntaxKind.ColonColonToken:
-        const keyword = this.getNextToken();
-        return new SyntaxCellAssignment(this.source, left as SyntaxCellReference, keyword, this.parseBinaryExpression());
+    if (this.match(SyntaxKind.ColonColonToken)) {
+      const keyword = this.getNextToken();
+      return new SyntaxCellAssignment(this.source, left as SyntaxCellReference, keyword, this.parseBinaryExpression());
     }
     return left;
   }

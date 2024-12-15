@@ -21,6 +21,7 @@ import { BoundUnaryExpression } from "./bound.unary.expression";
 import { BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "./bound.kind";
 import { SyntaxBinaryExpression } from "../parsing/syntax.binary.expression";
 import { BoundBinaryExpression } from "./bound.binary.expression";
+import { Span } from "../../lexing/span";
 
 export class Binder {
   private constructor(private configuration: CompilerOptions, private scope: BoundScope) {}
@@ -88,7 +89,8 @@ export class Binder {
     } else {
       if (node.left.kind !== SyntaxKind.SyntaxErrorExpression) {
         this.bind(node.left);
-        this.scope.diagnostics.reportCantAssignTo(node.left.kind, node.operator.span);
+        const span = Span.createFrom(node.source, node.left.span.start, node.operator.span.end);
+        this.scope.diagnostics.reportCantAssignTo(node.left.kind, span);
       }
       this.bind(node.expression);
       return new BoundErrorExpression(node.kind, node.span);
