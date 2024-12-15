@@ -224,7 +224,6 @@
 		outline: 1px solid #d1d9e0;
 		padding: 10px 20px;
 		border-radius: 4px;
-		user-select: none;
 		background-color: #f7f8fb;
 	}
 	.seperator {
