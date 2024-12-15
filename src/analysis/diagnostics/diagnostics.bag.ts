@@ -9,11 +9,6 @@ export class DiagnosticsBag {
   diagnostics = [] as Diagnostic[];
   private severity = new Set() as Set<Severity>;
 
-  private report(message: string, severity: Severity, span: Span) {
-    this.severity.add(severity);
-    this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
-  }
-
   canParse() {
     return !this.severity.has(Severity.CantParse);
   }
@@ -22,16 +17,17 @@ export class DiagnosticsBag {
     return this.canParse() && !this.severity.has(Severity.CantBind);
   }
 
+  report(message: string, severity: Severity, span: Span) {
+    this.severity.add(severity);
+    this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
+  }
+
   canEvaluate() {
     return this.canBind() && !this.severity.has(Severity.CantEvaluate);
   }
 
   reportBadCharacterFound(text: string, span: Span) {
     this.report(`bad character \`${text}\` found`, Severity.CantBind, span);
-  }
-
-  reportExpectingSyntax(kind: Kind, span: Span) {
-    this.report(`expecting \`${kind}\`.`, Severity.CantEvaluate, span);
   }
 
   reportUndeclaredCell(name: string, span: Span) {
@@ -48,10 +44,6 @@ export class DiagnosticsBag {
 
   reportCompactCellReferenceRequired(correctName: string, span: Span) {
     this.report(`did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
-  }
-
-  reportEmptyBlock(span: Span) {
-    this.report(`expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {

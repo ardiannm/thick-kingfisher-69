@@ -200,7 +200,7 @@
 			{#each diagnostics as diagnostic}
 				<div class="diagnostic">
 					{diagnostic.message}
-					<div class="address">{diagnostic.span.from.address}</div>
+					<div class="address">{diagnostic.span.from.address}:{diagnostic.span.to.address}</div>
 				</div>
 			{/each}
 		</div>
