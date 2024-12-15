@@ -253,7 +253,7 @@
 		display: flex;
 		flex-direction: row;
 		& .space-trivia {
-			background-color: #c9c3e6;
+			background-color: #c9c3e6dc;
 		}
 	}
 	.token {

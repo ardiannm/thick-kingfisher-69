@@ -41,7 +41,6 @@ export class Parser {
       const startToken = this.peekToken();
       const statement = this.parseBlock();
       statements.push(statement);
-      console.log(statement.kind, statement.text);
       if (this.peekToken() === startToken) this.getNextToken();
     }
     const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken, "expecting `EOF` token.") as SyntaxToken<SyntaxKind.EndOfFileToken>;
@@ -54,7 +53,8 @@ export class Parser {
       const statements = [] as SyntaxNode[];
       while (this.hasToken() && !this.match(SyntaxKind.CloseBraceToken)) {
         const startToken = this.peekToken();
-        statements.push(this.parseBlock());
+        const statement = this.parseBlock();
+        statements.push(statement);
         if (this.peekToken() === startToken) this.getNextToken();
       }
       const closeBrace = this.expect(SyntaxKind.CloseBraceToken, "expecting `}`.") as SyntaxToken<SyntaxKind.CloseBraceToken>;
@@ -69,7 +69,7 @@ export class Parser {
 
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
-    if (this.match(SyntaxKind.ColonColonToken)) {
+    if (left.kind === SyntaxKind.SyntaxCellReference && this.match(SyntaxKind.ColonColonToken)) {
       const keyword = this.getNextToken();
       return new SyntaxCellAssignment(this.source, left as SyntaxCellReference, keyword, this.parseBinaryExpression());
     }
@@ -79,15 +79,17 @@ export class Parser {
   private parseBinaryExpression(parentPrecedence = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
     while (true) {
-      const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
-      if (precedence === 0 || precedence <= parentPrecedence) {
+      let peek = this.peekToken();
+      const precedence = SyntaxFacts.getBinaryPrecedence(peek.kind);
+      if (precedence === 0 || precedence <= parentPrecedence || peek.span.from.line > left.span.from.line) {
         break;
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
-      const peek = this.peekToken();
-      if (peek.span.from.line > operator.span.from.line) {
+      peek = this.peekToken();
+      if (!this.hasToken() || peek.span.from.line > operator.span.from.line) {
         const token = this.createErrorToken(operator.span.end);
-        this.source.diagnosticsBag.report("missing operand after `" + operator.text + "`.", Severity.CantEvaluate, token.span);
+        this.source.diagnosticsBag.report("incomplete binary expression: missing operand after `" + operator.text + "`.", Severity.CantEvaluate, token.span);
+        this.recovering = true;
         return new SyntaxBinaryExpression(this.source, left, operator, token);
       } else {
         left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
@@ -101,9 +103,10 @@ export class Parser {
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
       const peek = this.peekToken();
-      if (peek.span.from.line > operator.span.from.line) {
+      if (!this.hasToken() || peek.span.from.line > operator.span.from.line) {
         const token = this.createErrorToken(operator.span.end);
-        this.source.diagnosticsBag.report("missing operand after `" + operator.text + "`.", Severity.CantEvaluate, token.span);
+        this.source.diagnosticsBag.report("incomplete unary expression: missing operand after `" + operator.text + "`.", Severity.CantEvaluate, token.span);
+        this.recovering = true;
         return new SyntaxUnaryExpression(this.source, operator, token);
       } else {
         return new SyntaxUnaryExpression(this.source, operator, this.parseUnaryExpression());
@@ -142,6 +145,7 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
+    this.recovering = false;
     return this.expect(SyntaxKind.SyntaxExpression, "unexpected token `" + (token.text || "EOF") + "`.");
   }
 
@@ -172,7 +176,7 @@ export class Parser {
     return true;
   }
 
-  private expect<K extends Kind = Kind>(kind: K = SyntaxKind.SyntaxExpression as K, message: string, severity: Severity = Severity.CantEvaluate): SyntaxToken<Kind> {
+  private expect<K extends Kind = Kind>(kind: K, message: string, severity: Severity = Severity.CantEvaluate): SyntaxToken<Kind> {
     if (this.match(kind)) {
       return this.getNextToken();
     }

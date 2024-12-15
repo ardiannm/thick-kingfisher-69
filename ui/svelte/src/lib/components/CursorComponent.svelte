@@ -36,7 +36,7 @@
 		position: absolute;
 		background-color: black;
 		pointer-events: none;
-		z-index: 10000;
+		z-index: 1000;
 		// animation: blink 1.05s step-end infinite;
 	}
 	@keyframes blink {
