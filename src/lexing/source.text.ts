@@ -45,7 +45,7 @@ export class SourceText {
     start = position;
   }
 
-  private getLineAt(position: number) {
+  private getLineLocation(position: number) {
     let left = 0;
     let right = this.lines.length - 1;
     let middle;
@@ -92,11 +92,11 @@ export class SourceText {
   }
 
   getLine(position: number) {
-    return this.getLineAt(position) + 1;
+    return this.getLineLocation(position) + 1;
   }
 
   getColumn(position: number): number {
-    return position - this.lines[this.getLineAt(position)].fullSpan.start + 1;
+    return position - this.lines[this.getLineLocation(position)].fullSpan.start + 1;
   }
 
   getPosition(line: number, column: number) {

@@ -41,7 +41,6 @@ export class Line {
     }
     if (tokenStart < lineStart) tokenStart = lineStart;
     if (tokenEnd > lineEnd) tokenEnd = lineEnd;
-    const tokenSpan = Span.createFrom(this.source, tokenStart, tokenEnd);
-    return new Token(token.kind, tokenSpan);
+    return new Token(token.kind, Span.createFrom(this.source, tokenStart, tokenEnd));
   }
 }

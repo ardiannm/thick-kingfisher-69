@@ -55,7 +55,7 @@ export class Binder {
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {
     const statements = new Array<BoundNode>();
-    for (const statement of node.root) {
+    for (const statement of node.statements) {
       statements.push(this.bind(statement));
     }
     return new BoundCompilationUnit(this.scope, statements, node.span);
