@@ -163,11 +163,9 @@
 <div class="editor">
 	<div class="highlight">
 		<ul>
-			<li>
-				unexpected end-of-file-token diagnostic span does not include the trivia in the diagnostic
-				rendering.
-			</li>
-			<li>rendering failure for the diagnostic missing quote on comments.</li>
+			<li>ensure spans beneath other spans are rendered on top.</li>
+			<li>render diagnostics that extend across multiple lines.</li>
+			<li>add clipboard functionality for copying and pasting code.</li>
 		</ul>
 	</div>
 	<div class="seperator"></div>
