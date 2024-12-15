@@ -57,6 +57,7 @@
 		position: absolute;
 		background-color: #c9c3e6d2;
 		opacity: 0.5;
+		min-width: 5px;
 		&:hover {
 			opacity: 1;
 			outline: 1px solid #2a2a2a;

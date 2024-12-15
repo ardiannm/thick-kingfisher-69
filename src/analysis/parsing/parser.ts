@@ -11,6 +11,7 @@ import { SyntaxParenthesis } from "./syntax.parenthesis";
 import { SyntaxToken } from "./syntax.token";
 import { Token } from "../../lexing/token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
+import { Span } from "../../lexing/span";
 
 export class Parser {
   private syntaxTokens = [] as SyntaxToken[];
@@ -23,8 +24,7 @@ export class Parser {
       if (token.isTrivia()) {
         trivias.push(token);
       } else {
-        const syntaxToken = SyntaxToken.createFrom(this.source, token, trivias);
-        this.syntaxTokens.push(syntaxToken);
+        this.syntaxTokens.push(new SyntaxToken(this.source, token.kind, token.span, trivias));
         trivias = [];
       }
     }
@@ -57,7 +57,7 @@ export class Parser {
       const closeBrace = this.expect(SyntaxKind.CloseBraceToken) as SyntaxToken<SyntaxKind.CloseBraceToken>;
       const node = new SyntaxBlock(this.source, openBrace, statements, closeBrace);
       if (closeBrace.kind === SyntaxKind.CloseBraceToken && !statements.length) {
-        this.source.diagnosticsBag.emptyBlock(node.span);
+        this.source.diagnosticsBag.reportEmptyBlock(node.span);
       }
       return node;
     }
@@ -82,8 +82,11 @@ export class Parser {
         break;
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
-      const right = this.parseBinaryExpression(precedence);
-      left = new SyntaxBinaryExpression(this.source, left, operator, right);
+      if (this.peekToken().span.line > operator.span.line) {
+        return new SyntaxBinaryExpression(this.source, left, operator, this.expect());
+      } else {
+        left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
+      }
     }
     return left;
   }
@@ -114,7 +117,7 @@ export class Parser {
       const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       const node = new SyntaxCellReference(this.source, left, right);
       if (right.hasTrivia()) {
-        this.source.diagnosticsBag.requireCompactCellReference(left.text + right.text, node.span);
+        this.source.diagnosticsBag.reportCompactCellReferenceRequired(left.text + right.text, node.span);
       }
       return node;
     }
@@ -158,16 +161,19 @@ export class Parser {
     return true;
   }
 
-  private expect<K extends Kind>(kind: K): SyntaxToken<Kind> {
+  private expect<K extends Kind = Kind>(kind: K = SyntaxKind.SyntaxExpression as K): SyntaxToken<Kind> {
     if (this.match(kind)) {
-      return this.getNextToken() as SyntaxToken<Kind>;
+      return this.getNextToken();
     }
-    const token = this.peekToken() as SyntaxToken<Kind>;
+    let peek = this.peekToken();
+    const trivia = peek.trivias?.length ? peek.trivias![0] : peek;
+    const returnToken = new SyntaxToken(this.source, SyntaxKind.SyntaxErrorExpression, trivia.span);
     if (this.recovering) {
-      return token;
+      return returnToken;
     }
     this.recovering = true;
-    this.source.diagnosticsBag.unexpectedTokenFound(token.kind, kind, token.span);
-    return token as SyntaxToken<Kind>;
+    const span = Span.createFrom(this.source, trivia.span.start, peek.span.start);
+    this.source.diagnosticsBag.reportExpectingSyntax(kind, span);
+    return returnToken as SyntaxToken<Kind>;
   }
 }

@@ -26,49 +26,49 @@ export class DiagnosticsBag {
     return this.canBind() && !this.severity.has(Severity.CantEvaluate);
   }
 
-  badCharacterFound(text: string, span: Span) {
+  reportBadCharacterFound(text: string, span: Span) {
     this.report(`bad character \`${text}\` found`, Severity.CantBind, span);
   }
 
-  unexpectedTokenFound(matched: Kind, expecting: Kind, span: Span) {
-    this.report(`unexpected token found: \`${matched}\` expecting \`${expecting}\`.`, Severity.CantEvaluate, span);
+  reportExpectingSyntax(kind: Kind, span: Span) {
+    this.report(`expecting \`${kind}\`.`, Severity.CantEvaluate, span);
   }
 
-  undeclaredCell(name: string, span: Span) {
+  reportUndeclaredCell(name: string, span: Span) {
     this.report(`cell reference \`${name}\` is undeclared.`, Severity.CantEvaluate, span);
   }
 
-  badFloatingPointNumber(span: Span) {
+  reportBadFloatingPointNumber(span: Span) {
     this.report(`wrong floating number format.`, Severity.CantBind, span);
   }
 
-  missingClosingQuote(span: Span) {
+  reportMissingClosingQuote(span: Span) {
     this.report(`comment is missing a closing \`"\``, Severity.CantParse, span);
   }
 
-  requireCompactCellReference(correctName: string, span: Span) {
+  reportCompactCellReferenceRequired(correctName: string, span: Span) {
     this.report(`did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
   }
 
-  emptyBlock(span: Span) {
+  reportEmptyBlock(span: Span) {
     this.report(`expecting statements in the block.`, Severity.CantEvaluate, span);
   }
 
-  circularDependencyDetected(span: Span, path: DependencyLink[]) {
+  reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
     const text = path.map((n) => `${n.node.reference.name}`).join(" > ");
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span);
     this.diagnostics.push(node);
   }
 
-  cantAssignTo(kind: Kind, span: Span) {
+  reportCantAssignTo(kind: Kind, span: Span) {
     this.report(`can't assign to \`${kind}\`.`, Severity.CantEvaluate, span);
   }
 
-  binderMethod(kind: Kind, span: Span) {
+  reportMissingBinderMethod(kind: Kind, span: Span) {
     this.report(`method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
   }
 
-  evaluatorMethod(kind: BoundKind, span: Span) {
+  reportMissingEvaluatorMethod(kind: BoundKind, span: Span) {
     this.report(`method for evaluating \`${kind}\` is not implemented.`, Severity.CantEvaluate, span);
   }
 }

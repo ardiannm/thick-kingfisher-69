@@ -188,7 +188,7 @@
 							{token.span.text}
 						</span>
 					{:else}
-						<span class="token {token.class}">&nbsp;</span>
+						<span class="token token-{(j % 4) + 1} {token.class}">&nbsp;</span>
 					{/if}
 				{/each}
 			</span>

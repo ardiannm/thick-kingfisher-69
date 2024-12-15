@@ -19,6 +19,7 @@ export enum SyntaxKind {
   SyntaxParenthesis = "SyntaxParenthesizedExpression",
   SyntaxCellReference = "SyntaxCellReference",
   SyntaxExpression = "Expression",
+  SyntaxErrorExpression = "SyntaxErrorExpression",
   PlusToken = "PlusToken",
   MinusToken = "MinusToken",
   StarToken = "StarToken",

@@ -34,7 +34,7 @@ export class Evaluator {
       case BoundKind.BoundNumericLiteral:
         return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
     }
-    this.diagnostics.evaluatorMethod(node.kind, node.span);
+    this.diagnostics.reportMissingEvaluatorMethod(node.kind, node.span);
     return 0;
   }
 

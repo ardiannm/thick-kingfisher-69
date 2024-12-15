@@ -64,7 +64,7 @@ export class Lexer {
 
   private lexBadToken() {
     const token = this.advanceAndCreateNewToken(SyntaxKind.BadToken);
-    this.source.diagnosticsBag.badCharacterFound(token.span.text, token.span);
+    this.source.diagnosticsBag.reportBadCharacterFound(token.span.text, token.span);
     return token;
   }
 
@@ -99,7 +99,7 @@ export class Lexer {
     if (this.char() === ".") {
       this.next();
       if (!this.isDigit()) {
-        this.source.diagnosticsBag.badFloatingPointNumber(this.span);
+        this.source.diagnosticsBag.reportBadFloatingPointNumber(this.span);
       }
     }
     while (this.isDigit()) this.next();
@@ -115,7 +115,7 @@ export class Lexer {
       }
       this.next();
     }
-    this.source.diagnosticsBag.missingClosingQuote(this.span);
+    this.source.diagnosticsBag.reportMissingClosingQuote(this.span);
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 

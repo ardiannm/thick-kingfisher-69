@@ -83,6 +83,10 @@ export class SourceText {
     return middle;
   }
 
+  getToken(position: number) {
+    return this.tokens[this.getTokenLocation(position)];
+  }
+
   getTokens() {
     return this.tokens;
   }

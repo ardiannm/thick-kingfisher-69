@@ -44,9 +44,12 @@ export class Binder {
         return this.bindCellReference(node as NodeType<SyntaxCellReference>);
       case SyntaxKind.SyntaxCellAssignment:
         return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
+      case SyntaxKind.SyntaxErrorExpression:
+        return new BoundErrorExpression(node.kind, node.span);
+      default:
+        this.scope.diagnostics.reportMissingBinderMethod(node.kind, node.span);
+        return new BoundErrorExpression(node.kind, node.span);
     }
-    this.scope.diagnostics.binderMethod(node.kind, node.span);
-    return new BoundErrorExpression(node.kind, node.span);
   }
 
   static bindCompilationUnit(node: SyntaxCompilationUnit, scope: BoundScope, configuration: CompilerOptions) {
@@ -83,9 +86,11 @@ export class Binder {
       this.scope.references = new Array<BoundCellReference>();
       return bound;
     } else {
-      this.bind(node.left);
+      if (node.left.kind !== SyntaxKind.SyntaxErrorExpression) {
+        this.bind(node.left);
+        this.scope.diagnostics.reportCantAssignTo(node.left.kind, node.operator.span);
+      }
       this.bind(node.expression);
-      this.scope.diagnostics.cantAssignTo(node.left.kind, node.operator.span);
       return new BoundErrorExpression(node.kind, node.span);
     }
   }
@@ -109,7 +114,7 @@ export class Binder {
       const value = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span);
       if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) {
-        this.scope.diagnostics.undeclaredCell(name, node.span);
+        this.scope.diagnostics.reportUndeclaredCell(name, node.span);
       }
     }
     const bound = new BoundCellReference(assigment, node.span);
