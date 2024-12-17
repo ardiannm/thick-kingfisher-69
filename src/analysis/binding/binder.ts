@@ -45,7 +45,7 @@ export class Binder {
         return this.bindCellReference(node as NodeType<SyntaxCellReference>);
       case SyntaxKind.SyntaxCellAssignment:
         return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
-      case SyntaxKind.SyntaxErrorExpression:
+      case SyntaxKind.SyntaxError:
         return new BoundErrorExpression(node.kind, node.span);
       default:
         this.scope.diagnostics.reportMissingBinderMethod(node.kind, node.span);
@@ -87,7 +87,7 @@ export class Binder {
       this.scope.references = new Array<BoundCellReference>();
       return bound;
     } else {
-      if (node.left.kind !== SyntaxKind.SyntaxErrorExpression) {
+      if (node.left.kind !== SyntaxKind.SyntaxError) {
         this.bind(node.left);
         const span = Span.createFrom(node.source, node.left.span.start, node.operator.span.end);
         this.scope.diagnostics.reportCantAssignTo(node.left.kind, span);
@@ -172,7 +172,7 @@ export class Binder {
   }
 
   private bindNumber(node: SyntaxToken<SyntaxKind.NumberToken>) {
-    const value = parseFloat(node.text);
+    const value = parseFloat(node.span.text);
     return new BoundNumericLiteral(value, node.span);
   }
 }

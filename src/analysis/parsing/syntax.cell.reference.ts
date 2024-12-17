@@ -17,6 +17,6 @@ export class SyntaxCellReference extends SyntaxNode {
   }
 
   get name() {
-    return this.left.text + this.right.text;
+    return this.left.span.text + this.right.span.text;
   }
 }

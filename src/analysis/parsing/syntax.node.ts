@@ -21,8 +21,4 @@ export abstract class SyntaxNode {
   get fullSpan() {
     return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
   }
-
-  get text() {
-    return this.source.text.substring(this.span.start, this.span.end);
-  }
 }
