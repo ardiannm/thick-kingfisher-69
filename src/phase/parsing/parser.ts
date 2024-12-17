@@ -16,7 +16,6 @@ import { Token } from "../lexing/token";
 export class Parser {
   private syntaxTokens = [] as SyntaxToken[];
   private position = 0;
-  private recovering = false;
 
   // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
   private constructor(public readonly source: SourceText) {
@@ -44,13 +43,13 @@ export class Parser {
       if (this.peekToken() === startToken) this.getNextToken();
     }
     const token = this.expect(SyntaxKind.EndOfFileToken, "expected the end of file token") as SyntaxToken<SyntaxKind.EndOfFileToken>;
-    return new SyntaxCompilationUnit(this.source, statements, token);
+    return new SyntaxCompilationUnit(statements, token);
   }
 
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
     if (this.match(SyntaxKind.ColonColonToken)) {
-      return new SyntaxCellAssignment(this.source, left as SyntaxCellReference, this.getNextToken(), this.parseBinaryExpression());
+      return new SyntaxCellAssignment(left as SyntaxCellReference, this.getNextToken(), this.parseBinaryExpression());
     }
     return left;
   }
@@ -67,7 +66,7 @@ export class Parser {
       if (this.peekNextLine("expected expression")) {
         return left;
       }
-      left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
+      left = new SyntaxBinaryExpression(left, operator, this.parseBinaryExpression(precedence));
     }
     return left;
   }
@@ -80,7 +79,7 @@ export class Parser {
       if (this.peekNextLine("expected expression")) {
         return this.parseErrorToken(operator);
       }
-      return new SyntaxUnaryExpression(this.source, operator, this.parseUnaryExpression());
+      return new SyntaxUnaryExpression(operator, this.parseUnaryExpression());
     }
     return this.parseParenthesis();
   }
@@ -89,8 +88,13 @@ export class Parser {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxKind.OpenParenthesisToken>;
       const expression = this.parseBinaryExpression();
+      if (this.peekNextLine("expecting `)`")) {
+        // TODO: Return a special syntax node called SyntaxError with interface SyntaxError(SyntaxKind.SyntaxError, span.start, span.end) and report message 'invalid parenthesized expression'
+        // TODO: Replace Parser.parseErrorToken with this new concept
+        return this.parseCellReference();
+      }
       const right = this.expect(SyntaxKind.CloseParenthesisToken, "expecting `)`") as SyntaxToken<SyntaxKind.CloseParenthesisToken>;
-      return new SyntaxParenthesis(this.source, left, expression, right);
+      return new SyntaxParenthesis(left, expression, right);
     }
     return this.parseCellReference();
   }
@@ -99,7 +103,7 @@ export class Parser {
     if (!this.peekToken(1).hasTrivia() && this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
       const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
-      return new SyntaxCellReference(this.source, left, right);
+      return new SyntaxCellReference(left, right);
     }
     return this.parseLiteral();
   }
@@ -112,11 +116,12 @@ export class Parser {
         return this.getNextToken();
     }
     const text = token.span.text;
-    return this.expect(SyntaxKind.Expression, text ? "unexpected token `" + text + "`" : "expected expression");
+    const message = "token `" + text + "`";
+    return this.expect(SyntaxKind.Expression, "unexpected " + (text ? message : "end of file"));
   }
 
   private parseErrorToken(token: SyntaxNode) {
-    return new SyntaxToken(this.source, SyntaxKind.SyntaxError, Span.createFrom(this.source, token.span.end, token.span.end));
+    return new SyntaxToken(this.source, SyntaxKind.SyntaxError, Span.createFrom(this.source, token.span.end, token.span.end), []);
   }
 
   private hasToken() {
@@ -160,24 +165,16 @@ export class Parser {
       if (kind !== this.peekToken(offset).kind) return false;
       offset++;
     }
-    this.recovering = false;
     return true;
   }
 
-  private expect<K extends Kind = Kind>(kind: K, message: string): SyntaxToken<Kind> {
+  private expect<K extends Kind = Kind>(kind: K, message?: string): SyntaxToken<Kind> {
     const nextToken = this.peekToken();
     if (this.match(kind)) {
       return this.getNextToken();
     }
-    if (this.peekNextLine()) {
-      this.recovering = false;
-    }
     const errorToken = this.parseErrorToken(nextToken);
-    if (this.recovering) {
-      return errorToken;
-    }
-    this.recovering = true;
-    this.source.diagnosticsBag.report(message, Severity.CantEvaluate, nextToken.span);
+    if (message) this.source.diagnosticsBag.report(message, Severity.CantEvaluate, nextToken.span);
     return errorToken as SyntaxToken<K>;
   }
 }

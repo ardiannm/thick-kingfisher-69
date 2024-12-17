@@ -1,11 +1,10 @@
-import { SourceText } from "../lexing/source.text";
 import { SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
 export class SyntaxCellReference extends SyntaxNode {
-  constructor(public override source: SourceText, public left: SyntaxToken<SyntaxKind.IdentifierToken>, public right: SyntaxToken<SyntaxKind.NumberToken>) {
-    super(source, SyntaxKind.SyntaxCellReference);
+  constructor(public left: SyntaxToken<SyntaxKind.IdentifierToken>, public right: SyntaxToken<SyntaxKind.NumberToken>) {
+    super(left.source, SyntaxKind.SyntaxCellReference);
   }
 
   override getFirstChild(): SyntaxToken {

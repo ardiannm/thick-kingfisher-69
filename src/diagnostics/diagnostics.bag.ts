@@ -27,7 +27,7 @@ export class DiagnosticsBag {
   }
 
   reportBadCharacterFound(text: string, span: Span) {
-    this.report(`bad character \`${text}\` found`, Severity.CantBind, span);
+    this.report(`invalid character \`${text}\``, Severity.CantBind, span);
   }
 
   reportUndeclaredCell(name: string, span: Span) {
