@@ -169,6 +169,9 @@ export class Parser {
     if (this.match(kind)) {
       return this.getNextToken();
     }
+    if (this.peekNextLine()) {
+      this.recovering = false;
+    }
     const errorToken = this.parseErrorToken(nextToken);
     if (this.recovering) {
       return errorToken;
