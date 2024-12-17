@@ -6,11 +6,7 @@ import { type Component, createSignal, createEffect } from "solid-js";
 import { BezierCurve, Position } from "../components/bezier.curve";
 import { CodeEditor } from "../components/code.editor";
 
-import { SourceText } from "../../../../src/lexing/source.text";
-import { SyntaxTree } from "../../../../src/syntax.tree";
-import { BoundScope } from "../../../../src/analysis/binding/bound.scope";
-import { Diagnostic } from "../../../../src/analysis/diagnostics/diagnostic";
-
+import { SourceText, SyntaxTree, BoundScope, Diagnostic } from "../../../../";
 var defaultCode = `A1 :: A2+A3`;
 
 const ShowComponent: Component = () => {

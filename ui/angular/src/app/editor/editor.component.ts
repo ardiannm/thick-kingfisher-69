@@ -1,7 +1,7 @@
 import { Component, Input, signal, computed, HostListener, effect, Inject, PLATFORM_ID, Output, EventEmitter, AfterViewInit } from "@angular/core";
 import { CursorComponent } from "./cursor/cursor.component";
 import { DOCUMENT, NgClass, isPlatformBrowser } from "@angular/common";
-import { SourceText } from "../../../../../src/lexing/source.text";
+import { SourceText } from "../../../../../";
 
 // var text = `A1 :: A3
 //   A2 :: A1
@@ -42,7 +42,7 @@ export class EditorComponent implements AfterViewInit {
   text = text;
   length = text.length;
   code = signal(text);
-  source = computed(() => SourceText.parse(this.code()));
+  source = computed(() => SourceText.bind(this.code()));
   lines = computed(() => this.source().getLines());
   cursor = signal(this.text.length);
   line = computed(() => this.source().getLine(this.cursor()).number);

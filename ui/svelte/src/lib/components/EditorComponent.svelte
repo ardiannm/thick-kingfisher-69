@@ -3,7 +3,7 @@
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
 	import TooltipComponent from './TooltipComponent.svelte';
 	import { onMount } from 'svelte';
-	import { SourceText } from '../../../../../src/lexing/source.text';
+	import { SourceText } from '../../../../../';
 
 	let { text } = $props();
 

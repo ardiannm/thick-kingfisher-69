@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TooltipComponent from './TooltipComponent.svelte';
-	import type { Diagnostic } from '../../../../../src/analysis/diagnostics/diagnostic';
 	import { getPosition } from '../Position';
+	import type { Diagnostic } from '../../../../../src/diagnostics/diagnostic';
 
 	let { diagnostic }: { diagnostic: Diagnostic } = $props();
 

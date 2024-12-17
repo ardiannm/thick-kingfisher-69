@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { EditorComponent } from "./editor/editor.component";
 import { HomeComponent } from "./home/home.component";
 import { EditorPageComponent } from "./page/editor-page/editor-page.component";
 

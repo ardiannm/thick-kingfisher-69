@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getPosition } from '$lib/Position';
+	import { getPosition } from '$lib';
 
 	let { line, column } = $props();
 

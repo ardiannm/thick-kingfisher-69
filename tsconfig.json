@@ -25,5 +25,8 @@
     "index.ts",
     "src/**/*.ts",
     "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "ui/**/*"
   ]
 }
