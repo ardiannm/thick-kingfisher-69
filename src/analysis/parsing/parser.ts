@@ -18,6 +18,7 @@ export class Parser {
   private position = 0;
   private recovering = false;
 
+  // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
   private constructor(public readonly source: SourceText) {
     let trivias = [] as Token[];
     for (const token of this.source.getTokens()) {
@@ -42,8 +43,8 @@ export class Parser {
       statements.push(statement);
       if (this.peekToken() === startToken) this.getNextToken();
     }
-    const endOfFileToken = this.expect(SyntaxKind.EndOfFileToken, "expected the end of file token") as SyntaxToken<SyntaxKind.EndOfFileToken>;
-    return new SyntaxCompilationUnit(this.source, statements, endOfFileToken);
+    const token = this.expect(SyntaxKind.EndOfFileToken, "expected the end of file token") as SyntaxToken<SyntaxKind.EndOfFileToken>;
+    return new SyntaxCompilationUnit(this.source, statements, token);
   }
 
   private parseCellAssignment() {
@@ -63,15 +64,22 @@ export class Parser {
         break;
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
+      if (this.peekNextLine("expected expression")) {
+        return left;
+      }
       left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
     }
     return left;
   }
 
+  // TODO: Refactor this method to replace the recursive solution with a while loop
   private parseUnaryExpression(): SyntaxNode {
     const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
+      if (this.peekNextLine("expected expression")) {
+        return this.parseErrorToken(operator);
+      }
       return new SyntaxUnaryExpression(this.source, operator, this.parseUnaryExpression());
     }
     return this.parseParenthesis();
@@ -88,7 +96,7 @@ export class Parser {
   }
 
   private parseCellReference() {
-    if (this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken) && !this.peekToken(1).hasTrivia()) {
+    if (!this.peekToken(1).hasTrivia() && this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
       const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
       return new SyntaxCellReference(this.source, left, right);
@@ -126,9 +134,15 @@ export class Parser {
     return this.syntaxTokens[thisIndex];
   }
 
-  private peekNextLine() {
+  private peekNextLine(message?: string) {
     const peek = this.peekToken();
-    if (peek.span.to.line > this.peekToken(-1).span.from.line) {
+    const prevToken = this.peekToken(-1);
+    if (peek.span.to.line > prevToken.span.from.line) {
+      if (message) {
+        const start = prevToken.span.end;
+        const end = Math.min(this.source.getLine(start).span.end, peek.span.start);
+        this.source.diagnosticsBag.report(message, Severity.CantEvaluate, Span.createFrom(this.source, start, end));
+      }
       return true;
     }
     return false;
