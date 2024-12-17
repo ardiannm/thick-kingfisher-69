@@ -1,5 +1,6 @@
 import { DiagnosticsBag } from "../analysis/diagnostics/diagnostics.bag";
 import { Parser } from "../analysis/parsing/parser";
+import { SyntaxTree } from "../syntax.tree";
 import { Lexer } from "./lexer";
 import { Line } from "./line";
 import { Token } from "./token";
@@ -19,8 +20,11 @@ export class SourceText {
   }
 
   static parse(text: string) {
-    const tree = Parser.parseCompilationUnit(SourceText.createFrom(text));
-    return tree.source;
+    return Parser.parseCompilationUnit(SourceText.createFrom(text)).source;
+  }
+
+  static bind(text: string) {
+    return SyntaxTree.createFrom(text).source;
   }
 
   private generateTokens() {

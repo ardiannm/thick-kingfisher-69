@@ -42,10 +42,6 @@ export class DiagnosticsBag {
     this.report(`comment is missing a closing \`"\``, Severity.CantParse, span);
   }
 
-  reportCompactCellReferenceRequired(correctName: string, span: Span) {
-    this.report(`did you mean \`${correctName}\`?`, Severity.CantEvaluate, span);
-  }
-
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
     const text = path.map((n) => `${n.node.reference.name}`).join(" > ");
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span);

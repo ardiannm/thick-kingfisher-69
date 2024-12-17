@@ -7,7 +7,9 @@
 
 	let { text } = $props();
 
-	const tree = $derived(SourceText.parse(text));
+	const bind = $state(true);
+
+	const tree = $derived(bind ? SourceText.bind(text) : SourceText.parse(text));
 	const lines = $derived(tree.getLines());
 	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
 
@@ -163,7 +165,7 @@
 <div class="editor">
 	<div class="highlight">
 		<ul>
-			<li>render the syntax tree on hover.</li>
+			<li>display the syntax tree when hovering over the code.</li>
 			<li>ensure spans beneath other spans are rendered on top.</li>
 			<li>render diagnostics that extend across multiple lines.</li>
 			<li>add clipboard functionality for copying and pasting code.</li>
@@ -199,7 +201,7 @@
 			{#each diagnostics as diagnostic}
 				<div class="diagnostic">
 					{diagnostic.message}
-					<div class="address">{diagnostic.span.from.address}:{diagnostic.span.to.address}</div>
+					<div class="address">{diagnostic.span.address}</div>
 				</div>
 			{/each}
 		</div>
@@ -211,7 +213,7 @@
 				<TooltipComponent>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet message()}
-						{token.span.from.address}
+						{token.span.address}-{token.class}
 					{/snippet}
 				</TooltipComponent>
 			{/each}

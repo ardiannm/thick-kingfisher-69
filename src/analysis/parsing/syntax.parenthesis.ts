@@ -6,18 +6,18 @@ import { SyntaxToken } from "./syntax.token";
 export class SyntaxParenthesis extends SyntaxNode {
   constructor(
     public override source: SourceText,
-    public openParen: SyntaxToken<SyntaxKind.OpenParenthesisToken>,
+    public left: SyntaxToken<SyntaxKind.OpenParenthesisToken>,
     public expression: SyntaxNode,
-    public closeParen: SyntaxToken<SyntaxKind.CloseParenthesisToken>
+    public right: SyntaxToken<SyntaxKind.CloseParenthesisToken>
   ) {
     super(source, SyntaxKind.SyntaxParenthesis);
   }
 
   override getFirstChild(): SyntaxToken<Kind> {
-    return this.openParen;
+    return this.left;
   }
 
   override getLastChild(): SyntaxToken<Kind> {
-    return this.closeParen;
+    return this.right;
   }
 }

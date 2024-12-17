@@ -23,4 +23,8 @@ export class Span {
   get to() {
     return new Location(this.source.getLine(this.end).number, this.source.getColumn(this.end));
   }
+
+  get address() {
+    return this.from.address + ":" + this.to.address;
+  }
 }
