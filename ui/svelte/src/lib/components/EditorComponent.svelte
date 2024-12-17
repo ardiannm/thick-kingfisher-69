@@ -163,6 +163,7 @@
 <div class="editor">
 	<div class="highlight">
 		<ul>
+			<li>render the syntax tree on hover.</li>
 			<li>ensure spans beneath other spans are rendered on top.</li>
 			<li>render diagnostics that extend across multiple lines.</li>
 			<li>add clipboard functionality for copying and pasting code.</li>

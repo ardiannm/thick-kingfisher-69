@@ -16,7 +16,6 @@ import { Span } from "../../lexing/span";
 export class Parser {
   private syntaxTokens = [] as SyntaxToken[];
   private position = 0;
-  private recovering = false;
 
   private constructor(public readonly source: SourceText) {
     let trivias = [] as Token[];
@@ -59,14 +58,12 @@ export class Parser {
     while (true) {
       let peek = this.peekToken();
       const precedence = SyntaxFacts.getBinaryPrecedence(peek.kind);
-      if (!precedence || parentPrecedence >= precedence || this.peekNextLine(left)) {
+      if (!precedence || parentPrecedence >= precedence || this.peekNextLine()) {
         break;
       }
       const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
-      if (this.peekNextLine(operator)) {
-        const span = Span.createFrom(this.source, operator.span.end, this.source.getLine(operator.span.end).span.end);
-        this.source.diagnosticsBag.report("expected expression", Severity.CantEvaluate, span);
-        return new SyntaxBinaryExpression(this.source, left, operator, this.parseErrorToken(operator));
+      if (this.peekNextLine()) {
+        return new SyntaxBinaryExpression(this.source, left, operator, this.expect(SyntaxKind.Expression, "expected expression"));
       } else {
         left = new SyntaxBinaryExpression(this.source, left, operator, this.parseBinaryExpression(precedence));
       }
@@ -78,8 +75,8 @@ export class Parser {
     const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
     if (precedence) {
       const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
-      if (this.peekNextLine(operator)) {
-        return new SyntaxUnaryExpression(this.source, operator, this.parseErrorToken(operator));
+      if (this.peekNextLine()) {
+        return new SyntaxUnaryExpression(this.source, operator, this.expect(SyntaxKind.Expression, "expected expression"));
       } else {
         return new SyntaxUnaryExpression(this.source, operator, this.parseUnaryExpression());
       }
@@ -90,6 +87,8 @@ export class Parser {
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
       const left = this.getNextToken() as SyntaxToken<SyntaxKind.OpenParenthesisToken>;
+      if (this.peekNextLine()) {
+      }
       const expression = this.parseBinaryExpression();
       const right = this.expect(SyntaxKind.CloseParenthesisToken, "expecting `)`") as SyntaxToken<SyntaxKind.CloseParenthesisToken>;
       return new SyntaxParenthesis(this.source, left, expression, right);
@@ -117,26 +116,26 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
-    return this.expect(SyntaxKind.Expression);
+    return this.expect(SyntaxKind.Expression, "expected expression");
   }
 
-  private expect<K extends Kind = Kind>(kind: K, message?: string): SyntaxToken<Kind> {
-    const token = this.peekToken();
+  private expect<K extends Kind = Kind>(kind: K, message: string, onLine = true): SyntaxToken<Kind> {
+    const nextToken = this.peekToken();
     if (this.match(kind)) {
       return this.getNextToken();
     }
-    const errorToken = this.parseErrorToken(token);
-    if (this.recovering) {
-      return errorToken;
+    const errorToken = this.parseErrorToken(nextToken);
+    let span = nextToken.span;
+    if (onLine) {
+      const token = this.peekToken(-1);
+      span = Span.createFrom(this.source, token.span.end, this.source.getLine(token.span.end).span.end);
     }
-    this.source.diagnosticsBag.report(message ? message : "unexpected token found `" + token.span.text + "`", Severity.CantEvaluate, token.span);
-    this.recovering = true;
+    this.source.diagnosticsBag.report(message, Severity.CantEvaluate, span);
     return errorToken as SyntaxToken<Kind>;
   }
 
   private parseErrorToken(token: SyntaxNode) {
-    const span = Span.createFrom(this.source, token.span.end, token.span.end);
-    return new SyntaxToken(this.source, SyntaxKind.SyntaxError, span);
+    return new SyntaxToken(this.source, SyntaxKind.SyntaxError, Span.createFrom(this.source, token.span.end, token.span.end));
   }
 
   private hasToken() {
@@ -154,9 +153,9 @@ export class Parser {
     return this.syntaxTokens[thisIndex];
   }
 
-  private peekNextLine(token: SyntaxNode) {
+  private peekNextLine() {
     const peek = this.peekToken();
-    if (peek.span.to.line > token.span.from.line || !this.hasToken()) {
+    if (peek.span.to.line > this.peekToken(-1).span.from.line) {
       return true;
     }
     return false;
@@ -174,7 +173,6 @@ export class Parser {
       if (kind !== this.peekToken(offset).kind) return false;
       offset++;
     }
-    this.recovering = false;
     return true;
   }
 }
