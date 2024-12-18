@@ -20,6 +20,7 @@
 	let tokens = $derived(tree.source.getTokens());
 
 	let showCursor = $state(false);
+	let showTree = $state(false);
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
@@ -27,7 +28,10 @@
 	function handleKey(event: KeyboardEvent) {
 		showCursor = true;
 		const input = event.key;
-		if (input === 'ArrowRight' && event.ctrlKey) {
+		if (event.code == 'AltRight' && event.altKey) {
+			event.preventDefault();
+			showTree = !showTree;
+		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			moveToNextToken();
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
 			moveToPrevToken();
@@ -175,7 +179,7 @@
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
-			<TooltipComponent>
+			<TooltipComponent show={showTree}>
 				<CursorComponent {line} {column} />
 				{#snippet message()}
 					<TreeComponent node={tree.root}></TreeComponent>
@@ -219,7 +223,7 @@
 				<TooltipComponent>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet message()}
-						<div class="address">
+						<div class="message">
 							{token.span.address}-{token.class}
 						</div>
 					{/snippet}
@@ -266,10 +270,13 @@
 		& .space-trivia {
 			background-color: #c9c3e6dc;
 		}
-		.address {
+		.message {
 			background-color: white;
 			padding: 1px 7px;
-			outline: 1px solid;
+			border: 1px solid;
+			box-shadow:
+				rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+				rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 		}
 	}
 	.token {

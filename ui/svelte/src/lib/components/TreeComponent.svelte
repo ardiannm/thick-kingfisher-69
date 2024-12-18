@@ -39,7 +39,7 @@
 		width: fit-content;
 	}
 	.highlight {
-		outline: 1px solid #d1d9e0;
+		border: 1px solid #d1d9e0;
 		padding: 10px 20px;
 		border-radius: 4px;
 		background-color: #f7f8fb;
@@ -51,6 +51,11 @@
 		background-color: white;
 		border-radius: 0;
 		border: 1px solid;
+		width: fit-content;
+		min-width: 400px;
+		box-shadow:
+			rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+			rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 	}
 	.syntax-binary-expression {
 		display: flex;
@@ -62,12 +67,14 @@
 	.number-token {
 		display: flex;
 		width: fit-content;
-		background-color: #c9c3e6d2;
+		border: 1px solid #d1d9e0;
+		background-color: #f7f8fb;
 		padding: 1px 7px;
-		margin-top: 4px;
 	}
 	.not-implement {
-		color: #645fa1;
+		padding: 1px 7px;
+		background-color: #f7f8fb;
+		border: 1px solid #d1d9e0;
 	}
 	.operator {
 		display: flex;

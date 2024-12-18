@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	let { message, children, offsetX = 0, offsetY = 0 }: { message: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
+	import { type Snippet } from 'svelte';
+
+	let { message, children, offsetX = 0, offsetY = 0, show = false }: { message: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
 
 	let x = $state(0);
 
 	let y = $state(0);
-
-	let show = $state(false);
 
 	let wrapper: HTMLSpanElement | null = null;
 
@@ -19,10 +18,16 @@
 			show = true;
 		}
 	}
+
+	$effect(() => {
+		if (show) {
+			renderUi();
+		}
+	});
 </script>
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-<span bind:this={wrapper} aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
+<span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
 	{@render children()}
 </span>
 {#if show}
