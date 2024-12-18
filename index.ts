@@ -1,3 +1,5 @@
+export { SyntaxKind } from "./src/phase/parsing/syntax.kind";
+export { SyntaxNode } from "./src/phase/parsing/syntax.node";
 export { Diagnostic } from "./src/diagnostics/diagnostic";
 export { SourceText } from "./src/phase/lexing/source.text";
 export { SyntaxTree } from "./src/syntax.tree";

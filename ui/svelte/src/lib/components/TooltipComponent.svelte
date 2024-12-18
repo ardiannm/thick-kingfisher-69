@@ -27,15 +27,11 @@
 <style>
 	.tooltip {
 		position: absolute;
-		padding: 1px 7px;
-		background-color: white;
+		background-color: transparent;
 		display: flex;
 		align-items: center;
 		z-index: 9999;
-		outline: 1px solid;
-		box-shadow:
-			#00000040 0px 0.0625em 0.0625em,
-			#00000040 0px 0.125em 0.5em,
-			#ffffff1a 0px 0px 0px 1px inset;
+		flex-direction: row;
+		pointer-events: none;
 	}
 </style>

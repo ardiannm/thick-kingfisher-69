@@ -48,11 +48,13 @@
 	"
 	></span>
 	{#snippet message()}
-		{diagnostic.message}
+		<div class="message">
+			{diagnostic.message}
+		</div>
 	{/snippet}
 </TooltipComponent>
 
-<style lang="scss">
+<style>
 	.diagnostic {
 		position: absolute;
 		background-color: #c9c3e6d2;
@@ -66,5 +68,10 @@
 				rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 			z-index: 100;
 		}
+	}
+	.message {
+		padding: 1px 7px;
+		background-color: white;
+		outline: 1px solid;
 	}
 </style>

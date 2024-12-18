@@ -31,20 +31,11 @@
     "
 ></span>
 
-<style scoped lang="scss">
+<style scoped>
 	.cursor {
 		position: absolute;
 		background-color: black;
 		pointer-events: none;
 		z-index: 1000;
-		// animation: blink 1.05s step-end infinite;
-	}
-	@keyframes blink {
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0;
-		}
 	}
 </style>

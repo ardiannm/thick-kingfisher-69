@@ -3,8 +3,8 @@ import { Span } from "../lexing/span";
 import { Kind } from "./syntax.kind";
 import { SyntaxToken } from "./syntax.token";
 
-export abstract class SyntaxNode {
-  constructor(public source: SourceText, public kind: Kind) {}
+export abstract class SyntaxNode<K extends Kind = Kind> {
+  constructor(public source: SourceText, public kind: K) {}
 
   abstract getFirstChild(): SyntaxToken;
   abstract getLastChild(): SyntaxToken;
@@ -20,5 +20,14 @@ export abstract class SyntaxNode {
 
   get fullSpan() {
     return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
+  }
+
+  get class() {
+    return this.kind
+      .toString()
+      .replace(/([A-Z])/g, " $1")
+      .trim()
+      .replace(/\s/g, "-")
+      .toLowerCase();
   }
 }

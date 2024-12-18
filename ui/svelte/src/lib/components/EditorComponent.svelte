@@ -2,22 +2,23 @@
 	import CursorComponent from './CursorComponent.svelte';
 	import DiagnosticComponent from './DiagnosticComponent.svelte';
 	import TooltipComponent from './TooltipComponent.svelte';
+	import TreeComponent from './TreeComponent.svelte';
 	import { onMount } from 'svelte';
-	import { SourceText } from '../../../../../';
+	import { SyntaxTree } from '../../../../../';
 
 	let { text } = $props();
 
-	const bind = $state(true);
+	const tree = $derived(SyntaxTree.createFrom(text));
 
-	const tree = $derived(bind ? SourceText.bind(text) : SourceText.parse(text));
-	const lines = $derived(tree.getLines());
-	const diagnostics = $derived(tree.diagnosticsBag.diagnostics);
+	const lines = $derived(tree.source.getLines());
+	const diagnostics = $derived(tree.source.diagnosticsBag.diagnostics);
 
 	let cursor = $state(text.length);
-	let line = $derived(tree.getLine(cursor).number);
-	let column = $derived(tree.getColumn(cursor));
-	let currentLine = $derived(tree.getLines()[line - 1]);
-	let tokens = $derived(tree.getTokens());
+	let line = $derived(tree.source.getLine(cursor).number);
+	let column = $derived(tree.source.getColumn(cursor));
+	let currentLine = $derived(tree.source.getLines()[line - 1]);
+	let tokens = $derived(tree.source.getTokens());
+
 	let showCursor = $state(false);
 
 	// svelte-ignore state_referenced_locally
@@ -76,10 +77,10 @@
 
 	function moveLine(step: number) {
 		const nextLine = line + step;
-		const nextTree = tree.swapLines(line, nextLine);
+		const nextTree = tree.source.swapLines(line, nextLine);
 		if (!nextTree) return;
 		text = nextTree;
-		cursor = tree.getPosition(nextLine, prevColumn);
+		cursor = tree.source.getPosition(nextLine, prevColumn);
 	}
 
 	function backspace() {
@@ -98,7 +99,7 @@
 	function moveCursorY(steps: number) {
 		const prevLine = line + steps;
 		if (prevLine > 0) {
-			const pos = tree.getPosition(prevLine, prevColumn);
+			const pos = tree.source.getPosition(prevLine, prevColumn);
 			cursor = pos;
 		} else {
 			prevColumn = 1;
@@ -126,14 +127,14 @@
 	}
 
 	function duplicateLine(step: number) {
-		text = tree.duplicateLine(line);
+		text = tree.source.duplicateLine(line);
 		const ln = line;
-		cursor = tree.getPosition(ln + step, prevColumn);
+		cursor = tree.source.getPosition(ln + step, prevColumn);
 	}
 
 	function moveToPrevToken() {
-		const position = tree.getPosition(line, column);
-		let index = tree.getTokenLocation(position - 1);
+		const position = tree.source.getPosition(line, column);
+		let index = tree.source.getTokenLocation(position - 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index--;
@@ -143,8 +144,8 @@
 	}
 
 	function moveToNextToken() {
-		const position = tree.getPosition(line, column);
-		let index = tree.getTokenLocation(position + 1);
+		const position = tree.source.getPosition(line, column);
+		let index = tree.source.getTokenLocation(position + 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index++;
@@ -195,6 +196,13 @@
 			</span>
 		{/each}
 	</div>
+	<br />
+	<TooltipComponent>
+		<div>tree-view</div>
+		{#snippet message()}
+			<TreeComponent node={tree.root}></TreeComponent>
+		{/snippet}
+	</TooltipComponent>
 	<div class="seperator">line {line} column {column}</div>
 	{#if diagnostics.length}
 		<div class="highlight diagnostics">
@@ -213,7 +221,9 @@
 				<TooltipComponent>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet message()}
-						{token.span.address}-{token.class}
+						<div class="address">
+							{token.span.address}-{token.class}
+						</div>
 					{/snippet}
 				</TooltipComponent>
 			{/each}
@@ -221,7 +231,7 @@
 	{/if}
 </div>
 
-<style scoped lang="scss">
+<style scoped>
 	.highlight {
 		outline: 1px solid #d1d9e0;
 		padding: 10px 20px;
@@ -257,6 +267,11 @@
 		flex-direction: row;
 		& .space-trivia {
 			background-color: #c9c3e6dc;
+		}
+		.address {
+			background-color: white;
+			padding: 1px 7px;
+			outline: 1px solid;
 		}
 	}
 	.token {
