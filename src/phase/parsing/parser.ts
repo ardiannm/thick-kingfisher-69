@@ -63,11 +63,17 @@ export class Parser {
 
   // TODO: Refactor this method to replace the recursive solution with a while loop
   private parseUnaryExpression(): SyntaxNode {
-    const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
-    if (precedence) {
-      return new SyntaxUnaryExpression(this.getNextToken<SyntaxUnaryOperatorKind>(), this.parseUnaryExpression());
+    const operators: SyntaxToken<SyntaxUnaryOperatorKind>[] = [];
+    while (SyntaxFacts.getUnaryPrecedence(this.peekToken().kind)) {
+      operators.push(this.getNextToken());
     }
-    return this.parseParenthesis();
+    let right = this.parseParenthesis() as SyntaxNode;
+    if (operators.length) {
+      while (operators.length) {
+        right = new SyntaxUnaryExpression(operators.pop()!, right);
+      }
+    }
+    return right;
   }
 
   private parseParenthesis() {
