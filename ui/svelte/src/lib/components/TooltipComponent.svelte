@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 
-	let { message, children, offsetX = 0, offsetY = 0, show = false }: { message: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
+	let { component, children: target, offsetX = 0, offsetY = 0, show = false }: { component: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
 
 	let x = $state(0);
 
@@ -38,11 +38,11 @@
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
 <span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
-	{@render children()}
+	{@render target()}
 </span>
 {#if show}
 	<div class="tooltip" style="top: {y}px; left: {x}px;">
-		{@render message()}
+		{@render component()}
 	</div>
 {/if}
 

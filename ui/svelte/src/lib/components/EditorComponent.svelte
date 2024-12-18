@@ -181,7 +181,7 @@
 		{#if showCursor}
 			<TooltipComponent show={showTree}>
 				<CursorComponent {line} {column} />
-				{#snippet message()}
+				{#snippet component()}
 					<TreeComponent node={tree.root}></TreeComponent>
 				{/snippet}
 			</TooltipComponent>
@@ -222,7 +222,7 @@
 			{#each tokens as token, i}
 				<TooltipComponent>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
-					{#snippet message()}
+					{#snippet component()}
 						<div class="message">
 							{token.span.address}-{token.class}
 						</div>
