@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 
-	let { component, children: target, offsetX = 0, offsetY = 0, show = false }: { component: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
+	let { render, children, offsetX = 0, offsetY = 0, show = false }: { render: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
 
 	let x = $state(0);
-
 	let y = $state(0);
 
 	let wrapper: HTMLSpanElement | null = null;
@@ -15,9 +14,14 @@
 			const pos = content.getBoundingClientRect();
 			x = pos.left + offsetX;
 			y = pos.top + pos.height + offsetY;
-			show = true;
 		}
 	}
+
+	$effect(() => {
+		if (show) {
+			renderUi();
+		}
+	});
 
 	onMount(() => {
 		if (show) {
@@ -28,21 +32,15 @@
 			});
 		}
 	});
-
-	$effect(() => {
-		if (show) {
-			renderUi();
-		}
-	});
 </script>
 
-<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-<span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
-	{@render target()}
+<span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={() => (show = true)} onmouseleave={() => (show = false)}>
+	{@render children()}
 </span>
+
 {#if show}
-	<div class="tooltip" style="top: {y}px; left: {x}px;">
-		{@render component()}
+	<div class="tooltip" style="left: {x}px; top: {y}px;">
+		{@render render()}
 	</div>
 {/if}
 

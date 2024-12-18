@@ -21,9 +21,9 @@
 			{node.kind}
 		</div>
 		{#each node.statements as statement}
-			<Tree node={statement} />
+			<Tree node={statement}></Tree>
 		{/each}
-		<Tree node={node.eof} />
+		<Tree node={node.eof}></Tree>
 	{:else if isEndOfFileToken(node)}
 		{node.kind}
 	{:else if isNumberToken(node)}
@@ -32,11 +32,11 @@
 		{node.span.text}
 	{:else if isBinaryExpression(node)}
 		{node.kind}
-		<Tree node={node.left} />
+		<Tree node={node.left}></Tree>
 		<div>
 			{node.operator.span.text}
 		</div>
-		<Tree node={node.right} />
+		<Tree node={node.right}></Tree>
 	{:else}
 		<div class="not-implement">
 			{node.kind}

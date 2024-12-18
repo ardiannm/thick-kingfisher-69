@@ -21,7 +21,7 @@
 	let tokens = $derived(tree.source.getTokens());
 
 	let showCursor = $state(false);
-	let showTree = $state(true);
+	let showTree = $state(false);
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
@@ -181,15 +181,15 @@
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
 			<Tooltip show={showTree}>
-				<Cursor {line} {column} />
-				{#snippet component()}
+				<Cursor {line} {column}></Cursor>
+				{#snippet render()}
 					<Tree node={tree.root}></Tree>
 				{/snippet}
 			</Tooltip>
 		{/if}
 		{#if diagnostics.length}
 			{#each diagnostics as diagnostic}
-				<Diagnostic {diagnostic} />
+				<Diagnostic {diagnostic}></Diagnostic>
 			{/each}
 		{/if}
 		{#each lines as line, i}
@@ -223,7 +223,7 @@
 			{#each tokens as token, i}
 				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
-					{#snippet component()}
+					{#snippet render()}
 						<div class="message">
 							{token.span.address}-{token.class}
 						</div>
