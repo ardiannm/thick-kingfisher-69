@@ -175,7 +175,12 @@
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
-			<CursorComponent {line} {column} />
+			<TooltipComponent>
+				<CursorComponent {line} {column} />
+				{#snippet message()}
+					<TreeComponent node={tree.root}></TreeComponent>
+				{/snippet}
+			</TooltipComponent>
 		{/if}
 		{#if diagnostics.length}
 			{#each diagnostics as diagnostic}
@@ -196,13 +201,6 @@
 			</span>
 		{/each}
 	</div>
-	<br />
-	<TooltipComponent>
-		<div>tree-view</div>
-		{#snippet message()}
-			<TreeComponent node={tree.root}></TreeComponent>
-		{/snippet}
-	</TooltipComponent>
 	<div class="seperator">line {line} column {column}</div>
 	{#if diagnostics.length}
 		<div class="highlight diagnostics">
@@ -231,11 +229,11 @@
 	{/if}
 </div>
 
-<style scoped>
+<style scoped lang="scss">
 	.highlight {
 		outline: 1px solid #d1d9e0;
 		padding: 10px 20px;
-		border-radius: 4px;
+		border-radius: 6px;
 		background-color: #f7f8fb;
 	}
 	.seperator {
@@ -246,13 +244,13 @@
 		margin: auto;
 		flex-direction: column;
 		width: fit-content;
-		padding: 10px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		margin-top: 5%;
 	}
 	.space {
 		width: 700px;
+		padding-right: 10px;
 	}
 	.line {
 		position: relative;

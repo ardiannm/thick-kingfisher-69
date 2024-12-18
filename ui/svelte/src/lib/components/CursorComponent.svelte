@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getPosition } from '$lib';
+	import { onMount } from 'svelte';
 
 	let { line, column } = $props();
 
@@ -35,7 +36,7 @@
 	.cursor {
 		position: absolute;
 		background-color: black;
-		pointer-events: none;
+		/* pointer-events: none; */
 		z-index: 1000;
 	}
 </style>

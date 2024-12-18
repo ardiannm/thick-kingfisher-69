@@ -1,23 +1,30 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	let { message, children }: { message: Snippet; children: Snippet } = $props();
+	let { message, children, offsetX = 0, offsetY = 0 }: { message: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
 
 	let x = $state(0);
+
 	let y = $state(0);
 
 	let show = $state(false);
 
-	function renderUi(event: MouseEvent) {
-		x = event.pageX + 5;
-		y = event.pageY - 20;
-		show = true;
+	let wrapper: HTMLSpanElement | null = null;
+
+	function renderUi() {
+		if (wrapper) {
+			const content = wrapper.children[0] as HTMLElement; // considering only the first child; alternatively we could iterate through all the children to construct a bounding client rect.
+			const pos = content.getBoundingClientRect();
+			x = pos.left + offsetX;
+			y = pos.top + pos.height + offsetY;
+			show = true;
+		}
 	}
 </script>
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-<div aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
+<span bind:this={wrapper} aria-hidden="true" onmouseenter={renderUi} onmouseleave={() => (show = false)}>
 	{@render children()}
-</div>
+</span>
 {#if show}
 	<div class="tooltip" style="top: {y}px; left: {x}px;">
 		{@render message()}
