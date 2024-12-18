@@ -52,13 +52,13 @@ export class Parser {
 
   private parseBinaryExpression(parent = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
-    while (true) {
+    do {
       const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
       if (!precedence || parent >= precedence) {
         return left;
       }
       left = new SyntaxBinaryExpression(left, this.getNextToken(), this.parseBinaryExpression(precedence));
-    }
+    } while (true);
   }
 
   // TODO: Refactor this method to replace the recursive solution with a while loop
