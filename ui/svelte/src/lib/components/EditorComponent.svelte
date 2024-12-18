@@ -20,7 +20,7 @@
 	let tokens = $derived(tree.source.getTokens());
 
 	let showCursor = $state(false);
-	let showTree = $state(false);
+	let showTree = $state(true);
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;

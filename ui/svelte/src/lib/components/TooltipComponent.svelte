@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 
 	let { message, children, offsetX = 0, offsetY = 0, show = false }: { message: Snippet; children: Snippet; offsetX?: number; offsetY?: number; show?: boolean } = $props();
 
@@ -18,6 +18,16 @@
 			show = true;
 		}
 	}
+
+	onMount(() => {
+		if (show) {
+			show = false;
+			setTimeout(() => {
+				show = true;
+				renderUi();
+			});
+		}
+	});
 
 	$effect(() => {
 		if (show) {
