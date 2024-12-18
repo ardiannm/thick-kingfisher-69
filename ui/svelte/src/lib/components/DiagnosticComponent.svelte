@@ -54,19 +54,18 @@
 	{/snippet}
 </TooltipComponent>
 
-<style>
+<style lang="scss">
 	.diagnostic {
 		position: absolute;
 		background-color: #c9c3e6d2;
-		opacity: 0.5;
 		min-width: 5px;
+		opacity: 1;
 		&:hover {
-			opacity: 1;
+			z-index: 100;
 			outline: 1px solid #2a2a2a;
 			box-shadow:
-				rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-				rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-			z-index: 100;
+				rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+				rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 		}
 	}
 	.message {
