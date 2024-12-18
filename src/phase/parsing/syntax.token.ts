@@ -19,8 +19,7 @@ export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
 
   override get fullSpan() {
     const start = !!this.trivias?.length ? this.trivias[0].span.start : this.span.start;
-    const end = this.span.end;
-    return Span.createFrom(this.source, start, end);
+    return Span.createFrom(this.source, start, this.span.end);
   }
 
   override getFirstChild() {

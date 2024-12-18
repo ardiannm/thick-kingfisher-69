@@ -1,4 +1,4 @@
-import { Kind, SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
+import { Kind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxBinaryExpression } from "./syntax.binary.expression";
 import { SyntaxCellAssignment } from "./syntax.cell.assignment";
 import { SyntaxCellReference } from "./syntax.cell.reference";
@@ -8,23 +8,21 @@ import { SyntaxNode } from "./syntax.node";
 import { SyntaxParenthesis } from "./syntax.parenthesis";
 import { SyntaxToken } from "./syntax.token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
-import { Severity } from "../../diagnostics/severity";
 import { SourceText } from "../lexing/source.text";
-import { Span } from "../lexing/span";
 import { Token } from "../lexing/token";
 
 export class Parser {
-  private syntaxTokens = [] as SyntaxToken[];
+  private tokens: SyntaxToken<Kind>[] = [];
   private position = 0;
 
   // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
   private constructor(public readonly source: SourceText) {
-    let trivias = [] as Token[];
+    let trivias: Token[] = [];
     for (const token of this.source.getTokens()) {
       if (token.isTrivia()) {
         trivias.push(token);
       } else {
-        this.syntaxTokens.push(new SyntaxToken(this.source, token.kind, token.span, trivias));
+        this.tokens.push(new SyntaxToken(this.source, token.kind, token.span, trivias));
         trivias = [];
       }
     }
@@ -36,74 +34,52 @@ export class Parser {
 
   private parseCompilationUnit() {
     const statements = [] as SyntaxNode[];
-    while (this.hasToken()) {
-      const startToken = this.peekToken();
-      const statement = this.parseCellAssignment();
-      statements.push(statement);
-      if (this.peekToken() === startToken) this.getNextToken();
+    while (!this.match(SyntaxKind.EndOfFileToken)) {
+      const token = this.peekToken();
+      statements.push(this.parseCellAssignment());
+      if (this.peekToken() === token) this.getNextToken();
     }
-    const token = this.expect(SyntaxKind.EndOfFileToken, "expected the end of file token") as SyntaxToken<SyntaxKind.EndOfFileToken>;
-    return new SyntaxCompilationUnit(statements, token);
+    return new SyntaxCompilationUnit(statements, this.getNextToken());
   }
 
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
     if (this.match(SyntaxKind.ColonColonToken)) {
-      return new SyntaxCellAssignment(left as SyntaxCellReference, this.getNextToken(), this.parseBinaryExpression());
+      return new SyntaxCellAssignment(left, this.getNextToken(), this.parseBinaryExpression());
     }
     return left;
   }
 
-  private parseBinaryExpression(parentPrecedence = 0): SyntaxNode {
+  private parseBinaryExpression(parent = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
     while (true) {
-      let peek = this.peekToken();
-      const precedence = SyntaxFacts.getBinaryPrecedence(peek.kind);
-      if (!precedence || parentPrecedence >= precedence || this.peekNextLine()) {
-        break;
-      }
-      const operator = this.getNextToken() as SyntaxToken<SyntaxBinaryOperatorKind>;
-      if (this.peekNextLine("expected expression")) {
+      const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
+      if (!precedence || parent >= precedence) {
         return left;
       }
-      left = new SyntaxBinaryExpression(left, operator, this.parseBinaryExpression(precedence));
+      left = new SyntaxBinaryExpression(left, this.getNextToken(), this.parseBinaryExpression(precedence));
     }
-    return left;
   }
 
   // TODO: Refactor this method to replace the recursive solution with a while loop
   private parseUnaryExpression(): SyntaxNode {
     const precedence = SyntaxFacts.getUnaryPrecedence(this.peekToken().kind);
     if (precedence) {
-      const operator = this.getNextToken() as SyntaxToken<SyntaxUnaryOperatorKind>;
-      if (this.peekNextLine("expected expression")) {
-        return this.parseErrorToken(operator);
-      }
-      return new SyntaxUnaryExpression(operator, this.parseUnaryExpression());
+      return new SyntaxUnaryExpression(this.getNextToken<SyntaxUnaryOperatorKind>(), this.parseUnaryExpression());
     }
     return this.parseParenthesis();
   }
 
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      const left = this.getNextToken() as SyntaxToken<SyntaxKind.OpenParenthesisToken>;
-      const expression = this.parseBinaryExpression();
-      if (this.peekNextLine("expecting `)`")) {
-        // TODO: Return a special syntax node called SyntaxError with interface SyntaxError(SyntaxKind.SyntaxError, span.start, span.end) and report message 'invalid parenthesized expression'
-        // TODO: Replace Parser.parseErrorToken with this new concept
-        return this.parseCellReference();
-      }
-      const right = this.expect(SyntaxKind.CloseParenthesisToken, "expecting `)`") as SyntaxToken<SyntaxKind.CloseParenthesisToken>;
-      return new SyntaxParenthesis(left, expression, right);
+      return new SyntaxParenthesis(this.getNextToken(), this.parseBinaryExpression(), this.getNextToken());
     }
     return this.parseCellReference();
   }
 
   private parseCellReference() {
     if (!this.peekToken(1).hasTrivia() && this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
-      const left = this.getNextToken() as SyntaxToken<SyntaxKind.IdentifierToken>;
-      const right = this.getNextToken() as SyntaxToken<SyntaxKind.NumberToken>;
-      return new SyntaxCellReference(left, right);
+      return new SyntaxCellReference(this.getNextToken(), this.getNextToken());
     }
     return this.parseLiteral();
   }
@@ -115,46 +91,18 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
-    const text = token.span.text;
-    const message = "token `" + text + "`";
-    return this.expect(SyntaxKind.Expression, "unexpected " + (text ? message : "end of file"));
+    return token;
   }
 
-  private parseErrorToken(token: SyntaxNode) {
-    return new SyntaxToken(this.source, SyntaxKind.SyntaxError, Span.createFrom(this.source, token.span.end, token.span.end), []);
+  private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
+    let next = this.position + offset;
+    if (next < 0) next = 0;
+    if (next >= this.tokens.length) next = this.tokens.length - 1;
+    return this.tokens[next] as SyntaxToken<K>;
   }
 
-  private hasToken() {
-    return !this.match(SyntaxKind.EndOfFileToken);
-  }
-
-  private peekToken(offset: number = 0) {
-    const thisIndex = this.position + offset;
-    const lastIndex = this.syntaxTokens.length - 1;
-    if (thisIndex > lastIndex) {
-      return this.syntaxTokens[lastIndex];
-    } else if (thisIndex < 0) {
-      return this.syntaxTokens[0];
-    }
-    return this.syntaxTokens[thisIndex];
-  }
-
-  private peekNextLine(message?: string) {
-    const peek = this.peekToken();
-    const prevToken = this.peekToken(-1);
-    if (peek.span.to.line > prevToken.span.from.line) {
-      if (message) {
-        const start = prevToken.span.end;
-        const end = Math.min(this.source.getLine(start).span.end, peek.span.start);
-        this.source.diagnosticsBag.report(message, Severity.CantEvaluate, Span.createFrom(this.source, start, end));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  private getNextToken() {
-    const token = this.peekToken();
+  private getNextToken<K extends Kind = Kind>(): SyntaxToken<K> {
+    const token = this.peekToken<K>();
     this.position++;
     return token;
   }
@@ -166,15 +114,5 @@ export class Parser {
       offset++;
     }
     return true;
-  }
-
-  private expect<K extends Kind = Kind>(kind: K, message?: string): SyntaxToken<Kind> {
-    const nextToken = this.peekToken();
-    if (this.match(kind)) {
-      return this.getNextToken();
-    }
-    const errorToken = this.parseErrorToken(nextToken);
-    if (message) this.source.diagnosticsBag.report(message, Severity.CantEvaluate, nextToken.span);
-    return errorToken as SyntaxToken<K>;
   }
 }

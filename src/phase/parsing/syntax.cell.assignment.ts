@@ -3,8 +3,8 @@ import { SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "./syntax.token";
 
-export class SyntaxCellAssignment extends SyntaxNode {
-  constructor(public left: SyntaxCellReference, public operator: SyntaxToken, public expression: SyntaxNode) {
+export class SyntaxCellAssignment<Left extends SyntaxNode = SyntaxCellReference, Right extends SyntaxNode = SyntaxNode> extends SyntaxNode {
+  constructor(public left: Left, public operator: SyntaxToken, public expression: Right) {
     super(left.source, SyntaxKind.SyntaxCellAssignment);
   }
 
