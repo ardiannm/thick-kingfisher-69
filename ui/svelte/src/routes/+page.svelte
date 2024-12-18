@@ -1,5 +1,5 @@
 <script lang="ts">
-	import EditorComponent from '$lib/components/EditorComponent.svelte';
+	import EditorComponent from '$lib/components/Editor.svelte';
 
 	let text = `1++2+3
 

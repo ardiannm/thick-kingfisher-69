@@ -1,7 +1,7 @@
 <script lang="ts">
-	import TreeComponent from './TreeComponent.svelte';
+	import Tree from './Tree.svelte';
 
-	import { SyntaxNode } from '../../../../../';
+	import { SyntaxNode } from '../../../../..';
 	import { SyntaxKind } from '../../../../../src/phase/parsing/syntax.kind';
 	import { SyntaxBinaryExpression } from '../../../../../src/phase/parsing/syntax.binary.expression';
 	import { SyntaxCompilationUnit } from '../../../../../src/phase/parsing/syntax.compilation.unit';
@@ -21,9 +21,9 @@
 			{node.kind}
 		</div>
 		{#each node.statements as statement}
-			<TreeComponent node={statement} />
+			<Tree node={statement} />
 		{/each}
-		<TreeComponent node={node.eof} />
+		<Tree node={node.eof} />
 	{:else if isEndOfFileToken(node)}
 		{node.kind}
 	{:else if isNumberToken(node)}
@@ -32,11 +32,11 @@
 		{node.span.text}
 	{:else if isBinaryExpression(node)}
 		{node.kind}
-		<TreeComponent node={node.left} />
+		<Tree node={node.left} />
 		<div>
 			{node.operator.span.text}
 		</div>
-		<TreeComponent node={node.right} />
+		<Tree node={node.right} />
 	{:else}
 		<div class="not-implement">
 			{node.kind}

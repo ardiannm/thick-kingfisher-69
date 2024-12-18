@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TooltipComponent from './TooltipComponent.svelte';
+	import Tooltip from './Tooltip.svelte';
 	import { getPosition } from '../Position';
 	import type { Diagnostic } from '../../../../../src/diagnostics/diagnostic';
 
@@ -34,7 +34,7 @@
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 
-<TooltipComponent>
+<Tooltip>
 	<span
 		role="tooltip"
 		onmouseenter={toggleShow}
@@ -52,7 +52,7 @@
 			{diagnostic.message}
 		</div>
 	{/snippet}
-</TooltipComponent>
+</Tooltip>
 
 <style lang="scss">
 	.diagnostic {

@@ -1,10 +1,11 @@
 <script lang="ts">
-	import CursorComponent from './CursorComponent.svelte';
-	import DiagnosticComponent from './DiagnosticComponent.svelte';
-	import TooltipComponent from './TooltipComponent.svelte';
-	import TreeComponent from './TreeComponent.svelte';
 	import { onMount } from 'svelte';
-	import { SyntaxTree } from '../../../../../';
+	import { SyntaxTree } from '../../../../..';
+
+	import Cursor from './Cursor.svelte';
+	import Diagnostic from './Diagnostic.svelte';
+	import Tooltip from './Tooltip.svelte';
+	import Tree from './Tree.svelte';
 
 	let { text } = $props();
 
@@ -179,16 +180,16 @@
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
-			<TooltipComponent show={showTree}>
-				<CursorComponent {line} {column} />
+			<Tooltip show={showTree}>
+				<Cursor {line} {column} />
 				{#snippet component()}
-					<TreeComponent node={tree.root}></TreeComponent>
+					<Tree node={tree.root}></Tree>
 				{/snippet}
-			</TooltipComponent>
+			</Tooltip>
 		{/if}
 		{#if diagnostics.length}
 			{#each diagnostics as diagnostic}
-				<DiagnosticComponent {diagnostic} />
+				<Diagnostic {diagnostic} />
 			{/each}
 		{/if}
 		{#each lines as line, i}
@@ -220,14 +221,14 @@
 		<div class="seperator">tokens</div>
 		<div class="tokens highlight">
 			{#each tokens as token, i}
-				<TooltipComponent>
+				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet component()}
 						<div class="message">
 							{token.span.address}-{token.class}
 						</div>
 					{/snippet}
-				</TooltipComponent>
+				</Tooltip>
 			{/each}
 		</div>
 	{/if}
