@@ -72,8 +72,5 @@
 		padding: 1px 7px;
 		background-color: white;
 		outline: 1px solid;
-		box-shadow:
-			rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
-			rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 	}
 </style>
