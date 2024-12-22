@@ -50,6 +50,7 @@ export class Parser {
     return left;
   }
 
+  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseBinaryExpression(parent = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
     do {
@@ -61,6 +62,7 @@ export class Parser {
     } while (true);
   }
 
+  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseUnaryExpression(): SyntaxNode {
     const operators: SyntaxToken<SyntaxUnaryOperatorKind>[] = [];
     while (SyntaxFacts.getUnaryPrecedence(this.peekToken().kind)) {
@@ -72,7 +74,8 @@ export class Parser {
     }
     return right;
   }
-
+  
+  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
       return new SyntaxParenthesis(this.getNextToken(), this.parseBinaryExpression(), this.getNextToken());
