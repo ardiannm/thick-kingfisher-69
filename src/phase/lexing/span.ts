@@ -17,11 +17,11 @@ export class Span {
   }
 
   get from() {
-    return new Location(this.source.getLine(this.start).number, this.source.getColumn(this.start));
+    return Location.createFom(this.source.getLine(this.start).number, this.source.getColumn(this.start));
   }
 
   get to() {
-    return new Location(this.source.getLine(this.end).number, this.source.getColumn(this.end));
+    return Location.createFom(this.source.getLine(this.end).number, this.source.getColumn(this.end));
   }
 
   get address() {
