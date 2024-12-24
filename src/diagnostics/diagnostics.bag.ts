@@ -2,6 +2,7 @@ import { DependencyLink } from "../phase/binding/bound.cell.assignment";
 import { BoundKind } from "../phase/binding/bound.kind";
 import { Span } from "../phase/lexing/span";
 import { Kind } from "../phase/parsing/syntax.kind";
+import { SyntaxToken } from "../phase/parsing/syntax.token";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
@@ -46,6 +47,13 @@ export class DiagnosticsBag {
     const text = path.map((n) => `${n.node.reference.name}`).join(" > ");
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span);
     this.diagnostics.push(node);
+  }
+
+  reportUnexpectedEndOfLine(peek: SyntaxToken<Kind>) {
+    const sourceText = peek.source;
+    const line = sourceText.getLine(peek.span.from.line);
+    const span = Span.createFrom(sourceText, peek.span.end, Math.max(peek.span.end, line.span.end));
+    this.report(`unexpected end of line.`, Severity.CantEvaluate, span);
   }
 
   reportCantAssignTo(kind: Kind, span: Span) {

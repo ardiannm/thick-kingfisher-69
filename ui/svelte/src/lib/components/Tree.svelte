@@ -70,6 +70,7 @@
 		width: fit-content;
 		min-width: 400px;
 	}
+	.syntax-unary-expression,
 	.syntax-binary-expression {
 		display: flex;
 		flex-direction: column;

@@ -1,4 +1,4 @@
-import { Kind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
+import { Kind, SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxBinaryExpression } from "./syntax.binary.expression";
 import { SyntaxCellAssignment } from "./syntax.cell.assignment";
 import { SyntaxCellReference } from "./syntax.cell.reference";
@@ -10,6 +10,7 @@ import { SyntaxToken } from "./syntax.token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 import { SourceText } from "../lexing/source.text";
 import { Token } from "../lexing/token";
+import { Span } from "../lexing/span";
 
 export class Parser {
   private tokens: SyntaxToken<Kind>[] = [];
@@ -50,32 +51,44 @@ export class Parser {
     return left;
   }
 
-  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseBinaryExpression(parent = 0): SyntaxNode {
     let left = this.parseUnaryExpression();
     do {
       const precedence = SyntaxFacts.getBinaryPrecedence(this.peekToken().kind);
-      if (!precedence || parent >= precedence) {
+      if (!precedence || parent >= precedence || this.peekNextLine()) {
         return left;
       }
-      left = new SyntaxBinaryExpression(left, this.getNextToken(), this.parseBinaryExpression(precedence));
+      const operator = this.getNextToken<SyntaxBinaryOperatorKind>();
+      if (this.peekNextLine(true)) {
+        return new SyntaxBinaryExpression(left, operator, this.parseErrorToken());
+      } else {
+        left = new SyntaxBinaryExpression(left, operator, this.parseBinaryExpression(precedence));
+      }
     } while (true);
   }
 
-  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
+  private parseErrorToken(): SyntaxNode<Kind> {
+    const node = this.peekToken();
+    const span = Span.createFrom(this.source, node.span.end, node.span.end);
+    return new SyntaxToken<SyntaxKind.SyntaxError>(this.source, SyntaxKind.SyntaxError, span);
+  }
+
   private parseUnaryExpression(): SyntaxNode {
     const operators: SyntaxToken<SyntaxUnaryOperatorKind>[] = [];
+    let nextLine = false;
     while (SyntaxFacts.getUnaryPrecedence(this.peekToken().kind)) {
       operators.push(this.getNextToken());
+      if (this.peekNextLine(true)) {
+        nextLine = true;
+        break;
+      }
     }
-    let right = this.parseParenthesis() as SyntaxNode;
-    while (operators.length) {
-      right = new SyntaxUnaryExpression(operators.pop()!, right);
-    }
+    let right = nextLine ? this.parseErrorToken() : (this.parseParenthesis() as SyntaxNode);
+    while (operators.length) right = new SyntaxUnaryExpression(operators.pop()!, right);
     return right;
   }
-  
-  // TODO: stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
+
+  // TODO: Stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
       return new SyntaxParenthesis(this.getNextToken(), this.parseBinaryExpression(), this.getNextToken());
@@ -97,7 +110,7 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
-    return token;
+    return this.parseErrorToken();
   }
 
   private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
@@ -120,5 +133,15 @@ export class Parser {
       offset++;
     }
     return true;
+  }
+
+  // TODO: Debug diagnostic span position while parsing cases like 1+2+    \n1+2+    \n.
+  // It fails to render the span from the last token to the very end of the line.
+  private peekNextLine(report = false) {
+    const token = this.peekToken(-1);
+    const peekToken = this.peekToken(0);
+    const nextLine = peekToken.span.to.line > token.span.to.line || peekToken.kind === SyntaxKind.EndOfFileToken;
+    if (nextLine && report) this.source.diagnosticsBag.reportUnexpectedEndOfLine(token);
+    return nextLine;
   }
 }

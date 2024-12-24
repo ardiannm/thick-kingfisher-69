@@ -180,7 +180,7 @@
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
-			<Tooltip show={showTree}>
+			<Tooltip show={showTree} {line} {column}>
 				<Cursor {line} {column}></Cursor>
 				{#snippet render()}
 					<Tree node={tree.root}></Tree>

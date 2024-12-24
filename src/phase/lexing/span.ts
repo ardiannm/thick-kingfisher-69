@@ -2,7 +2,7 @@ import { Location } from "./locaation";
 import { SourceText } from "./source.text";
 
 export class Span {
-  private constructor(protected source: SourceText, public start: number, public end: number) {}
+  private constructor(public source: SourceText, public start: number, public end: number) {}
 
   static createFrom(source: SourceText, start: number, end: number) {
     return new Span(source, start, end);
