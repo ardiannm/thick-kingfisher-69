@@ -44,7 +44,6 @@
 	{:else}
 		<div class="not-implement">
 			{node.kind}
-			{node.span.text}
 		</div>
 	{/if}
 </div>
@@ -59,12 +58,12 @@
 	.syntax-compilation-unit {
 		padding: 10px 20px;
 		border-radius: 4px;
-		background-color: #f7f8fb;
 		background-color: white;
 		border-radius: 0;
 		border: 1px solid;
 		width: fit-content;
 		min-width: 400px;
+		box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 	}
 	.syntax-unary-expression,
 	.syntax-binary-expression {
@@ -85,9 +84,9 @@
 		@extend .highlight;
 	}
 	.highlight {
-		background-color: #f7f8fb;
 		padding: 1px 7px;
-		border: 1px solid #d1d9e0;
 		margin-block: 4px;
+		border: 1px solid #c5c8d0;
+		background-color: #eff1f5;
 	}
 </style>

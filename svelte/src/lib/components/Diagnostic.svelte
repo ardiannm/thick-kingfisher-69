@@ -61,7 +61,6 @@
 		opacity: 1;
 		&:hover {
 			z-index: 100;
-			background-color: #ffc7ce4d;
 		}
 		&::before {
 			content: '';

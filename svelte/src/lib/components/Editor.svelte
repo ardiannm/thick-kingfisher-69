@@ -29,8 +29,11 @@
 	function handleKey(event: KeyboardEvent) {
 		showCursor = true;
 		const input = event.key;
+
 		if (event.code == 'AltRight' && event.altKey) {
 			event.preventDefault();
+			showTree = !showTree;
+		} else if (showTree) {
 			showTree = !showTree;
 		}
 
@@ -171,7 +174,7 @@
 <svelte:window on:keydown={handleKey} />
 
 <div class="editor">
-	<div class="highlight">
+	<div class="highlight todo">
 		<ul>
 			<li>display the syntax tree when hovering over the code.</li>
 			<li>ensure spans beneath other spans are rendered on top.</li>
@@ -235,10 +238,9 @@
 
 <style scoped lang="scss">
 	.highlight {
-		outline: 1px solid #d1d9e0;
+		outline: 1px solid #c5c8d0;
 		padding: 10px 20px;
-		border-radius: 6px;
-		background-color: #f7f8fb;
+		background-color: #fff;
 	}
 	.seperator {
 		margin-block: 20px;
@@ -268,7 +270,8 @@
 		display: flex;
 		flex-direction: row;
 		.token {
-			border-right: 1px solid #d1d9e0;
+			border-right: 1px solid #a5a8bf;
+			background-color: #eff1f5;
 			height: 100%;
 			min-width: 1px;
 		}
@@ -292,8 +295,7 @@
 		margin: 0;
 	}
 	.diagnostics {
-		color: #bebec5;
-		background-color: #2a2a2a;
+		background-color: #eff1f5;
 	}
 	.diagnostic {
 		display: flex;
@@ -301,5 +303,8 @@
 		.address {
 			margin-left: auto;
 		}
+	}
+	.todo {
+		background-color: #eff1f5;
 	}
 </style>
