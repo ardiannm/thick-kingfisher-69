@@ -37,6 +37,7 @@
 <span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={() => (show = true)} onmouseleave={() => (show = false)}>
 	{@render children()}
 </span>
+
 {#if show}
 	<div class="tooltip" style="left: {x}px; top: {y}px;">
 		{@render render()}

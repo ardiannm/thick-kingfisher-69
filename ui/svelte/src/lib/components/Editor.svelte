@@ -180,12 +180,9 @@
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
-			<Tooltip show={showTree} {line} {column}>
-				<Cursor {line} {column}></Cursor>
-				{#snippet render()}
-					<Tree node={tree.root}></Tree>
-				{/snippet}
-			</Tooltip>
+			<Cursor {line} {column} showTooltip={showTree}>
+				<Tree node={tree.root}></Tree>
+			</Cursor>
 		{/if}
 		{#if diagnostics.length}
 			{#each diagnostics as diagnostic}

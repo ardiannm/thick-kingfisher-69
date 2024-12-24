@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { getPosition } from '$lib';
+	import type { Snippet } from 'svelte';
+	import Tooltip from './Tooltip.svelte';
 
-	let { line, column } = $props();
+	let { line, column, showTooltip, children }: { line: number; column: number; showTooltip?: boolean; children?: Snippet } = $props();
 
 	let x: number = $state(0);
 	let y: number = $state(0);
@@ -21,15 +23,28 @@
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
 
-<span
-	class="cursor"
-	style="
-        left: {x}px;
-        top: {y}px;
-        width: {w}px;
-        height: {h}px;
-    "
-></span>
+{#snippet cursor()}
+	<span
+		class="cursor"
+		style="
+		left: {x}px;
+		top: {y}px;
+		width: {w}px;
+		height: {h}px;
+"
+	></span>
+{/snippet}
+
+{#if children}
+	<Tooltip show={showTooltip}>
+		{@render cursor()}
+		{#snippet render()}
+			{@render children()}
+		{/snippet}
+	</Tooltip>
+{:else}
+	{@render cursor()}
+{/if}
 
 <style scoped>
 	.cursor {
