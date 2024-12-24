@@ -7,13 +7,14 @@
 	let y = $state(0);
 
 	let wrapper: HTMLSpanElement | null = null;
+	let tooltip: HTMLSpanElement | null = $state(null);
 
 	function renderUi() {
-		if (wrapper) {
+		if (wrapper && tooltip) {
 			const content = wrapper.children[0] as HTMLElement; // considering only the first child; alternatively we could iterate through all the children to construct a bounding client rect.
 			const pos = content.getBoundingClientRect();
-			x = pos.left + offsetX;
-			y = pos.top + pos.height + offsetY;
+			x = pos.left + pos.width + offsetX;
+			y = pos.top + offsetY - tooltip.getBoundingClientRect().height;
 		}
 	}
 
@@ -39,7 +40,7 @@
 </span>
 
 {#if show}
-	<div class="tooltip" style="left: {x}px; top: {y}px;">
+	<div class="tooltip" style="left: {x}px; top: {y}px;" bind:this={tooltip}>
 		{@render render()}
 	</div>
 {/if}

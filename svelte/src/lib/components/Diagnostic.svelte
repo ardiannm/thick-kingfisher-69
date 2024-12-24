@@ -41,10 +41,10 @@
 		onmouseleave={toggleShow}
 		class="diagnostic"
 		style="
-	left: {x}px;
-	top: {y}px;
-	width: {w}px;
-	height: {h}px;
+			left: {x}px;
+			top: {y}px;
+			width: {w}px;
+			height: {h}px;
 	"
 	></span>
 	{#snippet render()}
@@ -57,15 +57,22 @@
 <style lang="scss">
 	.diagnostic {
 		position: absolute;
-		background-color: #c9c3e6d2;
 		min-width: 5px;
 		opacity: 1;
 		&:hover {
 			z-index: 100;
-			outline: 1px solid #2a2a2a;
-			box-shadow:
-				rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
-				rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+			background-color: #ffc7ce4d;
+		}
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 4px; /* Height of the squiggle */
+			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="red" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
+			z-index: 1;
 		}
 	}
 	.message {

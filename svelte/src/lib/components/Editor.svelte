@@ -193,11 +193,11 @@
 			<span id={`line-${i + 1}`} class="line">
 				{#each line.getTokens() as token, j}
 					{#if token.span.length}
-						<span class="token token-{(j % 4) + 1} {token.class}">
+						<span class="token {token.class}">
 							{token.span.text}
 						</span>
 					{:else}
-						<span class="token token-{(j % 4) + 1} {token.class}">&nbsp;</span>
+						<span class="token {token.class}">&nbsp;</span>
 					{/if}
 				{/each}
 			</span>
@@ -265,16 +265,18 @@
 	.tokens {
 		display: flex;
 		flex-direction: row;
-		& .space-trivia {
-			background-color: #c9c3e6dc;
+		.token {
+			border-right: 1px solid #d1d9e0;
+			height: 100%;
+			min-width: 1px;
 		}
 		.message {
 			background-color: white;
 			padding: 1px 7px;
 			border: 1px solid;
 			box-shadow:
-				rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
-				rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+				#43475545 0px 0px 0.25em,
+				#5a7dbc0d 0px 0.25em 1em;
 		}
 	}
 	.token {
