@@ -1,7 +1,0 @@
-@import "../../mixins.scss";
-
-:host {
-  display: flex;
-  @include applyMaxSize;
-  // @include flexCenter;
-}

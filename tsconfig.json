@@ -24,9 +24,7 @@
   "include": [
     "index.ts",
     "src/**/*.ts",
-    "types/**/*.d.ts"
-  ],
-  "exclude": [
+    "types/**/*.d.ts",
     "ui/**/*"
-  ]
+  ],
 }

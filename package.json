@@ -7,10 +7,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "solid": "cd ui/solid && npm run dev",
-    "angular": "cd ui/angular && npm run start",
-    "svelte": "cd ui/svelte && yarn dev --open",
-    "test": "vitest"
+    "start": "cd svelte && yarn dev --open"
   },
   "license": "MIT",
   "devDependencies": {

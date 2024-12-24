@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { SyntaxTree } from '../../../../..';
+	import { SyntaxTree } from '../../../..';
 
 	import Cursor from './Cursor.svelte';
 	import Diagnostic from './Diagnostic.svelte';

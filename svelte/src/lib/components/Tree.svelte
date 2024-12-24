@@ -1,11 +1,7 @@
 <script lang="ts">
 	import Tree from './Tree.svelte';
 
-	import { SyntaxNode } from '../../../../..';
-	import { SyntaxKind } from '../../../../../src/phase/parsing/syntax.kind';
-	import { SyntaxBinaryExpression } from '../../../../../src/phase/parsing/syntax.binary.expression';
-	import { SyntaxCompilationUnit } from '../../../../../src/phase/parsing/syntax.compilation.unit';
-	import type { SyntaxUnaryExpression } from '../../../../../src/phase/parsing/syntax.unary.expression';
+	import { SyntaxBinaryExpression, SyntaxCompilationUnit, SyntaxNode, SyntaxUnaryExpression, SyntaxKind } from '../../../..';
 
 	const { node }: { node: SyntaxNode } = $props();
 
