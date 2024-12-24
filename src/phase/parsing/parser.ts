@@ -135,13 +135,15 @@ export class Parser {
     return true;
   }
 
-  // TODO: Debug diagnostic span position while parsing cases like 1+2+    \n1+2+    \n.
-  // It fails to render the span from the last token to the very end of the line.
   private peekNextLine(report = false) {
     const token = this.peekToken(-1);
-    const peekToken = this.peekToken(0);
-    const nextLine = peekToken.span.to.line > token.span.to.line || peekToken.kind === SyntaxKind.EndOfFileToken;
-    if (nextLine && report) this.source.diagnosticsBag.reportUnexpectedEndOfLine(token);
+    const peek = this.peekToken(0);
+    const nextLine = peek.span.to.line > token.span.to.line || peek.kind === SyntaxKind.EndOfFileToken;
+    if (nextLine && report) {
+      const line = this.source.getLine(token.span.start);
+      const span = Span.createFrom(this.source, token.span.end, Math.max(token.span.end, line.span.end));
+      this.source.diagnosticsBag.reportUnexpectedEndOfLine(span);
+    }
     return nextLine;
   }
 }
