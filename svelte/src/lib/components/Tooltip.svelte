@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 
-	let { children, render, offsetX = 0, offsetY = 0, show = false }: { children: Snippet; render: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number } = $props();
+	let { children, render, offsetX = 0, offsetY = 0, show = false, direction = 'top' }: { children: Snippet; render: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number; direction?: 'top' | 'bottom' } = $props();
 
 	let x = $state(0);
 	let y = $state(0);
@@ -14,7 +14,7 @@
 			const content = wrapper.children[0] as HTMLElement; // considering only the first child; alternatively we could iterate through all the children to construct a bounding client rect.
 			const pos = content.getBoundingClientRect();
 			x = pos.left + pos.width + offsetX;
-			y = pos.top + offsetY - tooltip.getBoundingClientRect().height;
+			y = pos.top + offsetY - (direction === 'top' ? tooltip.getBoundingClientRect().height : -pos.height);
 		}
 	}
 

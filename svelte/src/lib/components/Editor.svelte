@@ -32,7 +32,9 @@
 		if (event.code == 'AltRight' && event.altKey) {
 			event.preventDefault();
 			showTree = !showTree;
-		} else if (input === 'ArrowRight' && event.ctrlKey) {
+		}
+
+		if (input === 'ArrowRight' && event.ctrlKey) {
 			moveToNextToken();
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
 			moveToPrevToken();

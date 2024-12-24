@@ -31,12 +31,13 @@
 		top: {y}px;
 		width: {w}px;
 		height: {h}px;
+		opacity: {showTooltip ? 0 : 1};
 "
 	></span>
 {/snippet}
 
 {#if children}
-	<Tooltip show={showTooltip}>
+	<Tooltip show={showTooltip} direction="bottom">
 		{@render cursor()}
 		{#snippet render()}
 			{@render children()}
