@@ -1,7 +1,7 @@
-import { Token } from "./token";
 import { SourceText } from "./source.text";
 import { Span } from "./span";
 import { SyntaxKind, Kind } from "../parsing/syntax.kind";
+import { SyntaxToken } from "./syntax.token";
 
 export class Lexer {
   private start: number = 0;
@@ -13,12 +13,12 @@ export class Lexer {
     return new Lexer(source);
   }
 
-  *lex(): Generator<Token> {
+  *lex(): Generator<SyntaxToken> {
     while (this.hasNext()) yield this.lexNextToken();
     yield this.lexNextToken();
   }
 
-  private lexNextToken(): Token {
+  private lexNextToken(): SyntaxToken {
     this.start = this.position;
     switch (this.char()) {
       case "":
@@ -74,26 +74,26 @@ export class Lexer {
   }
 
   private createNewToken(kind: Kind) {
-    return new Token(kind, this.span);
+    return new SyntaxToken(this.source, kind, this.span);
   }
 
   private get span() {
     return Span.createFrom(this.source, this.start, this.position);
   }
 
-  private lexIdentifier(): Token {
+  private lexIdentifier(): SyntaxToken {
     this.next();
     while (this.isLetter()) this.next();
     return this.createNewToken(SyntaxKind.IdentifierToken);
   }
 
-  private lexSpaceToken(): Token {
+  private lexSpaceToken(): SyntaxToken {
     this.next();
     while (this.isSpace()) this.next();
     return this.createNewToken(SyntaxKind.SpaceTrivia);
   }
 
-  private lexNumberToken(): Token {
+  private lexNumberToken(): SyntaxToken {
     this.next();
     while (this.isDigit()) this.next();
     if (this.char() === ".") {
@@ -106,7 +106,7 @@ export class Lexer {
     return this.createNewToken(SyntaxKind.NumberToken);
   }
 
-  private lexCommentToken(): Token {
+  private lexCommentToken(): SyntaxToken {
     this.next();
     while (this.hasNext()) {
       if (this.char() === '"') {

@@ -1,13 +1,13 @@
 import { DiagnosticsBag } from "../../diagnostics/diagnostics.bag";
 import { SyntaxTree } from "../../syntax.tree";
 import { Parser } from "../parsing/parser";
+import { SyntaxToken } from "./syntax.token";
 import { Lexer } from "./lexer";
 import { Line } from "./line";
-import { Token } from "./token";
 
 export class SourceText {
   private lines = [] as Line[];
-  private tokens = [] as Token[];
+  private tokens = [] as SyntaxToken[];
 
   private constructor(public text: string, public readonly diagnosticsBag: DiagnosticsBag) {
     this.generateLines();

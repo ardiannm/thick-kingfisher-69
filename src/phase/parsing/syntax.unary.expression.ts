@@ -1,6 +1,6 @@
 import { Kind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export class SyntaxUnaryExpression<Operator extends SyntaxToken<SyntaxUnaryOperatorKind> = SyntaxToken<SyntaxUnaryOperatorKind>, Right extends SyntaxNode = SyntaxNode> extends SyntaxNode {
   constructor(public operator: Operator, public right: Right) {

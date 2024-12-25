@@ -1,6 +1,6 @@
 import { Kind, SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export class SyntaxCompilationUnit extends SyntaxNode {
   constructor(public statements: Array<SyntaxNode>, public eof: SyntaxToken<SyntaxKind.EndOfFileToken>) {

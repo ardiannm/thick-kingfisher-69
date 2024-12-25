@@ -1,6 +1,6 @@
 import { Kind, SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export class SyntaxParenthesis extends SyntaxNode {
   constructor(public left: SyntaxToken<SyntaxKind.OpenParenthesisToken>, public expression: SyntaxNode, public right: SyntaxToken<SyntaxKind.CloseParenthesisToken>) {

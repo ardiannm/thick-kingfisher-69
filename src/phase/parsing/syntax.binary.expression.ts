@@ -1,6 +1,6 @@
 import { SyntaxBinaryOperatorKind, SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export class SyntaxBinaryExpression extends SyntaxNode {
   constructor(public left: SyntaxNode, public operator: SyntaxToken<SyntaxBinaryOperatorKind>, public right: SyntaxNode) {

@@ -1,4 +1,4 @@
-import { Location } from "./locaation";
+import { Location } from "./location";
 import { SourceText } from "./source.text";
 
 export class Span {

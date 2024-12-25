@@ -6,10 +6,9 @@ import { SyntaxCompilationUnit } from "./syntax.compilation.unit";
 import { SyntaxFacts } from "./syntax.facts";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxParenthesis } from "./syntax.parenthesis";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 import { SourceText } from "../lexing/source.text";
-import { Token } from "../lexing/token";
 import { Span } from "../lexing/span";
 
 export class Parser {
@@ -18,15 +17,7 @@ export class Parser {
 
   // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
   private constructor(public readonly source: SourceText) {
-    let trivias: Token[] = [];
-    for (const token of this.source.getTokens()) {
-      if (token.isTrivia()) {
-        trivias.push(token);
-      } else {
-        this.tokens.push(new SyntaxToken(this.source, token.kind, token.span, trivias));
-        trivias = [];
-      }
-    }
+    for (const token of this.source.getTokens()) if (!token.isTrivia()) this.tokens.push(token);
   }
 
   static parseCompilationUnit(sourceText: SourceText) {
@@ -113,6 +104,10 @@ export class Parser {
     return this.parseErrorToken();
   }
 
+  // TODO: Generate syntax tokens from SourceText.tokens cache instead on demand
+  // if this.tokens is empty grab another token from SourceText.tokens and store it to this.tokens cache
+  // so that Parser.getNextToken consumes it next and removes it from this cache.
+  // if there are tokens in this.tokens cache at peek position then refer to that token in this.tokens
   private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
     let next = this.position + offset;
     if (next < 0) next = 0;

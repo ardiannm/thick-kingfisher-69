@@ -1,7 +1,7 @@
 import { SourceText } from "../lexing/source.text";
 import { Kind, SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export class SyntaxBlock extends SyntaxNode {
   constructor(

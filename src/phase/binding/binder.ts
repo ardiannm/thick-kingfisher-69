@@ -7,7 +7,7 @@ import { SyntaxCellReference } from "../parsing/syntax.cell.reference";
 import { SyntaxCompilationUnit } from "../parsing/syntax.compilation.unit";
 import { SyntaxNode } from "../parsing/syntax.node";
 import { SyntaxParenthesis } from "../parsing/syntax.parenthesis";
-import { SyntaxToken } from "../parsing/syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 import { SyntaxUnaryExpression } from "../parsing/syntax.unary.expression";
 import { BoundBlock } from "./bound.block";
 import { BoundCellAssignment } from "./bound.cell.assignment";

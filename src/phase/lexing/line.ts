@@ -1,6 +1,6 @@
+import { SyntaxToken } from "./syntax.token";
 import { SourceText } from "./source.text";
 import { Span } from "./span";
-import { Token } from "./token";
 
 export class Line {
   private constructor(public source: SourceText, public number: number, public fullSpan: Span, private lineBreakLength: number) {}
@@ -13,7 +13,7 @@ export class Line {
     return Span.createFrom(this.source, this.fullSpan.start, this.fullSpan.end - this.lineBreakLength);
   }
 
-  *getTokens(): Generator<Token> {
+  *getTokens(): Generator<SyntaxToken> {
     const tokens = this.source.getTokens();
     const tokenStart = this.source.getTokenLocation(this.span.start);
     const token = tokens[tokenStart];
@@ -31,7 +31,7 @@ export class Line {
     }
   }
 
-  private trimToken(token: Token) {
+  private trimToken(token: SyntaxToken) {
     const lineStart = this.fullSpan.start;
     const lineEnd = this.fullSpan.end;
     let tokenStart = token.span.start;
@@ -41,6 +41,6 @@ export class Line {
     }
     if (tokenStart < lineStart) tokenStart = lineStart;
     if (tokenEnd > lineEnd) tokenEnd = lineEnd;
-    return new Token(token.kind, Span.createFrom(this.source, tokenStart, tokenEnd));
+    return new SyntaxToken(this.source, token.kind, Span.createFrom(this.source, tokenStart, tokenEnd));
   }
 }

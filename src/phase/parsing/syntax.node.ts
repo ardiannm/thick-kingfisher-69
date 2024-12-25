@@ -1,7 +1,7 @@
 import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
 import { Kind } from "./syntax.kind";
-import { SyntaxToken } from "./syntax.token";
+import { SyntaxToken } from "../lexing/syntax.token";
 
 export abstract class SyntaxNode<K extends Kind = Kind> {
   constructor(public source: SourceText, public kind: K) {}
@@ -10,8 +10,7 @@ export abstract class SyntaxNode<K extends Kind = Kind> {
   abstract getLastChild(): SyntaxToken;
 
   hasTrivia() {
-    const trivias = this.getFirstChild().trivias;
-    return !!trivias?.length;
+    return this.getFirstChild().hasTrivia();
   }
 
   get span() {
