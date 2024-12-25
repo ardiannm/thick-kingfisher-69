@@ -67,7 +67,7 @@ export class SourceText {
     return middle;
   }
 
-  getTokenLocation(position: number) {
+  getTokenPosition(position: number) {
     if (position < 0) return 0;
     if (position > this.text.length) return this.tokens.length - 1;
     let left = 0;
@@ -88,7 +88,9 @@ export class SourceText {
   }
 
   getToken(position: number) {
-    return this.tokens[this.getTokenLocation(position)];
+    if (position < 0) position = 0;
+    if (position >= this.tokens.length) position = this.tokens.length - 1;
+    return this.tokens[this.getTokenPosition(position)];
   }
 
   getTokens() {

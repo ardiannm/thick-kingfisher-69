@@ -144,7 +144,7 @@
 
 	function moveToPrevToken() {
 		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenLocation(position - 1);
+		let index = tree.source.getTokenPosition(position - 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index--;
@@ -155,7 +155,7 @@
 
 	function moveToNextToken() {
 		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenLocation(position + 1);
+		let index = tree.source.getTokenPosition(position + 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index++;
@@ -228,6 +228,7 @@
 					{#snippet render()}
 						<div class="message">
 							{token.span.address}-{token.class}
+							{token.position}
 						</div>
 					{/snippet}
 				</Tooltip>

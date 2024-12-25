@@ -12,8 +12,16 @@ export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
 
   // TODO: this has to be implemented using SourceText.tokens cache
   override hasTrivia(): boolean {
-    // return !!this.trivias && this.trivias.length > 0;
-    return false;
+    const leftPosition = this.span.start - 1;
+    if (this.isTrivia() || leftPosition - 1 < 0) {
+      return false;
+    }
+    const leftToken = this.source.getToken(leftPosition);
+    return leftToken.isTrivia();
+  }
+
+  get position() {
+    return this.source.getTokenPosition(this.span.start);
   }
 
   override get span() {

@@ -15,13 +15,13 @@ export class Line {
 
   *getTokens(): Generator<SyntaxToken> {
     const tokens = this.source.getTokens();
-    const tokenStart = this.source.getTokenLocation(this.span.start);
+    const tokenStart = this.source.getTokenPosition(this.span.start);
     const token = tokens[tokenStart];
     yield this.trimToken(token);
     if (!this.span.length) {
       return;
     }
-    const tokenEnd = this.source.getTokenLocation(this.span.end);
+    const tokenEnd = this.source.getTokenPosition(this.span.end);
     for (let position = tokenStart + 1; position < tokenEnd; position++) {
       yield tokens[position];
     }
