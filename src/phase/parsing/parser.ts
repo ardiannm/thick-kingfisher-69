@@ -12,13 +12,10 @@ import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
 
 export class Parser {
-  private tokens: SyntaxToken<Kind>[] = [];
   private position = 0;
 
   // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
-  private constructor(public readonly source: SourceText) {
-    for (const token of this.source.getTokens()) if (!token.isTrivia()) this.tokens.push(token);
-  }
+  private constructor(public readonly source: SourceText) {}
 
   static parseCompilationUnit(sourceText: SourceText) {
     return new Parser(sourceText).parseCompilationUnit();
@@ -104,20 +101,22 @@ export class Parser {
     return this.parseErrorToken();
   }
 
-  // TODO: Generate syntax tokens from SourceText.tokens cache instead on demand
-  // if this.tokens is empty grab another token from SourceText.tokens and store it to this.tokens cache
-  // so that Parser.getNextToken consumes it next and removes it from this cache.
-  // if there are tokens in this.tokens cache at peek position then refer to that token in this.tokens
   private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
     let next = this.position + offset;
+    const tokens = this.source.tokens;
     if (next < 0) next = 0;
-    if (next >= this.tokens.length) next = this.tokens.length - 1;
-    return this.tokens[next] as SyntaxToken<K>;
+    if (next >= tokens.length) next = tokens.length - 1;
+    let token: SyntaxToken = tokens[next];
+    while (token.isTrivia()) {
+      next++;
+      token = tokens[next];
+    }
+    return token as SyntaxToken<K>;
   }
 
   private getNextToken<K extends Kind = Kind>(): SyntaxToken<K> {
     const token = this.peekToken<K>();
-    this.position++;
+    this.position = token.position + 1;
     return token;
   }
 

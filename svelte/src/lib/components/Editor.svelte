@@ -18,7 +18,7 @@
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLines()[line - 1]);
-	let tokens = $derived(tree.source.getTokens());
+	let tokens = $derived(tree.source.tokens);
 
 	let showCursor = $state(false);
 	let showTree = $state(false);
