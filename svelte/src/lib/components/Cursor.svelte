@@ -51,6 +51,6 @@
 		position: absolute;
 		background-color: black;
 		pointer-events: none;
-		z-index: 1000;
+		z-index: 10;
 	}
 </style>

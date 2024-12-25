@@ -14,7 +14,8 @@
 	const lines = $derived(tree.source.getLines());
 	const diagnostics = $derived(tree.source.diagnosticsBag.diagnostics);
 
-	let cursor = $state(text.length);
+	// svelte-ignore state_referenced_locally
+	let cursor = $state(tree.source.getPosition(1, 19));
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLine(cursor));
@@ -33,8 +34,10 @@
 			event.preventDefault();
 			showTree = !showTree;
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
+			event.preventDefault();
 			moveToNextToken();
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
+			event.preventDefault();
 			moveToPrevToken();
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
 			event.preventDefault();
@@ -170,12 +173,10 @@
 
 <div class="editor">
 	<div class="highlight todo">
-		<ul>
-			<li>display the syntax tree when hovering over the code.</li>
-			<li>ensure spans beneath other spans are rendered on top.</li>
-			<li>render diagnostics that extend across multiple lines.</li>
-			<li>add clipboard functionality for copying and pasting code.</li>
-		</ul>
+		<span>display the syntax tree when hovering over the code.</span>
+		<span>ensure spans beneath other spans are rendered on top.</span>
+		<span>render diagnostics that extend across multiple lines.</span>
+		<span>add clipboard functionality for copying and pasting code.</span>
 	</div>
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
@@ -205,7 +206,7 @@
 	</div>
 	<div class="seperator">line {line} column {column}</div>
 	{#if diagnostics.length}
-		<div class="highlight diagnostics">
+		<div class="highlight">
 			{#each diagnostics as diagnostic}
 				<div class="diagnostic">
 					{diagnostic.message}
@@ -221,7 +222,7 @@
 				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet render()}
-						<div class="message">position="{token.position}" kind="{token.class}" text="{token.fullSpan.text}" len="{token.fullSpan.length}" trivia="{token.hasTrivia()}"</div>
+						<div class="message">position="{token.position}" kind="{token.class}" len="{token.fullSpan.length}" trivia="{token.hasTrivia()}"</div>
 					{/snippet}
 				</Tooltip>
 			{/each}
@@ -231,9 +232,8 @@
 
 <style scoped lang="scss">
 	.highlight {
-		outline: 1px solid #c5c8d0;
 		padding: 10px 20px;
-		background-color: #fff;
+		background-color: #eeeef0;
 	}
 	.seperator {
 		margin-block: 20px;
@@ -243,35 +243,39 @@
 		margin: auto;
 		flex-direction: column;
 		width: fit-content;
+		min-width: 700px;
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		margin-top: 5%;
 	}
 	.space {
-		width: 700px;
+		width: auto;
 		padding-right: 10px;
+		outline: none;
 	}
 	.line {
 		position: relative;
 		display: flex;
 		flex-direction: row;
 		box-sizing: border-box;
-		z-index: 1000;
 		pointer-events: none;
 	}
 	.tokens {
 		display: flex;
 		flex-direction: row;
 		.token {
-			border-right: 1px solid #a5a8bf;
-			background-color: #eff1f5;
 			height: 100%;
 			min-width: 1px;
+			border: 1px solid #cdcdcd;
+			margin-right: 2px;
+			&:hover {
+				border-color: #8c8a89;
+			}
 		}
 		.message {
-			background-color: white;
 			padding: 1px 7px;
 			border: 1px solid;
+			background-color: white;
 			box-shadow:
 				#43475545 0px 0px 0.25em,
 				#5a7dbc0d 0px 0.25em 1em;
@@ -284,12 +288,6 @@
 		min-width: 1px;
 		white-space: pre;
 	}
-	ul {
-		margin: 0;
-	}
-	.diagnostics {
-		background-color: #eff1f5;
-	}
 	.diagnostic {
 		display: flex;
 		flex-direction: row;
@@ -298,6 +296,12 @@
 		}
 	}
 	.todo {
-		background-color: #eff1f5;
+		display: flex;
+		flex-direction: column;
+	}
+	.number-token,
+	.identifier-token,
+	.comment-trivia {
+		color: #4c3dc4;
 	}
 </style>

@@ -63,22 +63,23 @@
 		margin-left: 8px;
 	}
 	.syntax-compilation-unit {
-		padding: 10px 20px;
+		padding: 30px;
 		border-radius: 4px;
 		background-color: white;
 		border-radius: 0;
-		border: 1px solid;
 		width: fit-content;
-		min-width: 400px;
-		box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+		min-width: 500px;
+		background-color: #ffffff;
+		border: 1px solid;
 	}
+
 	.syntax-unary-expression,
 	.syntax-binary-expression,
 	.syntax-cell-reference,
 	.syntax-parenthesis {
 		display: flex;
 		flex-direction: column;
-		border-left: 1px solid #d1d9e0;
+		border-left: 1px solid #4c3dc4;
 		padding-left: 30px;
 		padding: 1px 10px;
 	}
@@ -89,17 +90,14 @@
 		@extend .highlight;
 	}
 	.not-implement {
-		background-color: #f7f8fb;
-		border: 1px solid #d1d9e0;
 		@extend .highlight;
 	}
 	.highlight {
 		padding: 1px 7px;
 		margin-block: 4px;
-		border: 1px solid #c5c8d0;
-		background-color: #eff1f5;
 		margin-left: 4px;
 		width: fit-content;
+		background-color: #eeeef0;
 	}
 	.syntax-cell-reference {
 		display: flex;
