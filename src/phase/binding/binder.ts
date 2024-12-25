@@ -115,7 +115,7 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>();
       const value = this.bindCell(node);
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span);
-      if (this.configuration.explicitDeclarations && !node.right.hasTrivia()) {
+      if (this.configuration.explicitDeclarations) {
         this.scope.diagnostics.reportUndeclaredCell(name, node.span);
       }
     }

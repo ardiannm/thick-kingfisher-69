@@ -27,12 +27,11 @@
 	<span
 		class="cursor"
 		style="
-		left: {x}px;
-		top: {y}px;
-		width: {w}px;
-		height: {h}px;
-		opacity: {showTooltip ? 0 : 1};
-"
+			left: {x}px;
+			top: {y}px;
+			width: {w}px;
+			height: {h}px;
+		"
 	></span>
 {/snippet}
 

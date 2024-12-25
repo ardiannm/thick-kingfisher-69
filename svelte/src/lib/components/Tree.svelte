@@ -2,6 +2,8 @@
 	import Tree from './Tree.svelte';
 
 	import { SyntaxBinaryExpression, SyntaxCompilationUnit, SyntaxNode, SyntaxUnaryExpression, SyntaxKind } from '../../../..';
+	import type { SyntaxParenthesis } from '../../../../src/phase/parsing/syntax.parenthesis';
+	import type { SyntaxCellReference } from '../../../../src/phase/parsing/syntax.cell.reference';
 
 	const { node }: { node: SyntaxNode } = $props();
 
@@ -11,6 +13,8 @@
 	const isCompilationUnit = (node: SyntaxNode): node is SyntaxCompilationUnit => node.kind === SyntaxKind.SyntaxCompilationUnit;
 	const isBinaryExpression = (node: SyntaxNode): node is SyntaxBinaryExpression => node.kind === SyntaxKind.SyntaxBinaryExpression;
 	const isUnaryExpression = (node: SyntaxNode): node is SyntaxUnaryExpression => node.kind === SyntaxKind.SyntaxUnaryExpression;
+	const isParenthesisExpression = (node: SyntaxNode): node is SyntaxParenthesis => node.kind === SyntaxKind.SyntaxParenthesis;
+	const isSyntaxCellReference = (node: SyntaxNode): node is SyntaxCellReference => node.kind === SyntaxKind.SyntaxCellReference;
 </script>
 
 <div class={node.class}>
@@ -28,6 +32,12 @@
 		{node.span.text}
 	{:else if isIdentifierToken(node)}
 		{node.span.text}
+	{:else if isSyntaxCellReference(node)}
+		{node.kind}
+		<div class="name">{node.span.text}</div>
+	{:else if isParenthesisExpression(node)}
+		{node.kind}
+		<Tree node={node.expression}></Tree>
 	{:else if isBinaryExpression(node)}
 		{node.kind}
 		<Tree node={node.left}></Tree>
@@ -49,9 +59,6 @@
 </div>
 
 <style lang="scss">
-	div {
-		width: fit-content;
-	}
 	.operator {
 		margin-left: 8px;
 	}
@@ -66,14 +73,17 @@
 		box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 	}
 	.syntax-unary-expression,
-	.syntax-binary-expression {
+	.syntax-binary-expression,
+	.syntax-cell-reference,
+	.syntax-parenthesis {
 		display: flex;
 		flex-direction: column;
 		border-left: 1px solid #d1d9e0;
 		padding-left: 30px;
 		padding: 1px 10px;
 	}
-	.number-token {
+	.number-token,
+	.identifier-token {
 		display: flex;
 		width: fit-content;
 		@extend .highlight;
@@ -88,5 +98,14 @@
 		margin-block: 4px;
 		border: 1px solid #c5c8d0;
 		background-color: #eff1f5;
+		margin-left: 4px;
+		width: fit-content;
+	}
+	.syntax-cell-reference {
+		display: flex;
+		flex-direction: column;
+		.name {
+			@extend .highlight;
+		}
 	}
 </style>

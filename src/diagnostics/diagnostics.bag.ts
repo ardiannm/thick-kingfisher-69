@@ -1,3 +1,4 @@
+import { SourceText } from "../..";
 import { DependencyLink } from "../phase/binding/bound.cell.assignment";
 import { BoundKind } from "../phase/binding/bound.kind";
 import { Span } from "../phase/lexing/span";
@@ -39,7 +40,11 @@ export class DiagnosticsBag {
   }
 
   reportMissingClosingQuote(span: Span) {
-    this.report(`comment is missing a closing \`"\``, Severity.CantParse, span);
+    this.report(`comment is missing a closing \`"\`.`, Severity.CantParse, span);
+  }
+
+  reportExpectedInParenthesis(source: SourceText, start: number, end: number) {
+    this.report(`expected expression.`, Severity.CantEvaluate, Span.createFrom(source, start, end));
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {

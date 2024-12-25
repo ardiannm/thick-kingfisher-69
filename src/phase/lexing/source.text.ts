@@ -7,7 +7,7 @@ import { Line } from "./line";
 
 export class SourceText {
   private lines = [] as Line[];
-  public tokens = [] as SyntaxToken[];
+  private tokens = [] as SyntaxToken[];
 
   private constructor(public text: string, public readonly diagnosticsBag: DiagnosticsBag) {
     this.generateLines();
@@ -91,6 +91,10 @@ export class SourceText {
     if (position < 0) position = 0;
     if (position >= this.tokens.length) position = this.tokens.length - 1;
     return this.tokens[this.getTokenPosition(position)];
+  }
+
+  getTokens() {
+    return this.tokens;
   }
 
   getLines() {

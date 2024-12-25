@@ -10,13 +10,14 @@ import { SyntaxToken } from "../lexing/syntax.token";
 import { SyntaxUnaryExpression } from "./syntax.unary.expression";
 import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
+import { Severity } from "../../diagnostics/severity";
 
 export class Parser {
   private tokens: SyntaxToken<Kind>[] = [];
   private position = 0;
 
   private constructor(public readonly source: SourceText) {
-    for (const token of this.source.tokens) if (!token.isTrivia()) this.tokens.push(token);
+    for (const token of this.source.getTokens()) if (!token.isTrivia()) this.tokens.push(token);
   }
 
   static parseCompilationUnit(sourceText: SourceText) {
@@ -57,12 +58,6 @@ export class Parser {
     } while (true);
   }
 
-  private parseErrorToken(): SyntaxNode<Kind> {
-    const node = this.peekToken();
-    const span = Span.createFrom(this.source, node.span.end, node.span.end);
-    return new SyntaxToken<SyntaxKind.SyntaxError>(this.source, SyntaxKind.SyntaxError, span);
-  }
-
   private parseUnaryExpression(): SyntaxNode {
     const operators: SyntaxToken<SyntaxUnaryOperatorKind>[] = [];
     let nextLine = false;
@@ -81,12 +76,21 @@ export class Parser {
   // TODO: Stop parsing once the next token is in the next line, throw an "unexpected end of line" for the right hand side
   private parseParenthesis() {
     if (this.match(SyntaxKind.OpenParenthesisToken)) {
-      return new SyntaxParenthesis(this.getNextToken(), this.parseBinaryExpression(), this.getNextToken());
+      const left = this.getNextToken<SyntaxKind.OpenParenthesisToken>();
+      if (this.match(SyntaxKind.CloseParenthesisToken) || this.match(SyntaxKind.EndOfFileToken)) {
+        const errorToken = this.parseErrorToken();
+        const right = this.getNextToken<SyntaxKind.CloseParenthesisToken>();
+        this.source.diagnosticsBag.reportExpectedInParenthesis(this.source, left.span.end, right.span.start);
+        return new SyntaxParenthesis(left, errorToken, right);
+      }
+      const expression = this.parseBinaryExpression();
+      return new SyntaxParenthesis(left, expression, this.expect(SyntaxKind.CloseParenthesisToken, "expecting `)`."));
     }
     return this.parseCellReference();
   }
 
   private parseCellReference() {
+    // FIXME: Token.hasTrivia isn't working correctly
     if (!this.peekToken(1).hasTrivia() && this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       return new SyntaxCellReference(this.getNextToken(), this.getNextToken());
     }
@@ -101,6 +105,12 @@ export class Parser {
         return this.getNextToken();
     }
     return this.parseErrorToken();
+  }
+
+  private parseErrorToken() {
+    const node = this.peekToken();
+    const span = Span.createFrom(this.source, node.span.end, node.span.end);
+    return new SyntaxToken<SyntaxKind.SyntaxError>(this.source, SyntaxKind.SyntaxError, span);
   }
 
   private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
@@ -124,6 +134,15 @@ export class Parser {
       offset++;
     }
     return true;
+  }
+
+  private expect<K extends Kind = Kind>(kind: K, message?: string): SyntaxToken<K> {
+    if (this.match(kind)) {
+      return this.getNextToken();
+    }
+    const token = this.parseErrorToken();
+    if (message) this.source.diagnosticsBag.report(message, Severity.CantEvaluate, token.span);
+    return token as SyntaxToken<K>;
   }
 
   private peekNextLine(report = false) {

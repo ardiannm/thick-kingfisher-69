@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "start": "cd svelte && yarn dev --open"
+    "ui": "cd svelte && yarn dev --open"
   },
   "license": "MIT",
   "devDependencies": {
