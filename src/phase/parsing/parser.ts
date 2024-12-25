@@ -12,10 +12,13 @@ import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
 
 export class Parser {
+  private tokens: SyntaxToken<Kind>[] = [];
   private position = 0;
 
   // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
-  private constructor(public readonly source: SourceText) {}
+  private constructor(public readonly source: SourceText) {
+    for (const token of this.source.tokens) if (!token.isTrivia()) this.tokens.push(token);
+  }
 
   static parseCompilationUnit(sourceText: SourceText) {
     return new Parser(sourceText).parseCompilationUnit();
@@ -102,21 +105,16 @@ export class Parser {
   }
 
   private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
+    if (offset < 0) offset = 0;
     let next = this.position + offset;
-    const tokens = this.source.tokens;
     if (next < 0) next = 0;
-    if (next >= tokens.length) next = tokens.length - 1;
-    let token: SyntaxToken = tokens[next];
-    while (token.isTrivia()) {
-      next++;
-      token = tokens[next];
-    }
-    return token as SyntaxToken<K>;
+    if (next >= this.tokens.length) next = this.tokens.length - 1;
+    return this.tokens[next] as SyntaxToken<K>;
   }
 
   private getNextToken<K extends Kind = Kind>(): SyntaxToken<K> {
     const token = this.peekToken<K>();
-    this.position = token.position + 1;
+    this.position++;
     return token;
   }
 
@@ -130,8 +128,8 @@ export class Parser {
   }
 
   private peekNextLine(report = false) {
-    const token = this.peekToken(-1);
-    const peek = this.peekToken(0);
+    const token = this.tokens[this.position - 1 > 0 ? this.position - 1 : this.position];
+    const peek = this.peekToken();
     const nextLine = peek.span.to.line > token.span.to.line || peek.kind === SyntaxKind.EndOfFileToken;
     if (nextLine && report) {
       const line = this.source.getLine(token.span.start);
