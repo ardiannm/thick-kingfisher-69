@@ -17,7 +17,7 @@ export class Parser {
   private position = 0;
 
   private constructor(public readonly source: SourceText) {
-    for (const token of this.source.getTokens()) if (!token.isTrivia()) this.tokens.push(token);
+    for (const token of this.source.tokens) if (!token.isTrivia()) this.tokens.push(token);
   }
 
   static parseCompilationUnit(sourceText: SourceText) {
@@ -90,7 +90,6 @@ export class Parser {
   }
 
   private parseCellReference() {
-    // FIXME: Token.hasTrivia isn't working correctly
     if (!this.peekToken(1).hasTrivia() && this.match(SyntaxKind.IdentifierToken, SyntaxKind.NumberToken)) {
       return new SyntaxCellReference(this.getNextToken(), this.getNextToken());
     }

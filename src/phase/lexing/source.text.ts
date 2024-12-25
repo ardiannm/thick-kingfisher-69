@@ -7,7 +7,7 @@ import { Line } from "./line";
 
 export class SourceText {
   private lines = [] as Line[];
-  private tokens = [] as SyntaxToken[];
+  public tokens = [] as SyntaxToken[];
 
   private constructor(public text: string, public readonly diagnosticsBag: DiagnosticsBag) {
     this.generateLines();
@@ -67,7 +67,7 @@ export class SourceText {
     return middle;
   }
 
-  getTokenPosition(position: number) {
+  getTokenLocation(position: number) {
     if (position < 0) return 0;
     if (position > this.text.length) return this.tokens.length - 1;
     let left = 0;
@@ -85,16 +85,6 @@ export class SourceText {
       }
     } while (left <= right);
     return middle;
-  }
-
-  getToken(position: number) {
-    if (position < 0) position = 0;
-    if (position >= this.tokens.length) position = this.tokens.length - 1;
-    return this.tokens[this.getTokenPosition(position)];
-  }
-
-  getTokens() {
-    return this.tokens;
   }
 
   getLines() {

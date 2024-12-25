@@ -18,7 +18,7 @@
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLine(cursor));
-	let tokens = $derived(tree.source.getTokens());
+	let tokens = $derived(tree.source.tokens);
 
 	let showCursor = $state(false);
 	let showTree = $state(false);
@@ -139,7 +139,7 @@
 
 	function moveToPrevToken() {
 		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenPosition(position - 1);
+		let index = tree.source.getTokenLocation(position - 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index--;
@@ -150,7 +150,7 @@
 
 	function moveToNextToken() {
 		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenPosition(position + 1);
+		let index = tree.source.getTokenLocation(position + 1);
 		let token = tokens[index];
 		while (token && token.isPunctuation()) {
 			index++;
@@ -221,7 +221,7 @@
 				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet render()}
-						<div class="message">kind="{token.class}" text="{token.fullSpan.text}" len="{token.fullSpan.length}" trivia="{token.hasTrivia()}"</div>
+						<div class="message">position="{token.position}" kind="{token.class}" text="{token.fullSpan.text}" len="{token.fullSpan.length}" trivia="{token.hasTrivia()}"</div>
 					{/snippet}
 				</Tooltip>
 			{/each}

@@ -8,17 +8,15 @@ export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
     super(source, kind);
   }
 
-  // FIXME: Token.hasTrivia isn't working correctly
   override hasTrivia(): boolean {
-    if (this.isTrivia()) {
-      return false;
+    if (this.position > 0) {
+      return this.source.tokens[this.position - 1].isTrivia();
     }
-    const leftPosition = this.span.start - 1;
-    return this.source.getToken(leftPosition).isTrivia();
+    return false;
   }
 
   get position() {
-    return this.source.getTokenPosition(this.span.start);
+    return this.source.getTokenLocation(this.span.start);
   }
 
   override get span() {
@@ -30,7 +28,7 @@ export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
       return this.textSpan;
     }
     let position = this.position;
-    const tokens = this.source.getTokens();
+    const tokens = this.source.tokens;
     while (position > 0 && tokens[position - 1].isTrivia()) {
       position--;
     }
