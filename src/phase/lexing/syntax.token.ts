@@ -3,21 +3,17 @@ import { Span } from "./span";
 import { Kind, SyntaxKind } from "../parsing/syntax.kind";
 import { SyntaxNode } from "../parsing/syntax.node";
 
-// TODO: Add a this.position getter that return the current index position of this token in the SourceText.tokens cache
-// ueseful to know where to start from when looking to the left of the token for trivias
 export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
   constructor(public override source: SourceText, public override kind: K, private textSpan: Span) {
     super(source, kind);
   }
 
-  // TODO: this has to be implemented using SourceText.tokens cache
   override hasTrivia(): boolean {
     const leftPosition = this.span.start - 1;
     if (this.isTrivia() || leftPosition - 1 < 0) {
       return false;
     }
-    const leftToken = this.source.getToken(leftPosition);
-    return leftToken.isTrivia();
+    return this.source.getToken(leftPosition).isTrivia();
   }
 
   get position() {
@@ -28,10 +24,19 @@ export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
     return this.textSpan;
   }
 
-  // TODO: use the most to the left trivia to find the starting position for a full span
   override get fullSpan() {
-    // const start = !!this.trivias?.length ? this.trivias[0].span.start : this.span.start;
-    return Span.createFrom(this.source, this.span.start, this.span.end);
+    if (this.isTrivia()) {
+      return this.textSpan;
+    }
+    let position = this.position;
+    const tokens = this.source.tokens;
+    while (position > 0 && tokens[position - 1].isTrivia()) {
+      position--;
+    }
+    if (position === this.position) {
+      return this.textSpan;
+    }
+    return Span.createFrom(this.source, tokens[position].span.start, this.span.end);
   }
 
   override getFirstChild() {

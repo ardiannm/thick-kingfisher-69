@@ -226,10 +226,7 @@
 				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet render()}
-						<div class="message">
-							{token.span.address}-{token.class}
-							{token.position}
-						</div>
+						<div class="message">kind="{token.class}" text="{token.fullSpan.text}" len="{token.fullSpan.length}"</div>
 					{/snippet}
 				</Tooltip>
 			{/each}

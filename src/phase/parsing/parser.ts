@@ -15,7 +15,6 @@ export class Parser {
   private tokens: SyntaxToken<Kind>[] = [];
   private position = 0;
 
-  // TODO: Implement on-demand token buffering when Parser.peekToken is invoked.
   private constructor(public readonly source: SourceText) {
     for (const token of this.source.tokens) if (!token.isTrivia()) this.tokens.push(token);
   }
