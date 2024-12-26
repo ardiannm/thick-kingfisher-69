@@ -234,6 +234,7 @@
 	.highlight {
 		padding: 10px 20px;
 		background-color: #eeeef0;
+		border-radius: 2px;
 	}
 	.seperator {
 		margin-block: 20px;
