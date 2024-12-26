@@ -57,6 +57,10 @@ export class DiagnosticsBag {
     this.report(`unexpected end of line.`, Severity.CantEvaluate, span);
   }
 
+  reportUnexpectedTokenFound(span: Span) {
+    this.report(`unexpected token found \`${span.text}\`.`, Severity.CantEvaluate, span);
+  }
+
   reportCantAssignTo(kind: Kind, span: Span) {
     this.report(`can't assign to \`${kind}\`.`, Severity.CantEvaluate, span);
   }

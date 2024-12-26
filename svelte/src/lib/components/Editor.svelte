@@ -15,7 +15,7 @@
 	const diagnostics = $derived(tree.source.diagnosticsBag.diagnostics);
 
 	// svelte-ignore state_referenced_locally
-	let cursor = $state(tree.source.getPosition(1, 19));
+	let cursor = $state(tree.source.getPosition(1, 23));
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLine(cursor));
@@ -222,7 +222,7 @@
 				<Tooltip>
 					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
 					{#snippet render()}
-						<div class="message">position="{token.position}" kind="{token.class}" len="{token.fullSpan.length}" trivia="{token.hasTrivia()}"</div>
+						<div class="message">"position": "{token.position}"; "kind": "{token.class}"; "len": "{token.fullSpan.length}"; "trivia": "{token.hasTrivia()}"</div>
 					{/snippet}
 				</Tooltip>
 			{/each}

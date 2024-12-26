@@ -103,6 +103,7 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
+    this.source.diagnosticsBag.reportUnexpectedTokenFound(token.span);
     return this.parseErrorToken();
   }
 
