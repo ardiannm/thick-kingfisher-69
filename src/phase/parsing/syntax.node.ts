@@ -31,9 +31,8 @@ export abstract class SyntaxNode<K extends Kind = Kind> {
   }
 
   toJson() {
-    const json: Record<string, any> = {
-      type: this.class,
-    };
+    const json: Record<string, any> = {};
+    json["type"] = this.class;
     for (const [k, v] of Object.entries(this)) {
       if (v instanceof SyntaxNode) {
         json[k] = v.toJson();
