@@ -44,7 +44,10 @@ export class DiagnosticsBag {
   }
 
   reportExpectedInParenthesis(source: SourceText, start: number, end: number) {
-    this.report(`expected expression.`, Severity.CantEvaluate, Span.createFrom(source, start, end));
+    this.report(`expected expression in parenthesis.`, Severity.CantEvaluate, Span.createFrom(source, start, end));
+  }
+  reportExpectedClosingParenthesis(source: SourceText, position: number) {
+    this.report(`expected closing \`)\`.`, Severity.CantEvaluate, Span.createFrom(source, position, position));
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
@@ -58,7 +61,7 @@ export class DiagnosticsBag {
   }
 
   reportUnexpectedTokenFound(span: Span) {
-    this.report(`unexpected token found \`${span.text}\`.`, Severity.CantEvaluate, span);
+    this.report(`unexpected token \`${span.text}\`.`, Severity.CantEvaluate, span);
   }
 
   reportCantAssignTo(kind: Kind, span: Span) {
