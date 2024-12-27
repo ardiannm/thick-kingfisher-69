@@ -1,7 +1,8 @@
-import { SourceText } from "../..";
+import { SourceText, SyntaxNode } from "../..";
 import { DependencyLink } from "../phase/binding/bound.cell.assignment";
 import { BoundKind } from "../phase/binding/bound.kind";
 import { Span } from "../phase/lexing/span";
+import { SyntaxToken } from "../phase/lexing/syntax.token";
 import { Kind } from "../phase/parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
@@ -46,8 +47,9 @@ export class DiagnosticsBag {
   reportExpectedInParenthesis(source: SourceText, start: number, end: number) {
     this.report(`expected expression.`, Severity.CantEvaluate, Span.createFrom(source, start, end));
   }
-  reportExpectedClosingParenthesis(source: SourceText, position: number) {
-    this.report(`expected closing \`)\`.`, Severity.CantEvaluate, Span.createFrom(source, position, position));
+
+  reportExpectedClosingParenthesis(node: SyntaxNode) {
+    this.report(`expected closing \`)\`.`, Severity.CantEvaluate, Span.createFrom(node.source, node.span.end, node.span.end));
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
@@ -56,7 +58,9 @@ export class DiagnosticsBag {
     this.diagnostics.push(node);
   }
 
-  reportUnexpectedEndOfLine(span: Span) {
+  reportUnexpectedEndOfLine(token: SyntaxToken) {
+    const line = token.span.source.getLine(token.span.start);
+    const span = Span.createFrom(token.span.source, token.span.end, Math.max(token.span.end, line.span.end));
     this.report(`expected expression.`, Severity.CantEvaluate, span);
   }
 

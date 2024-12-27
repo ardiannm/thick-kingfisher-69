@@ -87,7 +87,7 @@ export class Parser {
         right = this.getNextToken();
       } else {
         right = this.parseErrorToken();
-        this.source.diagnosticsBag.reportExpectedClosingParenthesis(this.source, expression.span.end);
+        this.source.diagnosticsBag.reportExpectedClosingParenthesis(expression);
       }
       return new SyntaxParenthesis(left, expression, right);
     }
@@ -146,9 +146,7 @@ export class Parser {
     const peek = this.peekToken();
     const nextLine = peek.span.to.line > token.span.to.line || peek.kind === SyntaxKind.EndOfFileToken;
     if (nextLine && report) {
-      const line = this.source.getLine(token.span.start);
-      const span = Span.createFrom(this.source, token.span.end, Math.max(token.span.end, line.span.end));
-      this.source.diagnosticsBag.reportUnexpectedEndOfLine(span);
+      this.source.diagnosticsBag.reportUnexpectedEndOfLine(token);
     }
     return nextLine;
   }
