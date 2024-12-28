@@ -35,8 +35,13 @@ export class Parser {
 
   private parseCellAssignment() {
     const left = this.parseBinaryExpression();
-    if (this.match(SyntaxKind.ColonColonToken)) {
-      return new SyntaxCellAssignment(left, this.getNextToken(), this.parseBinaryExpression());
+    if (this.match(SyntaxKind.ColonColonToken) && !this.peekNextLine()) {
+      const operator = this.getNextToken();
+      if (this.peekNextLine(true)) {
+        return new SyntaxCellAssignment(left, operator, this.parseErrorToken());
+      } else {
+        return new SyntaxCellAssignment(left, operator, this.parseBinaryExpression());
+      }
     }
     return left;
   }

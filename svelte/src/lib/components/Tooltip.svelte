@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 
-	let { children, render, offsetX = 0, offsetY = 0, show = false, direction = 'top' }: { children: Snippet; render: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number; direction?: 'top' | 'bottom' } = $props();
+	let { children, render, offsetX = 0, offsetY = 0, show = false, direction = 'top', style = '' }: { children: Snippet; render: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number; direction?: 'top' | 'bottom'; style?: string } = $props();
 
 	let x = $state(0);
 	let y = $state(0);
@@ -35,7 +35,7 @@
 	});
 </script>
 
-<span bind:this={wrapper} tabindex="-1" aria-hidden="true" onmouseenter={() => (show = true)} onmouseleave={() => (show = false)}>
+<span bind:this={wrapper} {style} tabindex="-1" aria-hidden="true" onmouseenter={() => (show = true)} onmouseleave={() => (show = false)}>
 	{@render children()}
 </span>
 
