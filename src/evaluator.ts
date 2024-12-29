@@ -21,20 +21,19 @@ export class Evaluator {
   }
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
-    type NodeType<T> = Kind & T;
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
-        return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
+        return this.evaluateBoundCompilationUnit(node as Kind & BoundCompilationUnit);
       case BoundKind.BoundCellAssignment:
-        return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
+        return this.evaluateBoundCellAssignment(node as Kind & BoundCellAssignment);
       case BoundKind.BoundCellReference:
-        return this.evaluateBoundCellReference(node as NodeType<BoundCellReference>);
+        return this.evaluateBoundCellReference(node as Kind & BoundCellReference);
       case BoundKind.BoundBinaryExpression:
-        return this.evaluateBoundBinaryExpression(node as NodeType<BoundBinaryExpression>);
+        return this.evaluateBoundBinaryExpression(node as Kind & BoundBinaryExpression);
       case BoundKind.BoundUnaryExpression:
-        return this.evaluateBoundUnaryExpression(node as NodeType<BoundUnaryExpression>);
+        return this.evaluateBoundUnaryExpression(node as Kind & BoundUnaryExpression);
       case BoundKind.BoundNumericLiteral:
-        return this.evaluateBoundNumericLiteral(node as NodeType<BoundNumericLiteral>);
+        return this.evaluateBoundNumericLiteral(node as Kind & BoundNumericLiteral);
     }
     this.diagnostics.reportMissingEvaluatorMethod(node.kind, node.span);
     return 0;

@@ -25,22 +25,21 @@ export class Binder {
   private constructor(private configuration: CompilerOptions, private scope: BoundScope) {}
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
-    type NodeType<T> = Kind & T;
     switch (node.kind) {
       case SyntaxKind.SyntaxCompilationUnit:
-        return this.bindCompilationUnit(node as NodeType<SyntaxCompilationUnit>);
+        return this.bindCompilationUnit(node as Kind & SyntaxCompilationUnit);
       case SyntaxKind.NumberToken:
-        return this.bindNumber(node as NodeType<SyntaxToken<SyntaxKind.NumberToken>>);
+        return this.bindNumber(node as Kind & SyntaxToken<SyntaxKind.NumberToken>);
       case SyntaxKind.SyntaxParenthesis:
-        return this.bindParenthesizedExpression(node as NodeType<SyntaxParenthesis>);
+        return this.bindParenthesizedExpression(node as Kind & SyntaxParenthesis);
       case SyntaxKind.SyntaxUnaryExpression:
-        return this.bindUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
+        return this.bindUnaryExpression(node as Kind & SyntaxUnaryExpression);
       case SyntaxKind.SyntaxBinaryExpression:
-        return this.bindBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
+        return this.bindBinaryExpression(node as Kind & SyntaxBinaryExpression);
       case SyntaxKind.SyntaxCellReference:
-        return this.bindCellReference(node as NodeType<SyntaxCellReference>);
+        return this.bindCellReference(node as Kind & SyntaxCellReference);
       case SyntaxKind.SyntaxCellAssignment:
-        return this.bindCellAssignment(node as NodeType<SyntaxCellAssignment>);
+        return this.bindCellAssignment(node as Kind & SyntaxCellAssignment);
       case SyntaxKind.SyntaxError:
         return new BoundSyntaxError(node.kind, node.span);
       default:
