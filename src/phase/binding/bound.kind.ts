@@ -1,6 +1,5 @@
 export enum BoundKind {
   BoundBinaryExpression = "BoundBinaryExpression",
-  BoundBlock = "BoundBlock",
   BoundCellReference = "BoundCellReference",
   BoundCompilationUnit = "BoundCompilationUnit",
   BoundSyntaxError = "BoundSyntaxError",

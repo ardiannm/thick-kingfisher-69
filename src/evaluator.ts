@@ -1,6 +1,5 @@
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { BoundBinaryExpression } from "./phase/binding/bound.binary.expression";
-import { BoundBlock } from "./phase/binding/bound.block";
 import { BoundCellAssignment } from "./phase/binding/bound.cell.assignment";
 import { BoundCellReference } from "./phase/binding/bound.cell.reference";
 import { BoundCompilationUnit } from "./phase/binding/bound.compilation.unit";
@@ -19,8 +18,6 @@ export class Evaluator {
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
         return this.evaluateBoundCompilationUnit(node as NodeType<BoundCompilationUnit>);
-      case BoundKind.BoundBlock:
-        return this.evaluateBoundBlock(node as NodeType<BoundBlock>);
       case BoundKind.BoundCellAssignment:
         return this.evaluateBoundCellAssignment(node as NodeType<BoundCellAssignment>);
       case BoundKind.BoundCellReference:
@@ -42,11 +39,6 @@ export class Evaluator {
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
-    return this.value;
-  }
-
-  private evaluateBoundBlock(node: BoundBlock): number {
-    for (const statement of node.statements) this.value = this.evaluate(statement);
     return this.value;
   }
 

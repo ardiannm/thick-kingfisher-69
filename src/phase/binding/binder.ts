@@ -1,7 +1,6 @@
 import { Cell } from "../../cell";
 import { CompilerOptions } from "../../syntax.tree";
 import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind";
-import { SyntaxBlock } from "../parsing/syntax.block";
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment";
 import { SyntaxCellReference } from "../parsing/syntax.cell.reference";
 import { SyntaxCompilationUnit } from "../parsing/syntax.compilation.unit";
@@ -9,7 +8,6 @@ import { SyntaxNode } from "../parsing/syntax.node";
 import { SyntaxParenthesis } from "../parsing/syntax.parenthesis";
 import { SyntaxToken } from "../lexing/syntax.token";
 import { SyntaxUnaryExpression } from "../parsing/syntax.unary.expression";
-import { BoundBlock } from "./bound.block";
 import { BoundCellAssignment } from "./bound.cell.assignment";
 import { BoundCellReference } from "./bound.cell.reference";
 import { BoundCompilationUnit } from "./bound.compilation.unit";
@@ -39,8 +37,6 @@ export class Binder {
         return this.bindUnaryExpression(node as NodeType<SyntaxUnaryExpression>);
       case SyntaxKind.SyntaxBinaryExpression:
         return this.bindBinaryExpression(node as NodeType<SyntaxBinaryExpression>);
-      case SyntaxKind.SyntaxBlock:
-        return this.bindBlock(node as NodeType<SyntaxBlock>);
       case SyntaxKind.SyntaxCellReference:
         return this.bindCellReference(node as NodeType<SyntaxCellReference>);
       case SyntaxKind.SyntaxCellAssignment:
@@ -65,29 +61,16 @@ export class Binder {
     return new BoundCompilationUnit(this.scope, statements, node.span);
   }
 
-  private bindBlock(node: SyntaxBlock): BoundNode {
-    this.scope = new BoundScope(this.scope.diagnostics, this.scope);
-    const statements = new Array<BoundNode>();
-    for (const statement of node.statements) {
-      statements.push(this.bind(statement));
-    }
-    this.scope = this.scope.parent!;
-    return new BoundBlock(statements, node.span);
-  }
-
   private bindCellAssignment(node: SyntaxCellAssignment) {
     if (node.left.kind === SyntaxKind.SyntaxCellReference) {
       this.scope.references.length = 0;
       const expression = this.bind(node.expression);
       const reference = this.bindCell(node.left);
       const bound = new BoundCellAssignment(this.scope, reference, expression, this.scope.references, node.span);
-      if (node.left.right.hasTrivia()) {
-        this.scope.assignments.delete(bound.reference.name);
-      }
       this.scope.references = new Array<BoundCellReference>();
       return bound;
     } else {
-      if (node.left.kind !== SyntaxKind.SyntaxError) {
+      if (node.left instanceof SyntaxError) {
         this.bind(node.left);
         const span = Span.createFrom(node.source, node.left.span.start, node.operator.span.end);
         this.scope.diagnostics.reportCantAssignTo(node.left.kind, span);

@@ -53,7 +53,7 @@ export class DiagnosticsBag {
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
-    const text = path.map((n) => `${n.node.reference.name}`).join(" > ");
+    const text = path.map((node) => `${node.node.reference.name}`).join(" > ");
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span);
     this.diagnostics.push(node);
   }

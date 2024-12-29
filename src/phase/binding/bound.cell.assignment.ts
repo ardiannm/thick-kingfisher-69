@@ -49,7 +49,7 @@ export class BoundCellAssignment extends BoundNode {
   private checkForCircularDependency() {
     let index = 0;
     let isCircular = false;
-    const chain: DependencyLink[] = [DependencyLink.createFrom(this)];
+    const chain = [DependencyLink.createFrom(this)];
     while (chain.length) {
       const { done, dependency } = chain[chain.length - 1].next();
       if (done) {
@@ -62,9 +62,9 @@ export class BoundCellAssignment extends BoundNode {
           chain.length = 1;
           isCircular = true;
         }
-      }
-      if (chain.length === 1) {
-        index++;
+        if (chain.length === 1) {
+          index++;
+        }
       }
     }
     return isCircular;

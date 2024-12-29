@@ -14,7 +14,6 @@ export enum SyntaxKind {
   OpenBraceToken = "OpenBraceToken",
   CloseBraceToken = "CloseBraceToken",
   SyntaxCompilationUnit = "SyntaxCompilationUnit",
-  SyntaxBlock = "SyntaxBlock",
   SyntaxCellAssignment = "SyntaxCellAssignment",
   SyntaxUnaryExpression = "SyntaxUnaryExpression",
   SyntaxParenthesis = "SyntaxParenthesis",
