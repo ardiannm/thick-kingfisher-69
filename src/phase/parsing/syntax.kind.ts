@@ -31,17 +31,6 @@ export enum SyntaxKind {
   QuoteToken = "QuoteToken",
 }
 
-export enum SyntaxUnaryOperatorKind {
-  PlusToken,
-  MinusToken,
-}
+export type SyntaxUnaryOperatorKind = SyntaxKind.PlusToken | SyntaxKind.MinusToken;
 
-export enum SyntaxBinaryOperatorKind {
-  PlusToken,
-  MinusToken,
-  StarToken,
-  SlashToken,
-  HatToken,
-}
-
-export type Kind = SyntaxKind | SyntaxUnaryOperatorKind | SyntaxBinaryOperatorKind;
+export type SyntaxBinaryOperatorKind = SyntaxKind.PlusToken | SyntaxKind.MinusToken | SyntaxKind.SlashToken | SyntaxKind.StarToken | SyntaxKind.HatToken;

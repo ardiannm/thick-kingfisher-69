@@ -1,14 +1,13 @@
-import { SourceText, SyntaxNode } from "../..";
+import { SourceText, SyntaxKind, SyntaxNode } from "../..";
 import { DependencyLink } from "../phase/binding/bound.cell.assignment";
 import { BoundKind } from "../phase/binding/bound.kind";
 import { Span } from "../phase/lexing/span";
 import { SyntaxToken } from "../phase/lexing/syntax.token";
-import { Kind } from "../phase/parsing/syntax.kind";
 import { Diagnostic } from "./diagnostic";
 import { Severity } from "./severity";
 
 export class DiagnosticsBag {
-  diagnostics = [] as Diagnostic[];
+  bag = [] as Diagnostic[];
   private severity = new Set() as Set<Severity>;
 
   canParse() {
@@ -21,7 +20,7 @@ export class DiagnosticsBag {
 
   report(message: string, severity: Severity, span: Span) {
     this.severity.add(severity);
-    this.diagnostics.push(Diagnostic.createFrom(message, severity, span));
+    this.bag.push(Diagnostic.createFrom(message, severity, span));
   }
 
   canEvaluate() {
@@ -55,7 +54,7 @@ export class DiagnosticsBag {
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
     const text = path.map((node) => `${node.node.reference.name}`).join(" > ");
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span);
-    this.diagnostics.push(node);
+    this.bag.push(node);
   }
 
   reportUnexpectedEndOfLine(token: SyntaxToken) {
@@ -68,11 +67,11 @@ export class DiagnosticsBag {
     this.report(`unexpected token \`${span.text}\`.`, Severity.CantEvaluate, span);
   }
 
-  reportCantAssignTo(kind: Kind, span: Span) {
+  reportCantAssignTo(kind: SyntaxKind, span: Span) {
     this.report(`can't assign to \`${kind}\`.`, Severity.CantEvaluate, span);
   }
 
-  reportMissingBinderMethod(kind: Kind, span: Span) {
+  reportMissingBinderMethod(kind: SyntaxKind, span: Span) {
     this.report(`method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
   }
 

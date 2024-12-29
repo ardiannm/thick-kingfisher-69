@@ -8,7 +8,7 @@ export class SyntaxTreeTest {
     describe(SyntaxTree.name, () => {
       const tree = SyntaxTree.createFrom(text);
       it("should" + (trueOrFalse ? "" : " not") + " be able to parse", () => {
-        expect(tree.source.diagnosticsBag.canParse()).toBe(trueOrFalse);
+        expect(tree.source.diagnostics.canParse()).toBe(trueOrFalse);
       });
     });
   }
@@ -17,7 +17,7 @@ export class SyntaxTreeTest {
     describe(SyntaxTree.name, () => {
       const tree = SyntaxTree.createFrom(text);
       it("should" + (trueOrFalse ? "" : " not") + " be able to bind", () => {
-        expect(tree.source.diagnosticsBag.canBind()).toBe(trueOrFalse);
+        expect(tree.source.diagnostics.canBind()).toBe(trueOrFalse);
       });
     });
   }
@@ -26,7 +26,7 @@ export class SyntaxTreeTest {
     describe(SyntaxTree.name, () => {
       const tree = SyntaxTree.createFrom(text);
       it("should" + (trueOrFalse ? "" : " not") + " be able to bind", () => {
-        expect(tree.source.diagnosticsBag.canEvaluate()).toBe(trueOrFalse);
+        expect(tree.source.diagnostics.canEvaluate()).toBe(trueOrFalse);
       });
     });
   }

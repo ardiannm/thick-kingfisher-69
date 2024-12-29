@@ -1,7 +1,7 @@
-import { Kind, SyntaxKind } from "./syntax.kind";
+import { SyntaxKind } from "./syntax.kind";
 
 export class SyntaxFacts {
-  static getUnaryPrecedence(kind: Kind) {
+  static getUnaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.PlusToken:
       case SyntaxKind.MinusToken:
@@ -11,7 +11,7 @@ export class SyntaxFacts {
     }
   }
 
-  static getBinaryPrecedence(kind: Kind) {
+  static getBinaryPrecedence(kind: SyntaxKind) {
     switch (kind) {
       case SyntaxKind.HatToken:
         return 3;

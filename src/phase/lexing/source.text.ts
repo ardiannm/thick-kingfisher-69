@@ -9,7 +9,7 @@ export class SourceText {
   private lines = [] as Line[];
   public tokens = [] as SyntaxToken[];
 
-  private constructor(public text: string, public readonly diagnosticsBag: DiagnosticsBag) {
+  private constructor(public text: string, public readonly diagnostics: DiagnosticsBag) {
     this.generateLines();
     this.generateTokens();
   }

@@ -1,4 +1,4 @@
-import { Kind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
+import { SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "../lexing/syntax.token";
 
@@ -11,7 +11,7 @@ export class SyntaxUnaryExpression<Operator extends SyntaxToken<SyntaxUnaryOpera
     return this.operator;
   }
 
-  override getLastChild(): SyntaxToken<Kind> {
+  override getLastChild(): SyntaxToken<SyntaxKind> {
     return this.right.getLastChild();
   }
 }

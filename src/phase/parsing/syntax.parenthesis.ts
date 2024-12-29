@@ -1,4 +1,4 @@
-import { Kind, SyntaxKind } from "./syntax.kind";
+import { SyntaxKind } from "./syntax.kind";
 import { SyntaxNode } from "./syntax.node";
 import { SyntaxToken } from "../lexing/syntax.token";
 
@@ -7,11 +7,11 @@ export class SyntaxParenthesis extends SyntaxNode {
     super(left.source, SyntaxKind.SyntaxParenthesis);
   }
 
-  override getFirstChild(): SyntaxToken<Kind> {
+  override getFirstChild(): SyntaxToken<SyntaxKind> {
     return this.left;
   }
 
-  override getLastChild(): SyntaxToken<Kind> {
+  override getLastChild(): SyntaxToken<SyntaxKind> {
     return this.right;
   }
 }

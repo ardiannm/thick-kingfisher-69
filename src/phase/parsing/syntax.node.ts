@@ -1,9 +1,9 @@
 import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
-import { Kind, SyntaxKind } from "./syntax.kind";
+import { SyntaxKind } from "./syntax.kind";
 import { SyntaxToken } from "../lexing/syntax.token";
 
-export abstract class SyntaxNode<K extends Kind = Kind> {
+export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
   constructor(public source: SourceText, public kind: K) {}
 
   abstract getFirstChild(): SyntaxToken;

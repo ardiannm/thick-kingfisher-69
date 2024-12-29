@@ -1,3 +1,4 @@
+import { SyntaxTree } from "..";
 import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
 import { BoundBinaryExpression } from "./phase/binding/bound.binary.expression";
 import { BoundCellAssignment } from "./phase/binding/bound.cell.assignment";
@@ -11,7 +12,13 @@ import { BoundUnaryExpression } from "./phase/binding/bound.unary.expression";
 export class Evaluator {
   private value = 0;
 
-  constructor(private diagnostics: DiagnosticsBag) {}
+  private constructor(private diagnostics: DiagnosticsBag) {}
+
+  static evaluate(tree: SyntaxTree) {
+    const diagnostics = tree.source.diagnostics;
+    if (diagnostics.bag.length) return 0;
+    return new Evaluator(diagnostics).evaluate(tree.bound);
+  }
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     type NodeType<T> = Kind & T;
@@ -43,8 +50,8 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
-    const value = (node.reference.value = this.evaluate(node.expression));
-    return value;
+    this.value = node.reference.value = this.evaluate(node.expression);
+    return this.value;
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {

@@ -49,8 +49,8 @@ export class Binder {
     }
   }
 
-  static bindCompilationUnit(node: SyntaxCompilationUnit, scope: BoundScope, configuration: CompilerOptions) {
-    return new Binder(configuration, scope).bindCompilationUnit(node);
+  static bindCompilationUnit(node: SyntaxCompilationUnit, configuration: CompilerOptions) {
+    return new Binder(configuration, new BoundScope(node.source.diagnostics)).bindCompilationUnit(node);
   }
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {
@@ -70,7 +70,7 @@ export class Binder {
       this.scope.references = new Array<BoundCellReference>();
       return bound;
     } else {
-      if (node.left instanceof SyntaxError) {
+      if (node.left.kind === SyntaxKind.SyntaxError) {
         this.bind(node.left);
         const span = Span.createFrom(node.source, node.left.span.start, node.operator.span.end);
         this.scope.diagnostics.reportCantAssignTo(node.left.kind, span);
@@ -112,8 +112,8 @@ export class Binder {
   private bindUnaryExpression(node: SyntaxUnaryExpression) {
     const right = this.bind(node.right);
     switch (node.operator.kind) {
-      case SyntaxUnaryOperatorKind.MinusToken:
-      case SyntaxUnaryOperatorKind.PlusToken:
+      case SyntaxKind.MinusToken:
+      case SyntaxKind.PlusToken:
         const operator = this.bindUnaryOperatorKind(node.operator.kind);
         return new BoundUnaryExpression(operator, right, node.span);
     }
@@ -128,24 +128,24 @@ export class Binder {
 
   private bindUnaryOperatorKind(kind: SyntaxUnaryOperatorKind): BoundUnaryOperatorKind {
     switch (kind) {
-      case SyntaxUnaryOperatorKind.PlusToken:
+      case SyntaxKind.PlusToken:
         return BoundUnaryOperatorKind.Identity;
-      case SyntaxUnaryOperatorKind.MinusToken:
+      case SyntaxKind.MinusToken:
         return BoundUnaryOperatorKind.Negation;
     }
   }
 
   private bindBinaryOperatorKind(kind: SyntaxBinaryOperatorKind): BoundBinaryOperatorKind {
     switch (kind) {
-      case SyntaxBinaryOperatorKind.PlusToken:
+      case SyntaxKind.PlusToken:
         return BoundBinaryOperatorKind.Addition;
-      case SyntaxBinaryOperatorKind.MinusToken:
+      case SyntaxKind.MinusToken:
         return BoundBinaryOperatorKind.Subtraction;
-      case SyntaxBinaryOperatorKind.StarToken:
+      case SyntaxKind.StarToken:
         return BoundBinaryOperatorKind.Multiplication;
-      case SyntaxBinaryOperatorKind.SlashToken:
+      case SyntaxKind.SlashToken:
         return BoundBinaryOperatorKind.Division;
-      case SyntaxBinaryOperatorKind.HatToken:
+      case SyntaxKind.HatToken:
         return BoundBinaryOperatorKind.Exponentiation;
     }
   }

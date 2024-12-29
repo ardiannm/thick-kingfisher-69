@@ -1,6 +1,6 @@
 import { SourceText } from "./source.text";
 import { Span } from "./span";
-import { SyntaxKind, Kind } from "../parsing/syntax.kind";
+import { SyntaxKind } from "../parsing/syntax.kind";
 import { SyntaxToken } from "./syntax.token";
 
 export class Lexer {
@@ -64,16 +64,16 @@ export class Lexer {
 
   private lexBadToken() {
     const token = this.advanceAndCreateNewToken(SyntaxKind.BadToken);
-    this.source.diagnosticsBag.reportBadCharacterFound(token.span.text, token.span);
+    this.source.diagnostics.reportBadCharacterFound(token.span.text, token.span);
     return token;
   }
 
-  private advanceAndCreateNewToken(kind: Kind) {
+  private advanceAndCreateNewToken(kind: SyntaxKind) {
     this.next();
     return this.createNewToken(kind);
   }
 
-  private createNewToken(kind: Kind) {
+  private createNewToken(kind: SyntaxKind) {
     return new SyntaxToken(this.source, kind, this.span);
   }
 
@@ -99,7 +99,7 @@ export class Lexer {
     if (this.char() === ".") {
       this.next();
       if (!this.isDigit()) {
-        this.source.diagnosticsBag.reportBadFloatingPointNumber(this.span);
+        this.source.diagnostics.reportBadFloatingPointNumber(this.span);
       }
     }
     while (this.isDigit()) this.next();
@@ -115,7 +115,7 @@ export class Lexer {
       }
       this.next();
     }
-    this.source.diagnosticsBag.reportMissingClosingQuote(this.span);
+    this.source.diagnostics.reportMissingClosingQuote(this.span);
     return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 

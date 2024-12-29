@@ -62,9 +62,9 @@ export class BoundCellAssignment extends BoundNode {
           chain.length = 1;
           isCircular = true;
         }
-        if (chain.length === 1) {
-          index++;
-        }
+      }
+      if (chain.length === 1) {
+        index++;
       }
     }
     return isCircular;

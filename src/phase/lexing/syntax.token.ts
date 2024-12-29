@@ -1,9 +1,9 @@
 import { SourceText } from "./source.text";
 import { Span } from "./span";
-import { Kind, SyntaxKind } from "../parsing/syntax.kind";
+import { SyntaxKind } from "../parsing/syntax.kind";
 import { SyntaxNode } from "../parsing/syntax.node";
 
-export class SyntaxToken<K extends Kind = Kind> extends SyntaxNode {
+export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
   constructor(public override source: SourceText, public override kind: K, private textSpan: Span) {
     super(source, kind);
   }

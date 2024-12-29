@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { SyntaxTree } from '../../../..';
+	import { Evaluator, SyntaxTree } from '../../../..';
 
 	import Cursor from './Cursor.svelte';
 	import Diagnostic from './Diagnostic.svelte';
@@ -12,7 +12,7 @@
 	const tree = $derived(SyntaxTree.createFrom(text));
 
 	const lines = $derived(tree.source.getLines());
-	const diagnostics = $derived(tree.source.diagnosticsBag.diagnostics);
+	const diagnostics = $derived(tree.source.diagnostics.bag);
 
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(tree.source.getPosition(1, 23));
@@ -23,6 +23,8 @@
 
 	let showCursor = $state(false);
 	let showTree = $state(false);
+
+	let value = $derived(Evaluator.evaluate(tree));
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
@@ -204,6 +206,7 @@
 			</span>
 		{/each}
 	</div>
+	<div class="program-value">program value: {diagnostics.length ? '#N/A' : value}</div>
 	<div class="seperator">line {line} column {column}</div>
 	{#if diagnostics.length}
 		<div class="highlight">
@@ -304,5 +307,10 @@
 	.identifier-token,
 	.comment-trivia {
 		color: #4c3dc4;
+	}
+	.program-value {
+		margin-left: auto;
+		margin-top: 14px;
+		padding: 7px;
 	}
 </style>

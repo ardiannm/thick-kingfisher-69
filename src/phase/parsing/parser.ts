@@ -1,4 +1,4 @@
-import { Kind, SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
+import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "./syntax.kind";
 import { SyntaxBinaryExpression } from "./syntax.binary.expression";
 import { SyntaxCellAssignment } from "./syntax.cell.assignment";
 import { SyntaxCellReference } from "./syntax.cell.reference";
@@ -12,7 +12,7 @@ import { SourceText } from "../lexing/source.text";
 import { Span } from "../lexing/span";
 
 export class Parser {
-  private tokens: SyntaxToken<Kind>[] = [];
+  private tokens: SyntaxToken[] = [];
   private position = 0;
 
   private constructor(public readonly source: SourceText) {
@@ -83,7 +83,7 @@ export class Parser {
       if (this.match(SyntaxKind.CloseParenthesisToken) || this.match(SyntaxKind.EndOfFileToken)) {
         const errorToken = this.parseErrorToken();
         const right = this.getNextToken<SyntaxKind.CloseParenthesisToken>();
-        this.source.diagnosticsBag.reportExpectedInParenthesis(this.source, left.span.end, right.span.start);
+        this.source.diagnostics.reportExpectedInParenthesis(this.source, left.span.end, right.span.start);
         return new SyntaxParenthesis(left, errorToken, right);
       }
       const expression = this.parseBinaryExpression();
@@ -92,7 +92,7 @@ export class Parser {
         right = this.getNextToken();
       } else {
         right = this.parseErrorToken();
-        this.source.diagnosticsBag.reportExpectedClosingParenthesis(expression);
+        this.source.diagnostics.reportExpectedClosingParenthesis(expression);
       }
       return new SyntaxParenthesis(left, expression, right);
     }
@@ -113,17 +113,17 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken();
     }
-    this.source.diagnosticsBag.reportUnexpectedTokenFound(token.span);
+    this.source.diagnostics.reportUnexpectedTokenFound(token.span);
     return this.parseErrorToken();
   }
 
-  private parseErrorToken<K extends Kind = Kind>() {
+  private parseErrorToken<K extends SyntaxKind = SyntaxKind>() {
     const node = this.peekToken();
     const span = Span.createFrom(this.source, node.span.end, node.span.end);
     return new SyntaxToken<K>(this.source, SyntaxKind.SyntaxError as K, span);
   }
 
-  private peekToken<K extends Kind = Kind>(offset: number = 0): SyntaxToken<K> {
+  private peekToken<K extends SyntaxKind = SyntaxKind>(offset: number = 0): SyntaxToken<K> {
     if (offset < 0) offset = 0;
     let next = this.position + offset;
     if (next < 0) next = 0;
@@ -131,13 +131,13 @@ export class Parser {
     return this.tokens[next] as SyntaxToken<K>;
   }
 
-  private getNextToken<K extends Kind = Kind>(): SyntaxToken<K> {
+  private getNextToken<K extends SyntaxKind = SyntaxKind>(): SyntaxToken<K> {
     const token = this.peekToken<K>();
     this.position++;
     return token;
   }
 
-  private match(...kinds: Kind[]) {
+  private match(...kinds: SyntaxKind[]) {
     let offset = 0;
     for (const kind of kinds) {
       if (kind !== this.peekToken(offset).kind) return false;
@@ -151,7 +151,7 @@ export class Parser {
     const peek = this.peekToken();
     const nextLine = peek.span.to.line > token.span.to.line || peek.kind === SyntaxKind.EndOfFileToken;
     if (nextLine && report) {
-      this.source.diagnosticsBag.reportUnexpectedEndOfLine(token);
+      this.source.diagnostics.reportUnexpectedEndOfLine(token);
     }
     return nextLine;
   }
