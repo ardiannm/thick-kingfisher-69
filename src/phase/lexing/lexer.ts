@@ -45,7 +45,7 @@ export class Lexer {
         return this.advanceAndCreateNewToken(SyntaxKind.DotToken);
       case "\n":
         return this.advanceAndCreateNewToken(SyntaxKind.LineBreakTrivia);
-      case '"':
+      case "`":
         return this.lexCommentToken();
       case ":":
         return this.lexColonColonToken();
@@ -107,16 +107,16 @@ export class Lexer {
   }
 
   private lexCommentToken(): SyntaxToken {
-    this.next();
-    while (this.hasNext()) {
-      if (this.char() === '"') {
+    if (this.source.text.substring(this.start, this.start + 3) === "```") {
+      this.next(3);
+      while (this.hasNext()) {
+        if (this.char() === "\n") break;
         this.next();
-        return this.createNewToken(SyntaxKind.CommentTrivia);
       }
-      this.next();
+      return this.createNewToken(SyntaxKind.CommentTrivia);
+    } else {
+      return this.lexBadToken();
     }
-    this.source.diagnostics.reportMissingClosingQuote(this.span);
-    return this.createNewToken(SyntaxKind.CommentTrivia);
   }
 
   private lexColonColonToken() {

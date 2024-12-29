@@ -4,7 +4,6 @@
 
 	import Cursor from './Cursor.svelte';
 	import Diagnostic from './Diagnostic.svelte';
-	import Tooltip from './Tooltip.svelte';
 	import Tree from './Tree.svelte';
 
 	let { text }: { text: string } = $props();

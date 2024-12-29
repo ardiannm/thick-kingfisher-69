@@ -84,7 +84,7 @@ export class Binder {
     if (this.scope.assignments.has(name)) {
       return this.scope.assignments.get(name)!.reference;
     }
-    return new Cell(name, 0);
+    return new Cell(name, 0, false);
   }
 
   private bindCellReference(node: SyntaxCellReference) {
@@ -102,9 +102,7 @@ export class Binder {
       }
     }
     const bound = new BoundCellReference(assigment, node.span);
-    if (!node.right.hasTrivia()) {
-      this.scope.references.push(bound);
-    }
+    this.scope.references.push(bound);
     return bound;
   }
 

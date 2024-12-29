@@ -39,10 +39,6 @@ export class DiagnosticsBag {
     this.report(`wrong floating number format.`, Severity.CantBind, span);
   }
 
-  reportMissingClosingQuote(span: Span) {
-    this.report(`comment is missing a closing \`"\`.`, Severity.CantParse, span);
-  }
-
   reportExpectedInParenthesis(source: SourceText, start: number, end: number) {
     this.report(`expected expression.`, Severity.CantEvaluate, Span.createFrom(source, start, end));
   }
