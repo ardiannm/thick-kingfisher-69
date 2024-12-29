@@ -13,11 +13,7 @@ export class BoundCellReference extends BoundNode {
   }
 
   get name() {
-    return this._assignment.reference.name;
-  }
-
-  get value() {
-    return this._assignment.reference.value;
+    return this._assignment.store.name;
   }
 
   get assignment() {

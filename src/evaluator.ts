@@ -45,7 +45,7 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
-    this.value = node.reference.value = this.evaluate(node.expression);
+    this.value = node.store.value = this.evaluate(node.expression);
     return this.value;
   }
 
@@ -77,7 +77,12 @@ export class Evaluator {
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    return node.value;
+    const store = node.assignment.store;
+    if (store.evaluated) {
+      return store.value;
+    }
+    store.value = this.evaluate(node.assignment.expression);
+    return store.value;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {

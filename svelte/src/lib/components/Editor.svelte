@@ -14,7 +14,7 @@
 	const diagnostics = $derived(tree.source.diagnostics.bag);
 
 	// svelte-ignore state_referenced_locally
-	let cursor = $state(tree.source.getPosition(1, 23));
+	let cursor = $state(text.length);
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLine(cursor));
