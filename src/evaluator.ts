@@ -39,10 +39,6 @@ export class Evaluator {
     return 0;
   }
 
-  private evaluateBoundCellReference(node: BoundCellReference): number {
-    return node.value;
-  }
-
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
     for (const statement of node.root) this.value = this.evaluate(statement);
     return this.value;
@@ -78,6 +74,10 @@ export class Evaluator {
       case BoundUnaryOperatorKind.Negation:
         return -right;
     }
+  }
+
+  private evaluateBoundCellReference(node: BoundCellReference): number {
+    return node.value;
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {

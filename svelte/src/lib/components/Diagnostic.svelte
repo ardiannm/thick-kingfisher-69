@@ -1,9 +1,8 @@
 <script lang="ts">
 	import Tooltip from './Tooltip.svelte';
 	import { getPosition } from '../Position';
-	import type { Diagnostic } from '../../../..';
 
-	let { diagnostic }: { diagnostic: Diagnostic } = $props();
+	let { line, column, length = 1, message }: { line: number; column: number; length: number; message: string } = $props();
 
 	let x: number = $state(0);
 	let y: number = $state(0);
@@ -15,9 +14,6 @@
 	$effect(renderUi);
 
 	function renderUi() {
-		const line = diagnostic.span.from.line;
-		const column = diagnostic.span.from.column;
-		const length = diagnostic.span.length || 1;
 		const upToColumn = column + length;
 		const pos1 = getPosition(line, column);
 		const pos2 = getPosition(line, upToColumn);
@@ -49,7 +45,7 @@
 	></span>
 	{#snippet render()}
 		<div class="message">
-			{diagnostic.message}
+			{message}
 		</div>
 	{/snippet}
 </Tooltip>

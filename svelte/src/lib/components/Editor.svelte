@@ -7,7 +7,7 @@
 	import Tooltip from './Tooltip.svelte';
 	import Tree from './Tree.svelte';
 
-	let { text } = $props();
+	let { text }: { text: string } = $props();
 
 	const tree = $derived(SyntaxTree.createFrom(text));
 
@@ -188,8 +188,8 @@
 			</Cursor>
 		{/if}
 		{#if diagnostics.length}
-			{#each diagnostics as diagnostic}
-				<Diagnostic {diagnostic}></Diagnostic>
+			{#each diagnostics as d}
+				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
 			{/each}
 		{/if}
 		{#each lines as line, i}
