@@ -9,7 +9,7 @@ export class BoundCellReference extends BoundNode {
   }
 
   get observers() {
-    return this._assignment.observers;
+    return this._assignment.generate;
   }
 
   get name() {

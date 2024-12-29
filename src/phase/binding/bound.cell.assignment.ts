@@ -6,14 +6,15 @@ import { BoundKind } from "./bound.kind";
 import { Span } from "../lexing/span";
 
 export class BoundCellAssignment extends BoundNode {
+  public observers?: Array<BoundCellAssignment>;
   constructor(public scope: BoundScope, public reference: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span);
 
     this.cleanupExistingNode();
     this.registerSelf();
 
-    if (!this.checkForCircularDependency()) {
-      this.storeNewAssignment();
+    if (this.noCircularDependency()) {
+      this.storeAssignment();
     }
   }
 
@@ -31,11 +32,16 @@ export class BoundCellAssignment extends BoundNode {
     this.dependencies.forEach((node) => node.observers.add(this));
   }
 
-  private storeNewAssignment() {
+  private storeAssignment() {
     this.scope.assignments.set(this.reference.name, this);
+    const obs = this.generate;
+    if (obs.size) {
+      this.observers = [];
+      obs.forEach((o) => this.observers?.push(o));
+    }
   }
 
-  get observers() {
+  get generate() {
     var observers: Set<BoundCellAssignment>;
     if (this.scope.observers.has(this.reference.name)) {
       observers = this.scope.observers.get(this.reference.name)!;
@@ -46,9 +52,9 @@ export class BoundCellAssignment extends BoundNode {
     return observers;
   }
 
-  private checkForCircularDependency() {
+  private noCircularDependency() {
     let index = 0;
-    let isCircular = false;
+    let correct = true;
     const chain = [DependencyLink.createFrom(this)];
     while (chain.length) {
       const { done, dependency } = chain[chain.length - 1].next();
@@ -60,14 +66,14 @@ export class BoundCellAssignment extends BoundNode {
         if (this.reference.name === dependency.name) {
           this.scope.diagnostics.reportCircularDependencyDetected(this.dependencies[index].span, chain);
           chain.length = 1;
-          isCircular = true;
+          correct = false;
         }
       }
       if (chain.length === 1) {
         index++;
       }
     }
-    return isCircular;
+    return correct;
   }
 }
 
