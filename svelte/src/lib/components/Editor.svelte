@@ -206,8 +206,10 @@
 			</span>
 		{/each}
 	</div>
-	<div class="program-value">program value: {diagnostics.length ? '#N/A' : value}</div>
-	<div class="seperator">line {line} column {column}</div>
+	<div class="seperator stats">
+		<div>line {line} column {column}</div>
+		<div class="value">{diagnostics.length ? '' : 'value: ' + value}</div>
+	</div>
 	{#if diagnostics.length}
 		<div class="highlight">
 			{#each diagnostics as diagnostic}
@@ -218,25 +220,12 @@
 			{/each}
 		</div>
 	{/if}
-	{#if tokens.length > 1}
-		<div class="seperator">tokens</div>
-		<div class="tokens highlight">
-			{#each tokens as token, i}
-				<Tooltip>
-					<span class="token token-{(i % 4) + 1} {token.class}">{token.span.text}</span>
-					{#snippet render()}
-						<div class="message">"position": "{token.position}"; "kind": "{token.class}"; "len": "{token.fullSpan.length}"; "trivia": "{token.hasTrivia()}"</div>
-					{/snippet}
-				</Tooltip>
-			{/each}
-		</div>
-	{/if}
 </div>
 
 <style scoped lang="scss">
 	.highlight {
 		padding: 10px 20px;
-		background-color: #eeeef0;
+		background-color: #f5f5f5;
 		border-radius: 2px;
 	}
 	.seperator {
@@ -264,27 +253,6 @@
 		box-sizing: border-box;
 		pointer-events: none;
 	}
-	.tokens {
-		display: flex;
-		flex-direction: row;
-		.token {
-			height: 100%;
-			min-width: 1px;
-			border: 1px solid #cdcdcd;
-			margin-right: 2px;
-			&:hover {
-				border-color: #8c8a89;
-			}
-		}
-		.message {
-			padding: 1px 7px;
-			border: 1px solid;
-			background-color: white;
-			box-shadow:
-				#43475545 0px 0px 0.25em,
-				#5a7dbc0d 0px 0.25em 1em;
-		}
-	}
 	.token {
 		display: inline-block;
 		width: auto;
@@ -304,13 +272,21 @@
 		flex-direction: column;
 	}
 	.number-token,
-	.identifier-token,
-	.comment-trivia {
+	.identifier-token {
+		color: #4271ae;
+		color: #718c00;
 		color: #4c3dc4;
 	}
-	.program-value {
+	.space .comment-trivia {
+		color: #c82829;
+		color: #8959a8;
+		color: #8e908c;
+	}
+	.value {
 		margin-left: auto;
-		margin-top: 14px;
-		padding: 7px;
+	}
+	.stats {
+		display: flex;
+		flex-direction: row;
 	}
 </style>

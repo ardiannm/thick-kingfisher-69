@@ -1,10 +1,13 @@
 <script lang="ts">
 	import EditorComponent from '$lib/components/Editor.svelte';
 
-	let text = `A1 :: 4
-A2 :: A1
-A3 :: A1 + A2
-A4 :: A1+A2+A3+A2
+	let text = `A1 :: 1+              
+A2 :: A1+2
+A3 :: A1+A2
+
+" this assignment should update its observers "
+
+A1 :: 2
 
 `;
 </script>

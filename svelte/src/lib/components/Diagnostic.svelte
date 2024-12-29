@@ -63,7 +63,7 @@
 			right: 0;
 			bottom: 0;
 			height: 4px; /* Height of the squiggle */
-			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="black" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%23c82829" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
 			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
 		}
 	}
