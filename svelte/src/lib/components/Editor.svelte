@@ -25,15 +25,50 @@
 
 	let value = $derived(Evaluator.evaluate(tree));
 
+	let copied = $state(false);
+
+	const copyToClipboard = (text: string) => {
+		(async () => {
+			try {
+				await navigator.clipboard.writeText(text);
+				copied = true;
+				// Reset the copied state after a short delay
+				setTimeout(() => (copied = false), 2000);
+			} catch (error) {
+				console.error('Failed to copy text: ', error);
+			}
+		})();
+	};
+
+	const pasteFromClipboard = () => {
+		return (async () => {
+			try {
+				const text = await navigator.clipboard.readText();
+				return text;
+			} catch (error) {
+				console.error('Failed to paste text: ', error);
+			}
+		})();
+	};
+
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column;
 
-	function handleKey(event: KeyboardEvent) {
+	const handleKey = async (event: KeyboardEvent) => {
 		showCursor = true;
 		const input = event.key;
 		if (event.code == 'AltRight' && event.altKey) {
 			event.preventDefault();
 			showTree = !showTree;
+		} else if (input === 'c' && event.ctrlKey) {
+			event.preventDefault();
+			copyToClipboard(currentLine.span.text);
+		} else if (input === 'v' && event.ctrlKey) {
+			event.preventDefault();
+			const content = (await pasteFromClipboard()) + '\n';
+			cursor = currentLine.fullSpan.end;
+			insertText(content);
+			cursor = tree.source.getPosition(line - 1, prevColumn);
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			event.preventDefault();
 			moveToNextToken();
@@ -82,7 +117,7 @@
 			event.preventDefault();
 			insertText(input);
 		}
-	}
+	};
 
 	function moveLine(step: number) {
 		const nextLine = line + step;
@@ -118,7 +153,7 @@
 
 	function insertText(charText: string = '\n') {
 		text = text.substring(0, cursor) + charText + text.substring(cursor);
-		cursor += 1;
+		cursor += charText.length;
 	}
 
 	function removeText() {
@@ -172,12 +207,12 @@
 
 <svelte:window on:keydown={handleKey} />
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
 	<div class="highlight todo">
-		<span>display the syntax tree when hovering over the code.</span>
-		<span>ensure spans beneath other spans are rendered on top.</span>
-		<span>render diagnostics that extend across multiple lines.</span>
 		<span>add clipboard functionality for copying and pasting code.</span>
+		<span>display the syntax tree when hovering over the code.</span>
+		<span>render diagnostics that extend across multiple lines.</span>
 	</div>
 	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
