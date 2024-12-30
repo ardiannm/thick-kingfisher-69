@@ -210,52 +210,42 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
-	<div id="space" class="space highlight" tabindex="-1">
-		{#if showCursor}
-			<Cursor {line} {column} showTooltip={showTree}>
-				<Tree node={tree.root}></Tree>
-			</Cursor>
-		{/if}
-		{#if diagnostics.length}
-			{#each diagnostics as d}
-				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
-			{/each}
-		{/if}
-		{#each lines as line, i}
-			<span id={`line-${i + 1}`} class="line">
-				{#each line.getTokens() as token, j}
-					{#if token.span.length}
-						<span class="token {token.class}">
-							{token.span.text}
-						</span>
-					{:else}
-						<span class="token {token.class}">&nbsp;</span>
-					{/if}
+	<div class="shade">
+		<div id="space" class="space highlight" tabindex="-1">
+			{#if showCursor}
+				<Cursor {line} {column} showTooltip={showTree}>
+					<Tree node={tree.root}></Tree>
+				</Cursor>
+			{/if}
+			{#if diagnostics.length}
+				{#each diagnostics as d}
+					<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
 				{/each}
-			</span>
-		{/each}
+			{/if}
+			{#each lines as line, i}
+				<span id={`line-${i + 1}`} class="line">
+					{#each line.getTokens() as token, j}
+						{#if token.span.length}
+							<span class="token {token.class}">
+								{token.span.text}
+							</span>
+						{:else}
+							<span class="token {token.class}">&nbsp;</span>
+						{/if}
+					{/each}
+				</span>
+			{/each}
+		</div>
 	</div>
 	<div class="seperator stats">
 		<div>line {line} column {column}</div>
 		<div class="value">{diagnostics.length ? '' : 'value: ' + value}</div>
 	</div>
-	{#if diagnostics.length}
-		<div class="highlight">
-			{#each diagnostics as diagnostic}
-				<div class="diagnostic">
-					{diagnostic.message}
-					<div class="address">{diagnostic.span.address}</div>
-				</div>
-			{/each}
-		</div>
-	{/if}
 </div>
 
 <style scoped lang="scss">
 	.highlight {
 		padding: 10px 20px;
-		background-color: #f5f5f5;
-		border-radius: 2px;
 	}
 	.seperator {
 		margin-block: 20px;
@@ -274,6 +264,11 @@
 		width: auto;
 		padding-right: 10px;
 		outline: none;
+		background-color: #f7f8fb;
+	}
+	.shade {
+		padding: 3px;
+		border: 1px solid #cfd7e6;
 	}
 	.line {
 		position: relative;
@@ -289,23 +284,12 @@
 		min-width: 1px;
 		white-space: pre;
 	}
-	.diagnostic {
-		display: flex;
-		flex-direction: row;
-		.address {
-			margin-left: auto;
-		}
-	}
 	.number-token,
 	.identifier-token {
-		color: #4271ae;
-		color: #718c00;
-		color: #4c3dc4;
+		color: #8666ab;
 	}
-	.space .comment-trivia {
-		color: #c82829;
-		color: #8959a8;
-		color: #8e908c;
+	.comment-trivia {
+		color: #5b6b82;
 	}
 	.value {
 		margin-left: auto;
@@ -313,5 +297,7 @@
 	.stats {
 		display: flex;
 		flex-direction: row;
+		padding-inline: 17px;
+		color: #5b6b82;
 	}
 </style>
