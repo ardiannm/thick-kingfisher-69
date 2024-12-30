@@ -209,12 +209,6 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
-	<div class="highlight todo">
-		<span>add clipboard functionality for copying and pasting code.</span>
-		<span>display the syntax tree when hovering over the code.</span>
-		<span>render diagnostics that extend across multiple lines.</span>
-	</div>
-	<div class="seperator"></div>
 	<div id="space" class="space highlight" tabindex="-1">
 		{#if showCursor}
 			<Cursor {line} {column} showTooltip={showTree}>
@@ -300,10 +294,6 @@
 		.address {
 			margin-left: auto;
 		}
-	}
-	.todo {
-		display: flex;
-		flex-direction: column;
 	}
 	.number-token,
 	.identifier-token {
