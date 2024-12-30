@@ -4,7 +4,6 @@
 
 	import Cursor from './Cursor.svelte';
 	import Diagnostic from './Diagnostic.svelte';
-	import Tree from './Tree.svelte';
 
 	let { text }: { text: string } = $props();
 
@@ -213,18 +212,16 @@
 	<div class="shade">
 		<div id="space" class="space highlight" tabindex="-1">
 			{#if showCursor}
-				<Cursor {line} {column} showTooltip={showTree}>
-					<Tree node={tree.root}></Tree>
-				</Cursor>
+				<Cursor {line} {column}>{text.slice(cursor, cursor + 2)}</Cursor>
 			{/if}
 			{#if diagnostics.length}
 				{#each diagnostics as d}
 					<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
 				{/each}
 			{/if}
-			{#each lines as line, i}
-				<span id={`line-${i + 1}`} class="line">
-					{#each line.getTokens() as token, j}
+			{#each lines as ln, i}
+				<span id="line-{i + 1}" class="line {line === i + 1 ? 'active' : ''}">
+					{#each ln.getTokens() as token, j}
 						{#if token.span.length}
 							<span class="token {token.class}">
 								{token.span.text}
@@ -259,16 +256,15 @@
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		margin-top: 5%;
+		background-color: #f6f6f6;
 	}
 	.space {
 		width: auto;
 		padding-right: 10px;
 		outline: none;
-		background-color: #f7f8fb;
 	}
 	.shade {
-		padding: 3px;
-		border: 1px solid #cfd7e6;
+		padding: 2px;
 	}
 	.line {
 		position: relative;
@@ -286,10 +282,9 @@
 	}
 	.number-token,
 	.identifier-token {
-		color: #8666ab;
 	}
 	.comment-trivia {
-		color: #5b6b82;
+		color: #555;
 	}
 	.value {
 		margin-left: auto;
@@ -298,6 +293,5 @@
 		display: flex;
 		flex-direction: row;
 		padding-inline: 17px;
-		color: #5b6b82;
 	}
 </style>
