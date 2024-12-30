@@ -68,6 +68,7 @@
 			const content = (await pasteFromClipboard()) + '\n';
 			cursor = currentLine.fullSpan.end;
 			insertText(content);
+			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
 			cursor = tree.source.getPosition(line - 1, prevColumn);
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			event.preventDefault();
