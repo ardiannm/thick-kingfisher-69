@@ -261,7 +261,8 @@
 		width: auto;
 		padding-right: 10px;
 		outline: none;
-		background-color: #1e1e1e;
+		background-color: #eff2f5;
+		padding: 20px 40px;
 	}
 	.shade {
 		padding: 2px;
@@ -282,9 +283,10 @@
 	}
 	.number-token,
 	.identifier-token {
+		color: #005cc5;
 	}
 	.comment-trivia {
-		color: #6a9955;
+		color: slategray;
 	}
 	.value {
 		margin-left: auto;

@@ -71,8 +71,6 @@
 		padding: 1px 7px;
 		background-color: white;
 		color: black;
-		box-shadow:
-			#43475545 0px 0px 0.25em,
-			#5a7dbc0d 0px 0.25em 1em;
+		border: 1px solid;
 	}
 </style>
