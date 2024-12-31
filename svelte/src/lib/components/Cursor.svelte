@@ -39,12 +39,13 @@
 <style scoped>
 	.cursor {
 		position: absolute;
-		background-color: black;
 		pointer-events: none;
 		z-index: 10;
-		min-width: 10px;
-		color: #f6f6f6;
+		min-width: 2px;
 		overflow: hidden;
 		white-space: pre;
+		color: #020617;
+		background-color: #aaaaaa;
+
 	}
 </style>

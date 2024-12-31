@@ -256,12 +256,12 @@
 		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		margin-top: 5%;
-		background-color: #f6f6f6;
 	}
 	.space {
 		width: auto;
 		padding-right: 10px;
 		outline: none;
+		background-color: #1e1e1e;
 	}
 	.shade {
 		padding: 2px;
@@ -284,7 +284,7 @@
 	.identifier-token {
 	}
 	.comment-trivia {
-		color: #555;
+		color: #6a9955;
 	}
 	.value {
 		margin-left: auto;
