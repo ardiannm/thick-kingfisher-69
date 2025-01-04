@@ -234,16 +234,11 @@
 			{/each}
 		</div>
 	</div>
-	<div class="seperator stats">
-		<div>line {line} column {column}</div>
-		<div class="value">{diagnostics.length ? '' : 'value: ' + value}</div>
-	</div>
+	<br />
+	<span style="margin-left: auto; padding-inline: 4px"> {line}:{column} </span>
 </div>
 
 <style scoped lang="scss">
-	.highlight {
-		padding: 10px 20px;
-	}
 	.seperator {
 		margin-block: 20px;
 	}
@@ -259,12 +254,11 @@
 	}
 	.space {
 		width: auto;
-		padding-right: 10px;
 		outline: none;
-		padding: 20px 40px;
-	}
-	.shade {
-		padding: 2px;
+		background-color: #f5f5f5;
+		border: 1px solid #d4d4d4;
+		border-radius: 4px;
+		padding: 20px;
 	}
 	.line {
 		position: relative;
@@ -285,14 +279,8 @@
 	.identifier-token {
 	}
 	.comment-trivia {
-		font-style: italic;
 	}
 	.value {
 		margin-left: auto;
-	}
-	.stats {
-		display: flex;
-		flex-direction: row;
-		padding-inline: 17px;
 	}
 </style>

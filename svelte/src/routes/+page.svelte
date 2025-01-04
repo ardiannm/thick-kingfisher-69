@@ -9,7 +9,8 @@ A2 :: A1+2
 A1 :: 1
 A2	\`\`\` should be 3
 
-`;
+
+(1+                          `;
 </script>
 
 <EditorComponent {text} />
