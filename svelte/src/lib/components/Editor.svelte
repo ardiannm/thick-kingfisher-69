@@ -212,7 +212,7 @@
 	<div class="shade">
 		<div id="space" class="space highlight" tabindex="-1">
 			{#if showCursor}
-				<Cursor {line} {column}>{text.slice(cursor, cursor + 2)}</Cursor>
+				<Cursor {line} {column}></Cursor>
 			{/if}
 			{#if diagnostics.length}
 				{#each diagnostics as d}
@@ -261,7 +261,6 @@
 		width: auto;
 		padding-right: 10px;
 		outline: none;
-		background-color: #eff2f5;
 		padding: 20px 40px;
 	}
 	.shade {
@@ -273,6 +272,7 @@
 		flex-direction: row;
 		box-sizing: border-box;
 		pointer-events: none;
+		z-index: 1;
 	}
 	.token {
 		display: inline-block;
@@ -283,10 +283,9 @@
 	}
 	.number-token,
 	.identifier-token {
-		color: #005cc5;
 	}
 	.comment-trivia {
-		color: slategray;
+		font-style: italic;
 	}
 	.value {
 		margin-left: auto;

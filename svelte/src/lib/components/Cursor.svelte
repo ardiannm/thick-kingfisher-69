@@ -41,11 +41,9 @@
 		position: absolute;
 		pointer-events: none;
 		z-index: 10;
-		min-width: 2px;
+		min-width: 1px;
 		overflow: hidden;
 		white-space: pre;
-		color: #020617;
-		background-color: #aaaaaa;
-
+		background-color: black;
 	}
 </style>
