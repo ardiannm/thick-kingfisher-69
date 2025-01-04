@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Copy from './Copy.svelte';
 	import { onMount } from 'svelte';
 	import { Evaluator, SyntaxTree } from '../../../..';
 
@@ -209,33 +210,38 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
-	<div class="shade">
-		<div id="space" class="space highlight" tabindex="-1">
-			{#if showCursor}
-				<Cursor {line} {column}></Cursor>
-			{/if}
-			{#if diagnostics.length}
-				{#each diagnostics as d}
-					<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
-				{/each}
-			{/if}
-			{#each lines as ln, i}
-				<span id="line-{i + 1}" class="line {line === i + 1 ? 'active' : ''}">
-					{#each ln.getTokens() as token, j}
-						{#if token.span.length}
-							<span class="token {token.class}">
-								{token.span.text}
-							</span>
-						{:else}
-							<span class="token {token.class}">&nbsp;</span>
-						{/if}
-					{/each}
-				</span>
+	<div id="space" class="space" tabindex="-1">
+		<Copy {text}></Copy>
+		{#if showCursor}
+			<Cursor {line} {column}></Cursor>
+		{/if}
+		{#if diagnostics.length}
+			{#each diagnostics as d}
+				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
 			{/each}
-		</div>
+		{/if}
+		{#each lines as ln, i}
+			<span id="line-{i + 1}" class="line">
+				{#each ln.getTokens() as token, j}
+					{#if token.span.length}
+						<span class="token {token.class}">
+							{token.span.text}
+						</span>
+					{:else}
+						<span class="token {token.class}">&nbsp;</span>
+					{/if}
+				{/each}
+			</span>
+		{/each}
 	</div>
 	<br />
-	<span style="margin-left: auto; padding-inline: 4px"> {line}:{column} </span>
+	<span style="margin-left: auto; padding-inline: 4px">
+		{#if value}
+			{value}
+		{:else}
+			waiting...
+		{/if}
+	</span>
 </div>
 
 <style scoped lang="scss">
@@ -255,10 +261,11 @@
 	.space {
 		width: auto;
 		outline: none;
-		background-color: #f5f5f5;
-		border: 1px solid #d4d4d4;
+		background-color: #fafafa;
+		border: 1px solid #bbb;
+		padding: 1rem;
+		padding-left: 40px;
 		border-radius: 4px;
-		padding: 20px;
 	}
 	.line {
 		position: relative;
@@ -266,7 +273,6 @@
 		flex-direction: row;
 		box-sizing: border-box;
 		pointer-events: none;
-		z-index: 1;
 	}
 	.token {
 		display: inline-block;
@@ -274,13 +280,6 @@
 		height: fit-content;
 		min-width: 1px;
 		white-space: pre;
-	}
-	.number-token,
-	.identifier-token {
-	}
-	.comment-trivia {
-	}
-	.value {
-		margin-left: auto;
+		z-index: 1;
 	}
 </style>

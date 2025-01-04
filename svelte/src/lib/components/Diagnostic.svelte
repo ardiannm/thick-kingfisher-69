@@ -55,9 +55,8 @@
 		position: absolute;
 		min-width: 5px;
 		opacity: 1;
-		z-index: 0;
-		background-color: #e2f2e3;
-		background-color: hsl(137.14deg 38.89% 92.94%);
+		background-color: #f0f0f0;
+		padding-inline: 1px;
 		&::before {
 			content: '';
 			position: absolute;
@@ -65,14 +64,16 @@
 			right: 0;
 			bottom: 0;
 			height: 4px; /* Height of the squiggle */
-			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%23188038" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+			// background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="black" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
 			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
+			stroke: black;
+			z-index: 2;
 		}
 	}
 	.message {
-		padding: 1px 7px;
+		padding: 1px 14px;
 		background-color: white;
-		color: black;
-		border: 1px solid;
+		justify-items: center;
+		border: 1px solid
 	}
 </style>
