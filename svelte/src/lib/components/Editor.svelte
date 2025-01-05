@@ -261,11 +261,13 @@
 	.space {
 		width: auto;
 		outline: none;
-		background-color: #fafafa;
-		border: 1px solid #bbb;
+		border: 1px solid #efeff1;
 		padding: 1rem;
 		padding-left: 40px;
-		border-radius: 4px;
+		padding-top: 0.5rem;
+		padding-right: 0.5rem;
+		border-radius: 0.9rem;
+		background-color: white;
 	}
 	.line {
 		position: relative;
@@ -281,5 +283,8 @@
 		min-width: 1px;
 		white-space: pre;
 		z-index: 1;
+	}
+	.comment-trivia {
+		padding: 2px 11px;
 	}
 </style>
