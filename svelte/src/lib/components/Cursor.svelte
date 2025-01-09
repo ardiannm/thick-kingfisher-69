@@ -44,6 +44,7 @@
 		min-width: 1px;
 		overflow: hidden;
 		white-space: pre;
-		background-color: black;
+		background-color: #d4d4d4;
+		opacity: 0.9;
 	}
 </style>

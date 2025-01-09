@@ -265,7 +265,8 @@
 		padding-left: 40px;
 		padding-top: 0.5rem;
 		padding-right: 0.5rem;
-		background-color: #f8f8f8;
+		color: #d4d4d4;
+		background-color: #1e1e1e;
 	}
 	.line {
 		position: relative;
@@ -284,9 +285,10 @@
 	}
 	.comment-trivia {
 		padding: 2px 11px;
-		color: #818553;
+		color: #6a9955;
 	}
-	.identifier-token, .number-token {
-		// color: #3b2e74;
+	.identifier-token,
+	.number-token {
+		color: #569cd6;
 	}
 </style>

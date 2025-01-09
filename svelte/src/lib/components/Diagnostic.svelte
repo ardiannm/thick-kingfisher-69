@@ -62,7 +62,7 @@
 			right: 0;
 			bottom: 0;
 			height: 4px; /* Height of the squiggle */
-			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%234f2bc0" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="red" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
 			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
 			stroke: black;
 			z-index: 2;
@@ -71,6 +71,6 @@
 	.message {
 		padding: 3px 14px;
 		justify-items: center;
-		color: #4f2bc0;
+		color: red;
 	}
 </style>
