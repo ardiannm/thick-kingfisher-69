@@ -48,9 +48,7 @@
 		z-index: 2;
 		margin-left: auto;
 		width: fit-content;
-		background-color: #efeff1;
 		padding: 4px 9px;
-		border-radius: 5px;
 	}
 	svg {
 		width: 15px;

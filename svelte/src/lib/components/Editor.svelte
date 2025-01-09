@@ -261,13 +261,11 @@
 	.space {
 		width: auto;
 		outline: none;
-		border: 1px solid #efeff1;
 		padding: 1rem;
 		padding-left: 40px;
 		padding-top: 0.5rem;
 		padding-right: 0.5rem;
-		border-radius: 0.9rem;
-		background-color: white;
+		background-color: #f8f8f8;
 	}
 	.line {
 		position: relative;
@@ -286,5 +284,9 @@
 	}
 	.comment-trivia {
 		padding: 2px 11px;
+		color: #818553;
+	}
+	.identifier-token, .number-token {
+		// color: #3b2e74;
 	}
 </style>

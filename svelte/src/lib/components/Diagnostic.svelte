@@ -20,7 +20,7 @@
 		x = pos1.x + window.scrollX;
 		y = pos1.y + window.scrollY;
 		w = pos2.x - pos1.x;
-		h = pos1.height + 2;
+		h = pos1.height;
 	}
 
 	function toggleShow() {
@@ -55,7 +55,6 @@
 		position: absolute;
 		min-width: 5px;
 		opacity: 1;
-		padding-inline: 1px;
 		&::before {
 			content: '';
 			position: absolute;
@@ -63,7 +62,7 @@
 			right: 0;
 			bottom: 0;
 			height: 4px; /* Height of the squiggle */
-			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%230056d2" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%234f2bc0" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
 			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
 			stroke: black;
 			z-index: 2;
@@ -71,9 +70,7 @@
 	}
 	.message {
 		padding: 3px 14px;
-		background-color: white;
 		justify-items: center;
-		background-color: #efeff1;
-		border-radius: 5px;
+		color: #4f2bc0;
 	}
 </style>
