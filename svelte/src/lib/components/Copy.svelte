@@ -19,7 +19,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div onmousedown={copyToClipboard} class="copy">
 	{#if copied}
-		✔ Copied!
+		✔
 	{:else}
 		<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-sm">
 			<path
@@ -30,7 +30,6 @@
 			>
 			</path>
 		</svg>
-		Copy code
 	{/if}
 </div>
 
@@ -43,15 +42,14 @@
 		justify-content: right;
 		gap: 4px;
 		background-color: transparent;
-		height: 12px;
-		font-size: 13px;
 		z-index: 2;
 		margin-left: auto;
 		width: fit-content;
-		padding: 4px 9px;
+		height: 16px;
+		padding: 10px;
 	}
 	svg {
-		width: 15px;
+		width: 16px;
 		height: auto;
 	}
 </style>

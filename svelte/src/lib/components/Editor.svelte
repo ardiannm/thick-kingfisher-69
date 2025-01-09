@@ -210,63 +210,58 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
-	<div id="space" class="space" tabindex="-1">
-		<Copy {text}></Copy>
-		{#if showCursor}
-			<Cursor {line} {column}></Cursor>
-		{/if}
-		{#if diagnostics.length}
-			{#each diagnostics as d}
-				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
-			{/each}
-		{/if}
-		{#each lines as ln, i}
-			<span id="line-{i + 1}" class="line">
-				{#each ln.getTokens() as token, j}
-					{#if token.span.length}
-						<span class="token {token.class}">
-							{token.span.text}
-						</span>
-					{:else}
-						<span class="token {token.class}">&nbsp;</span>
-					{/if}
+	<div class="elements">
+		<Copy {text} />
+		<div class="content">
+			<div class="space" tabindex="-1">
+				{#if showCursor}
+					<Cursor {line} {column}></Cursor>
+				{/if}
+				{#each diagnostics as d}
+					<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
 				{/each}
-			</span>
-		{/each}
+				{#each lines as ln, index}
+					<span id="line-{index + 1}" class="line">
+						{#each ln.getTokens() as token}
+							{#if token.span.length}
+								<span class="token {token.class}">
+									{token.span.text}
+								</span>
+							{:else}
+								<span class="token {token.class}">&nbsp;</span>
+							{/if}
+						{/each}
+					</span>
+				{/each}
+			</div>
+		</div>
 	</div>
-	<br />
-	<span style="margin-left: auto; padding-inline: 4px">
-		{#if value}
-			{value}
-		{:else}
-			waiting...
-		{/if}
-	</span>
 </div>
 
 <style scoped lang="scss">
-	.seperator {
-		margin-block: 20px;
-	}
 	.editor {
 		display: flex;
-		margin: auto;
 		flex-direction: column;
-		width: fit-content;
-		min-width: 700px;
-		font-family: SuisseIntl-Regular, Helvetica, Arial, sans-serif;
+		width: 100%;
 		font-size: 14px;
-		margin-top: 5%;
+		height: 100%;
+		box-sizing: border-box;
+		color: #101010;
+	}
+	.elements {
+		display: flex;
+		flex-direction: column;
+		border-right: 1px solid #c9c9d2;
+		margin-right: auto;
+		box-sizing: border-box;
+		height: 100%;
+		width: 444px;
+	}
+	.content {
+		padding-left: 20px;
 	}
 	.space {
-		width: auto;
 		outline: none;
-		padding: 1rem;
-		padding-left: 40px;
-		padding-top: 0.5rem;
-		padding-right: 0.5rem;
-		color: #d4d4d4;
-		background-color: #1e1e1e;
 	}
 	.line {
 		position: relative;
@@ -284,11 +279,9 @@
 		z-index: 1;
 	}
 	.comment-trivia {
-		padding: 2px 11px;
-		color: #6a9955;
+		color: #4285f4;
 	}
-	.identifier-token,
-	.number-token {
-		color: #569cd6;
+	.c {
+		border: 1px solid purple;
 	}
 </style>

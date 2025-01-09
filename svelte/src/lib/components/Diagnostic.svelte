@@ -11,9 +11,9 @@
 
 	let show = $state(false);
 
-	$effect(renderUi);
+	const toggleShow = () => (show = !show);
 
-	function renderUi() {
+	const renderUi = () => {
 		const upToColumn = column + length;
 		const pos1 = getPosition(line, column);
 		const pos2 = getPosition(line, upToColumn);
@@ -21,11 +21,9 @@
 		y = pos1.y + window.scrollY;
 		w = pos2.x - pos1.x;
 		h = pos1.height;
-	}
+	};
 
-	function toggleShow() {
-		show = !show;
-	}
+	$effect(renderUi);
 </script>
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
@@ -41,11 +39,17 @@
 			top: {y}px;
 			width: {w}px;
 			height: {h}px;
-	"
+		"
 	></span>
 	{#snippet render()}
-		<div class="message">
-			{message}
+		<div
+			class="message"
+			style="
+				top: {h + 2}px;
+				width: {w}px;
+			"
+		>
+			^^^ {message}
 		</div>
 	{/snippet}
 </Tooltip>
@@ -55,22 +59,24 @@
 		position: absolute;
 		min-width: 5px;
 		opacity: 1;
-		&::before {
-			content: '';
-			position: absolute;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			height: 4px; /* Height of the squiggle */
-			background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="red" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
-			background-size: 5px 5px; /* Match the adjusted SVG dimensions */
-			stroke: black;
-			z-index: 2;
-		}
+	}
+	.diagnostic::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 4px; /* Height of the squiggle */
+		background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="4" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="purple" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+		background-size: 5px 5px; /* Match the adjusted SVG dimensions */
+		stroke: black;
+		z-index: 2;
 	}
 	.message {
-		padding: 3px 14px;
-		justify-items: center;
-		color: red;
+		position: absolute;
+		align-items: center;
+		width: fit-content;
+		color: purple;
+		white-space: pre;
 	}
 </style>
