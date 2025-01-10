@@ -1,288 +1,258 @@
 <script lang="ts">
-	import Spreadsheet from './Spreadsheet.svelte';
-	import Cursor from './Cursor.svelte';
-	import Diagnostic from './Diagnostic.svelte';
+	import { onMount } from 'svelte'
+	import { Evaluator, SyntaxTree } from '../../../..'
 
-	import { onMount } from 'svelte';
-	import { Evaluator, SyntaxTree } from '../../../..';
+	import Cursor from './Cursor.svelte'
+	import Diagnostic from './Diagnostic.svelte'
 
-	let { text }: { text?: string } = $props();
+	let { text }: { text: string } = $props()
 
-	let length = $state(text?.length || 0);
-
-	onMount(() => {
-		text = `A1 = 0
-A2 = A1+2
-
-\`\`\` this assignment should update its observers
-
-A1 = 1
-
-A2	\`\`\` value should be 3
-
-1+2+(1+         
-
-
-`;
-	});
-
-	const tree = $derived(SyntaxTree.createFrom(text));
-	const lines = $derived(tree.source.getLines());
-	const diagnostics = $derived(tree.source.diagnostics.bag);
+	const tree = $derived(SyntaxTree.createFrom(text))
+	const lines = $derived(tree.source.getLines())
+	const diagnostics = $derived(tree.source.diagnostics.bag)
 
 	// svelte-ignore state_referenced_locally
-	let cursor = $state(length);
-	let line = $derived(tree.source.getLine(cursor).number);
-	let column = $derived(tree.source.getColumn(cursor));
-	let currentLine = $derived(tree.source.getLine(cursor));
-	let tokens = $derived(tree.source.tokens);
+	let cursor = $state(text.length)
+	let line = $derived(tree.source.getLine(cursor).number)
+	let column = $derived(tree.source.getColumn(cursor))
+	let currentLine = $derived(tree.source.getLine(cursor))
+	let tokens = $derived(tree.source.tokens)
 
-	let showCursor = $state(false);
-	let showTree = $state(false);
+	let showCursor = $state(false)
+	let showTree = $state(false)
 
-	let value = $derived(Evaluator.evaluate(tree));
+	let value = $derived(Evaluator.evaluate(tree))
 
-	let copied = $state(false);
+	let copied = $state(false)
 
 	const copyToClipboard = (text: string) => {
-		(async () => {
+		;(async () => {
 			try {
-				await navigator.clipboard.writeText(text);
-				copied = true;
+				await navigator.clipboard.writeText(text)
+				copied = true
 				// Reset the copied state after a short delay
-				setTimeout(() => (copied = false), 2000);
+				setTimeout(() => (copied = false), 2000)
 			} catch (error) {
-				console.error('Failed to copy text: ', error);
+				console.error('Failed to copy text: ', error)
 			}
-		})();
-	};
+		})()
+	}
 
 	const pasteFromClipboard = () => {
 		return (async () => {
 			try {
-				const text = await navigator.clipboard.readText();
-				return text;
+				const text = await navigator.clipboard.readText()
+				return text
 			} catch (error) {
-				console.error('Failed to paste text: ', error);
+				console.error('Failed to paste text: ', error)
 			}
-		})();
-	};
+		})()
+	}
 
 	// svelte-ignore state_referenced_locally
-	let prevColumn = column;
+	let prevColumn = column
 
 	const handleKey = async (event: KeyboardEvent) => {
-		showCursor = true;
-		const input = event.key;
+		showCursor = true
+		const input = event.key
 		if (event.code == 'AltRight' && event.altKey) {
-			event.preventDefault();
-			showTree = !showTree;
+			event.preventDefault()
+			showTree = !showTree
 		} else if (input === 'c' && event.ctrlKey) {
-			event.preventDefault();
-			copyToClipboard(currentLine.span.text);
+			event.preventDefault()
+			copyToClipboard(currentLine.span.text)
 		} else if (input === 'v' && event.ctrlKey) {
-			event.preventDefault();
-			const content = (await pasteFromClipboard()) + '\n';
-			cursor = currentLine.fullSpan.end;
-			insertText(content);
+			event.preventDefault()
+			const content = (await pasteFromClipboard()) + '\n'
+			cursor = currentLine.fullSpan.end
+			insertText(content)
 			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
-			cursor = tree.source.getPosition(line - 1, prevColumn);
+			cursor = tree.source.getPosition(line - 1, prevColumn)
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
-			event.preventDefault();
-			moveToNextToken();
+			event.preventDefault()
+			moveToNextToken()
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
-			event.preventDefault();
-			moveToPrevToken();
+			event.preventDefault()
+			moveToPrevToken()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
-			event.preventDefault();
-			duplicateLine(0);
+			event.preventDefault()
+			duplicateLine(0)
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
-			event.preventDefault();
-			duplicateLine(+1);
+			event.preventDefault()
+			duplicateLine(+1)
 		} else if (input === 'ArrowDown' && event.altKey) {
-			event.preventDefault();
-			moveLine(+1);
+			event.preventDefault()
+			moveLine(+1)
 		} else if (input === 'ArrowUp' && event.altKey) {
-			event.preventDefault();
-			moveLine(-1);
+			event.preventDefault()
+			moveLine(-1)
 		} else if (input === 'x' && event.ctrlKey) {
-			event.preventDefault();
-			removeLine();
+			event.preventDefault()
+			removeLine()
 		} else if (input === 'ArrowRight') {
-			event.preventDefault();
-			moveCursorX(+1);
+			event.preventDefault()
+			moveCursorX(+1)
 		} else if (input === 'ArrowLeft') {
-			event.preventDefault();
-			moveCursorX(-1);
+			event.preventDefault()
+			moveCursorX(-1)
 		} else if (input === 'ArrowDown') {
-			event.preventDefault();
-			moveCursorY(+1);
+			event.preventDefault()
+			moveCursorY(+1)
 		} else if (input === 'ArrowUp') {
-			event.preventDefault();
-			moveCursorY(-1);
+			event.preventDefault()
+			moveCursorY(-1)
 		} else if (input === 'Enter') {
-			event.preventDefault();
-			insertText();
+			event.preventDefault()
+			insertText()
 		} else if (input === 'Backspace') {
-			event.preventDefault();
-			backspace();
+			event.preventDefault()
+			backspace()
 		} else if (input === 'Delete') {
-			event.preventDefault();
-			moveCursorX(+1);
-			removeText();
-			moveCursorX(-1);
+			event.preventDefault()
+			moveCursorX(+1)
+			removeText()
+			moveCursorX(-1)
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
-			event.preventDefault();
-			insertText(input);
+			event.preventDefault()
+			insertText(input)
 		}
-	};
+	}
 
 	function moveLine(step: number) {
-		const nextLine = line + step;
-		const nextTree = tree.source.swapLines(line, nextLine);
-		if (!nextTree) return;
-		text = nextTree;
-		cursor = tree.source.getPosition(nextLine, prevColumn);
+		const nextLine = line + step
+		const nextTree = tree.source.swapLines(line, nextLine)
+		if (!nextTree) return
+		text = nextTree
+		cursor = tree.source.getPosition(nextLine, prevColumn)
 	}
 
 	function backspace() {
-		removeText();
-		moveCursorX(-1);
+		removeText()
+		moveCursorX(-1)
 	}
 
 	function moveCursorX(step: number) {
-		const newPos = cursor + step;
-		if (newPos >= 0 && newPos <= length) {
-			cursor = newPos;
-			prevColumn = column;
+		const newPos = cursor + step
+		if (newPos >= 0 && newPos <= text.length) {
+			cursor = newPos
+			prevColumn = column
 		}
 	}
 
 	function moveCursorY(steps: number) {
-		const prevLine = line + steps;
+		const prevLine = line + steps
 		if (prevLine > 0) {
-			const pos = tree.source.getPosition(prevLine, prevColumn);
-			cursor = pos;
+			const pos = tree.source.getPosition(prevLine, prevColumn)
+			cursor = pos
 		} else {
-			prevColumn = 1;
-			cursor = 0;
+			prevColumn = 1
+			cursor = 0
 		}
 	}
 
 	function insertText(charText: string = '\n') {
-		text = text.substring(0, cursor) + charText + text.substring(cursor);
-		cursor += length;
+		text = text.substring(0, cursor) + charText + text.substring(cursor)
+		cursor += charText.length
 	}
 
 	function removeText() {
-		text = text.substring(0, cursor - 1) + text.substring(cursor);
+		text = text.substring(0, cursor - 1) + text.substring(cursor)
 	}
 
 	function removeLine() {
-		const span = currentLine.fullSpan;
+		const span = currentLine.fullSpan
 		if (span.length === 0) {
-			backspace();
+			backspace()
 		} else {
-			text = text.slice(0, span.start) + text.slice(span.end);
-			cursor = span.start;
+			text = text.slice(0, span.start) + text.slice(span.end)
+			cursor = span.start
 		}
 	}
 
 	function duplicateLine(step: number) {
-		text = tree.source.duplicateLine(line);
-		const ln = line;
-		cursor = tree.source.getPosition(ln + step, prevColumn);
+		text = tree.source.duplicateLine(line)
+		const ln = line
+		cursor = tree.source.getPosition(ln + step, prevColumn)
 	}
 
 	function moveToPrevToken() {
-		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenLocation(position - 1);
-		let token = tokens[index];
+		const position = tree.source.getPosition(line, column)
+		let index = tree.source.getTokenLocation(position - 1)
+		let token = tokens[index]
 		while (token && token.isPunctuation()) {
-			index--;
-			token = tokens[index];
+			index--
+			token = tokens[index]
 		}
-		cursor = token.span.start;
+		cursor = token.span.start
 	}
 
 	function moveToNextToken() {
-		const position = tree.source.getPosition(line, column);
-		let index = tree.source.getTokenLocation(position + 1);
-		let token = tokens[index];
+		const position = tree.source.getPosition(line, column)
+		let index = tree.source.getTokenLocation(position + 1)
+		let token = tokens[index]
 		while (token && token.isPunctuation()) {
-			index++;
-			token = tokens[index];
+			index++
+			token = tokens[index]
 		}
 		if (token) {
-			cursor = token.span.end;
+			cursor = token.span.end
 		} else {
-			cursor = length;
+			cursor = text.length
 		}
 	}
 
-	onMount(() => (showCursor = true));
+	onMount(() => (showCursor = true))
 </script>
 
 <svelte:window on:keydown={handleKey} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor">
-	<div class="elements">
-		<div class="content">
-			<div class="space" tabindex="-1">
-				{#if showCursor}
-					<Cursor {line} {column}></Cursor>
-				{/if}
-				{#each diagnostics as d}
-					<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
-				{/each}
-				{#each lines as ln, index}
-					<span id="line-{index + 1}" class="line">
-						{#each ln.getTokens() as token}
-							{#if token.span.length}
-								<span class="token {token.class}">
-									{token.span.text}
-								</span>
-							{:else}
-								<span class="token {token.class}">&nbsp;</span>
-							{/if}
-						{/each}
-					</span>
-				{/each}
-			</div>
-			{@render diagnosticSnippet()}
+<div class="editor" class:alarm={diagnostics.length}>
+	<div class="content">
+		<div class="space" tabindex="-1">
+			{#if showCursor}
+				<Cursor {line} {column}></Cursor>
+			{/if}
+			{#each diagnostics as d}
+				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
+			{/each}
+			{#each lines as ln, index}
+				<span id="line-{index + 1}" class="line">
+					{#each ln.getTokens() as token}
+						{#if token.span.length}
+							<span class="token {token.class}">
+								{token.span.text}
+							</span>
+						{:else}
+							<span class="token {token.class}">&nbsp;</span>
+						{/if}
+					{/each}
+				</span>
+			{/each}
 		</div>
 	</div>
-	<Spreadsheet />
+	<div class="terminal" class:error={diagnostics.length}>
+		{#if diagnostics.length}
+			{@render diagnosticSnippet()}
+		{:else}
+			value: {value}
+		{/if}
+	</div>
 </div>
 
 {#snippet diagnosticSnippet()}
-	{#if diagnostics.length}
-		<div class="diagnotics">
-			{#each diagnostics as diagnostic}
-				<div>{diagnostic.message} {diagnostic.span.from.address}</div>
-			{/each}
-		</div>
-	{/if}
+	{#each diagnostics as diagnostic}
+		<div>{diagnostic.message} {diagnostic.span.from.address}</div>
+	{/each}
 {/snippet}
 
 <style scoped lang="scss">
 	.editor {
 		display: flex;
-		flex-direction: row;
-		width: 100%;
-		font-size: 14px;
-		height: 100%;
-		box-sizing: border-box;
-		color: #101010;
-	}
-	.elements {
-		display: flex;
 		flex-direction: column;
-		border-right: 1px solid #dcdcdc;
-		box-sizing: border-box;
+		width: 100%;
 		height: 100%;
-		width: 350px;
+		border: 1px solid rgba(158, 151, 184, 50%);
 	}
 	.content {
 		display: flex;
@@ -308,21 +278,25 @@ A2	\`\`\` value should be 3
 		white-space: pre;
 		z-index: 1;
 	}
-	.comment-trivia {
-		color: #156fc9;
-	}
 	.identifier-token,
 	.number-token {
-		color: #5011a5;
+		color: #5e14d1;
 	}
-	.diagnotics {
+	.comment-trivia {
+		color: #209f62;
+	}
+	.terminal {
 		display: flex;
 		flex-direction: column;
-		box-sizing: border-box;
-		color: red;
-		background-color: rgba(255, 0, 0, 7%);
-		margin: 7px;
-		margin-top: auto;
+		justify-content: right;
 		padding: 10px 20px;
+		margin-top: auto;
+		color: #209f62;
+		background-color: rgba(32, 159, 98, 20%);
+		margin: 4px;
+	}
+	.error {
+		color: #e6007a;
+		background-color: rgba(230, 0, 122, 10%);
 	}
 </style>

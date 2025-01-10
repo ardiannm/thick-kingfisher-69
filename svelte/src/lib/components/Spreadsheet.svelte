@@ -1,26 +1,26 @@
 <script lang="ts">
 	interface Row {
-		height: number;
+		height: number
 	}
 	interface Column {
-		width: number;
+		width: number
 	}
 	interface Cell {
-		value: number;
+		value: number
 	}
 	interface RowState {
-		[key: number]: Row;
+		[key: number]: Row
 	}
 	interface ColumnState {
-		[key: number]: Column;
+		[key: number]: Column
 	}
 	interface CellState {
 		[key: number]: {
-			[key: number]: Cell;
-		};
+			[key: number]: Cell
+		}
 	}
-	let rowsSpecs = $state<RowState>({});
-	let columnsSpecs = $state<ColumnState>({});
+	let rowsSpecs = $state<RowState>({})
+	let columnsSpecs = $state<ColumnState>({})
 	let cellSpecs = $state<CellState>({
 		1: {
 			1: {
@@ -44,36 +44,36 @@
 				value: 6
 			}
 		}
-	});
+	})
 
-	const rowNum = $state(20);
-	const columnNum = $state(16);
+	const rowNum = $state(20)
+	const columnNum = $state(16)
 
-	const rows = $derived(Array.from({ length: rowNum }, (_, i) => i + 1));
-	const columns = $derived(Array.from({ length: columnNum }, (_, i) => i + 1));
+	const rows = $derived(Array.from({ length: rowNum }, (_, i) => i + 1))
+	const columns = $derived(Array.from({ length: columnNum }, (_, i) => i + 1))
 
-	const defaultCellHeight = $state(21);
-	const defaultCellWidth = $state(70);
+	const defaultCellHeight = $state(21)
+	const defaultCellWidth = $state(70)
 
 	const getRowHeight = (row: number) => {
-		const height = rowsSpecs[row]?.height || defaultCellHeight;
-		return height;
-	};
+		const height = rowsSpecs[row]?.height || defaultCellHeight
+		return height
+	}
 
 	const getColumnHeight = (column: number) => {
-		const height = columnsSpecs[column]?.width || defaultCellWidth;
-		return height;
-	};
+		const height = columnsSpecs[column]?.width || defaultCellWidth
+		return height
+	}
 	const increaseColumnHeight = (column: number) => {
 		if (!columnsSpecs[column]) {
-			columnsSpecs[column] = { width: defaultCellWidth };
+			columnsSpecs[column] = { width: defaultCellWidth }
 		}
-		columnsSpecs[column].width += 5;
-	};
+		columnsSpecs[column].width += 5
+	}
 	const getCellValue = (row: number, column: number) => {
-		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].value;
-		return null;
-	};
+		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].value
+		return null
+	}
 </script>
 
 <div class="spreadsheet">
@@ -99,8 +99,12 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
+	}
+	.frame {
+		background-color: white;
 		width: fit-content;
 		height: fit-content;
+		border-top: 1px solid rgba(158, 151, 184, 50%);
 	}
 	.row {
 		display: flex;
@@ -110,8 +114,8 @@
 	.column {
 		display: flex;
 		box-sizing: border-box;
-		border-right: 1px solid #dcdcdc;
-		border-bottom: 1px solid #dcdcdc;
+		border-right: 1px solid rgba(158, 151, 184, 50%);
+		border-bottom: 1px solid rgba(158, 151, 184, 50%);
 		overflow: hidden;
 		justify-content: center;
 		align-items: center;
