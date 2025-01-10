@@ -1,91 +1,91 @@
-import { SyntaxTree } from "..";
-import { DiagnosticsBag } from "./diagnostics/diagnostics.bag";
-import { BoundBinaryExpression } from "./phase/binding/bound.binary.expression";
-import { BoundCellAssignment } from "./phase/binding/bound.cell.assignment";
-import { BoundCellReference } from "./phase/binding/bound.cell.reference";
-import { BoundCompilationUnit } from "./phase/binding/bound.compilation.unit";
-import { BoundKind, BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "./phase/binding/bound.kind";
-import { BoundNode } from "./phase/binding/bound.node";
-import { BoundNumericLiteral } from "./phase/binding/bound.numeric.literal";
-import { BoundUnaryExpression } from "./phase/binding/bound.unary.expression";
+import { SyntaxTree } from ".."
+import { DiagnosticsBag } from "./diagnostics/diagnostics.bag"
+import { BoundBinaryExpression } from "./phase/binding/bound.binary.expression"
+import { BoundCellAssignment } from "./phase/binding/bound.cell.assignment"
+import { BoundCellReference } from "./phase/binding/bound.cell.reference"
+import { BoundCompilationUnit } from "./phase/binding/bound.compilation.unit"
+import { BoundKind, BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "./phase/binding/bound.kind"
+import { BoundNode } from "./phase/binding/bound.node"
+import { BoundNumericLiteral } from "./phase/binding/bound.numeric.literal"
+import { BoundUnaryExpression } from "./phase/binding/bound.unary.expression"
 
 export class Evaluator {
-  private value = 0;
+  private value = 0
 
   private constructor(private diagnostics: DiagnosticsBag) {}
 
   static evaluate(tree: SyntaxTree) {
-    const diagnostics = tree.source.diagnostics;
-    if (diagnostics.bag.length) return 0;
-    return new Evaluator(diagnostics).evaluate(tree.bound);
+    const diagnostics = tree.source.diagnostics
+    if (diagnostics.bag.length) return 0
+    return new Evaluator(diagnostics).evaluate(tree.bound)
   }
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     switch (node.kind) {
       case BoundKind.BoundCompilationUnit:
-        return this.evaluateBoundCompilationUnit(node as Kind & BoundCompilationUnit);
+        return this.evaluateBoundCompilationUnit(node as Kind & BoundCompilationUnit)
       case BoundKind.BoundCellAssignment:
-        return this.evaluateBoundCellAssignment(node as Kind & BoundCellAssignment);
+        return this.evaluateBoundCellAssignment(node as Kind & BoundCellAssignment)
       case BoundKind.BoundCellReference:
-        return this.evaluateBoundCellReference(node as Kind & BoundCellReference);
+        return this.evaluateBoundCellReference(node as Kind & BoundCellReference)
       case BoundKind.BoundBinaryExpression:
-        return this.evaluateBoundBinaryExpression(node as Kind & BoundBinaryExpression);
+        return this.evaluateBoundBinaryExpression(node as Kind & BoundBinaryExpression)
       case BoundKind.BoundUnaryExpression:
-        return this.evaluateBoundUnaryExpression(node as Kind & BoundUnaryExpression);
+        return this.evaluateBoundUnaryExpression(node as Kind & BoundUnaryExpression)
       case BoundKind.BoundNumericLiteral:
-        return this.evaluateBoundNumericLiteral(node as Kind & BoundNumericLiteral);
+        return this.evaluateBoundNumericLiteral(node as Kind & BoundNumericLiteral)
     }
-    this.diagnostics.reportMissingEvaluatorMethod(node.kind, node.span);
-    return 0;
+    this.diagnostics.reportMissingEvaluatorMethod(node.kind, node.span)
+    return 0
   }
 
   private evaluateBoundCompilationUnit(node: BoundCompilationUnit): number {
-    for (const statement of node.root) this.value = this.evaluate(statement);
-    return this.value;
+    for (const statement of node.root) this.value = this.evaluate(statement)
+    return this.value
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
-    this.value = node.store.value = this.evaluate(node.expression);
-    return this.value;
+    this.value = node.store.value = this.evaluate(node.expression)
+    return this.value
   }
 
   private evaluateBoundBinaryExpression(node: BoundBinaryExpression): number {
-    const left = this.evaluate(node.left);
-    const right = this.evaluate(node.right);
+    const left = this.evaluate(node.left)
+    const right = this.evaluate(node.right)
     switch (node.operatorKind) {
       case BoundBinaryOperatorKind.Addition:
-        return left + right;
+        return left + right
       case BoundBinaryOperatorKind.Subtraction:
-        return left - right;
+        return left - right
       case BoundBinaryOperatorKind.Multiplication:
-        return left * right;
+        return left * right
       case BoundBinaryOperatorKind.Division:
-        return left / right;
+        return left / right
       case BoundBinaryOperatorKind.Exponentiation:
-        return left ** right;
+        return left ** right
     }
   }
 
   private evaluateBoundUnaryExpression(node: BoundUnaryExpression): number {
-    const right = this.evaluate(node.right);
+    const right = this.evaluate(node.right)
     switch (node.operatorKind) {
       case BoundUnaryOperatorKind.Identity:
-        return right;
+        return right
       case BoundUnaryOperatorKind.Negation:
-        return -right;
+        return -right
     }
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    const store = node.assignment.store;
+    const store = node.assignment.store
     if (store.evaluated) {
-      return store.value;
+      return store.value
     }
-    store.value = this.evaluate(node.assignment.expression);
-    return store.value;
+    store.value = this.evaluate(node.assignment.expression)
+    return store.value
   }
 
   private evaluateBoundNumericLiteral(node: BoundNumericLiteral) {
-    return node.value;
+    return node.value
   }
 }

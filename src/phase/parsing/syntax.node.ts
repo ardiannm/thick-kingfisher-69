@@ -1,24 +1,24 @@
-import { SourceText } from "../lexing/source.text";
-import { Span } from "../lexing/span";
-import { SyntaxKind } from "./syntax.kind";
-import { SyntaxToken } from "../lexing/syntax.token";
+import { SourceText } from "../lexing/source.text"
+import { Span } from "../lexing/span"
+import { SyntaxKind } from "./syntax.kind"
+import { SyntaxToken } from "../lexing/syntax.token"
 
 export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
   constructor(public source: SourceText, public kind: K) {}
 
-  abstract getFirstChild(): SyntaxToken;
-  abstract getLastChild(): SyntaxToken;
+  abstract getFirstChild(): SyntaxToken
+  abstract getLastChild(): SyntaxToken
 
   hasTrivia() {
-    return this.getFirstChild().hasTrivia();
+    return this.getFirstChild().hasTrivia()
   }
 
   get span() {
-    return Span.createFrom(this.source, this.getFirstChild().span.start, this.getLastChild().span.end);
+    return Span.createFrom(this.source, this.getFirstChild().span.start, this.getLastChild().span.end)
   }
 
   get fullSpan() {
-    return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end);
+    return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end)
   }
 
   get class() {
@@ -27,14 +27,14 @@ export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
       .replace(/([A-Z])/g, " $1")
       .trim()
       .replace(/\s/g, "-")
-      .toLowerCase();
+      .toLowerCase()
   }
 
   hasDiagnostics() {
-    const span = this.span;
+    const span = this.span
     for (const diagnostic of this.source.diagnostics.bag) {
-      if ((diagnostic.span.start >= span.start && diagnostic.span.start <= span.end) || (diagnostic.span.end >= span.start && diagnostic.span.end <= span.end)) return true;
+      if ((diagnostic.span.start >= span.start && diagnostic.span.start <= span.end) || (diagnostic.span.end >= span.start && diagnostic.span.end <= span.end)) return true
     }
-    return false;
+    return false
   }
 }

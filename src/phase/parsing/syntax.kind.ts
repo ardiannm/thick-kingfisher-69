@@ -32,5 +32,5 @@ export enum SyntaxKind {
   EqualsToken,
 }
 
-export type SyntaxUnaryOperatorKind = SyntaxKind.PlusToken | SyntaxKind.MinusToken;
-export type SyntaxBinaryOperatorKind = SyntaxUnaryOperatorKind | SyntaxKind.SlashToken | SyntaxKind.StarToken | SyntaxKind.HatToken;
+export type SyntaxUnaryOperatorKind = SyntaxKind.PlusToken | SyntaxKind.MinusToken
+export type SyntaxBinaryOperatorKind = SyntaxUnaryOperatorKind | SyntaxKind.SlashToken | SyntaxKind.StarToken | SyntaxKind.HatToken

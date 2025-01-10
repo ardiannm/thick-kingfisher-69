@@ -214,12 +214,6 @@
 <div class="editor" class:alarm={diagnostics.length}>
 	<div class="content">
 		<div class="space" tabindex="-1">
-			{#if showCursor}
-				<Cursor {line} {column}></Cursor>
-			{/if}
-			{#each diagnostics as d}
-				<Diagnostic line={d.span.from.line} column={d.span.from.column} length={d.span.length} message={d.message}></Diagnostic>
-			{/each}
 			{#each lines as ln, index}
 				<span id="line-{index + 1}" class="line">
 					{#each ln.getTokens() as token}
@@ -232,6 +226,12 @@
 						{/if}
 					{/each}
 				</span>
+			{/each}
+			{#if showCursor}
+				<Cursor {line} {column}></Cursor>
+			{/if}
+			{#each diagnostics as { span: { from: { line, column }, length }, message }}
+				<Diagnostic {line} {column} {length} {message}></Diagnostic>
 			{/each}
 		</div>
 	</div>

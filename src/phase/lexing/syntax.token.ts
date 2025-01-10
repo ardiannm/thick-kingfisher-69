@@ -1,49 +1,49 @@
-import { SourceText } from "./source.text";
-import { Span } from "./span";
-import { SyntaxKind } from "../parsing/syntax.kind";
-import { SyntaxNode } from "../parsing/syntax.node";
+import { SourceText } from "./source.text"
+import { Span } from "./span"
+import { SyntaxKind } from "../parsing/syntax.kind"
+import { SyntaxNode } from "../parsing/syntax.node"
 
 export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
   constructor(public override source: SourceText, public override kind: K, private textSpan: Span) {
-    super(source, kind);
+    super(source, kind)
   }
 
   override hasTrivia(): boolean {
     if (this.position > 0) {
-      return this.source.tokens[this.position - 1].isTrivia();
+      return this.source.tokens[this.position - 1].isTrivia()
     }
-    return false;
+    return false
   }
 
   get position() {
-    return this.source.getTokenLocation(this.span.start);
+    return this.source.getTokenLocation(this.span.start)
   }
 
   override get span() {
-    return this.textSpan;
+    return this.textSpan
   }
 
   override get fullSpan() {
     if (this.isTrivia()) {
-      return this.textSpan;
+      return this.textSpan
     }
-    let position = this.position;
-    const tokens = this.source.tokens;
+    let position = this.position
+    const tokens = this.source.tokens
     while (position > 0 && tokens[position - 1].isTrivia()) {
-      position--;
+      position--
     }
     if (position === this.position) {
-      return this.textSpan;
+      return this.textSpan
     }
-    return Span.createFrom(this.source, tokens[position].span.start, this.span.end);
+    return Span.createFrom(this.source, tokens[position].span.start, this.span.end)
   }
 
   override getFirstChild() {
-    return this;
+    return this
   }
 
   override getLastChild() {
-    return this;
+    return this
   }
 
   isTrivia() {
@@ -52,18 +52,18 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
       case SyntaxKind.SpaceTrivia:
       case SyntaxKind.CommentTrivia:
       case SyntaxKind.BadToken:
-        return true;
+        return true
       default:
-        return false;
+        return false
     }
   }
 
   isMultiLine() {
     switch (this.kind) {
       case SyntaxKind.CommentTrivia:
-        return true;
+        return true
       default:
-        return false;
+        return false
     }
   }
 
@@ -81,9 +81,9 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
       case SyntaxKind.ColonColonToken:
       case SyntaxKind.ColonToken:
       case SyntaxKind.SpaceTrivia:
-        return true;
+        return true
       default:
-        return false;
+        return false
     }
   }
 }
