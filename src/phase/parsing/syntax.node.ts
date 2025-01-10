@@ -29,24 +29,4 @@ export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
       .replace(/\s/g, "-")
       .toLowerCase();
   }
-
-  toJson() {
-    const json: Record<string, any> = {};
-    json["type"] = this.class;
-    for (const [k, v] of Object.entries(this)) {
-      if (v instanceof SyntaxNode) {
-        json[k] = v.toJson();
-      } else if (Array.isArray(v)) {
-        json[k] = v.map((node) => node.toJson());
-      }
-    }
-    switch (this.kind) {
-      case SyntaxKind.OpenParenthesisToken:
-      case SyntaxKind.CloseParenthesisToken:
-      case SyntaxKind.IdentifierToken:
-      case SyntaxKind.NumberToken:
-        json["text"] = this.span.text;
-    }
-    return json;
-  }
 }

@@ -87,8 +87,6 @@ export class Parser {
         return new SyntaxParenthesis(left, errorToken, right);
       }
       const expression = this.parseBinaryExpression();
-      console.log(expression.kind);
-      
       let right: SyntaxToken<SyntaxKind.CloseParenthesisToken>;
       if (this.match(SyntaxKind.CloseParenthesisToken)) {
         right = this.getNextToken();
