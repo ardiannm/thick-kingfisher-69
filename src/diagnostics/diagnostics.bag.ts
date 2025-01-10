@@ -64,14 +64,14 @@ export class DiagnosticsBag {
   }
 
   reportCantAssignTo(kind: SyntaxKind, span: Span) {
-    this.report(`can't assign to \`${kind}\`.`, Severity.CantEvaluate, span);
+    this.report(`can't assign to \`${SyntaxKind[kind]}\`.`, Severity.CantEvaluate, span);
   }
 
   reportMissingBinderMethod(kind: SyntaxKind, span: Span) {
-    this.report(`method for binding \`${kind}\` is not implemented.`, Severity.CantBind, span);
+    this.report(`method for binding \`${SyntaxKind[kind]}\` is not implemented.`, Severity.CantBind, span);
   }
 
   reportMissingEvaluatorMethod(kind: BoundKind, span: Span) {
-    this.report(`method for evaluating \`${kind}\` is not implemented.`, Severity.CantEvaluate, span);
+    this.report(`method for evaluating \`${BoundKind[kind]}\` is not implemented.`, Severity.CantEvaluate, span);
   }
 }

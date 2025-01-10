@@ -86,13 +86,4 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
         return false;
     }
   }
-
-  override get class() {
-    return this.kind
-      .toString()
-      .replace(/([A-Z])/g, " $1")
-      .trim()
-      .replace(/\s/g, "-")
-      .toLowerCase();
-  }
 }

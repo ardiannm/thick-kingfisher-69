@@ -294,8 +294,8 @@
 		justify-content: right;
 		padding: 10px 20px;
 		margin-top: auto;
-		color: #209f62;
-		background-color: rgba(32, 159, 98, 20%);
+		color: #5e14d1;
+		background-color: rgba(93, 20, 210, 10%);
 		margin: 4px;
 	}
 	.error {

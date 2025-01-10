@@ -22,7 +22,7 @@ export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
   }
 
   get class() {
-    return this.kind
+    return SyntaxKind[this.kind]
       .toString()
       .replace(/([A-Z])/g, " $1")
       .trim()
