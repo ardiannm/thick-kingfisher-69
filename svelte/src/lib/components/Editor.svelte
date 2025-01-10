@@ -1,20 +1,37 @@
 <script lang="ts">
-	import Copy from './Copy.svelte';
-	import { onMount } from 'svelte';
-	import { Evaluator, SyntaxTree } from '../../../..';
-
+	import Spreadsheet from './Spreadsheet.svelte';
 	import Cursor from './Cursor.svelte';
 	import Diagnostic from './Diagnostic.svelte';
 
-	let { text }: { text: string } = $props();
+	import { onMount } from 'svelte';
+	import { Evaluator, SyntaxTree } from '../../../..';
+
+	let { text }: { text?: string } = $props();
+
+	let length = $state(text?.length || 0);
+
+	onMount(() => {
+		text = `A1 = 0
+A2 = A1+2
+
+\`\`\` this assignment should update its observers
+
+A1 = 1
+
+A2	\`\`\` value should be 3
+
+1+2+(1+         
+
+
+`;
+	});
 
 	const tree = $derived(SyntaxTree.createFrom(text));
-
 	const lines = $derived(tree.source.getLines());
 	const diagnostics = $derived(tree.source.diagnostics.bag);
 
 	// svelte-ignore state_referenced_locally
-	let cursor = $state(text.length);
+	let cursor = $state(length);
 	let line = $derived(tree.source.getLine(cursor).number);
 	let column = $derived(tree.source.getColumn(cursor));
 	let currentLine = $derived(tree.source.getLine(cursor));
@@ -135,7 +152,7 @@
 
 	function moveCursorX(step: number) {
 		const newPos = cursor + step;
-		if (newPos >= 0 && newPos <= text.length) {
+		if (newPos >= 0 && newPos <= length) {
 			cursor = newPos;
 			prevColumn = column;
 		}
@@ -154,7 +171,7 @@
 
 	function insertText(charText: string = '\n') {
 		text = text.substring(0, cursor) + charText + text.substring(cursor);
-		cursor += charText.length;
+		cursor += length;
 	}
 
 	function removeText() {
@@ -199,7 +216,7 @@
 		if (token) {
 			cursor = token.span.end;
 		} else {
-			cursor = text.length;
+			cursor = length;
 		}
 	}
 
@@ -211,7 +228,6 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor">
 	<div class="elements">
-		<Copy {text} />
 		<div class="content">
 			<div class="space" tabindex="-1">
 				{#if showCursor}
@@ -234,14 +250,26 @@
 					</span>
 				{/each}
 			</div>
+			{@render diagnosticSnippet()}
 		</div>
 	</div>
+	<Spreadsheet />
 </div>
+
+{#snippet diagnosticSnippet()}
+	{#if diagnostics.length}
+		<div class="diagnotics">
+			{#each diagnostics as diagnostic}
+				<div>{diagnostic.message} {diagnostic.span.from.address}</div>
+			{/each}
+		</div>
+	{/if}
+{/snippet}
 
 <style scoped lang="scss">
 	.editor {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		width: 100%;
 		font-size: 14px;
 		height: 100%;
@@ -251,17 +279,19 @@
 	.elements {
 		display: flex;
 		flex-direction: column;
-		border-right: 1px solid #c9c9d2;
-		margin-right: auto;
+		border-right: 1px solid #dcdcdc;
 		box-sizing: border-box;
 		height: 100%;
-		width: 444px;
+		width: 350px;
 	}
 	.content {
-		padding-left: 20px;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 	}
 	.space {
 		outline: none;
+		margin: 17px;
 	}
 	.line {
 		position: relative;
@@ -279,9 +309,20 @@
 		z-index: 1;
 	}
 	.comment-trivia {
-		color: #4285f4;
+		color: #156fc9;
 	}
-	.c {
-		border: 1px solid purple;
+	.identifier-token,
+	.number-token {
+		color: #5011a5;
+	}
+	.diagnotics {
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		color: red;
+		background-color: rgba(255, 0, 0, 7%);
+		margin: 7px;
+		margin-top: auto;
+		padding: 10px 20px;
 	}
 </style>
