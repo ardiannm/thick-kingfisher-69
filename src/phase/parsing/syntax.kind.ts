@@ -29,6 +29,7 @@ export enum SyntaxKind {
   ColonColonToken = "ColonColonToken",
   LineBreakTrivia = "LineBreakTrivia",
   QuoteToken = "QuoteToken",
+  EqualsToken = "EqualsToken",
 }
 
 export type SyntaxUnaryOperatorKind = SyntaxKind.PlusToken | SyntaxKind.MinusToken;

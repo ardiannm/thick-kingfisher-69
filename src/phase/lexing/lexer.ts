@@ -43,6 +43,8 @@ export class Lexer {
         return this.advanceAndCreateNewToken(SyntaxKind.CloseBraceToken);
       case ".":
         return this.advanceAndCreateNewToken(SyntaxKind.DotToken);
+      case "=":
+        return this.advanceAndCreateNewToken(SyntaxKind.EqualsToken);
       case "\n":
         return this.advanceAndCreateNewToken(SyntaxKind.LineBreakTrivia);
       case "`":
