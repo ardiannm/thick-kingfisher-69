@@ -104,7 +104,7 @@
 		background-color: white;
 		width: fit-content;
 		height: fit-content;
-		border-top: 1px solid rgba(158, 151, 184, 50%);
+		border-top: 1px solid #cccccc;
 	}
 	.row {
 		display: flex;
@@ -114,8 +114,8 @@
 	.column {
 		display: flex;
 		box-sizing: border-box;
-		border-right: 1px solid rgba(158, 151, 184, 50%);
-		border-bottom: 1px solid rgba(158, 151, 184, 50%);
+		border-right: 1px solid #cccccc;
+		border-bottom: 1px solid #cccccc;
 		overflow: hidden;
 		justify-content: center;
 		align-items: center;

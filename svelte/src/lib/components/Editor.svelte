@@ -68,6 +68,9 @@
 			insertText(content)
 			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
 			cursor = tree.source.getPosition(line - 1, prevColumn)
+		} else if (input === 'Tab') {
+			insertText('\t')
+			event.preventDefault()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			event.preventDefault()
 			moveToNextToken()
@@ -103,7 +106,7 @@
 			moveCursorY(-1)
 		} else if (input === 'Enter') {
 			event.preventDefault()
-			insertText()
+			insertText('\n')
 		} else if (input === 'Backspace') {
 			event.preventDefault()
 			backspace()
@@ -150,7 +153,7 @@
 		}
 	}
 
-	function insertText(charText: string = '\n') {
+	function insertText(charText: string) {
 		text = text.substring(0, cursor) + charText + text.substring(cursor)
 		cursor += charText.length
 	}
@@ -252,7 +255,7 @@
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
-		border: 1px solid rgba(158, 151, 184, 50%);
+		border: 1px solid #cccccc;
 	}
 	.content {
 		display: flex;

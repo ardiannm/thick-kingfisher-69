@@ -4,11 +4,14 @@
 	import Workbook from '../lib/layouts/Workbook.svelte'
 
 	let text = `A1 = 0
-A2 = A1 + 2
-A1 = 1
-A2	\`\`\` value should be 3
+A2 = A1 + 3
+A3 = A1 + A2
+A3	\`\`\` value should be 3
 
-1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10`
+A1 = 1
+A3	\`\`\` value should be 5
+
+`
 </script>
 
 <Workbook>
