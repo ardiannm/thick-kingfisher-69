@@ -1,38 +1,38 @@
 <script lang="ts">
-	import { onMount, type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte'
 
-	let { children, render, offsetX = 0, offsetY = 0, show = false, direction = 'top', style = '' }: { children: Snippet; render: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number; direction?: 'top' | 'bottom'; style?: string } = $props();
+	let { children, component, offsetX = 0, offsetY = 0, show = false, direction = 'top', style = '' }: { children: Snippet; component: Snippet; offsetX?: number; offsetY?: number; show?: boolean; line?: number; column?: number; direction?: 'top' | 'bottom'; style?: string } = $props()
 
-	let x = $state(0);
-	let y = $state(0);
+	let x = $state(0)
+	let y = $state(0)
 
-	let wrapper: HTMLSpanElement | null = null;
-	let tooltip: HTMLSpanElement | null = $state(null);
+	let wrapper: HTMLSpanElement | null = null
+	let tooltip: HTMLSpanElement | null = $state(null)
 
 	function renderUi() {
 		if (wrapper && tooltip) {
-			const content = wrapper.children[0] as HTMLElement; // considering only the first child; alternatively we could iterate through all the children to construct a bounding client rect.
-			const pos = content.getBoundingClientRect();
-			x = pos.left + pos.width + offsetX;
-			y = pos.top + offsetY - (direction === 'top' ? tooltip.getBoundingClientRect().height : -pos.height);
+			const content = wrapper.children[0] as HTMLElement // considering only the first child; alternatively we could iterate through all the children to construct a bounding client rect.
+			const pos = content.getBoundingClientRect()
+			x = pos.left + pos.width + offsetX
+			y = pos.top + offsetY - (direction === 'top' ? tooltip.getBoundingClientRect().height : -pos.height)
 		}
 	}
 
 	$effect(() => {
 		if (show) {
-			renderUi();
+			renderUi()
 		}
-	});
+	})
 
 	onMount(() => {
 		if (show) {
-			show = false;
+			show = false
 			setTimeout(() => {
-				show = true;
-				renderUi();
-			});
+				show = true
+				renderUi()
+			})
 		}
-	});
+	})
 </script>
 
 <span bind:this={wrapper} {style} tabindex="-1" aria-hidden="true" onmouseenter={() => (show = true)} onmouseleave={() => (show = false)}>
@@ -41,7 +41,7 @@
 
 {#if show}
 	<div class="tooltip" style="left: {x}px; top: {y}px;" bind:this={tooltip}>
-		{@render render()}
+		{@render component()}
 	</div>
 {/if}
 

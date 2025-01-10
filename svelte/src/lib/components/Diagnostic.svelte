@@ -41,7 +41,7 @@
 			height: {h}px;
 		"
 	></span>
-	{#snippet render()}
+	{#snippet component()}
 		<div
 			class="message"
 			style="

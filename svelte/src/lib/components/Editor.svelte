@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Tooltip from './Tooltip.svelte'
 	import { onMount } from 'svelte'
 	import { Evaluator, SyntaxTree } from '../../../..'
 

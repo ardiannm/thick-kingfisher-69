@@ -92,7 +92,9 @@ export class Parser {
         right = this.getNextToken();
       } else {
         right = this.parseErrorToken();
-        this.source.diagnostics.reportExpectedClosingParenthesis(expression);
+        if (!expression.hasDiagnostics()) {
+          this.source.diagnostics.reportExpectedClosingParenthesis(expression);
+        }
       }
       return new SyntaxParenthesis(left, expression, right);
     }
