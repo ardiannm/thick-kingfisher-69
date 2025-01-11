@@ -16,7 +16,7 @@ A3	\`\`\` value should be 5
 
 <Workbook>
 	{#snippet sidebarContent()}
-		<Editor {text} />
+		<Editor {text} style="width: 100%; border: none; margin: 17px;" />
 	{/snippet}
 	{#snippet workspaceContent()}
 		<Spreadsheet />

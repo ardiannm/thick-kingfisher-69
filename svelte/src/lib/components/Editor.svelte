@@ -1,12 +1,11 @@
 <script lang="ts">
-	import Tooltip from './Tooltip.svelte'
 	import { onMount } from 'svelte'
-	import { Evaluator, SyntaxTree } from '../../../..'
+	import { SyntaxTree } from '../../../..'
 
 	import Cursor from './Cursor.svelte'
 	import Diagnostic from './Diagnostic.svelte'
 
-	let { text }: { text: string } = $props()
+	let { text, style = '' }: { text: string; style?: string } = $props()
 
 	const tree = $derived(SyntaxTree.createFrom(text))
 	const lines = $derived(tree.source.getLines())
@@ -21,8 +20,6 @@
 
 	let showCursor = $state(false)
 	let showTree = $state(false)
-
-	let value = $derived(Evaluator.evaluate(tree))
 
 	let copied = $state(false)
 
@@ -211,61 +208,33 @@
 <svelte:window on:keydown={handleKey} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" class:alarm={diagnostics.length}>
-	<div class="content">
-		<div class="space" tabindex="-1">
-			{#each lines as ln, index}
-				<span id="line-{index + 1}" class="line">
-					{#each ln.getTokens() as token}
-						{#if token.span.length}
-							<span class="token {token.class}">
-								{token.span.text}
-							</span>
-						{:else}
-							<span class="token {token.class}">&nbsp;</span>
-						{/if}
-					{/each}
-				</span>
+<div class="editor" tabindex="-1" {style}>
+	{#each lines as ln, index}
+		<span id="line-{index + 1}" class="line">
+			{#each ln.getTokens() as token}
+				{#if token.span.length}
+					<span class="token {token.class}">
+						{token.span.text}
+					</span>
+				{:else}
+					<span class="token {token.class}">&nbsp;</span>
+				{/if}
 			{/each}
-			{#if showCursor}
-				<Cursor {line} {column}></Cursor>
-			{/if}
-			{#each diagnostics as { span: { from: { line, column }, length }, message }}
-				<Diagnostic {line} {column} {length} {message}></Diagnostic>
-			{/each}
-		</div>
-	</div>
-	<div class="terminal" class:error={diagnostics.length}>
-		{#if diagnostics.length}
-			{@render diagnosticSnippet()}
-		{:else}
-			value: {value}
-		{/if}
-	</div>
-</div>
-
-{#snippet diagnosticSnippet()}
-	{#each diagnostics as diagnostic}
-		<div>{diagnostic.message} {diagnostic.span.from.address}</div>
+		</span>
 	{/each}
-{/snippet}
+	{#if showCursor}
+		<Cursor {line} {column}></Cursor>
+	{/if}
+	{#each diagnostics as { span: { from: { line, column }, length }, message }}
+		<Diagnostic {line} {column} {length} {message}></Diagnostic>
+	{/each}
+</div>
 
 <style scoped lang="scss">
 	.editor {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-		border: 1px solid #cccccc;
-	}
-	.content {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
-	.space {
 		outline: none;
-		margin: 17px;
+		border: 1px solid #cccccc;
+		height: fit-content;
 	}
 	.line {
 		position: relative;
@@ -298,9 +267,5 @@
 		color: #5e14d1;
 		background-color: rgba(93, 20, 210, 10%);
 		margin: 4px;
-	}
-	.error {
-		color: #e6007a;
-		background-color: rgba(230, 0, 122, 10%);
 	}
 </style>
