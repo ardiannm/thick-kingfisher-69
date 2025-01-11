@@ -18,7 +18,6 @@
 	let currentLine = $derived(tree.source.getLine(cursor))
 	let tokens = $derived(tree.source.tokens)
 
-	let showCursor = $state(false)
 	let showTree = $state(false)
 
 	let copied = $state(false)
@@ -51,7 +50,6 @@
 	let prevColumn = column
 
 	const handleKey = async (event: KeyboardEvent) => {
-		showCursor = true
 		const input = event.key
 		if (event.code == 'AltRight' && event.altKey) {
 			event.preventDefault()
@@ -201,8 +199,6 @@
 			cursor = text.length
 		}
 	}
-
-	onMount(() => (showCursor = true))
 </script>
 
 <svelte:window on:keydown={handleKey} />
@@ -222,9 +218,10 @@
 			{/each}
 		</span>
 	{/each}
-	{#if showCursor}
-		<Cursor {line} {column}></Cursor>
-	{/if}
+	<!-- FIXME: this cursor needs to be able to grab the character position of the parent and not of the same element with the given line id -->
+	<!-- It should also be based upon a single character position value and not based on line and numbers -->
+	<!-- This way each instance of cursor is capable of being independent of other editors -->
+	<Cursor {line} {column}></Cursor>
 	{#each diagnostics as { span: { from: { line, column }, length }, message }}
 		<Diagnostic {line} {column} {length} {message}></Diagnostic>
 	{/each}

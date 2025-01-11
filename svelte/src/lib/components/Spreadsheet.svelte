@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Editor from '$lib/components/Editor.svelte'
 	interface Row {
 		height: number
 	}
@@ -86,6 +87,10 @@
 					<div class="column" style="width: {getColumnHeight(j + 1)}px" onmousedown={() => increaseColumnHeight(j + 1)}>
 						{getCellValue(i + 1, j + 1)}
 					</div>
+					<!-- TODO: make this editor component appear and disappear in absolute position using the cell positions -->
+					{#if i === 4 && j === 4}
+						<Editor text="D4" />
+					{/if}
 				{/each}
 			</div>
 		{/each}

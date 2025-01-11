@@ -1,23 +1,24 @@
 <script lang="ts">
-	import { getPosition } from '$lib';
-	import type { Snippet } from 'svelte';
+	import { getPosition } from '$lib'
 
-	let { line, column, children }: { line: number; column: number; children?: Snippet } = $props();
-
-	let x: number = $state(0);
-	let y: number = $state(0);
-	let w: number = 2;
-	let h: number = 16;
-
+	// FIXME: this cursor needs to have only one position parameter to determine which character it needs to grab from the parent
+	let { line, column }: { line: number; column: number } = $props()
+	
+	let x: number = $state(0)
+	let y: number = $state(0)
+	let w: number = 2
+	let h: number = 16
+	
 	function renderUi() {
-		const pos = getPosition(line, column);
-		const scrollX = window.scrollX;
-		const scrollY = window.scrollY;
-		x = pos.x + scrollX;
-		y = pos.y + scrollY;
+		// FIXME: find a way to make this cursor grab the nth character's positions and render itself
+		const pos = getPosition(line, column)
+		const scrollX = window.scrollX
+		const scrollY = window.scrollY
+		x = pos.x + scrollX
+		y = pos.y + scrollY
 	}
 
-	$effect(renderUi);
+	$effect(renderUi)
 </script>
 
 <svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
@@ -31,9 +32,6 @@
 			height: {h}px;
 		"
 >
-	{#if children}
-		{@render children()}
-	{/if}
 </span>
 
 <style scoped>
