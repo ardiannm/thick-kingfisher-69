@@ -1,34 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import type { Snippet } from 'svelte'
 
-	let { position }: { position: number } = $props()
+	let { start, end }: { start: number; end: number } = $props()
 
 	let parent: HTMLElement
 	let component: HTMLElement
 
 	let x = $state(0)
 	let y = $state(0)
-	let h = $state(0)
+	let w = $state(0)
 
-	let show = $state(false)
-
-	onMount(() => {
-		show = true
-	})
-
-	const renderPosition = () => {
+	$effect(() => {
 		if (component && component.parentElement) {
 			parent = component.parentElement
-			const pos = getCharacterPosition(position)
-			if (pos) {
-				x = pos.left
-				y = pos.top
-				h = pos.height
+			const from = getCharacterPosition(start)
+			const to = getCharacterPosition(end)
+			if (from && to) {
+				x = from.left
+				y = from.top + from.height - 3
+				const width = to.left - from.left
+				w = width ? width : 6
 			}
 		}
-	}
-
-	$effect(renderPosition)
+	})
 
 	const getCharacterPosition = (n: number) => {
 		const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null)
@@ -56,14 +50,14 @@
 	}
 </script>
 
-<div bind:this={component} style="left: {x}px; top: {y}px; height: {h}px; display: {show ? 'block' : 'none'};"></div>
+<div bind:this={component} style="left: {x}px; top: {y}px; width: {w}px;"></div>
 
 <style lang="scss" scoped>
 	div {
 		position: absolute;
-		background-color: black;
-		width: 1px;
-		z-index: 10;
-		pointer-events: none;
+		cursor: pointer;
+		background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%23e6007a" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+		background-size: 6px 4px;
+		height: 4px;
 	}
 </style>

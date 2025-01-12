@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Cursor from './Cursor.svelte'
-	import Diagnostic from './Diagnostic.svelte'
+	import Squigglie from './Squigglie.svelte'
 
 	import { SyntaxTree } from '../../../..'
 
@@ -218,8 +218,8 @@
 		</span>
 	{/each}
 	<Cursor position={cursor} />
-	{#each diagnostics as { span: { from: { line, column }, length }, message }}
-		<Diagnostic {line} {column} {length} {message}></Diagnostic>
+	{#each diagnostics as diagnostic}
+		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end}></Squigglie>
 	{/each}
 </div>
 
@@ -228,6 +228,7 @@
 		outline: none;
 		border: 1px solid #cccccc;
 		height: fit-content;
+		background-color: white;
 	}
 	.line {
 		position: relative;
@@ -260,5 +261,9 @@
 		color: #5e14d1;
 		background-color: rgba(93, 20, 210, 10%);
 		margin: 4px;
+	}
+	.message {
+		display: flex;
+		white-space: nowrap;
 	}
 </style>

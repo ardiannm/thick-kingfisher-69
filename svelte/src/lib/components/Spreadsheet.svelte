@@ -1,25 +1,32 @@
 <script lang="ts">
 	import Editor from '$lib/components/Editor.svelte'
+
 	interface Row {
 		height: number
 	}
+
 	interface Column {
 		width: number
 	}
+
 	interface Cell {
 		value: number
 	}
+
 	interface RowState {
 		[key: number]: Row
 	}
+
 	interface ColumnState {
 		[key: number]: Column
 	}
+
 	interface CellState {
 		[key: number]: {
 			[key: number]: Cell
 		}
 	}
+
 	let rowsSpecs = $state<RowState>({})
 	let columnsSpecs = $state<ColumnState>({})
 	let cellSpecs = $state<CellState>({
@@ -65,12 +72,14 @@
 		const height = columnsSpecs[column]?.width || defaultCellWidth
 		return height
 	}
+
 	const increaseColumnHeight = (column: number) => {
 		if (!columnsSpecs[column]) {
 			columnsSpecs[column] = { width: defaultCellWidth }
 		}
 		columnsSpecs[column].width += 5
 	}
+
 	const getCellValue = (row: number, column: number) => {
 		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].value
 		return null
@@ -89,7 +98,7 @@
 					</div>
 					<!-- TODO: make this editor component appear and disappear in absolute position using the cell positions -->
 					{#if i === 4 && j === 4}
-						<Editor text="D4" />
+						<Editor text="D4+        " style="z-index: 0; min-width: {defaultCellWidth}px; min-height: {defaultCellHeight}px;" />
 					{/if}
 				{/each}
 			</div>
@@ -114,14 +123,12 @@
 	.row {
 		display: flex;
 		box-sizing: border-box;
-		overflow: hidden;
 	}
 	.column {
 		display: flex;
 		box-sizing: border-box;
 		border-right: 1px solid #cccccc;
 		border-bottom: 1px solid #cccccc;
-		overflow: hidden;
 		justify-content: center;
 		align-items: center;
 	}
