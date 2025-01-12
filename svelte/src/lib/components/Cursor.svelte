@@ -1,48 +1,69 @@
 <script lang="ts">
-	import { getPosition } from '$lib'
+	import { onMount } from 'svelte'
 
-	// FIXME: this cursor needs to have only one position parameter to determine which character it needs to grab from the parent
-	let { line, column }: { line: number; column: number } = $props()
-	
-	let x: number = $state(0)
-	let y: number = $state(0)
-	let w: number = 2
-	let h: number = 16
-	
-	function renderUi() {
-		// FIXME: find a way to make this cursor grab the nth character's positions and render itself
-		const pos = getPosition(line, column)
-		const scrollX = window.scrollX
-		const scrollY = window.scrollY
-		x = pos.x + scrollX
-		y = pos.y + scrollY
+	let { position }: { position: number } = $props()
+
+	let component: HTMLElement
+	let parentComponent: HTMLElement
+
+	let x = $state(0)
+	let y = $state(0)
+	let h = $state(0)
+
+	let show = $state(false)
+
+	onMount(() => {
+		show = true
+	})
+
+	const renderPosition = () => {
+		if (component && component.parentElement) {
+			parentComponent = component.parentElement
+			const pos = getCharacterPosition(position)
+			if (pos) {
+				x = pos.left
+				y = pos.top
+				h = pos.height
+			}
+		}
 	}
 
-	$effect(renderUi)
+	$effect(renderPosition)
+
+	const getCharacterPosition = (n: number) => {
+		const walker = document.createTreeWalker(parentComponent, NodeFilter.SHOW_TEXT, null)
+		let charIndex = 0
+		while (walker.nextNode()) {
+			const node = walker.currentNode
+			const text = node.textContent || ''
+			if (charIndex + text.length > n) {
+				const localIndex = n - charIndex
+				if (localIndex >= text.length) {
+					console.error(`Invalid local index: ${localIndex} exceeds node length`)
+					return null
+				}
+				const range = document.createRange()
+				range.setStart(node, localIndex)
+				range.setEnd(node, localIndex + 1)
+				const rect = range.getBoundingClientRect()
+				range.detach()
+				return rect
+			}
+			charIndex += text.length
+		}
+		console.error(`Character position ${n} is out of bounds`)
+		return null
+	}
 </script>
 
-<svelte:window on:keydown={renderUi} on:resize={renderUi} on:scroll={renderUi} />
+<div bind:this={component} style="left: {x}px; top: {y}px; height: {h}px; display: {show ? 'block' : 'none'};"></div>
 
-<span
-	class="cursor"
-	style="
-			left: {x}px;
-			top: {y}px;
-			width: {w}px;
-			height: {h}px;
-		"
->
-</span>
-
-<style scoped>
-	.cursor {
+<style lang="scss" scoped>
+	div {
 		position: absolute;
-		pointer-events: none;
-		z-index: 10;
-		min-width: 1px;
-		overflow: hidden;
-		white-space: pre;
 		background-color: black;
-		opacity: 0.9;
+		width: 1px;
+		z-index: 10;
+		pointer-events: none;
 	}
 </style>
