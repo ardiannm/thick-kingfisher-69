@@ -1,17 +1,17 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte'
-	const { sidebarContent, workspaceContent }: { sidebarContent?: Snippet; workspaceContent?: Snippet } = $props()
+	const { sidebar, workspace }: { sidebar?: Snippet; workspace?: Snippet } = $props()
 </script>
 
 <div class="workbook">
 	<div class="sidebar">
-		{#if sidebarContent}
-			{@render sidebarContent()}
+		{#if sidebar}
+			{@render sidebar()}
 		{/if}
 	</div>
 	<div class="workspace">
-		{#if workspaceContent}
-			{@render workspaceContent()}
+		{#if workspace}
+			{@render workspace()}
 		{/if}
 	</div>
 </div>

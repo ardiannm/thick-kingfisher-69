@@ -1,4 +1,5 @@
 <script lang="ts">
+	import App from './../lib/layouts/App.svelte'
 	import Editor from '$lib/components/Editor.svelte'
 	import Spreadsheet from './../lib/components/Spreadsheet.svelte'
 	import Workbook from '../lib/layouts/Workbook.svelte'
@@ -14,11 +15,15 @@ A3	\`\`\` value should be 5
 1+2+           `
 </script>
 
-<Workbook>
-	{#snippet sidebarContent()}
-		<Editor {text} style="width: 100%; border: none; margin: 17px;" />
+<App>
+	{#snippet content()}
+		<Workbook>
+			{#snippet sidebar()}
+				<Editor style="width: 100%; border: none; margin: 17px;" {text} />
+			{/snippet}
+			{#snippet workspace()}
+				<Spreadsheet />
+			{/snippet}
+		</Workbook>
 	{/snippet}
-	{#snippet workspaceContent()}
-		<Spreadsheet />
-	{/snippet}
-</Workbook>
+</App>
