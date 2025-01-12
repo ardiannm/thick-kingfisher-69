@@ -17,17 +17,10 @@
 	let currentLine = $derived(tree.source.getLine(cursor))
 	let tokens = $derived(tree.source.tokens)
 
-	let showTree = $state(false)
-
-	let copied = $state(false)
-
 	const copyToClipboard = (text: string) => {
 		;(async () => {
 			try {
 				await navigator.clipboard.writeText(text)
-				copied = true
-				// Reset the copied state after a short delay
-				setTimeout(() => (copied = false), 2000)
 			} catch (error) {
 				console.error('Failed to copy text: ', error)
 			}
@@ -50,10 +43,7 @@
 
 	const handleKey = async (event: KeyboardEvent) => {
 		const input = event.key
-		if (event.code == 'AltRight' && event.altKey) {
-			event.preventDefault()
-			showTree = !showTree
-		} else if (input === 'c' && event.ctrlKey) {
+		if (input === 'c' && event.ctrlKey) {
 			event.preventDefault()
 			copyToClipboard(currentLine.span.text)
 		} else if (input === 'v' && event.ctrlKey) {
