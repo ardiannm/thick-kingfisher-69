@@ -205,7 +205,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor" tabindex="-1" {style}>
 	{#each lines as ln}
-		<span class="line">
+		<div class="line">
 			{#each ln.getTokens() as token}
 				{#if token.span.length}
 					<span class="token {token.class}">
@@ -215,7 +215,7 @@
 					<span class="token {token.class}">&nbsp;</span>
 				{/if}
 			{/each}
-		</span>
+		</div>
 	{/each}
 	<Cursor position={cursor} />
 	{#each diagnostics as diagnostic}
@@ -250,19 +250,5 @@
 	}
 	.comment-trivia {
 		color: #209f62;
-	}
-	.terminal {
-		display: flex;
-		flex-direction: column;
-		justify-content: right;
-		padding: 10px 20px;
-		margin-top: auto;
-		color: #5e14d1;
-		background-color: rgba(93, 20, 210, 10%);
-		margin: 4px;
-	}
-	.message {
-		display: flex;
-		white-space: nowrap;
 	}
 </style>

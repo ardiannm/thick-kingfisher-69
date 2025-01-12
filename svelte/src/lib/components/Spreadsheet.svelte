@@ -11,6 +11,7 @@
 
 	interface Cell {
 		value: number
+		formula?: string
 	}
 
 	interface RowState {
@@ -46,7 +47,13 @@
 				value: 2
 			},
 			4: {
-				value: 4
+				value: 4,
+				formula: `\`\`\` Hello world!
+
+@Component
+export class Transaction {
+
+}`
 			},
 			6: {
 				value: 6
@@ -85,7 +92,12 @@
 		return null
 	}
 
-	let activeRow = $state(4)
+	const getCellFormula = (row: number, column: number) => {
+		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].formula || ''
+		return ''
+	}
+
+	let activeRow = $state(2)
 	let activeColumn = $state(4)
 
 	const makeActive = (row: number, column: number) => {
@@ -94,8 +106,10 @@
 	}
 
 	const isActive = (row: number, column: number) => {
-		return activeRow === row && activeColumn === column
+		return activeRow === row && activeColumn === column && showEditor
 	}
+
+	let showEditor = $state(true)
 </script>
 
 <div class="spreadsheet">
@@ -104,10 +118,11 @@
 			<div class="row" style="height: {getRowHeight(row)}px">
 				{#each columns as _, column}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div class="cell" style="width: {getColumnWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal' : ''}" onmousedown={() => makeActive(row, column)}>
-						{getCellValue(row, column)}
+					<div class="cell" style="width: {getColumnWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal;' : ''}" onmousedown={() => makeActive(row, column)} ondblclick={() => (showEditor = true)}>
 						{#if isActive(row, column)}
-							<Editor text="D4+        " style="padding: 7px; border: 2px solid blue; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto;" />
+							<Editor text={getCellFormula(row, column)} style="padding: 2px; {!!getCellFormula(row, column).length ? 'padding: 0.5rem; padding-right: 5rem;' : ''}; outline: 2px solid #e6007a; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
+						{:else}
+							{getCellValue(row, column)}
 						{/if}
 					</div>
 				{/each}

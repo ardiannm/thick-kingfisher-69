@@ -26,8 +26,6 @@
 				x = pos.left - parentRect.left
 				y = pos.top - parentRect.top
 				h = pos.height
-				console.log(component, parent)
-				console.log(pos.x, parentRect.x)
 			}
 		}
 	}
