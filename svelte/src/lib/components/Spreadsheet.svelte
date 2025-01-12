@@ -95,11 +95,10 @@
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<div class="column" style="width: {getColumnHeight(j + 1)}px" onmousedown={() => increaseColumnHeight(j + 1)}>
 						{getCellValue(i + 1, j + 1)}
+						{#if i === 4 && j === 4}
+							<Editor text="D4+        " style="outline: 2px solid blue; position: absolute; z-index: 0; min-width: {defaultCellWidth}px; min-height: {defaultCellHeight}px; width: fit-content;" />
+						{/if}
 					</div>
-					<!-- TODO: make this editor component appear and disappear in absolute position using the cell positions -->
-					{#if i === 4 && j === 4}
-						<Editor text="D4+        " style="z-index: 0; min-width: {defaultCellWidth}px; min-height: {defaultCellHeight}px;" />
-					{/if}
 				{/each}
 			</div>
 		{/each}

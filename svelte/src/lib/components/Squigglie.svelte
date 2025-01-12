@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte'
-
 	let { start, end }: { start: number; end: number } = $props()
 
 	let parent: HTMLElement
@@ -13,11 +11,13 @@
 	$effect(() => {
 		if (component && component.parentElement) {
 			parent = component.parentElement
+			const style = getComputedStyle(parent)
+			const parentRect = ['relative', 'absolute', 'fixed'].includes(style.position) ? parent.getBoundingClientRect() : ({ left: 0, top: 0 } as DOMRect)
 			const from = getCharacterPosition(start)
 			const to = getCharacterPosition(end)
 			if (from && to) {
-				x = from.left
-				y = from.top + from.height - 3
+				x = from.left - parentRect.left
+				y = from.top + from.height - 3 - parentRect.top
 				const width = to.left - from.left
 				w = width ? width : 6
 			}

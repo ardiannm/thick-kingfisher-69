@@ -204,7 +204,7 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor" tabindex="-1" {style}>
-	{#each lines as ln, index}
+	{#each lines as ln}
 		<span class="line">
 			{#each ln.getTokens() as token}
 				{#if token.span.length}
@@ -228,7 +228,6 @@
 		outline: none;
 		height: fit-content;
 		background-color: white;
-		outline: 1px solid lightcoral;
 	}
 	.line {
 		position: relative;

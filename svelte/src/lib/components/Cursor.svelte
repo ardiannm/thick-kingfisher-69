@@ -19,11 +19,15 @@
 	const renderPosition = () => {
 		if (component && component.parentElement) {
 			parent = component.parentElement
+			const style = getComputedStyle(parent)
+			const parentRect = ['relative', 'absolute', 'fixed'].includes(style.position) ? parent.getBoundingClientRect() : ({ left: 0, top: 0 } as DOMRect)
 			const pos = getCharacterPosition(position)
 			if (pos) {
-				x = pos.left
-				y = pos.top
+				x = pos.left - parentRect.left
+				y = pos.top - parentRect.top
 				h = pos.height
+				console.log(component, parent)
+				console.log(pos.x, parentRect.x)
 			}
 		}
 	}
