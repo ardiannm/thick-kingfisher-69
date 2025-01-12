@@ -159,8 +159,7 @@
 
 	function duplicateLine(step: number) {
 		text = tree.source.duplicateLine(line)
-		const ln = line
-		cursor = tree.source.getPosition(ln + step, prevColumn)
+		cursor = tree.source.getPosition(line + step, prevColumn)
 	}
 
 	function moveToPrevToken() {
