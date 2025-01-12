@@ -205,7 +205,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="editor" tabindex="-1" {style}>
 	{#each lines as ln, index}
-		<span id="line-{index + 1}" class="line">
+		<span class="line">
 			{#each ln.getTokens() as token}
 				{#if token.span.length}
 					<span class="token {token.class}">
@@ -226,9 +226,9 @@
 <style scoped lang="scss">
 	.editor {
 		outline: none;
-		border: 1px solid #cccccc;
 		height: fit-content;
 		background-color: white;
+		outline: 1px solid lightcoral;
 	}
 	.line {
 		position: relative;

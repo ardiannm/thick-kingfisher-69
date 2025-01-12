@@ -30,6 +30,7 @@
 		min-width: 400px;
 		height: 100%;
 		border: 1px solid #cccccc;
+		padding: 14px;
 	}
 	.workspace {
 		display: flex;

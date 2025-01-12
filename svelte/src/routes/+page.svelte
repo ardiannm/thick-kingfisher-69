@@ -19,7 +19,7 @@ A3	\`\`\` value should be 5
 	{#snippet content()}
 		<Workbook>
 			{#snippet sidebar()}
-				<!-- <Editor style="width: 100%; border: none; margin: 17px;" {text} /> -->
+				<Editor style="width: 100%; border: none;" {text} />
 			{/snippet}
 			{#snippet workspace()}
 				<Spreadsheet />
