@@ -68,7 +68,7 @@
 		return height
 	}
 
-	const getColumnHeight = (column: number) => {
+	const getColumnWidth = (column: number) => {
 		const height = columnsSpecs[column]?.width || defaultCellWidth
 		return height
 	}
@@ -84,19 +84,30 @@
 		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].value
 		return null
 	}
+
+	let activeRow = $state(4)
+	let activeColumn = $state(4)
+
+	const makeActive = (row: number, column: number) => {
+		activeRow = row
+		activeColumn = column
+	}
+
+	const isActive = (row: number, column: number) => {
+		return activeRow === row && activeColumn === column
+	}
 </script>
 
 <div class="spreadsheet">
 	<div class="frame">
-		{#each rows as _, i}
-			<div class="row" style="height: {getRowHeight(i + 1)}px">
-				{#each columns as _, j}
+		{#each rows as _, row}
+			<div class="row" style="height: {getRowHeight(row)}px">
+				{#each columns as _, column}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<div class="column" style="width: {getColumnHeight(j + 1)}px" onmousedown={() => increaseColumnHeight(j + 1)}>
-						{getCellValue(i + 1, j + 1)}
-						{#if i === 4 && j === 4}
-							<Editor text="D4+        " style="outline: 2px solid blue; position: absolute; z-index: 0; min-width: {defaultCellWidth}px; min-height: {defaultCellHeight}px; width: fit-content;" />
+					<div class="cell" style="width: {getColumnWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal' : ''}" onmousedown={() => makeActive(row, column)}>
+						{getCellValue(row, column)}
+						{#if isActive(row, column)}
+							<Editor text="D4+        " style="padding: 7px; border: 2px solid blue; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto;" />
 						{/if}
 					</div>
 				{/each}
@@ -123,7 +134,7 @@
 		display: flex;
 		box-sizing: border-box;
 	}
-	.column {
+	.cell {
 		display: flex;
 		box-sizing: border-box;
 		border-right: 1px solid #cccccc;
