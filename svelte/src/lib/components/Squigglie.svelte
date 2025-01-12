@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { AppService } from '$lib/services'
+
 	let { start, end }: { start: number; end: number } = $props()
 
 	let parent: HTMLElement
@@ -13,8 +15,8 @@
 			parent = component.parentElement
 			const style = getComputedStyle(parent)
 			const parentRect = ['relative', 'absolute', 'fixed'].includes(style.position) ? parent.getBoundingClientRect() : ({ left: 0, top: 0 } as DOMRect)
-			const from = getCharacterPosition(start)
-			const to = getCharacterPosition(end)
+			const from = AppService.getCharacterPosition(start, parent)
+			const to = AppService.getCharacterPosition(end, parent)
 			if (from && to) {
 				x = from.left - parentRect.left
 				y = from.top + from.height - 3 - parentRect.top
@@ -23,31 +25,6 @@
 			}
 		}
 	})
-
-	const getCharacterPosition = (n: number) => {
-		const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null)
-		let charIndex = 0
-		while (walker.nextNode()) {
-			const node = walker.currentNode
-			const text = node.textContent || ''
-			if (charIndex + text.length > n) {
-				const localIndex = n - charIndex
-				if (localIndex >= text.length) {
-					console.error(`Invalid local index: ${localIndex} exceeds node length`)
-					return null
-				}
-				const range = document.createRange()
-				range.setStart(node, localIndex)
-				range.setEnd(node, localIndex + 1)
-				const rect = range.getBoundingClientRect()
-				range.detach()
-				return rect
-			}
-			charIndex += text.length
-		}
-		console.error(`Character position ${n} is out of bounds`)
-		return null
-	}
 </script>
 
 <div bind:this={component} style="left: {x}px; top: {y}px; width: {w}px;"></div>

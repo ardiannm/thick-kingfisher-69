@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { AppService } from '$lib/services'
 	import { onMount } from 'svelte'
 
 	let { position }: { position: number } = $props()
@@ -21,7 +22,7 @@
 			parent = component.parentElement
 			const style = getComputedStyle(parent)
 			const parentRect = ['relative', 'absolute', 'fixed'].includes(style.position) ? parent.getBoundingClientRect() : ({ left: 0, top: 0 } as DOMRect)
-			const pos = getCharacterPosition(position)
+			const pos = AppService.getCharacterPosition(position, parent)
 			if (pos) {
 				x = pos.left - parentRect.left
 				y = pos.top - parentRect.top
@@ -31,31 +32,6 @@
 	}
 
 	$effect(renderPosition)
-
-	const getCharacterPosition = (n: number) => {
-		const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null)
-		let charIndex = 0
-		while (walker.nextNode()) {
-			const node = walker.currentNode
-			const text = node.textContent || ''
-			if (charIndex + text.length > n) {
-				const localIndex = n - charIndex
-				if (localIndex >= text.length) {
-					console.error(`Invalid local index: ${localIndex} exceeds node length`)
-					return null
-				}
-				const range = document.createRange()
-				range.setStart(node, localIndex)
-				range.setEnd(node, localIndex + 1)
-				const rect = range.getBoundingClientRect()
-				range.detach()
-				return rect
-			}
-			charIndex += text.length
-		}
-		console.error(`Character position ${n} is out of bounds`)
-		return null
-	}
 </script>
 
 <div bind:this={component} style="left: {x}px; top: {y}px; height: {h}px; display: {show ? 'block' : 'none'};"></div>
