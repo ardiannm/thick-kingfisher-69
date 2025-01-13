@@ -11,7 +11,12 @@
 	let w = $state(0)
 	let h = $state(7)
 
-	$effect(() => {
+	let show = $state(false)
+
+	const showText = () => (show = true)
+	const hideText = () => (show = false)
+
+	const render = () => {
 		if (component && component.parentElement) {
 			parent = component.parentElement
 			const style = getComputedStyle(parent)
@@ -25,33 +30,30 @@
 				w = width ? width : 6
 			}
 		}
-	})
+	}
 
-	let show = $state(false)
-
-	const showText = () => (show = true)
-	const hideText = () => (show = false)
+	$effect(render)
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div bind:this={component} style="left: {x}px; top: {y}px; width: {w}px;" onmouseenter={showText} onmouseleave={hideText}>
+<span bind:this={component} style="left: {x}px; top: {y}px; width: {w}px;" onmouseenter={showText} onmouseleave={hideText}>
 	{#if text && show}
-		<span style="left: {Math.max(w - 17, 0)}px; top: {h}px;">^^^ {text}</span>
+		<span class="diagnostic" style="left: {w}px; top: {h}px;">^^^ {text}</span>
 	{/if}
-</div>
+</span>
 
 <style lang="scss" scoped>
-	div {
+	span:not(.diagnostic) {
 		position: absolute;
 		cursor: pointer;
-		background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="%23e6007a" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
+		background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 3"><path d="M0 2 Q 1 0 3 2 T 6 2" fill="none" stroke="blue" stroke-width="1" stroke-linecap="round"/></svg>') repeat-x;
 		background-size: 6px 4px;
 		height: 4px;
 		z-index: 1;
 	}
-	span {
+	.diagnostic {
 		position: absolute;
 		white-space: nowrap;
-		color: #e6007a;
+		color: blue;
 	}
 </style>

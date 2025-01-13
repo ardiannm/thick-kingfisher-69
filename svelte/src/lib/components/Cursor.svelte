@@ -17,7 +17,7 @@
 		show = true
 	})
 
-	const renderPosition = () => {
+	const render = () => {
 		if (component && component.parentElement) {
 			parent = component.parentElement
 			const style = getComputedStyle(parent)
@@ -31,7 +31,7 @@
 		}
 	}
 
-	$effect(renderPosition)
+	$effect(render)
 </script>
 
 <div bind:this={component} style="left: {x}px; top: {y}px; height: {h}px; display: {show ? 'block' : 'none'};"></div>

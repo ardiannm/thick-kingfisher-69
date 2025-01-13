@@ -29,7 +29,11 @@
 	}
 
 	let rowsSpecs = $state<RowState>({})
-	let columnsSpecs = $state<ColumnState>({})
+	let columnsSpecs = $state<ColumnState>({
+		3: {
+			width: 100
+		}
+	})
 	let cellSpecs = $state<CellState>({
 		1: {
 			1: {
@@ -67,32 +71,32 @@ export class Transaction {
 	const rows = $derived(Array.from({ length: rowNum }, (_, i) => i + 1))
 	const columns = $derived(Array.from({ length: columnNum }, (_, i) => i + 1))
 
-	const defaultCellHeight = $state(21)
-	const defaultCellWidth = $state(70)
+	const defaultHeight = $state(21)
+	const defaultWidth = $state(70)
 
-	const getRowHeight = (row: number) => {
-		const height = rowsSpecs[row]?.height || defaultCellHeight
+	const getHeight = (row: number) => {
+		const height = rowsSpecs[row]?.height || defaultHeight
 		return height
 	}
 
-	const getColumnWidth = (column: number) => {
-		const height = columnsSpecs[column]?.width || defaultCellWidth
+	const getWidth = (column: number) => {
+		const height = columnsSpecs[column]?.width || defaultWidth
 		return height
 	}
 
-	const increaseColumnHeight = (column: number) => {
+	const setHeight = (column: number) => {
 		if (!columnsSpecs[column]) {
-			columnsSpecs[column] = { width: defaultCellWidth }
+			columnsSpecs[column] = { width: defaultWidth }
 		}
 		columnsSpecs[column].width += 5
 	}
 
-	const getCellValue = (row: number, column: number) => {
+	const getValue = (row: number, column: number) => {
 		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].value
 		return null
 	}
 
-	const getCellFormula = (row: number, column: number) => {
+	const getFormula = (row: number, column: number) => {
 		if (row in cellSpecs && column in cellSpecs[row]) return cellSpecs[row][column].formula || ''
 		return ''
 	}
@@ -100,7 +104,12 @@ export class Transaction {
 	let activeRow = $state(2)
 	let activeColumn = $state(4)
 
-	const makeActive = (row: number, column: number) => {
+	let activeWidth = $derived(getWidth(activeColumn))
+	let activeHeight = $derived(getHeight(activeRow))
+
+	let isFormula = $derived(getFormula(activeRow, activeColumn).length > 0)
+
+	const setActive = (row: number, column: number) => {
 		activeRow = row
 		activeColumn = column
 	}
@@ -115,14 +124,14 @@ export class Transaction {
 <div class="spreadsheet">
 	<div class="frame">
 		{#each rows as _, row}
-			<div class="row" style="height: {getRowHeight(row)}px">
+			<div class="row" style="height: {getHeight(row)}px">
 				{#each columns as _, column}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<div class="cell" style="width: {getColumnWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal;' : ''}" onmousedown={() => makeActive(row, column)} ondblclick={() => (showEditor = true)}>
+					<div class="cell" style="width: {isActive(row, column) ? activeWidth : getWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal;' : ''}" onmousedown={() => setActive(row, column)} ondblclick={() => (showEditor = true)}>
 						{#if isActive(row, column)}
-							<Editor text={getCellFormula(row, column)} style="padding: 2px; {!!getCellFormula(row, column).length ? 'padding: 0.5rem; padding-right: 5rem;' : ''}; outline: 2px solid #a1d6e2; border: 1px solid #1995ad; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
+							<Editor text={getFormula(row, column)} style="padding: 2px; {isFormula ? 'padding: 0.5rem; padding-bottom: 1.5rem; padding-right: 7rem;' : ''}; outline: 2px solid #696969; box-sizing: borer-box; position: absolute; z-index: 0; min-width: {activeWidth}px; min-height: {defaultHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
 						{:else}
-							{getCellValue(row, column)}
+							{getValue(row, column)}
 						{/if}
 					</div>
 				{/each}

@@ -235,9 +235,9 @@
 	}
 	.identifier-token,
 	.number-token {
-		color: #5e14d1;
+		color: #215273;
 	}
 	.comment-trivia {
-		color: #209f62;
+		color: #359d9e;
 	}
 </style>
