@@ -208,7 +208,7 @@
 	{/each}
 	<Cursor position={cursor} />
 	{#each diagnostics as diagnostic}
-		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end}></Squigglie>
+		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
 </div>
 

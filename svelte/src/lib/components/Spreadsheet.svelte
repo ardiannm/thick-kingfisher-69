@@ -120,7 +120,7 @@ export class Transaction {
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div class="cell" style="width: {getColumnWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal;' : ''}" onmousedown={() => makeActive(row, column)} ondblclick={() => (showEditor = true)}>
 						{#if isActive(row, column)}
-							<Editor text={getCellFormula(row, column)} style="padding: 2px; {!!getCellFormula(row, column).length ? 'padding: 0.5rem; padding-right: 5rem;' : ''}; outline: 2px solid #e6007a; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
+							<Editor text={getCellFormula(row, column)} style="padding: 2px; {!!getCellFormula(row, column).length ? 'padding: 0.5rem; padding-right: 5rem;' : ''}; outline: 2px solid #a1d6e2; border: 1px solid #1995ad; position: absolute; z-index: 0; min-width: {getColumnWidth(column)}px; min-height: {defaultCellHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
 						{:else}
 							{getCellValue(row, column)}
 						{/if}
