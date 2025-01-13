@@ -109,10 +109,13 @@ export class Lexer {
   }
 
   private lexCommentToken(): SyntaxToken {
-    if (this.source.text.substring(this.start, this.start + 3) === "```") {
+    if (this.source.text.substring(this.position, this.position + 3) === "```") {
       this.next(3)
-      while (this.hasNext()) {
-        if (this.char() === "\n") break
+      while (this.hasNext() && this.char() !== "\n") {
+        if (this.char() === "`" && this.source.text.substring(this.position, this.position + 3) === "```") {
+          this.next(3)
+          break
+        }
         this.next()
       }
       return this.createNewToken(SyntaxKind.CommentTrivia)
