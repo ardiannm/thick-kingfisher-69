@@ -42,7 +42,7 @@
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
 
-	const handleKey = async (event: KeyboardEvent) => {
+	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
 			event.preventDefault()
@@ -188,12 +188,25 @@
 			cursor = text.length
 		}
 	}
+
+	let editorElement: HTMLElement
+
+	let isActive = $state(false)
+
+	$effect(() => {
+		if (isActive) {
+			editorElement.addEventListener('keydown', handleKeyboard)
+		} else {
+			editorElement.removeEventListener('keydown', handleKeyboard)
+		}
+	})
+
 	const active = (node: HTMLElement) => {
 		const checkTarget = (event: MouseEvent) => {
 			if (node.contains(event.target as Node)) {
-				console.log(true)
+				isActive = true
 			} else {
-				console.log(false)
+				isActive = false
 			}
 		}
 		const initEvent = () => {
@@ -212,7 +225,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" tabindex="-1" {style} use:active>
+<div class="editor" tabindex="-1" {style} use:active bind:this={editorElement}>
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
@@ -226,7 +239,9 @@
 			{/each}
 		</div>
 	{/each}
-	<Cursor position={cursor} />
+	{#if isActive}
+		<Cursor position={cursor} />
+	{/if}
 	{#each diagnostics as diagnostic}
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
