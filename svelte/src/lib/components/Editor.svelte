@@ -188,23 +188,19 @@
 			cursor = text.length
 		}
 	}
-
 	const active = (node: HTMLElement) => {
-		const registerEvents = () => {
-			node.addEventListener('mouseenter', initEvent)
-			node.addEventListener('mouseleave', initEvent)
-		}
 		const checkTarget = (event: MouseEvent) => {
 			if (node.contains(event.target as Node)) {
 				console.log(true)
 			} else {
 				console.log(false)
 			}
-			document.removeEventListener('mousedown', checkTarget)
 		}
-		document.addEventListener('mousedown', checkTarget)
-		const initEvent = () => document.addEventListener('mousedown', checkTarget)
-		registerEvents()
+		const initEvent = () => {
+			document.addEventListener('mousedown', checkTarget, { once: true })
+		}
+		node.addEventListener('mouseenter', initEvent)
+		node.addEventListener('mouseleave', initEvent)
 		return {
 			destroy() {
 				document.removeEventListener('mousedown', checkTarget)
