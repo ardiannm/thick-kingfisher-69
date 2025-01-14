@@ -3,7 +3,6 @@
 	import Squigglie from './Squigglie.svelte'
 
 	import { SyntaxTree } from '../../../..'
-	import { onMount } from 'svelte'
 
 	let { text, style = '' }: { text: string; style?: string } = $props()
 
@@ -191,41 +190,52 @@
 
 	let editorElement: HTMLElement
 
-	let isActive = $state(false)
+	let isActive = $state(true)
 
 	$effect(() => {
 		if (isActive) {
-			editorElement.addEventListener('keydown', handleKeyboard)
+			document.addEventListener('keydown', handleKeyboard)
 		} else {
-			editorElement.removeEventListener('keydown', handleKeyboard)
+			document.removeEventListener('keydown', handleKeyboard)
 		}
 	})
 
-	const active = (node: HTMLElement) => {
-		const checkTarget = (event: MouseEvent) => {
+	const active = (node: HTMLElement, fire: (event: boolean) => void) => {
+		const mousedown = () => document.addEventListener('mousedown', check)
+		node.addEventListener('mouseenter', mousedown)
+		node.addEventListener('mouseleave', mousedown)
+		let focus: boolean | undefined = undefined
+		const check = (event: MouseEvent) => {
 			if (node.contains(event.target as Node)) {
-				isActive = true
+				if (focus !== true) {
+					fire(true)
+					focus = true
+				}
 			} else {
-				isActive = false
+				if (focus !== false) {
+					fire(false)
+					focus = false
+				}
 			}
+			document.removeEventListener('mousedown', check)
 		}
-		const initEvent = () => {
-			document.addEventListener('mousedown', checkTarget, { once: true })
-		}
-		node.addEventListener('mouseenter', initEvent)
-		node.addEventListener('mouseleave', initEvent)
+		document.addEventListener('mousedown', check)
 		return {
 			destroy() {
-				document.removeEventListener('mousedown', checkTarget)
-				node.removeEventListener('mouseenter', initEvent)
-				node.removeEventListener('mouseleave', initEvent)
+				document.removeEventListener('mousedown', check)
+				node.removeEventListener('mouseenter', mousedown)
+				node.removeEventListener('mouseleave', mousedown)
 			}
 		}
+	}
+	const fireActive = (event: boolean) => {
+		isActive = event
+		console.log(isActive)
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" tabindex="-1" {style} use:active bind:this={editorElement}>
+<div class="editor" tabindex="-1" {style} use:active={fireActive} bind:this={editorElement}>
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
