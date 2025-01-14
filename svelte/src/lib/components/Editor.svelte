@@ -106,7 +106,7 @@
 		}
 	}
 
-	function moveLine(step: number) {
+	const moveLine = (step: number) => {
 		const nextLine = line + step
 		const nextTree = tree.source.swapLines(line, nextLine)
 		if (!nextTree) return
@@ -114,12 +114,12 @@
 		cursor = tree.source.getPosition(nextLine, prevColumn)
 	}
 
-	function backspace() {
+	const backspace = () => {
 		removeText()
 		moveCursorX(-1)
 	}
 
-	function moveCursorX(step: number) {
+	const moveCursorX = (step: number) => {
 		const newPos = cursor + step
 		if (newPos >= 0 && newPos <= text.length) {
 			cursor = newPos
@@ -127,7 +127,7 @@
 		}
 	}
 
-	function moveCursorY(steps: number) {
+	const moveCursorY = (steps: number) => {
 		const prevLine = line + steps
 		if (prevLine > 0) {
 			const pos = tree.source.getPosition(prevLine, prevColumn)
@@ -138,16 +138,16 @@
 		}
 	}
 
-	function insertText(charText: string) {
+	const insertText = (charText: string) => {
 		text = text.substring(0, cursor) + charText + text.substring(cursor)
 		cursor += charText.length
 	}
 
-	function removeText() {
+	const removeText = () => {
 		text = text.substring(0, cursor - 1) + text.substring(cursor)
 	}
 
-	function removeLine() {
+	const removeLine = () => {
 		const span = currentLine.fullSpan
 		if (span.length === 0) {
 			backspace()
@@ -157,12 +157,12 @@
 		}
 	}
 
-	function duplicateLine(step: number) {
+	const duplicateLine = (step: number) => {
 		text = tree.source.duplicateLine(line)
 		cursor = tree.source.getPosition(line + step, prevColumn)
 	}
 
-	function moveToPrevToken() {
+	const moveToPrevToken = () => {
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenLocation(position - 1)
 		let token = tokens[index]
@@ -173,7 +173,7 @@
 		cursor = token.span.start
 	}
 
-	function moveToNextToken() {
+	const moveToNextToken = () => {
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenLocation(position + 1)
 		let token = tokens[index]
