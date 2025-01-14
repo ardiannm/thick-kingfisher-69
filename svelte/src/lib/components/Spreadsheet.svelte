@@ -129,7 +129,7 @@ export class Transaction {
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div class="cell" style="width: {isActive(row, column) ? activeWidth : getWidth(column)}px; {isActive(row, column) ? 'justify-content: left; align-items: normal;' : ''}" onmousedown={() => setActive(row, column)} ondblclick={() => (showEditor = true)}>
 						{#if isActive(row, column)}
-							<Editor text={getFormula(row, column)} style="padding: 2px; {isFormula ? 'padding: 0.5rem; padding-bottom: 1.5rem; padding-right: 7rem;' : ''}; outline: 2px solid #696969; box-sizing: borer-box; position: absolute; z-index: 0; min-width: {activeWidth}px; min-height: {defaultHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
+							<Editor startTyping text={getFormula(row, column)} style="padding: 2px; {isFormula ? 'padding: 0.5rem; padding-bottom: 1.5rem; padding-right: 7rem;' : ''}; outline: 2px solid #696969; box-sizing: borer-box; position: absolute; z-index: 0; min-width: {activeWidth}px; min-height: {defaultHeight}px; width: auto; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" />
 						{:else}
 							{getValue(row, column)}
 						{/if}

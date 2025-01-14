@@ -3,8 +3,9 @@
 	import Squigglie from './Squigglie.svelte'
 
 	import { SyntaxTree } from '../../../..'
+	import { onMount } from 'svelte'
 
-	let { text, style = '' }: { text: string; style?: string } = $props()
+	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
 	const tree = $derived(SyntaxTree.createFrom(text))
 	const lines = $derived(tree.source.getLines())
@@ -188,22 +189,24 @@
 		}
 	}
 
-	let editorElement: HTMLElement
-
-	let isActive = $state(true)
+	let isTyping = $state()
 
 	$effect(() => {
-		if (isActive) {
+		if (isTyping) {
 			document.addEventListener('keydown', handleKeyboard)
 		} else {
 			document.removeEventListener('keydown', handleKeyboard)
 		}
 	})
 
-	const active = (node: HTMLElement, fire: (event: boolean) => void) => {
-		const mousedown = () => document.addEventListener('mousedown', check)
-		node.addEventListener('mouseenter', mousedown)
-		node.addEventListener('mouseleave', mousedown)
+	onMount(() => {
+		if (startTyping)
+			setTimeout(() => {
+				isTyping = true
+			})
+	})
+
+	const focus = (node: HTMLElement, fire: (event: boolean) => void) => {
 		let focus: boolean | undefined = undefined
 		const check = (event: MouseEvent) => {
 			if (node.contains(event.target as Node)) {
@@ -219,7 +222,10 @@
 			}
 			document.removeEventListener('mousedown', check)
 		}
-		document.addEventListener('mousedown', check)
+		const mousedown = () => document.addEventListener('mousedown', check)
+		node.addEventListener('mouseenter', mousedown)
+		node.addEventListener('mouseleave', mousedown)
+		mousedown()
 		return {
 			destroy() {
 				document.removeEventListener('mousedown', check)
@@ -228,14 +234,13 @@
 			}
 		}
 	}
-	const fireActive = (event: boolean) => {
-		isActive = event
-		console.log(isActive)
+	const switchFocusState = (event: boolean) => {
+		isTyping = event
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" tabindex="-1" {style} use:active={fireActive} bind:this={editorElement}>
+<div class="editor" tabindex="-1" {style} use:focus={switchFocusState}>
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
@@ -249,7 +254,7 @@
 			{/each}
 		</div>
 	{/each}
-	{#if isActive}
+	{#if isTyping}
 		<Cursor position={cursor} />
 	{/if}
 	{#each diagnostics as diagnostic}
