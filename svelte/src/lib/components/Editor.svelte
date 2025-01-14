@@ -3,6 +3,7 @@
 	import Squigglie from './Squigglie.svelte'
 
 	import { SyntaxTree } from '../../../..'
+	import { onMount } from 'svelte'
 
 	let { text, style = '' }: { text: string; style?: string } = $props()
 
@@ -187,12 +188,35 @@
 			cursor = text.length
 		}
 	}
+
+	const active = (node: HTMLElement) => {
+		const registerEvents = () => {
+			node.addEventListener('mouseenter', initEvent)
+			node.addEventListener('mouseleave', initEvent)
+		}
+		const checkTarget = (event: MouseEvent) => {
+			if (node.contains(event.target as Node)) {
+				console.log(true)
+			} else {
+				console.log(false)
+			}
+			document.removeEventListener('mousedown', checkTarget)
+		}
+		document.addEventListener('mousedown', checkTarget)
+		const initEvent = () => document.addEventListener('mousedown', checkTarget)
+		registerEvents()
+		return {
+			destroy() {
+				document.removeEventListener('mousedown', checkTarget)
+				node.removeEventListener('mouseenter', initEvent)
+				node.removeEventListener('mouseleave', initEvent)
+			}
+		}
+	}
 </script>
 
-<svelte:window on:keydown={handleKey} />
-
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" tabindex="-1" {style}>
+<div class="editor" tabindex="-1" {style} use:active>
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
