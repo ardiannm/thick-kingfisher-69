@@ -6,6 +6,8 @@
 	import { onMount } from 'svelte'
 	import { SyntaxTree } from '../../../..'
 
+	import { Action, EditorState } from '$lib/services/EditorServices'
+
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
 	const tree = $derived(SyntaxTree.createFrom(text))
@@ -43,6 +45,8 @@
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
 
+	const editorState = EditorState.createState(text)
+
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
@@ -78,7 +82,14 @@
 			moveLine(-1)
 		} else if (input === 'x' && event.ctrlKey) {
 			event.preventDefault()
-			removeLine()
+			deleteLine()
+		} else if (input === 'z' && event.ctrlKey) {
+			event.preventDefault()
+			const prevState = editorState.getPrevState()
+			switch (prevState.action) {
+				case Action.INSERT:
+					deleteText(prevState.position, prevState.text.length)
+			}
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(+1)
@@ -99,9 +110,7 @@
 			backspace()
 		} else if (input === 'Delete') {
 			event.preventDefault()
-			moveCursorX(+1)
-			removeText()
-			moveCursorX(-1)
+			deleteText(cursor, 1)
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault()
 			insertText(input)
@@ -116,10 +125,7 @@
 		cursor = tree.source.getPosition(nextLine, prevColumn)
 	}
 
-	const backspace = () => {
-		removeText()
-		moveCursorX(-1)
-	}
+	const backspace = () => deleteText(cursor - 1, 1)
 
 	const moveCursorX = (step: number) => {
 		const newPos = cursor + step
@@ -141,15 +147,17 @@
 	}
 
 	const insertText = (charText: string) => {
+		editorState.registerInsertAction(cursor, charText)
 		text = text.substring(0, cursor) + charText + text.substring(cursor)
 		cursor += charText.length
 	}
 
-	const removeText = () => {
-		text = text.substring(0, cursor - 1) + text.substring(cursor)
+	const deleteText = (position: number, steps: number) => {
+		cursor = position
+		text = text.substring(0, position) + text.substring(position + steps)
 	}
 
-	const removeLine = () => {
+	const deleteLine = () => {
 		const span = currentLine.fullSpan
 		if (span.length === 0) {
 			backspace()
