@@ -8,6 +8,7 @@ export class EditorState {
 	constructor(
 		public action: State,
 		public start: number,
-		public text: string
+		public text: string,
+		public cursor: number
 	) {}
 }

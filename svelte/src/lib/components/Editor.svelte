@@ -88,13 +88,17 @@
 				switch (stage.action) {
 					case State.EDIT:
 						deleteText(stage.start, stage.text.length, false)
+						cursor = stage.cursor
 						return
 					case State.DELETE:
 						insertText(stage.text, stage.start, false)
+						cursor = stage.cursor
 						return
 				}
 			}
-			// TODO: Add the undo action here
+		} else if (input === 'y' && event.ctrlKey) {
+			event.preventDefault()
+			// TODO: Implement redo actions
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(1)
@@ -123,7 +127,8 @@
 	}
 
 	let keepStages = $state<EditorState[]>([])
-	let stages = $state<EditorState[]>([new EditorState(State.DEFAULT, 0, text)])
+	// svelte-ignore state_referenced_locally
+	let stages = $state<EditorState[]>([new EditorState(State.DEFAULT, 0, text, cursor)])
 
 	const moveLine = (step: number) => {
 		const nextLine = line + step
@@ -155,15 +160,18 @@
 	}
 
 	const insertText = (newText: string, position: number, registerState = true) => {
-		if (registerState) stages.push(new EditorState(State.EDIT, position, newText))
+		if (registerState) stages.push(new EditorState(State.EDIT, position, newText, cursor))
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
 	}
 
 	const deleteText = (position: number, steps: number, registerState = true) => {
+		let pos = cursor
 		cursor = position > 0 ? position : 0
-		const deletedText = text.substring(cursor, cursor + steps)
-		if (registerState) stages.push(new EditorState(State.DELETE, position, deletedText))
+		if (registerState) {
+			const deletedText = text.substring(cursor, cursor + steps)
+			stages.push(new EditorState(State.DELETE, position, deletedText, pos))
+		}
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
