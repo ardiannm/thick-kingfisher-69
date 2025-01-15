@@ -116,6 +116,9 @@ export class SourceText {
   }
 
   // TODO: Remove this method and keep its implementation within EditorComponent on the UI side of this parser
+  /**
+   * @deprecated this method will be removed and its implementation will be kept within the EditorComponent itself
+   */
   swapLines(a: number, b: number) {
     a--
     b--
@@ -138,6 +141,9 @@ export class SourceText {
   }
 
   // TODO: Remove this method and keep its implementation within EditorComponent on the UI side of this parser
+  /**
+   * @deprecated this method will be removed and its implementation will be kept within the EditorComponent itself
+   */
   duplicateLine(line: number) {
     line--
     let n = 0
