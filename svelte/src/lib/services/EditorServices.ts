@@ -35,7 +35,7 @@ export class EditorState {
 	}
 
 	registerInsertAction(start: number, text: string) {
-		if (this.position < this.stack.length) {
+		if (this.position + 1 !== this.stack.length) {
 			this.stack.length = this.position + 1
 		}
 		const action = new SourceTextAction(Action.INSERT, start, text)
@@ -49,7 +49,7 @@ export class EditorState {
 		this.position--
 	}
 
-	getPrevState() {
+	getPreviousState() {
 		const state = this.stack[this.position]
 		if (this.position > 0) this.position--
 		return state

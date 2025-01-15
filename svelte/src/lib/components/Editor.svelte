@@ -85,11 +85,7 @@
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
 			event.preventDefault()
-			const prevState = editorState.getPrevState()
-			switch (prevState.action) {
-				case Action.INSERT:
-					deleteText(prevState.position, prevState.text.length)
-			}
+			undoAction()
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(+1)
@@ -114,6 +110,14 @@
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault()
 			insertText(input)
+		}
+	}
+
+	const undoAction = () => {
+		const prevState = editorState.getPreviousState()
+		switch (prevState.action) {
+			case Action.INSERT:
+				deleteText(prevState.position, prevState.text.length)
 		}
 	}
 
@@ -153,7 +157,7 @@
 	}
 
 	const deleteText = (position: number, steps: number) => {
-		cursor = position
+		cursor = position > 0 ? position : 0
 		text = text.substring(0, position) + text.substring(position + steps)
 	}
 
@@ -162,7 +166,7 @@
 		if (span.length === 0) {
 			backspace()
 		} else {
-			text = text.slice(0, span.start) + text.slice(span.end)
+			deleteText(span.start, span.length)
 			cursor = span.start
 		}
 	}
