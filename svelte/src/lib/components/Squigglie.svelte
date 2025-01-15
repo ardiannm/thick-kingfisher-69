@@ -11,6 +11,8 @@
 	let w = $state(0)
 	let h = $state(7)
 
+	let zIndex = $derived(start - end + 1000)
+
 	let show = $state(false)
 
 	const showText = () => (show = true)
@@ -36,7 +38,7 @@
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<span bind:this={component} style="left: {x}px; top: {y}px; width: {w}px;" onmouseenter={showText} onmouseleave={hideText}>
+<span bind:this={component} style="left: {x}px; top: {y}px; width: {w}px; z-index: {zIndex}" onmouseenter={showText} onmouseleave={hideText}>
 	{#if text && show}
 		<span class="diagnostic" style="left: {w}px; top: {h}px;">^^^ {text}</span>
 	{/if}
