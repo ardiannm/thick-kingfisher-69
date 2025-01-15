@@ -70,10 +70,10 @@
 			duplicateLine(0)
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
 			event.preventDefault()
-			duplicateLine(+1)
+			duplicateLine(1)
 		} else if (input === 'ArrowDown' && event.altKey) {
 			event.preventDefault()
-			moveLine(+1)
+			moveLine(1)
 		} else if (input === 'ArrowUp' && event.altKey) {
 			event.preventDefault()
 			moveLine(-1)
@@ -82,17 +82,28 @@
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
 			event.preventDefault()
-			if (stages.length) undoStages.push(stages.pop()!)
+			if (stages.length > 1) {
+				const stage = stages.pop()!
+				keepStages.push(stage)
+				switch (stage.action) {
+					case State.EDIT:
+						deleteText(stage.start, stage.text.length, false)
+						return
+					case State.DELETE:
+						insertText(stage.text, stage.start, false)
+						return
+				}
+			}
 			// TODO: Add the undo action here
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
-			moveCursorX(+1)
+			moveCursorX(1)
 		} else if (input === 'ArrowLeft') {
 			event.preventDefault()
 			moveCursorX(-1)
 		} else if (input === 'ArrowDown') {
 			event.preventDefault()
-			moveCursorY(+1)
+			moveCursorY(1)
 		} else if (input === 'ArrowUp') {
 			event.preventDefault()
 			moveCursorY(-1)
@@ -111,8 +122,8 @@
 		}
 	}
 
-	let undoStages = $state<EditorState[]>([])
-	let stages = $state<EditorState[]>([new EditorState(State.EDIT, 0, text)])
+	let keepStages = $state<EditorState[]>([])
+	let stages = $state<EditorState[]>([new EditorState(State.DEFAULT, 0, text)])
 
 	const moveLine = (step: number) => {
 		const nextLine = line + step
