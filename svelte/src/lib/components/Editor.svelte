@@ -5,7 +5,7 @@
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
 	import { SyntaxTree } from '../../../..'
-	import { EditorState, State, EditorService } from '$lib/services'
+	import { EditorState, Action, EditorService } from '$lib/services'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
@@ -63,21 +63,30 @@
 			event.preventDefault()
 			if (stages.length > 1) {
 				const stage = stages.pop()!
-				keepStages.push(stage)
+				prevStages.push(stage)
 				switch (stage.action) {
-					case State.EDIT:
+					case Action.EDIT:
 						deleteText(stage.start, stage.text.length, false)
-						cursor = stage.cursor
 						return
-					case State.DELETE:
+					case Action.DELETE:
 						insertText(stage.text, stage.start, false)
-						cursor = stage.cursor
 						return
 				}
 			}
 		} else if (input === 'y' && event.ctrlKey) {
 			event.preventDefault()
-			// TODO: Implement redo actions
+			if (prevStages.length > 0) {
+				const stage = prevStages.pop()!
+				stages.push(stage)
+				switch (stage.action) {
+					case Action.DELETE:
+						deleteText(stage.start, stage.text.length, false)
+						return
+					case Action.EDIT:
+						insertText(stage.text, stage.start, false)
+						return
+				}
+			}
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(1)
@@ -105,9 +114,9 @@
 		}
 	}
 
-	let keepStages = $state<EditorState[]>([])
+	let prevStages = $state<EditorState[]>([])
 	// svelte-ignore state_referenced_locally
-	let stages = $state<EditorState[]>([new EditorState(State.DEFAULT, 0, text, cursor)])
+	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text)])
 
 	const moveLine = (step: number) => {
 		const nextLine = line + step
@@ -139,19 +148,18 @@
 	}
 
 	const insertText = (newText: string, position: number, registerState = true) => {
-		if (registerState) stages.push(new EditorState(State.EDIT, position, newText, cursor))
+		if (registerState) stages.push(new EditorState(Action.EDIT, position, newText))
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
 	}
 
 	const deleteText = (position: number, steps: number, registerState = true) => {
-		let pos = cursor
 		cursor = position > 0 ? position : 0
+		text = text.substring(0, cursor) + text.substring(cursor + steps)
 		if (registerState) {
 			const deletedText = text.substring(cursor, cursor + steps)
-			stages.push(new EditorState(State.DELETE, position, deletedText, pos))
+			stages.push(new EditorState(Action.DELETE, position, deletedText))
 		}
-		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
 	const deleteLine = () => {

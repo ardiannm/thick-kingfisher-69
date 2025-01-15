@@ -1,4 +1,4 @@
-export enum State {
+export enum Action {
 	DEFAULT,
 	EDIT,
 	DELETE
@@ -6,10 +6,9 @@ export enum State {
 
 export class EditorState {
 	constructor(
-		public action: State,
+		public action: Action,
 		public start: number,
-		public text: string,
-		public cursor: number
+		public text: string
 	) {}
 }
 
