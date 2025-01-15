@@ -56,11 +56,11 @@
 			event.preventDefault()
 			const content = (await pasteFromClipboard()) + '\n'
 			cursor = currentLine.fullSpan.end
-			insertText(content)
+			insertText(content, cursor)
 			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
 			cursor = tree.source.getPosition(line - 1, prevColumn)
 		} else if (input === 'Tab') {
-			insertText('\t')
+			insertText('\t', cursor)
 			event.preventDefault()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			event.preventDefault()
@@ -100,7 +100,7 @@
 			moveCursorY(-1)
 		} else if (input === 'Enter') {
 			event.preventDefault()
-			insertText('\n')
+			insertText('\n', cursor)
 		} else if (input === 'Backspace') {
 			event.preventDefault()
 			backspace()
@@ -109,7 +109,7 @@
 			deleteText(cursor, 1)
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault()
-			insertText(input)
+			insertText(input, cursor)
 		}
 	}
 
@@ -150,9 +150,9 @@
 		}
 	}
 
-	const insertText = (charText: string) => {
-		editorState.registerInsertAction(cursor, charText)
-		text = text.substring(0, cursor) + charText + text.substring(cursor)
+	const insertText = (charText: string, position: number) => {
+		editorState.registerInsertAction(position, charText)
+		text = text.substring(0, position) + charText + text.substring(position)
 		cursor += charText.length
 	}
 
