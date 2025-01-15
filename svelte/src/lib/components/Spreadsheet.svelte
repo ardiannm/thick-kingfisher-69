@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { focus } from '$lib/actions'
 	import Editor from '$lib/components/Editor.svelte'
 
 	interface Row {
@@ -119,10 +120,14 @@ export class Transaction {
 	}
 
 	let showEditor = $state(true)
+
+	const switchEditorDisplay = (event: boolean) => {
+		showEditor = event
+	}
 </script>
 
 <div class="spreadsheet">
-	<div class="frame">
+	<div class="frame" use:focus={switchEditorDisplay}>
 		{#each rows as _, row}
 			<div class="row" style="height: {getHeight(row)}px">
 				{#each columns as _, column}
