@@ -8,7 +8,9 @@ export class EditorState {
 	constructor(
 		public action: Action,
 		public start: number,
-		public text: string
+		public text: string,
+		// cursor position before action
+		public position: number
 	) {}
 }
 

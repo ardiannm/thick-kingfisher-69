@@ -67,9 +67,11 @@
 				switch (stage.action) {
 					case Action.EDIT:
 						deleteText(stage.start, stage.text.length, false)
+						cursor = stage.position
 						return
 					case Action.DELETE:
 						insertText(stage.text, stage.start, false)
+						cursor = stage.position
 						return
 				}
 			}
@@ -116,7 +118,7 @@
 
 	let prevStages = $state<EditorState[]>([])
 	// svelte-ignore state_referenced_locally
-	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text)])
+	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text, cursor)])
 
 	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
 	const moveLine = (step: number) => {
@@ -149,18 +151,19 @@
 	}
 
 	const insertText = (newText: string, position: number, registerState = true) => {
-		if (registerState) stages.push(new EditorState(Action.EDIT, position, newText))
+		if (registerState) stages.push(new EditorState(Action.EDIT, position, newText, cursor))
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
 	}
 
 	const deleteText = (position: number, steps: number, registerState = true) => {
+		let pos = cursor
 		cursor = position > 0 ? position : 0
-		text = text.substring(0, cursor) + text.substring(cursor + steps)
 		if (registerState) {
 			const deletedText = text.substring(cursor, cursor + steps)
-			stages.push(new EditorState(Action.DELETE, position, deletedText))
+			stages.push(new EditorState(Action.DELETE, position, deletedText, pos))
 		}
+		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
 	const deleteLine = () => {
