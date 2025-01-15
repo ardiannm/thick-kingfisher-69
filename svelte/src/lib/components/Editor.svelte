@@ -123,15 +123,6 @@
 	// svelte-ignore state_referenced_locally
 	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text, cursor)])
 
-	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
-	const moveLine = (step: number) => {
-		const nextLine = line + step
-		const nextTree = tree.source.swapLines(line, nextLine)
-		if (!nextTree) return
-		text = nextTree
-		cursor = tree.source.getPosition(nextLine, prevColumn)
-	}
-
 	const backspace = () => deleteText(cursor - 1, 1)
 
 	const moveCursorX = (step: number) => {
@@ -183,6 +174,15 @@
 	const duplicateLine = (step: number) => {
 		text = tree.source.duplicateLine(line)
 		cursor = tree.source.getPosition(line + step, prevColumn)
+	}
+
+	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
+	const moveLine = (step: number) => {
+		const nextLine = line + step
+		const nextTree = tree.source.swapLines(line, nextLine)
+		if (!nextTree) return
+		text = nextTree
+		cursor = tree.source.getPosition(nextLine, prevColumn)
 	}
 
 	const moveToPrevToken = () => {
@@ -252,6 +252,7 @@
 		<Cursor position={cursor} />
 	{/if}
 	{#each diagnostics as diagnostic}
+		<!-- FIXME: Squigglie fails to render when in multiple lines -->
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
 
