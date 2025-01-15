@@ -1,4 +1,4 @@
-import { Cell } from "../../cell"
+import { Cell } from "../evaluting/cell"
 import { BoundCellReference } from "./bound.cell.reference"
 import { BoundNode } from "./bound.node"
 import { BoundScope } from "./bound.scope"

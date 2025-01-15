@@ -1,13 +1,13 @@
-import { SyntaxTree } from ".."
-import { DiagnosticsBag } from "./diagnostics/diagnostics.bag"
-import { BoundBinaryExpression } from "./phase/binding/bound.binary.expression"
-import { BoundCellAssignment } from "./phase/binding/bound.cell.assignment"
-import { BoundCellReference } from "./phase/binding/bound.cell.reference"
-import { BoundCompilationUnit } from "./phase/binding/bound.compilation.unit"
-import { BoundKind, BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "./phase/binding/bound.kind"
-import { BoundNode } from "./phase/binding/bound.node"
-import { BoundNumericLiteral } from "./phase/binding/bound.numeric.literal"
-import { BoundUnaryExpression } from "./phase/binding/bound.unary.expression"
+import { SyntaxTree } from "../../.."
+import { DiagnosticsBag } from "../../diagnostics/diagnostics.bag"
+import { BoundBinaryExpression } from "../binding/bound.binary.expression"
+import { BoundCellAssignment } from "../binding/bound.cell.assignment"
+import { BoundCellReference } from "../binding/bound.cell.reference"
+import { BoundCompilationUnit } from "../binding/bound.compilation.unit"
+import { BoundKind, BoundBinaryOperatorKind, BoundUnaryOperatorKind } from "../binding/bound.kind"
+import { BoundNode } from "../binding/bound.node"
+import { BoundNumericLiteral } from "../binding/bound.numeric.literal"
+import { BoundUnaryExpression } from "../binding/bound.unary.expression"
 
 export class Evaluator {
   private value = 0
