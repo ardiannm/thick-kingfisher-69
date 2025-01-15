@@ -118,6 +118,7 @@
 	// svelte-ignore state_referenced_locally
 	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text)])
 
+	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
 	const moveLine = (step: number) => {
 		const nextLine = line + step
 		const nextTree = tree.source.swapLines(line, nextLine)
@@ -172,6 +173,7 @@
 		}
 	}
 
+	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
 	const duplicateLine = (step: number) => {
 		text = tree.source.duplicateLine(line)
 		cursor = tree.source.getPosition(line + step, prevColumn)

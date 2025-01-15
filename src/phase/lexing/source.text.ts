@@ -115,6 +115,7 @@ export class SourceText {
     return span.start + offset
   }
 
+  // TODO: Remove this method and keep its implementation within EditorComponent on the UI side of this parser
   swapLines(a: number, b: number) {
     a--
     b--
@@ -136,6 +137,7 @@ export class SourceText {
     return text.join("\n")
   }
 
+  // TODO: Remove this method and keep its implementation within EditorComponent on the UI side of this parser
   duplicateLine(line: number) {
     line--
     let n = 0
