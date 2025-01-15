@@ -5,8 +5,7 @@
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
 	import { SyntaxTree } from '../../../..'
-
-	import { Action, EditorState } from '$lib/services/EditorServices'
+	import { EditorState, State } from '$lib/services/EditorServices'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
@@ -44,8 +43,6 @@
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
-
-	const editorState = EditorState.createState(text)
 
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
@@ -85,7 +82,8 @@
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
 			event.preventDefault()
-			undoAction()
+			if (stages.length) undoStages.push(stages.pop()!)
+			// TODO: Add the undo action here
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(+1)
@@ -113,13 +111,8 @@
 		}
 	}
 
-	const undoAction = () => {
-		const prevState = editorState.getPreviousState()
-		switch (prevState.action) {
-			case Action.INSERT:
-				deleteText(prevState.position, prevState.text.length)
-		}
-	}
+	let undoStages = $state<EditorState[]>([])
+	let stages = $state<EditorState[]>([new EditorState(State.EDIT, 0, text)])
 
 	const moveLine = (step: number) => {
 		const nextLine = line + step
@@ -150,15 +143,17 @@
 		}
 	}
 
-	const insertText = (charText: string, position: number) => {
-		editorState.registerInsertAction(position, charText)
-		text = text.substring(0, position) + charText + text.substring(position)
-		cursor += charText.length
+	const insertText = (newText: string, position: number, registerState = true) => {
+		if (registerState) stages.push(new EditorState(State.EDIT, position, newText))
+		text = text.substring(0, position) + newText + text.substring(position)
+		cursor += newText.length
 	}
 
-	const deleteText = (position: number, steps: number) => {
+	const deleteText = (position: number, steps: number, registerState = true) => {
 		cursor = position > 0 ? position : 0
-		text = text.substring(0, position) + text.substring(position + steps)
+		const deletedText = text.substring(cursor, cursor + steps)
+		if (registerState) stages.push(new EditorState(State.DELETE, position, deletedText))
+		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
 	const deleteLine = () => {
@@ -244,6 +239,13 @@
 	{/if}
 	{#each diagnostics as diagnostic}
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
+	{/each}
+
+	<br />
+	<br />
+	<br />
+	{#each stages as a}
+		<div>{JSON.stringify(a)}</div>
 	{/each}
 </div>
 
