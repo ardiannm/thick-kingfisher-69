@@ -256,6 +256,7 @@
 	<br />
 	<br />
 	<br />
+
 	{#each stages as a}
 		<div>{JSON.stringify(a)}</div>
 	{/each}

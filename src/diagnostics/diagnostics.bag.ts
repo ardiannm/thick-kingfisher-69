@@ -1,8 +1,8 @@
 import { SourceText, SyntaxKind, SyntaxNode } from "../.."
-import { DependencyLink } from "../phase/binding/bound.cell.assignment"
-import { BoundKind } from "../phase/binding/bound.kind"
-import { Span } from "../phase/lexing/span"
-import { SyntaxToken } from "../phase/lexing/syntax.token"
+import { DependencyLink } from "../phases/binding/bound.cell.assignment"
+import { BoundKind } from "../phases/binding/bound.kind"
+import { Span } from "../phases/lexing/span"
+import { SyntaxToken } from "../phases/lexing/syntax.token"
 import { Diagnostic } from "./diagnostic"
 import { Severity } from "./severity"
 

@@ -1,8 +1,8 @@
-import { Binder } from "./phase/binding/binder"
-import { BoundCompilationUnit } from "./phase/binding/bound.compilation.unit"
-import { SourceText } from "./phase/lexing/source.text"
-import { Parser } from "./phase/parsing/parser"
-import { SyntaxCompilationUnit } from "./phase/parsing/syntax.compilation.unit"
+import { Binder } from "./phases/binding/binder"
+import { BoundCompilationUnit } from "./phases/binding/bound.compilation.unit"
+import { SourceText } from "./phases/lexing/source.text"
+import { Parser } from "./phases/parsing/parser"
+import { SyntaxCompilationUnit } from "./phases/parsing/syntax.compilation.unit"
 
 export class CompilerOptions {
   constructor(public explicitDeclarations: boolean) {}

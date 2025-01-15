@@ -1,4 +1,4 @@
-import { Span } from "../phase/lexing/span";
+import { Span } from "../phases/lexing/span";
 import { Severity } from "./severity";
 
 export class Diagnostic {

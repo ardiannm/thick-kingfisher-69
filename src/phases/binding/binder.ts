@@ -1,4 +1,4 @@
-import { Cell } from "../evaluting/cell"
+import { Cell } from "../evaluating/cell"
 import { CompilerOptions } from "../../syntax.tree"
 import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind"
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment"
