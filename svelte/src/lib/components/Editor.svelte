@@ -84,9 +84,11 @@
 				switch (stage.action) {
 					case Action.DELETE:
 						deleteText(stage.start, stage.text.length, false)
+						cursor = stage.position
 						return
 					case Action.EDIT:
 						insertText(stage.text, stage.start, false)
+						cursor = stage.position + stage.text.length
 						return
 				}
 			}
@@ -253,13 +255,13 @@
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
 
-	<br />
+	<!-- <br />
 	<br />
 	<br />
 
 	{#each stages as a}
 		<div>{JSON.stringify(a)}</div>
-	{/each}
+	{/each} -->
 </div>
 
 <style scoped lang="scss">
