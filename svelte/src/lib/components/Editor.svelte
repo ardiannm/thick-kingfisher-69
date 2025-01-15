@@ -5,7 +5,7 @@
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
 	import { SyntaxTree } from '../../../..'
-	import { EditorState, State } from '$lib/services/EditorServices'
+	import { EditorState, State, EditorService } from '$lib/services'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
@@ -20,27 +20,6 @@
 	let currentLine = $derived(tree.source.getLine(cursor))
 	let tokens = $derived(tree.source.tokens)
 
-	const copyToClipboard = (text: string) => {
-		;(async () => {
-			try {
-				await navigator.clipboard.writeText(text)
-			} catch (error) {
-				console.error('Failed to copy text: ', error)
-			}
-		})()
-	}
-
-	const pasteFromClipboard = () => {
-		return (async () => {
-			try {
-				const text = await navigator.clipboard.readText()
-				return text
-			} catch (error) {
-				console.error('Failed to paste text: ', error)
-			}
-		})()
-	}
-
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
 
@@ -48,10 +27,10 @@
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
 			event.preventDefault()
-			copyToClipboard(currentLine.span.text)
+			EditorService.copyToClipboard(currentLine.span.text)
 		} else if (input === 'v' && event.ctrlKey) {
 			event.preventDefault()
-			const content = (await pasteFromClipboard()) + '\n'
+			const content = (await EditorService.pasteFromClipboard()) + '\n'
 			cursor = currentLine.fullSpan.end
 			insertText(content, cursor)
 			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
