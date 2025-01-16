@@ -86,8 +86,8 @@
 					insertText(stage.text, stage.pointer, false)
 					cursor = stage.initialCursorPosition
 					return
+				case Action.moveLineUp:
 				case Action.moveLineDown:
-					// TODO: move line up on encountering this type of state
 					cursor = stage.pointer
 					moveLineDown(false)
 					cursor = stage.initialCursorPosition
