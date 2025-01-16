@@ -156,7 +156,11 @@
 
 	// TODO: implement this function
 	const deleteLine = () => {
-		throw new Error('Method not implemented.')
+		if (currentLine.fullSpan.length) {
+			deleteText(currentLine.fullSpan.start, currentLine.fullSpan.length, true)
+		} else {
+			backspace()
+		}
 	}
 
 	// TODO: implement this function
