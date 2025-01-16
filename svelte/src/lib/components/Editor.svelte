@@ -146,6 +146,7 @@
 	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
+			// TODO: Implement debouncing to group consecutive changes and minimize excessive state updates
 			const action = new EditorState(Action.EDIT, position, newText, cursor)
 			stages.push(action)
 		}
@@ -160,6 +161,7 @@
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
 			const deletedText = text.substring(cursor, cursor + steps)
+			// TODO: Implement debouncing to group consecutive changes and minimize excessive state updates
 			const action = new EditorState(Action.DELETE, position, deletedText, originalPosition)
 			stages.push(action)
 		}
