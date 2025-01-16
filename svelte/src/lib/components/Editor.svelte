@@ -158,9 +158,8 @@
 		cursor = tree.source.getPosition(lineNext, columnNext)
 	}
 
-	// TODO: implement this function
 	const duplicateLineBelow = () => {
-		throw new Error('Function not implemented')
+		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
 	}
 
 	const deleteLine = () => {
