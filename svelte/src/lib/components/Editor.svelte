@@ -144,15 +144,15 @@
 	}
 
 	const duplicateLine = (direction: 'Up' | 'Down') => {
-		const ln = tree.source.getLine(cursor)
-		const lineText = text.substring(ln.span.start, ln.span.end)
+		const lineText = text.substring(currentLine.span.start, currentLine.span.end)
 		switch (direction) {
 			case 'Up':
-				insertText(lineText + '\n', ln.span.start, true)
-				cursor = tree.source.getPosition(ln.number, prevColumn)
+				const position = cursor
+				insertText(lineText + '\n', currentLine.span.start, true)
+				cursor = position
 				return
 			case 'Down':
-				insertText('\n' + lineText, ln.span.end, true)
+				insertText('\n' + lineText, currentLine.span.end, true)
 				return
 		}
 	}
