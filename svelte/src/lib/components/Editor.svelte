@@ -32,9 +32,9 @@
 		} else if (input === 'v' && event.ctrlKey) {
 			await pasteFromClipboard()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
-			moveToNextToken()
+			moveOneTokenRight()
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
-			moveToPrevToken()
+			moveOneTokenLeft()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
 			duplicateLineAbove()
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
@@ -50,8 +50,7 @@
 		} else if (input === 'y' && event.ctrlKey) {
 			redoAction()
 		} else if (input === 'Backspace' && event.ctrlKey) {
-			// TODO: implement this function
-			throw new Error('Function not implemented')
+			deleteTokenLeft()
 		} else if (input === 'ArrowRight') {
 			moveCursorX(1)
 		} else if (input === 'ArrowLeft') {
@@ -213,7 +212,7 @@
 		if (registerState) stages.push(new EditorState(Action.moveLineDown, firstLine.span.start, editedText, atPosition))
 	}
 
-	const moveToPrevToken = () => {
+	const moveOneTokenLeft = () => {
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenPosition(position - 1)
 		let token = tokens[index]
@@ -224,7 +223,7 @@
 		cursor = token.span.start
 	}
 
-	const moveToNextToken = () => {
+	const moveOneTokenRight = () => {
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenPosition(position + 1)
 		let token = tokens[index]
@@ -277,6 +276,13 @@
 
 	const switchIsTyping = (event: boolean) => {
 		isTyping = event
+	}
+
+	// FIXME: ensure this function considers token trivias only within the same line
+	const deleteTokenLeft = () => {
+		const position = tree.source.getTokenPosition(cursor - 1)
+		const start = tree.source.tokens[position].fullSpan.start
+		deleteText(start, cursor - start, true)
 	}
 </script>
 
