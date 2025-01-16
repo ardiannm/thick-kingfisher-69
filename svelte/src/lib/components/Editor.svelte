@@ -38,10 +38,10 @@
 			duplicateLine('Up')
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
 			duplicateLine('Down')
-		} else if (input === 'ArrowDown' && event.altKey) {
-			moveLineDown()
 		} else if (input === 'ArrowUp' && event.altKey) {
-			moveLineUp()
+			moveLineUp(true)
+		} else if (input === 'ArrowDown' && event.altKey) {
+			moveLineDown(true)
 		} else if (input === 'x' && event.ctrlKey) {
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
@@ -52,10 +52,10 @@
 			moveCursorX(1)
 		} else if (input === 'ArrowLeft') {
 			moveCursorX(-1)
-		} else if (input === 'ArrowDown') {
-			moveCursorY(1)
 		} else if (input === 'ArrowUp') {
 			moveCursorY(-1)
+		} else if (input === 'ArrowDown') {
+			moveCursorY(1)
 		} else if (input === 'Enter') {
 			insertText('\n', cursor, true)
 		} else if (input === 'Backspace') {
@@ -80,15 +80,18 @@
 			prevStages.push(stage)
 			switch (stage.action) {
 				case Action.insertText:
-					deleteText(stage.atPosition, stage.text.length, false)
+					deleteText(stage.pointer, stage.text.length, false)
 					return
 				case Action.deleteText:
-					insertText(stage.text, stage.atPosition, false)
-					cursor = stage.cursorPosition
+					insertText(stage.text, stage.pointer, false)
+					cursor = stage.initialCursorPosition
 					return
 				case Action.moveLineDown:
 					// TODO: move line up on encountering this type of state
-					throw new Error('Function not implemented.')
+					cursor = stage.pointer
+					moveLineDown(false)
+					cursor = stage.initialCursorPosition
+					return
 			}
 		}
 	}
@@ -99,11 +102,11 @@
 			stages.push(stage)
 			switch (stage.action) {
 				case Action.deleteText:
-					deleteText(stage.atPosition, stage.text.length, false)
+					deleteText(stage.pointer, stage.text.length, false)
 					return
 				case Action.insertText:
-					insertText(stage.text, stage.atPosition, false)
-					cursor = stage.cursorPosition + stage.text.length
+					insertText(stage.text, stage.pointer, false)
+					cursor = stage.initialCursorPosition + stage.text.length
 					return
 			}
 		}
@@ -166,27 +169,47 @@
 	}
 
 	// TODO: implement this function
-	const moveLineUp = () => {
-		throw new Error('Function not implemented.')
+	const moveLineUp = (registerState: boolean) => {
+		if (currentLine.number === 1) {
+			return
+		}
+		const firstLine = tree.source.getLine(currentLine.fullSpan.start - 1)
+		const secondLine = currentLine
+		const text1 = firstLine.span.text
+		const text2 = secondLine.span.text
+		const atPosition = cursor
+		const editedText = text2 + '\n' + text1
+		if (text1 === text2) {
+			moveCursorY(-1)
+		} else {
+			const lineNext = line - 1
+			const columnNext = column
+			text = text.substring(0, firstLine.span.start) + editedText + text.substring(secondLine.span.end)
+			cursor = tree.source.getPosition(lineNext, columnNext)
+		}
+		if (registerState) stages.push(new EditorState(Action.moveLineUp, firstLine.span.start, editedText, atPosition))
 	}
 
 	// TODO: implement this function
-	const moveLineDown = () => {
+	const moveLineDown = (registerState: boolean) => {
 		const firstLine = currentLine
 		if (firstLine.fullSpan.end >= text.length) {
 			return
 		}
-		stages.push(new EditorState(Action.moveLineDown, firstLine.span.start, '', cursor))
 		const secondLine = tree.source.getLine(firstLine.fullSpan.end)
-		const firstText = firstLine.span.text
-		const secondText = secondLine.span.text
-		if (firstText === secondText) {
+		const text1 = firstLine.span.text
+		const text2 = secondLine.span.text
+		const atPosition = cursor
+		const editedText = text2 + '\n' + text1
+		if (text1 === text2) {
 			moveCursorY(1)
 		} else {
-			deleteText(firstLine.span.start, secondLine.span.end - firstLine.span.start, false)
-			insertText(secondText + '\n' + firstText, cursor, false)
-			cursor = tree.source.getPosition(line, prevColumn)
+			const lineNext = line + 1
+			const columnNext = column
+			text = text.substring(0, firstLine.span.start) + editedText + text.substring(secondLine.span.end)
+			cursor = tree.source.getPosition(lineNext, columnNext)
 		}
+		if (registerState) stages.push(new EditorState(Action.moveLineDown, firstLine.span.start, editedText, atPosition))
 	}
 
 	const moveToPrevToken = () => {
@@ -286,6 +309,8 @@
 			<span>{JSON.stringify(stage)}</span>
 		{/each}
 	</div>
+	<br />
+	{line}:{column}:{cursor}
 </div>
 
 <style scoped lang="scss">

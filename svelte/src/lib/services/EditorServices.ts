@@ -2,15 +2,16 @@ export enum Action {
 	genesisState,
 	insertText,
 	deleteText,
+	moveLineUp,
 	moveLineDown
 }
 
 export class EditorState {
 	constructor(
 		public action: Action,
-		public atPosition: number,
+		public pointer: number,
 		public text: string,
-		public cursorPosition: number
+		public initialCursorPosition: number
 	) {}
 }
 
