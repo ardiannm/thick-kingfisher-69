@@ -144,7 +144,10 @@
 	}
 
 	const insertText = (newText: string, position: number, registerState = true) => {
-		if (registerState) stages.push(new EditorState(Action.EDIT, position, newText, cursor))
+		if (registerState) {
+			if (prevStages.length) prevStages.length = 0
+			stages.push(new EditorState(Action.EDIT, position, newText, cursor))
+		}
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
 	}
@@ -154,6 +157,7 @@
 		if (position < 0) position = 0
 		cursor = position
 		if (registerState) {
+			if (prevStages.length) prevStages.length = 0
 			const deletedText = text.substring(cursor, cursor + steps)
 			stages.push(new EditorState(Action.DELETE, position, deletedText, originalPosition))
 		}
