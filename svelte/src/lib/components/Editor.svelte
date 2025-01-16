@@ -154,12 +154,12 @@
 		}
 	}
 
-	// FIXME: There is a bug with cursor positioning being out of index bounds when on undo and redo actions
+	// TODO: implement this function
 	const deleteLine = () => {
 		throw new Error('Method not implemented.')
 	}
 
-	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
+	// TODO: implement this function
 	const moveLine = (direction: 'Up' | 'Down') => {
 		throw new Error('Method not implemented.')
 	}
