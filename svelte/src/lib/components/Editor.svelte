@@ -175,11 +175,11 @@
 		const lineText = text.substring(ln.span.start, ln.span.end)
 		switch (direction) {
 			case 'up':
-				insertText(lineText + '\n', ln.span.start, false)
+				insertText(lineText + '\n', ln.span.start, true)
 				cursor = tree.source.getPosition(ln.number, prevColumn)
 				return
 			case 'down':
-				insertText('\n' + lineText, ln.span.end, false)
+				insertText('\n' + lineText, ln.span.end, true)
 				return
 		}
 	}
