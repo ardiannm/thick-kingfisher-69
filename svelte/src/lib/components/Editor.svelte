@@ -76,7 +76,6 @@
 				}
 			}
 		} else if (input === 'y' && event.ctrlKey) {
-			// FIXME: Ensure that redo actions are done properly even when new additions are made while in the middle of undo actions
 			event.preventDefault()
 			if (prevStages.length > 0) {
 				const stage = prevStages.pop()!
