@@ -151,25 +151,19 @@
 	}
 
 	const deleteText = (position: number, steps: number, registerState = true) => {
-		let pos = cursor
-		cursor = position > 0 ? position : 0
+		let originalPosition = cursor
+		if (position < 0) position = 0
+		cursor = position
 		if (registerState) {
 			const deletedText = text.substring(cursor, cursor + steps)
-			stages.push(new EditorState(Action.DELETE, position, deletedText, pos))
+			stages.push(new EditorState(Action.DELETE, position, deletedText, originalPosition))
 		}
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
-
 	// FIXME: There is a bug with cursor positioning being out of index bounds when on undo and redo actions
 	const deleteLine = () => {
-		const span = currentLine.fullSpan
-		if (span.length === 0) {
-			backspace()
-		} else {
-			deleteText(span.start, span.length)
-			cursor = span.start
-		}
+		throw new Error('Method not implemented.')
 	}
 
 	const duplicateLine = (direction: 'up' | 'down') => {
