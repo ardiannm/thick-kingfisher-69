@@ -23,6 +23,7 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
     return this.textSpan
   }
 
+  // REVIEW: reevaluate which trivia should be classified as trivia for this token.
   override get fullSpan() {
     if (this.isTrivia()) {
       return this.textSpan

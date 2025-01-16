@@ -1,6 +1,7 @@
 import { SyntaxTree } from "."
 import { Evaluator } from "."
 
+export { SyntaxToken } from "./src/phases/lexing/syntax.token"
 export { SyntaxKind } from "./src/phases/parsing/syntax.kind"
 export { SyntaxNode } from "./src/phases/parsing/syntax.node"
 export { Diagnostic } from "./src/diagnostics/diagnostic"

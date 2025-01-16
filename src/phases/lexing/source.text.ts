@@ -15,8 +15,7 @@ export class SourceText {
   }
 
   static createFrom(text: string): SourceText {
-    const diagnostics = new DiagnosticsBag()
-    return new SourceText(text, diagnostics)
+    return new SourceText(text, new DiagnosticsBag())
   }
 
   static parse(text: string) {
