@@ -61,35 +61,10 @@
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
 			event.preventDefault()
-			if (stages.length > 1) {
-				const stage = stages.pop()!
-				prevStages.push(stage)
-				switch (stage.action) {
-					case Action.EDIT:
-						deleteText(stage.start, stage.text.length, false)
-						cursor = stage.position
-						return
-					case Action.DELETE:
-						insertText(stage.text, stage.start, false)
-						cursor = stage.position
-						return
-				}
-			}
+			undoAction()
 		} else if (input === 'y' && event.ctrlKey) {
 			event.preventDefault()
-			if (prevStages.length > 0) {
-				const stage = prevStages.pop()!
-				stages.push(stage)
-				switch (stage.action) {
-					case Action.DELETE:
-						deleteText(stage.start, stage.text.length, false)
-						return
-					case Action.EDIT:
-						insertText(stage.text, stage.start, false)
-						cursor = stage.position + stage.text.length
-						return
-				}
-			}
+			redoAction()
 		} else if (input === 'ArrowRight') {
 			event.preventDefault()
 			moveCursorX(1)
@@ -121,7 +96,38 @@
 	// svelte-ignore state_referenced_locally
 	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text, cursor)])
 
-	const backspace = () => deleteText(cursor - 1, 1, true)
+	const undoAction = () => {
+		if (stages.length > 1) {
+			const stage = stages.pop()!
+			prevStages.push(stage)
+			switch (stage.action) {
+				case Action.EDIT:
+					deleteText(stage.start, stage.text.length, false)
+					cursor = stage.position
+					return
+				case Action.DELETE:
+					insertText(stage.text, stage.start, false)
+					cursor = stage.position
+					return
+			}
+		}
+	}
+
+	const redoAction = () => {
+		if (prevStages.length > 0) {
+			const stage = prevStages.pop()!
+			stages.push(stage)
+			switch (stage.action) {
+				case Action.DELETE:
+					deleteText(stage.start, stage.text.length, false)
+					return
+				case Action.EDIT:
+					insertText(stage.text, stage.start, false)
+					cursor = stage.position + stage.text.length
+					return
+			}
+		}
+	}
 
 	const moveCursorX = (step: number) => {
 		const newPos = cursor + step
@@ -165,6 +171,10 @@
 			stages.push(action)
 		}
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
+	}
+
+	const backspace = () => {
+		deleteText(cursor - 1, 1, true)
 	}
 
 	const duplicateLine = (direction: 'Up' | 'Down') => {
