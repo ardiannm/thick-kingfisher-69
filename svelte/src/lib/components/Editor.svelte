@@ -23,6 +23,7 @@
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
 
+	// TODO: Implement a general keyboard shortcut use:action to emit keyboard hotkeys or any other events
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
