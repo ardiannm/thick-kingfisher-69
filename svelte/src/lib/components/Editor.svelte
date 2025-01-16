@@ -247,10 +247,9 @@
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
+				<!-- TODO: Refactor the code to avoid adding unnecessary HTML span elements for tokens without styling -->
 				{#if token.span.length}
-					<span class="token {token.class}">
-						{token.span.text}
-					</span>
+					<span class="token {token.class}">{token.span.text}</span>
 				{:else}
 					<span class="token {token.class}">&nbsp;</span>
 				{/if}
