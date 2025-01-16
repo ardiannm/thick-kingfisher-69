@@ -8,10 +8,9 @@ export enum Action {
 export class EditorState {
 	constructor(
 		public action: Action,
-		public start: number,
+		public atPosition: number,
 		public text: string,
-		// cursor position before action
-		public position: number
+		public cursorPosition: number
 	) {}
 }
 

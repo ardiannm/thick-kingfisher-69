@@ -80,11 +80,11 @@
 			prevStages.push(stage)
 			switch (stage.action) {
 				case Action.insertText:
-					deleteText(stage.start, stage.text.length, false)
+					deleteText(stage.atPosition, stage.text.length, false)
 					return
 				case Action.deleteText:
-					insertText(stage.text, stage.start, false)
-					cursor = stage.position
+					insertText(stage.text, stage.atPosition, false)
+					cursor = stage.cursorPosition
 					return
 				case Action.moveLineDown:
 					// TODO: move line up on encountering this type of state
@@ -99,11 +99,11 @@
 			stages.push(stage)
 			switch (stage.action) {
 				case Action.deleteText:
-					deleteText(stage.start, stage.text.length, false)
+					deleteText(stage.atPosition, stage.text.length, false)
 					return
 				case Action.insertText:
-					insertText(stage.text, stage.start, false)
-					cursor = stage.position + stage.text.length
+					insertText(stage.text, stage.atPosition, false)
+					cursor = stage.cursorPosition + stage.text.length
 					return
 			}
 		}
@@ -176,6 +176,7 @@
 		if (firstLine.fullSpan.end >= text.length) {
 			return
 		}
+		stages.push(new EditorState(Action.moveLineDown, firstLine.span.start, '', cursor))
 		const secondLine = tree.source.getLine(firstLine.fullSpan.end)
 		const firstText = firstLine.span.text
 		const secondText = secondLine.span.text
@@ -186,7 +187,6 @@
 			insertText(secondText + '\n' + firstText, cursor, false)
 			cursor = tree.source.getPosition(line, prevColumn)
 		}
-		// TODO: add this function as a special action in the editor state
 	}
 
 	const moveToPrevToken = () => {
