@@ -176,6 +176,7 @@
 		if (thisLine.fullSpan.end >= text.length) return
 		const otherLine = tree.source.getLine(thisLine.fullSpan.end)
 		const length = thisLine.fullSpan.length + otherLine.span.length
+		// TODO: if text is the same in both lines simply move cursor one line below and this prevents the tree being rebuilt
 		deleteText(thisLine.span.start, length, false)
 		insertText(otherLine.span.text + '\n' + thisLine.span.text, cursor, false)
 		cursor = tree.source.getPosition(line, prevColumn)
