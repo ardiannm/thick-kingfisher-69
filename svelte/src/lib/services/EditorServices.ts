@@ -28,7 +28,7 @@ export class EditorService {
 		})()
 	}
 
-	static pasteFromClipboard = () => {
+	static readFromClipboard = () => {
 		return (async () => {
 			try {
 				const text = await navigator.clipboard.readText()

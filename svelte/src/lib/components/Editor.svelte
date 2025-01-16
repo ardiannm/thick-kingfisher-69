@@ -27,6 +27,7 @@
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
+			// TODO: differentiate internal copy events from external ones when copy pasting the line or text content
 			EditorService.copyToClipboard(currentLine.span.text)
 		} else if (input === 'v' && event.ctrlKey) {
 			await pasteFromClipboard()
@@ -142,7 +143,7 @@
 	}
 
 	const pasteFromClipboard = async () => {
-		const content = await EditorService.pasteFromClipboard()
+		const content = await EditorService.readFromClipboard()
 		content && insertText(content, cursor, true)
 	}
 
