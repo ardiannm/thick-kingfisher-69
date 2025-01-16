@@ -46,10 +46,10 @@
 			moveToPrevToken()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
 			event.preventDefault()
-			duplicateLine('up')
+			duplicateLine('Up')
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
 			event.preventDefault()
-			duplicateLine('down')
+			duplicateLine('Down')
 		} else if (input === 'ArrowDown' && event.altKey) {
 			event.preventDefault()
 			moveLine(1)
@@ -84,7 +84,6 @@
 				switch (stage.action) {
 					case Action.DELETE:
 						deleteText(stage.start, stage.text.length, false)
-						cursor = stage.position
 						return
 					case Action.EDIT:
 						insertText(stage.text, stage.start, false)
@@ -166,15 +165,15 @@
 		throw new Error('Method not implemented.')
 	}
 
-	const duplicateLine = (direction: 'up' | 'down') => {
+	const duplicateLine = (direction: 'Up' | 'Down') => {
 		const ln = tree.source.getLine(cursor)
 		const lineText = text.substring(ln.span.start, ln.span.end)
 		switch (direction) {
-			case 'up':
+			case 'Up':
 				insertText(lineText + '\n', ln.span.start, true)
 				cursor = tree.source.getPosition(ln.number, prevColumn)
 				return
-			case 'down':
+			case 'Down':
 				insertText('\n' + lineText, ln.span.end, true)
 				return
 		}
