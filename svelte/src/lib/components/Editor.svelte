@@ -120,18 +120,18 @@
 		cursor += newText.length
 	}
 
-	const deleteText = (position: number, steps: number, registerState: boolean) => {
+	const deleteText = (position: number, length: number, registerState: boolean) => {
 		let originalPosition = cursor
 		if (position < 0) position = 0
 		cursor = position
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
-			const deletedText = text.substring(cursor, cursor + steps)
+			const deletedText = text.substring(cursor, cursor + length)
 			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
 			const action = new EditorState(Action.deleteText, position, deletedText, originalPosition)
 			stages.push(action)
 		}
-		text = text.substring(0, cursor) + text.substring(cursor + steps)
+		text = text.substring(0, cursor) + text.substring(cursor + length)
 	}
 
 	const backspace = () => {
@@ -172,17 +172,20 @@
 
 	// TODO: implement this function
 	const moveLineDown = () => {
-		const thisLine = currentLine
-		if (thisLine.fullSpan.end >= text.length) return
-		const otherLine = tree.source.getLine(thisLine.fullSpan.end)
-		const length = thisLine.fullSpan.length + otherLine.span.length
-		if (thisLine.span.text === otherLine.span.text) {
-			moveCursorY(1)
+		const firstLine = currentLine
+		if (firstLine.fullSpan.end >= text.length) {
 			return
 		}
-		deleteText(thisLine.span.start, length, false)
-		insertText(otherLine.span.text + '\n' + thisLine.span.text, cursor, false)
-		cursor = tree.source.getPosition(line, prevColumn)
+		const secondLine = tree.source.getLine(firstLine.fullSpan.end)
+		const firstText = firstLine.span.text
+		const secondText = secondLine.span.text
+		if (firstText === secondText) {
+			moveCursorY(1)
+		} else {
+			deleteText(firstLine.span.start, secondLine.span.end - firstLine.span.start, false)
+			insertText(secondText + '\n' + firstText, cursor, false)
+			cursor = tree.source.getPosition(line, prevColumn)
+		}
 		// TODO: add this function as a special action in the editor state
 	}
 
@@ -190,7 +193,7 @@
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenPosition(position - 1)
 		let token = tokens[index]
-		while (token && token.isPunctuation()) {
+		while (token.isPunctuation()) {
 			index--
 			token = tokens[index]
 		}
