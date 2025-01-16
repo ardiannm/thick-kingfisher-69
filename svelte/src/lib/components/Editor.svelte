@@ -32,11 +32,11 @@
 			event.preventDefault()
 			const content = (await EditorService.pasteFromClipboard()) + '\n'
 			cursor = currentLine.fullSpan.end
-			insertText(content, cursor)
+			insertText(content, cursor, true)
 			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
 			cursor = tree.source.getPosition(line - 1, prevColumn)
 		} else if (input === 'Tab') {
-			insertText('\t', cursor)
+			insertText('\t', cursor, true)
 			event.preventDefault()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
 			event.preventDefault()
@@ -105,16 +105,16 @@
 			moveCursorY(-1)
 		} else if (input === 'Enter') {
 			event.preventDefault()
-			insertText('\n', cursor)
+			insertText('\n', cursor, true)
 		} else if (input === 'Backspace') {
 			event.preventDefault()
 			backspace()
 		} else if (input === 'Delete') {
 			event.preventDefault()
-			deleteText(cursor, 1)
+			deleteText(cursor, 1, true)
 		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			event.preventDefault()
-			insertText(input, cursor)
+			insertText(input, cursor, true)
 		}
 	}
 
@@ -122,7 +122,7 @@
 	// svelte-ignore state_referenced_locally
 	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text, cursor)])
 
-	const backspace = () => deleteText(cursor - 1, 1)
+	const backspace = () => deleteText(cursor - 1, 1, true)
 
 	const moveCursorX = (step: number) => {
 		const newPos = cursor + step
@@ -143,30 +143,27 @@
 		}
 	}
 
-	const insertText = (newText: string, position: number, registerState = true) => {
+	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
-			stages.push(new EditorState(Action.EDIT, position, newText, cursor))
+			const action = new EditorState(Action.EDIT, position, newText, cursor)
+			stages.push(action)
 		}
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
 	}
 
-	const deleteText = (position: number, steps: number, registerState = true) => {
+	const deleteText = (position: number, steps: number, registerState: boolean) => {
 		let originalPosition = cursor
 		if (position < 0) position = 0
 		cursor = position
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
 			const deletedText = text.substring(cursor, cursor + steps)
-			stages.push(new EditorState(Action.DELETE, position, deletedText, originalPosition))
+			const action = new EditorState(Action.DELETE, position, deletedText, originalPosition)
+			stages.push(action)
 		}
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
-	}
-
-	// FIXME: There is a bug with cursor positioning being out of index bounds when on undo and redo actions
-	const deleteLine = () => {
-		throw new Error('Method not implemented.')
 	}
 
 	const duplicateLine = (direction: 'Up' | 'Down') => {
@@ -181,6 +178,11 @@
 				insertText('\n' + lineText, ln.span.end, true)
 				return
 		}
+	}
+
+	// FIXME: There is a bug with cursor positioning being out of index bounds when on undo and redo actions
+	const deleteLine = () => {
+		throw new Error('Method not implemented.')
 	}
 
 	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
