@@ -169,7 +169,7 @@
 
 	const moveToPrevToken = () => {
 		const position = tree.source.getPosition(line, column)
-		let index = tree.source.getTokenLocation(position - 1)
+		let index = tree.source.getTokenPosition(position - 1)
 		let token = tokens[index]
 		while (token && token.isPunctuation()) {
 			index--
@@ -180,7 +180,7 @@
 
 	const moveToNextToken = () => {
 		const position = tree.source.getPosition(line, column)
-		let index = tree.source.getTokenLocation(position + 1)
+		let index = tree.source.getTokenPosition(position + 1)
 		let token = tokens[index]
 		while (token && token.isPunctuation()) {
 			index++

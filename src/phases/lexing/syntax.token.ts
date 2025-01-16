@@ -16,7 +16,7 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
   }
 
   get position() {
-    return this.source.getTokenLocation(this.span.start)
+    return this.source.getTokenPosition(this.span.start)
   }
 
   override get span() {
