@@ -23,7 +23,7 @@
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
 
-	// TODO: Implement a general keyboard shortcut use:action to emit keyboard hotkeys or any other events
+	// TODO: implement a general keyboard shortcut use:action to emit keyboard hotkeys or any other events
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
@@ -72,20 +72,23 @@
 
 	let prevStages = $state<EditorState[]>([])
 	// svelte-ignore state_referenced_locally
-	let stages = $state<EditorState[]>([new EditorState(Action.DEFAULT, 0, text, cursor)])
+	let stages = $state<EditorState[]>([new EditorState(Action.genesisState, 0, text, cursor)])
 
 	const undoAction = () => {
 		if (stages.length > 1) {
 			const stage = stages.pop()!
 			prevStages.push(stage)
 			switch (stage.action) {
-				case Action.INSERT:
+				case Action.insertText:
 					deleteText(stage.start, stage.text.length, false)
 					return
-				case Action.DELETE:
+				case Action.deleteText:
 					insertText(stage.text, stage.start, false)
 					cursor = stage.position
 					return
+				case Action.moveLineDown:
+					// TODO: move line up on encountering this type of state
+					throw new Error('Function not implemented.')
 			}
 		}
 	}
@@ -95,10 +98,10 @@
 			const stage = prevStages.pop()!
 			stages.push(stage)
 			switch (stage.action) {
-				case Action.DELETE:
+				case Action.deleteText:
 					deleteText(stage.start, stage.text.length, false)
 					return
-				case Action.INSERT:
+				case Action.insertText:
 					insertText(stage.text, stage.start, false)
 					cursor = stage.position + stage.text.length
 					return
@@ -109,8 +112,8 @@
 	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
-			// TODO: Implement debouncing to group consecutive changes and minimize excessive state updates
-			const action = new EditorState(Action.INSERT, position, newText, cursor)
+			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
+			const action = new EditorState(Action.insertText, position, newText, cursor)
 			stages.push(action)
 		}
 		text = text.substring(0, position) + newText + text.substring(position)
@@ -124,8 +127,8 @@
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
 			const deletedText = text.substring(cursor, cursor + steps)
-			// TODO: Implement debouncing to group consecutive changes and minimize excessive state updates
-			const action = new EditorState(Action.DELETE, position, deletedText, originalPosition)
+			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
+			const action = new EditorState(Action.deleteText, position, deletedText, originalPosition)
 			stages.push(action)
 		}
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
@@ -170,7 +173,14 @@
 
 	// TODO: implement this function
 	const moveLineDown = () => {
-		throw new Error('Function not implemented.')
+		const thisLine = currentLine
+		if (thisLine.fullSpan.end >= text.length) return
+		const otherLine = tree.source.getLine(thisLine.fullSpan.end)
+		const length = thisLine.fullSpan.length + otherLine.span.length
+		deleteText(thisLine.span.start, length, false)
+		insertText(otherLine.span.text + '\n' + thisLine.span.text, cursor, false)
+		cursor = tree.source.getPosition(line, prevColumn)
+		// TODO: add this function as a special action in the editor state
 	}
 
 	const moveToPrevToken = () => {
@@ -245,7 +255,7 @@
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
-				<!-- TODO: Refactor the code to avoid adding unnecessary HTML span elements for tokens without styling -->
+				<!-- TODO: refactor the code to avoid adding unnecessary HTML span elements for tokens without styling -->
 				{#if token.span.length}
 					<span class="token {token.class}">{token.span.text}</span>
 				{:else}
@@ -258,9 +268,18 @@
 		<Cursor position={cursor} />
 	{/if}
 	{#each diagnostics as diagnostic}
-		<!-- FIXME: Squigglie fails to render when in multiple lines -->
+		<!-- FIXME: squigglie fails to render when in multiple lines -->
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
+	<br />
+	<br />
+	<br />
+	<!-- TODO: remove this template after servig the development process purposes -->
+	<div style="display: flex; flex-direction: column">
+		{#each stages as stage}
+			<span>{JSON.stringify(stage)}</span>
+		{/each}
+	</div>
 </div>
 
 <style scoped lang="scss">

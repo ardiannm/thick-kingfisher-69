@@ -1,7 +1,8 @@
 export enum Action {
-	DEFAULT,
-	INSERT,
-	DELETE
+	genesisState,
+	insertText,
+	deleteText,
+	moveLineDown
 }
 
 export class EditorState {
