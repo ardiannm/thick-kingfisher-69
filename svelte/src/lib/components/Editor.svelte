@@ -160,6 +160,8 @@
 		text = text.substring(0, cursor) + text.substring(cursor + steps)
 	}
 
+
+	// FIXME: There is a bug with cursor positioning being out of index bounds when on undo and redo actions
 	const deleteLine = () => {
 		const span = currentLine.fullSpan
 		if (span.length === 0) {
