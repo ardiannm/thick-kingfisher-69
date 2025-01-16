@@ -49,6 +49,9 @@
 			undoAction()
 		} else if (input === 'y' && event.ctrlKey) {
 			redoAction()
+		} else if (input === 'Backspace' && event.ctrlKey) {
+			// TODO: implement this function
+			throw new Error('Function not implemented')
 		} else if (input === 'ArrowRight') {
 			moveCursorX(1)
 		} else if (input === 'ArrowLeft') {
@@ -82,6 +85,7 @@
 			switch (stage.action) {
 				case Action.insertText:
 					deleteText(stage.pointer, stage.text.length, false)
+					cursor = stage.initialCursorPosition
 					return
 				case Action.deleteText:
 					insertText(stage.text, stage.pointer, false)
@@ -147,9 +151,11 @@
 		content && insertText(content, cursor, true)
 	}
 
-	// TODO: implement this function
 	const duplicateLineAbove = () => {
-		throw new Error('Function not implemented')
+		const lineNext = line
+		const columnNext = column
+		insertText(currentLine.fullSpan.text, currentLine.span.start, true)
+		cursor = tree.source.getPosition(lineNext, columnNext)
 	}
 
 	// TODO: implement this function
