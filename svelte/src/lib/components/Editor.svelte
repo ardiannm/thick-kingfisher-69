@@ -136,11 +136,8 @@
 	}
 
 	const pasteFromClipboard = async () => {
-		const content = (await EditorService.pasteFromClipboard()) + '\n'
-		cursor = currentLine.fullSpan.end
-		insertText(content, cursor, true)
-		// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
-		cursor = tree.source.getPosition(line - 1, prevColumn)
+		const content = await EditorService.pasteFromClipboard()
+		content && insertText(content, cursor, true)
 	}
 
 	const duplicateLine = (direction: 'Up' | 'Down') => {
