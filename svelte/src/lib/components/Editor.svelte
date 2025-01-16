@@ -46,10 +46,10 @@
 			moveToPrevToken()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
 			event.preventDefault()
-			duplicateLine(0)
+			duplicateLine('up')
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
 			event.preventDefault()
-			duplicateLine(1)
+			duplicateLine('down')
 		} else if (input === 'ArrowDown' && event.altKey) {
 			event.preventDefault()
 			moveLine(1)
@@ -170,10 +170,18 @@
 		}
 	}
 
-	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
-	const duplicateLine = (step: number) => {
-		text = tree.source.duplicateLine(line)
-		cursor = tree.source.getPosition(line + step, prevColumn)
+	const duplicateLine = (direction: 'up' | 'down') => {
+		const ln = tree.source.getLine(cursor)
+		const lineText = text.substring(ln.span.start, ln.span.end)
+		switch (direction) {
+			case 'up':
+				insertText(lineText + '\n', ln.span.start, false)
+				cursor = tree.source.getPosition(ln.number, prevColumn)
+				return
+			case 'down':
+				insertText('\n' + lineText, ln.span.end, false)
+				return
+		}
 	}
 
 	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions

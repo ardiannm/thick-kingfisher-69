@@ -139,22 +139,4 @@ export class SourceText {
     }
     return text.join("\n")
   }
-
-  // TODO: Remove this method and keep its implementation within EditorComponent on the UI side of this parser
-  /**
-   * @deprecated this method will be removed and its implementation will be kept within the EditorComponent itself
-   */
-  duplicateLine(line: number) {
-    line--
-    let n = 0
-    let text = [] as string[]
-    while (n < this.lines.length) {
-      text.push(this.lines[n].span.text)
-      if (n === line) {
-        text.push(this.lines[n].span.text)
-      }
-      n++
-    }
-    return text.join("\n")
-  }
 }
