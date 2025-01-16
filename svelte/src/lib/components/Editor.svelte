@@ -147,9 +147,8 @@
 		const lineText = text.substring(currentLine.span.start, currentLine.span.end)
 		switch (direction) {
 			case 'Up':
-				const position = cursor
 				insertText(lineText + '\n', currentLine.span.start, true)
-				cursor = position
+				moveCursorY(-1)
 				return
 			case 'Down':
 				insertText('\n' + lineText, currentLine.span.end, true)
