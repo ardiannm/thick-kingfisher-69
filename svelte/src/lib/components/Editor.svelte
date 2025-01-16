@@ -35,9 +35,9 @@
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
 			moveToPrevToken()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
-			duplicateLine('Up')
+			duplicateLineAbove()
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
-			duplicateLine('Down')
+			duplicateLineBelow()
 		} else if (input === 'ArrowUp' && event.altKey) {
 			moveLineUp(true)
 		} else if (input === 'ArrowDown' && event.altKey) {
@@ -146,20 +146,16 @@
 		content && insertText(content, cursor, true)
 	}
 
-	const duplicateLine = (direction: 'Up' | 'Down') => {
-		const lineText = text.substring(currentLine.span.start, currentLine.span.end)
-		switch (direction) {
-			case 'Up':
-				insertText(lineText + '\n', currentLine.span.start, true)
-				moveCursorY(-1)
-				return
-			case 'Down':
-				insertText('\n' + lineText, currentLine.span.end, true)
-				return
-		}
+	// TODO: implement this function
+	const duplicateLineAbove = () => {
+		throw new Error('Function not implemented')
 	}
 
 	// TODO: implement this function
+	const duplicateLineBelow = () => {
+		throw new Error('Function not implemented')
+	}
+
 	const deleteLine = () => {
 		if (currentLine.fullSpan.length) {
 			deleteText(currentLine.fullSpan.start, currentLine.fullSpan.length, true)
@@ -168,7 +164,6 @@
 		}
 	}
 
-	// TODO: implement this function
 	const moveLineUp = (registerState: boolean) => {
 		if (currentLine.number === 1) {
 			return
