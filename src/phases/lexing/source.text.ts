@@ -50,6 +50,8 @@ export class SourceText {
   }
 
   private getLinePosition(position: number) {
+    if (position < 0) return 0
+    if (position > this.text.length) return this.lines.length - 1
     let left = 0
     let right = this.lines.length - 1
     let middle

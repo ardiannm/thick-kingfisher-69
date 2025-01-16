@@ -15,9 +15,9 @@
 
 	// svelte-ignore state_referenced_locally
 	let cursor = $state(text.length)
-	let line = $derived(tree.source.getLine(cursor).number)
-	let column = $derived(tree.source.getColumn(cursor))
 	let currentLine = $derived(tree.source.getLine(cursor))
+	let line = $derived(currentLine.number)
+	let column = $derived(tree.source.getColumn(cursor))
 	let tokens = $derived(tree.source.tokens)
 
 	// svelte-ignore state_referenced_locally
@@ -39,9 +39,9 @@
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
 			duplicateLine('Down')
 		} else if (input === 'ArrowDown' && event.altKey) {
-			moveLine('Down')
+			moveLineDown()
 		} else if (input === 'ArrowUp' && event.altKey) {
-			moveLine('Up')
+			moveLineUp()
 		} else if (input === 'x' && event.ctrlKey) {
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
@@ -164,8 +164,13 @@
 	}
 
 	// TODO: implement this function
-	const moveLine = (direction: 'Up' | 'Down') => {
-		throw new Error('Method not implemented.')
+	const moveLineUp = () => {
+		throw new Error('Function not implemented.')
+	}
+
+	// TODO: implement this function
+	const moveLineDown = () => {
+		throw new Error('Function not implemented.')
 	}
 
 	const moveToPrevToken = () => {
