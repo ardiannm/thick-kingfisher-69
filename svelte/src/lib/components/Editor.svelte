@@ -27,68 +27,45 @@
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
-			event.preventDefault()
 			EditorService.copyToClipboard(currentLine.span.text)
 		} else if (input === 'v' && event.ctrlKey) {
-			event.preventDefault()
-			const content = (await EditorService.pasteFromClipboard()) + '\n'
-			cursor = currentLine.fullSpan.end
-			insertText(content, cursor, true)
-			// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
-			cursor = tree.source.getPosition(line - 1, prevColumn)
-		} else if (input === 'Tab') {
-			insertText('\t', cursor, true)
-			event.preventDefault()
+			await pasteFromClipboard()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
-			event.preventDefault()
 			moveToNextToken()
 		} else if (input === 'ArrowLeft' && event.ctrlKey) {
-			event.preventDefault()
 			moveToPrevToken()
 		} else if (input === 'ArrowUp' && event.shiftKey && event.altKey) {
-			event.preventDefault()
 			duplicateLine('Up')
 		} else if (input === 'ArrowDown' && event.shiftKey && event.altKey) {
-			event.preventDefault()
 			duplicateLine('Down')
 		} else if (input === 'ArrowDown' && event.altKey) {
-			event.preventDefault()
-			moveLine(1)
+			moveLine('Down')
 		} else if (input === 'ArrowUp' && event.altKey) {
-			event.preventDefault()
-			moveLine(-1)
+			moveLine('Up')
 		} else if (input === 'x' && event.ctrlKey) {
-			event.preventDefault()
 			deleteLine()
 		} else if (input === 'z' && event.ctrlKey) {
-			event.preventDefault()
 			undoAction()
 		} else if (input === 'y' && event.ctrlKey) {
-			event.preventDefault()
 			redoAction()
 		} else if (input === 'ArrowRight') {
-			event.preventDefault()
 			moveCursorX(1)
 		} else if (input === 'ArrowLeft') {
-			event.preventDefault()
 			moveCursorX(-1)
 		} else if (input === 'ArrowDown') {
-			event.preventDefault()
 			moveCursorY(1)
 		} else if (input === 'ArrowUp') {
-			event.preventDefault()
 			moveCursorY(-1)
 		} else if (input === 'Enter') {
-			event.preventDefault()
 			insertText('\n', cursor, true)
 		} else if (input === 'Backspace') {
-			event.preventDefault()
 			backspace()
 		} else if (input === 'Delete') {
-			event.preventDefault()
 			deleteText(cursor, 1, true)
-		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
+		} else if (input === 'Tab') {
 			event.preventDefault()
+			insertText('\t', cursor, true)
+		} else if (input.length === 1 && !event.ctrlKey && !event.altKey) {
 			insertText(input, cursor, true)
 		}
 	}
@@ -102,9 +79,8 @@
 			const stage = stages.pop()!
 			prevStages.push(stage)
 			switch (stage.action) {
-				case Action.EDIT:
+				case Action.INSERT:
 					deleteText(stage.start, stage.text.length, false)
-					cursor = stage.position
 					return
 				case Action.DELETE:
 					insertText(stage.text, stage.start, false)
@@ -122,7 +98,7 @@
 				case Action.DELETE:
 					deleteText(stage.start, stage.text.length, false)
 					return
-				case Action.EDIT:
+				case Action.INSERT:
 					insertText(stage.text, stage.start, false)
 					cursor = stage.position + stage.text.length
 					return
@@ -130,30 +106,11 @@
 		}
 	}
 
-	const moveCursorX = (step: number) => {
-		const newPos = cursor + step
-		if (newPos >= 0 && newPos <= text.length) {
-			cursor = newPos
-			prevColumn = column
-		}
-	}
-
-	const moveCursorY = (steps: number) => {
-		const prevLine = line + steps
-		if (prevLine > 0) {
-			const pos = tree.source.getPosition(prevLine, prevColumn)
-			cursor = pos
-		} else {
-			prevColumn = 1
-			cursor = 0
-		}
-	}
-
 	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
 			if (prevStages.length) prevStages.length = 0
 			// TODO: Implement debouncing to group consecutive changes and minimize excessive state updates
-			const action = new EditorState(Action.EDIT, position, newText, cursor)
+			const action = new EditorState(Action.INSERT, position, newText, cursor)
 			stages.push(action)
 		}
 		text = text.substring(0, position) + newText + text.substring(position)
@@ -178,6 +135,14 @@
 		deleteText(cursor - 1, 1, true)
 	}
 
+	const pasteFromClipboard = async () => {
+		const content = (await EditorService.pasteFromClipboard()) + '\n'
+		cursor = currentLine.fullSpan.end
+		insertText(content, cursor, true)
+		// FIXME: Address the issue with cursor failing to move forward as expected when on the last line
+		cursor = tree.source.getPosition(line - 1, prevColumn)
+	}
+
 	const duplicateLine = (direction: 'Up' | 'Down') => {
 		const ln = tree.source.getLine(cursor)
 		const lineText = text.substring(ln.span.start, ln.span.end)
@@ -198,12 +163,8 @@
 	}
 
 	// FIXME: Refactor this method to use insertText property which allows for proper EditorState actions
-	const moveLine = (step: number) => {
-		const nextLine = line + step
-		const nextTree = tree.source.swapLines(line, nextLine)
-		if (!nextTree) return
-		text = nextTree
-		cursor = tree.source.getPosition(nextLine, prevColumn)
+	const moveLine = (direction: 'Up' | 'Down') => {
+		throw new Error('Method not implemented.')
 	}
 
 	const moveToPrevToken = () => {
@@ -232,7 +193,33 @@
 		}
 	}
 
+	const moveCursorX = (step: number) => {
+		const newPos = cursor + step
+		if (newPos >= 0 && newPos <= text.length) {
+			cursor = newPos
+			prevColumn = column
+		}
+	}
+
+	const moveCursorY = (steps: number) => {
+		const prevLine = line + steps
+		if (prevLine > 0) {
+			const pos = tree.source.getPosition(prevLine, prevColumn)
+			cursor = pos
+		} else {
+			prevColumn = 1
+			cursor = 0
+		}
+	}
+
 	let isTyping = $state()
+
+	onMount(() => {
+		if (startTyping)
+			setTimeout(() => {
+				isTyping = true
+			})
+	})
 
 	$effect(() => {
 		if (isTyping) {
@@ -242,20 +229,13 @@
 		}
 	})
 
-	onMount(() => {
-		if (startTyping)
-			setTimeout(() => {
-				isTyping = true
-			})
-	})
-
-	const switchFocusState = (event: boolean) => {
+	const switchIsTyping = (event: boolean) => {
 		isTyping = event
 	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="editor" tabindex="-1" {style} use:focus={switchFocusState}>
+<div class="editor" tabindex="-1" {style} use:focus={switchIsTyping}>
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
@@ -275,14 +255,6 @@
 		<!-- FIXME: Squigglie fails to render when in multiple lines -->
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
-
-	<!-- <br />
-	<br />
-	<br />
-
-	{#each stages as a}
-		<div>{JSON.stringify(a)}</div>
-	{/each} -->
 </div>
 
 <style scoped lang="scss">

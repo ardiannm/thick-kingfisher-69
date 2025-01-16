@@ -1,6 +1,6 @@
 export enum Action {
 	DEFAULT,
-	EDIT,
+	INSERT,
 	DELETE
 }
 
