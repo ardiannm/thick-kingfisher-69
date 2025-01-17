@@ -4,8 +4,8 @@
 
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
-	import { SyntaxKind, SyntaxToken, SyntaxTree } from '../../../..'
-	import { EditorState, Action, EditorService } from '$lib/services'
+	import { SyntaxToken, SyntaxTree } from '../../../..'
+	import { Action, ActionType, EditorService } from '$lib/services'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
@@ -74,43 +74,43 @@
 	}
 
 	// svelte-ignore state_referenced_locally
-	let nodes = $state<EditorState[]>([new EditorState(Action.genesisState, 0, text, cursor)])
-	let prevNodes = $state<EditorState[]>([])
+	let actions = $state<Action[]>([new Action(ActionType.genesisState, 0, text, cursor)])
+	let prevActions = $state<Action[]>([])
 
 	const undoAction = () => {
-		if (nodes.length > 1) {
-			const node = nodes.pop()!
-			prevNodes.push(node)
-			switch (node.action) {
-				case Action.insertText:
-					deleteText(node.pointer, node.text.length, false)
-					cursor = node.initialCursorPosition
+		if (actions.length > 1) {
+			const action = actions.pop()!
+			prevActions.push(action)
+			switch (action.type) {
+				case ActionType.insertText:
+					deleteText(action.pointer, action.text.length, false)
+					cursor = action.initialCursorPosition
 					return
-				case Action.deleteText:
-					insertText(node.text, node.pointer, false)
-					cursor = node.initialCursorPosition
+				case ActionType.deleteText:
+					insertText(action.text, action.pointer, false)
+					cursor = action.initialCursorPosition
 					return
-				case Action.moveLineUp:
-				case Action.moveLineDown:
-					cursor = node.pointer
+				case ActionType.moveLineUp:
+				case ActionType.moveLineDown:
+					cursor = action.pointer
 					moveLineDown(false)
-					cursor = node.initialCursorPosition
+					cursor = action.initialCursorPosition
 					return
 			}
 		}
 	}
 
 	const redoAction = () => {
-		if (prevNodes.length > 0) {
-			const node = prevNodes.pop()!
-			nodes.push(node)
-			switch (node.action) {
-				case Action.deleteText:
-					deleteText(node.pointer, node.text.length, false)
+		if (prevActions.length > 0) {
+			const action = prevActions.pop()!
+			actions.push(action)
+			switch (action.type) {
+				case ActionType.deleteText:
+					deleteText(action.pointer, action.text.length, false)
 					return
-				case Action.insertText:
-					insertText(node.text, node.pointer, false)
-					cursor = node.initialCursorPosition + node.text.length
+				case ActionType.insertText:
+					insertText(action.text, action.pointer, false)
+					cursor = action.initialCursorPosition + action.text.length
 					return
 			}
 		}
@@ -118,10 +118,10 @@
 
 	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
-			if (prevNodes.length) prevNodes.length = 0
+			if (prevActions.length) prevActions.length = 0
 			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
-			const action = new EditorState(Action.insertText, position, newText, cursor)
-			nodes.push(action)
+			const action = new Action(ActionType.insertText, position, newText, cursor)
+			actions.push(action)
 		}
 		text = text.substring(0, position) + newText + text.substring(position)
 		cursor += newText.length
@@ -132,11 +132,11 @@
 		if (position < 0) position = 0
 		cursor = position
 		if (registerState) {
-			if (prevNodes.length) prevNodes.length = 0
+			if (prevActions.length) prevActions.length = 0
 			const deletedText = text.substring(cursor, cursor + length)
 			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
-			const action = new EditorState(Action.deleteText, position, deletedText, originalPosition)
-			nodes.push(action)
+			const action = new Action(ActionType.deleteText, position, deletedText, originalPosition)
+			actions.push(action)
 		}
 		text = text.substring(0, cursor) + text.substring(cursor + length)
 	}
@@ -187,7 +187,7 @@
 			text = text.substring(0, firstLine.span.start) + editedText + text.substring(secondLine.span.end)
 			cursor = tree.source.getPosition(lineNext, columnNext)
 		}
-		if (registerState) nodes.push(new EditorState(Action.moveLineUp, firstLine.span.start, editedText, atPosition))
+		if (registerState) actions.push(new Action(ActionType.moveLineUp, firstLine.span.start, editedText, atPosition))
 	}
 
 	// TODO: implement this function
@@ -209,7 +209,7 @@
 			text = text.substring(0, firstLine.span.start) + editedText + text.substring(secondLine.span.end)
 			cursor = tree.source.getPosition(lineNext, columnNext)
 		}
-		if (registerState) nodes.push(new EditorState(Action.moveLineDown, firstLine.span.start, editedText, atPosition))
+		if (registerState) actions.push(new Action(ActionType.moveLineDown, firstLine.span.start, editedText, atPosition))
 	}
 
 	const moveOneTokenLeft = () => {
@@ -227,7 +227,7 @@
 		const position = tree.source.getPosition(line, column)
 		let index = tree.source.getTokenPosition(position + 1)
 		let token = tokens[index]
-		while (token && token.isPunctuation()) {
+		while (token.isPunctuation()) {
 			index++
 			token = tokens[index]
 		}
@@ -319,7 +319,7 @@
 	<br />
 	<!-- TODO: Remove this template after it has served its purpose in development -->
 	<div style="display: flex; flex-direction: column">
-		{#each nodes as stage}
+		{#each actions as stage}
 			<span>{JSON.stringify(stage)}</span>
 		{/each}
 	</div>

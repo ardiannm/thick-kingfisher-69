@@ -1,4 +1,4 @@
-export enum Action {
+export enum ActionType {
 	genesisState,
 	insertText,
 	deleteText,
@@ -6,9 +6,9 @@ export enum Action {
 	moveLineDown
 }
 
-export class EditorState {
+export class Action {
 	constructor(
-		public action: Action,
+		public type: ActionType,
 		public pointer: number,
 		public text: string,
 		public initialCursorPosition: number
