@@ -23,20 +23,9 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
     return this.textSpan
   }
 
-  // REVIEW: reevaluate which trivia should be classified as trivia for this token.
+  // TODO: implement this method to include the leading and trailing trivias which yet will have to be defined
   override get fullSpan() {
-    if (this.isTrivia()) {
-      return this.textSpan
-    }
-    let position = this.position
-    const tokens = this.source.tokens
-    while (position > 0 && tokens[position - 1].isTrivia()) {
-      position--
-    }
-    if (position === this.position) {
-      return this.textSpan
-    }
-    return Span.createFrom(this.source, tokens[position].span.start, this.span.end)
+    return this.textSpan
   }
 
   override getFirstChild() {

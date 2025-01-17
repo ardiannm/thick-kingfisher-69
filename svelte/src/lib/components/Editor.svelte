@@ -4,7 +4,7 @@
 
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
-	import { SyntaxToken, SyntaxTree } from '../../../..'
+	import { SyntaxKind, SyntaxToken, SyntaxTree } from '../../../..'
 	import { Action, ActionType, EditorService } from '$lib/services'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
@@ -169,6 +169,22 @@
 		}
 	}
 
+	const deleteTokenLeft = () => {
+		if (cursor <= 0) return
+		let position = tree.source.getTokenPosition(cursor)
+		let token = tree.source.tokens[position]
+		if (currentLine.span.length === 0) {
+			backspace()
+		} else {
+			while ((token.isTrivia() || token.kind === SyntaxKind.EndOfFileToken) && position > 0) {
+				position--
+				token = tree.source.tokens[position]
+			}
+			const start = Math.max(token.span.start, currentLine.span.start)
+			deleteText(start, cursor - start, true)
+		}
+	}
+
 	const moveLineUp = (registerState: boolean) => {
 		if (currentLine.number === 1) {
 			return
@@ -277,20 +293,6 @@
 	const switchIsTyping = (event: boolean) => {
 		isTyping = event
 	}
-
-	// REVIEW: verify that this implementation aligns with the trivias and fullSpan logic in parser side of the SyntaxToken
-	const deleteTokenLeft = () => {
-		if (cursor <= 0) return
-		let position = tree.source.getTokenPosition(cursor - 1)
-		const tokens = tree.source.tokens
-		let token: SyntaxToken = tokens[position]
-		while (position > 0 && token.isTrivia() && token.span.from.line === line) {
-			position--
-			token = tokens[position]
-		}
-		const start = token.span.start
-		deleteText(start, cursor - start, true)
-	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -298,7 +300,7 @@
 	{#each lines as ln}
 		<div class="line">
 			{#each ln.getTokens() as token}
-				<!-- TODO: refactor the code to avoid adding unnecessary HTML span elements for tokens without styling -->
+				<!-- TODO: refactor this template to avoid adding unnecessary HTML span elements for tokens without styling -->
 				{#if token.span.length}
 					<span class="token {token.class}">{token.span.text}</span>
 				{:else}
