@@ -241,29 +241,26 @@
 		}
 	}
 
+	// TODO: refactor this function to reflect the deleteTokenLeft cursor behaviour
 	const moveOneTokenLeft = () => {
 		if (cursor <= 0) return
-		let position = tree.source.getTokenPosition(cursor - 1)
-		let tokens = tree.source.tokens
-		let token = tokens[position]
-		while (token.isPunctuation()) {
-			position--
-			token = tokens[position]
+		const lineStart = currentLine.span.start
+		if (lineStart === cursor) {
+			cursor--
+		} else {
+			let position = tree.source.getTokenPosition(cursor - 1)
+			const tokens = tree.source.tokens
+			let token = tokens[position]
+			while (token.isTrivia() && position > 0) {
+				position--
+				token = tokens[position]
+			}
+			cursor = Math.max(token.span.start, lineStart)
 		}
-		cursor = token.span.start
 	}
 
-	const moveOneTokenRight = () => {
-		if (cursor >= text.length) return
-		let position = tree.source.getTokenPosition(cursor + 1)
-		let tokens = tree.source.tokens
-		let token = tokens[position]
-		while (token.isPunctuation()) {
-			position++
-			token = tokens[position]
-		}
-		cursor = token.span.end
-	}
+	// TODO: refactor this function to do exactly the reverse of what moveOneTokenLeft does
+	const moveOneTokenRight = () => {}
 
 	const copyFromClipboard = () => {
 		EditorService.copyToClipboard(currentLine.span.text)
