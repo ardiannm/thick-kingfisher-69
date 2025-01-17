@@ -148,7 +148,9 @@
 		if (cursor <= 0) return
 		const end = cursor
 		moveOneTokenLeft()
-		deleteText(cursor, end - cursor, true)
+		const start = cursor
+		cursor = end
+		deleteText(start, end - start, true)
 	}
 
 	const moveLineUp = (registerState: boolean) => {
