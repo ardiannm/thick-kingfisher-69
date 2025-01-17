@@ -18,7 +18,6 @@
 	let currentLine = $derived(tree.source.getLine(cursor))
 	let line = $derived(currentLine.number)
 	let column = $derived(tree.source.getColumn(cursor))
-	let tokens = $derived(tree.source.tokens)
 
 	// svelte-ignore state_referenced_locally
 	let prevColumn = column
@@ -28,7 +27,7 @@
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
 			// TODO: differentiate internal copy events from external ones when copy pasting the line or text content
-			EditorService.copyToClipboard(currentLine.span.text)
+			copyFromClipboard()
 		} else if (input === 'v' && event.ctrlKey) {
 			await pasteFromClipboard()
 		} else if (input === 'ArrowRight' && event.ctrlKey) {
@@ -145,40 +144,17 @@
 		deleteText(cursor - 1, 1, true)
 	}
 
-	const pasteFromClipboard = async () => {
-		const content = await EditorService.readFromClipboard()
-		content && insertText(content, cursor, true)
-	}
-
-	const duplicateLineAbove = () => {
-		const lineNext = line
-		const columnNext = column
-		insertText(currentLine.fullSpan.text, currentLine.span.start, true)
-		cursor = tree.source.getPosition(lineNext, columnNext)
-	}
-
-	const duplicateLineBelow = () => {
-		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
-	}
-
-	const deleteLine = () => {
-		if (currentLine.fullSpan.length) {
-			deleteText(currentLine.fullSpan.start, currentLine.fullSpan.length, true)
-		} else {
-			backspace()
-		}
-	}
-
 	const deleteTokenLeft = () => {
 		if (cursor <= 0) return
-		let position = tree.source.getTokenPosition(cursor)
-		let token = tree.source.tokens[position]
 		if (currentLine.span.length === 0) {
 			backspace()
 		} else {
+			let position = tree.source.getTokenPosition(cursor)
+			const tokens = tree.source.tokens
+			let token = tokens[position]
 			while ((token.isTrivia() || token.kind === SyntaxKind.EndOfFileToken) && position > 0) {
 				position--
-				token = tree.source.tokens[position]
+				token = tokens[position]
 			}
 			const start = Math.max(token.span.start, currentLine.span.start)
 			deleteText(start, cursor - start, true)
@@ -206,7 +182,6 @@
 		if (registerState) actions.push(new Action(ActionType.moveLineUp, firstLine.span.start, editedText, atPosition))
 	}
 
-	// TODO: implement this function
 	const moveLineDown = (registerState: boolean) => {
 		const firstLine = currentLine
 		if (firstLine.fullSpan.end >= text.length) {
@@ -228,30 +203,23 @@
 		if (registerState) actions.push(new Action(ActionType.moveLineDown, firstLine.span.start, editedText, atPosition))
 	}
 
-	const moveOneTokenLeft = () => {
-		const position = tree.source.getPosition(line, column)
-		let index = tree.source.getTokenPosition(position - 1)
-		let token = tokens[index]
-		while (token.isPunctuation()) {
-			index--
-			token = tokens[index]
+	const deleteLine = () => {
+		if (currentLine.fullSpan.length) {
+			deleteText(currentLine.fullSpan.start, currentLine.fullSpan.length, true)
+		} else {
+			backspace()
 		}
-		cursor = token.span.start
 	}
 
-	const moveOneTokenRight = () => {
-		const position = tree.source.getPosition(line, column)
-		let index = tree.source.getTokenPosition(position + 1)
-		let token = tokens[index]
-		while (token.isPunctuation()) {
-			index++
-			token = tokens[index]
-		}
-		if (token) {
-			cursor = token.span.end
-		} else {
-			cursor = text.length
-		}
+	const duplicateLineAbove = () => {
+		const lineNext = line
+		const columnNext = column
+		insertText(currentLine.fullSpan.text, currentLine.span.start, true)
+		cursor = tree.source.getPosition(lineNext, columnNext)
+	}
+
+	const duplicateLineBelow = () => {
+		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
 	}
 
 	const moveCursorX = (step: number) => {
@@ -271,6 +239,39 @@
 			prevColumn = 1
 			cursor = 0
 		}
+	}
+
+	const moveOneTokenLeft = () => {
+		if (cursor <= 0) return
+		let position = tree.source.getTokenPosition(cursor - 1)
+		let tokens = tree.source.tokens
+		let token = tokens[position]
+		while (token.isPunctuation()) {
+			position--
+			token = tokens[position]
+		}
+		cursor = token.span.start
+	}
+
+	const moveOneTokenRight = () => {
+		if (cursor >= text.length) return
+		let position = tree.source.getTokenPosition(cursor + 1)
+		let tokens = tree.source.tokens
+		let token = tokens[position]
+		while (token.isPunctuation()) {
+			position++
+			token = tokens[position]
+		}
+		cursor = token.span.end
+	}
+
+	const copyFromClipboard = () => {
+		EditorService.copyToClipboard(currentLine.span.text)
+	}
+
+	const pasteFromClipboard = async () => {
+		const content = await EditorService.readFromClipboard()
+		if (content) insertText(content, cursor, true)
 	}
 
 	let isTyping = $state()
@@ -316,17 +317,17 @@
 		<!-- FIXME: squigglie fails to render when in multiple lines -->
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
-	<br />
-	<br />
-	<br />
 	<!-- TODO: Remove this template after it has served its purpose in development -->
-	<div style="display: flex; flex-direction: column">
+	<!-- <br /> -->
+	<!-- <br /> -->
+	<!-- <br /> -->
+	<!-- <div style="display: flex; flex-direction: column">
 		{#each actions as stage}
 			<span>{JSON.stringify(stage)}</span>
 		{/each}
 	</div>
 	<br />
-	{line}:{column}:{cursor}
+	{line}:{column}:{cursor} -->
 </div>
 
 <style scoped lang="scss">

@@ -41,7 +41,7 @@
 		position: absolute;
 		background-color: black;
 		width: 1px;
-		z-index: 10;
+		z-index: 100;
 		pointer-events: none;
 	}
 </style>

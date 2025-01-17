@@ -11,7 +11,7 @@
 	let w = $state(0)
 	let h = $state(7)
 
-	let zIndex = $derived(start - end + 1000)
+	let zIndex = $derived(start - end + 100)
 
 	let show = $state(false)
 
