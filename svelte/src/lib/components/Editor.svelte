@@ -51,13 +51,13 @@
 		} else if (input === 'Backspace' && event.ctrlKey) {
 			deleteTokenLeft()
 		} else if (input === 'ArrowRight') {
-			moveCursorX(1)
+			moveCursorDownTheLine(1)
 		} else if (input === 'ArrowLeft') {
-			moveCursorX(-1)
+			moveCursorDownTheLine(-1)
 		} else if (input === 'ArrowUp') {
-			moveCursorY(-1)
+			moveCursorDownTheColumns(-1)
 		} else if (input === 'ArrowDown') {
-			moveCursorY(1)
+			moveCursorDownTheColumns(1)
 		} else if (input === 'Enter') {
 			insertText('\n', cursor, true)
 		} else if (input === 'Backspace') {
@@ -146,19 +146,9 @@
 
 	const deleteTokenLeft = () => {
 		if (cursor <= 0) return
-		if (currentLine.span.length === 0) {
-			backspace()
-		} else {
-			let position = tree.source.getTokenPosition(cursor)
-			const tokens = tree.source.tokens
-			let token = tokens[position]
-			while ((token.isTrivia() || token.kind === SyntaxKind.EndOfFileToken) && position > 0) {
-				position--
-				token = tokens[position]
-			}
-			const start = Math.max(token.span.start, currentLine.span.start)
-			deleteText(start, cursor - start, true)
-		}
+		const end = cursor
+		moveOneTokenLeft()
+		deleteText(cursor, end - cursor, true)
 	}
 
 	const moveLineUp = (registerState: boolean) => {
@@ -172,7 +162,7 @@
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
-			moveCursorY(-1)
+			moveCursorDownTheColumns(-1)
 		} else {
 			const lineNext = line - 1
 			const columnNext = column
@@ -193,7 +183,7 @@
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
-			moveCursorY(1)
+			moveCursorDownTheColumns(1)
 		} else {
 			const lineNext = line + 1
 			const columnNext = column
@@ -222,7 +212,7 @@
 		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
 	}
 
-	const moveCursorX = (step: number) => {
+	const moveCursorDownTheLine = (step: number) => {
 		const newPos = cursor + step
 		if (newPos >= 0 && newPos <= text.length) {
 			cursor = newPos
@@ -230,7 +220,7 @@
 		}
 	}
 
-	const moveCursorY = (steps: number) => {
+	const moveCursorDownTheColumns = (steps: number) => {
 		const prevLine = line + steps
 		if (prevLine > 0) {
 			const pos = tree.source.getPosition(prevLine, prevColumn)
@@ -241,11 +231,9 @@
 		}
 	}
 
-	// TODO: refactor this function to reflect the deleteTokenLeft cursor behaviour
 	const moveOneTokenLeft = () => {
 		if (cursor <= 0) return
-		const lineStart = currentLine.span.start
-		if (lineStart === cursor) {
+		if (currentLine.span.start === cursor) {
 			cursor--
 		} else {
 			let position = tree.source.getTokenPosition(cursor - 1)
@@ -255,12 +243,31 @@
 				position--
 				token = tokens[position]
 			}
-			cursor = Math.max(token.span.start, lineStart)
+			cursor = Math.max(token.span.start, currentLine.span.start)
 		}
+		prevColumn = column
 	}
 
-	// TODO: refactor this function to do exactly the reverse of what moveOneTokenLeft does
-	const moveOneTokenRight = () => {}
+	const moveOneTokenRight = () => {
+		if (cursor >= text.length) return
+		if (cursor === currentLine.span.end) {
+			cursor++
+		} else {
+			let position = tree.source.getTokenPosition(cursor)
+			const tokens = tree.source.tokens
+			let token = tokens[position]
+			if (!token.isTrivia()) {
+				position++
+				token = tokens[position]
+			}
+			while (token.isTrivia() && position < tokens.length) {
+				position++
+				token = tokens[position]
+			}
+			cursor = Math.min(token.span.start, currentLine.span.end)
+		}
+		prevColumn = column
+	}
 
 	const copyFromClipboard = () => {
 		EditorService.copyToClipboard(currentLine.span.text)
@@ -322,9 +329,9 @@
 		{#each actions as stage}
 			<span>{JSON.stringify(stage)}</span>
 		{/each}
-	</div>
+	</div> -->
 	<br />
-	{line}:{column}:{cursor} -->
+	{line}:{column}:{cursor}
 </div>
 
 <style scoped lang="scss">
