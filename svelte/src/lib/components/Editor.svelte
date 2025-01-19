@@ -51,13 +51,13 @@
 		} else if (input === 'Backspace' && event.ctrlKey) {
 			deleteTokenLeft()
 		} else if (input === 'ArrowRight') {
-			moveCursorDownTheLine(1)
+			moveDownTheLine(1)
 		} else if (input === 'ArrowLeft') {
-			moveCursorDownTheLine(-1)
+			moveDownTheLine(-1)
 		} else if (input === 'ArrowUp') {
-			moveCursorDownTheColumns(-1)
+			moveDownTheColumn(-1)
 		} else if (input === 'ArrowDown') {
-			moveCursorDownTheColumns(1)
+			moveDownTheColumn(1)
 		} else if (input === 'Enter') {
 			insertText('\n', cursor, true)
 		} else if (input === 'Backspace') {
@@ -164,7 +164,7 @@
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
-			moveCursorDownTheColumns(-1)
+			moveDownTheColumn(-1)
 		} else {
 			const lineNext = line - 1
 			const columnNext = column
@@ -185,7 +185,7 @@
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
-			moveCursorDownTheColumns(1)
+			moveDownTheColumn(1)
 		} else {
 			const lineNext = line + 1
 			const columnNext = column
@@ -214,7 +214,7 @@
 		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
 	}
 
-	const moveCursorDownTheLine = (step: number) => {
+	const moveDownTheLine = (step: number) => {
 		const newPos = cursor + step
 		if (newPos >= 0 && newPos <= text.length) {
 			cursor = newPos
@@ -222,7 +222,7 @@
 		}
 	}
 
-	const moveCursorDownTheColumns = (steps: number) => {
+	const moveDownTheColumn = (steps: number) => {
 		const prevLine = line + steps
 		if (prevLine > 0) {
 			const pos = tree.source.getPosition(prevLine, prevColumn)
