@@ -50,6 +50,8 @@
 			redoAction()
 		} else if (input === 'Backspace' && event.ctrlKey) {
 			deleteTokenLeft()
+		} else if (input === 'Delete' && event.ctrlKey) {
+			deleteTokenRight()
 		} else if (input === 'ArrowRight') {
 			moveDownTheLine(1)
 		} else if (input === 'ArrowLeft') {
@@ -153,6 +155,15 @@
 		deleteText(start, end - start, true)
 	}
 
+	const deleteTokenRight = () => {
+		if (cursor >= text.length) return
+		const start = cursor
+		moveOneTokenRight()
+		const end = cursor
+		cursor = start
+		deleteText(start, end - start, true)
+	}
+
 	const moveLineUp = (registerState: boolean) => {
 		if (currentLine.number === 1) {
 			return
@@ -235,16 +246,11 @@
 
 	const moveOneTokenLeft = () => {
 		if (cursor <= 0) return
-		if (currentLine.span.start === cursor) {
+		if (cursor === currentLine.span.start) {
 			cursor--
 		} else {
-			let position = tree.source.getTokenPosition(cursor - 1)
-			const tokens = tree.source.tokens
-			let token = tokens[position]
-			while (token.isTrivia() && position > 0) {
-				position--
-				token = tokens[position]
-			}
+			const position = tree.source.getTokenPosition(cursor - 1)
+			const token = tree.source.tokens[position]
 			cursor = Math.max(token.span.start, currentLine.span.start)
 		}
 		prevColumn = column
@@ -252,22 +258,8 @@
 
 	const moveOneTokenRight = () => {
 		if (cursor >= text.length) return
-		if (cursor === currentLine.span.end) {
-			cursor++
-		} else {
-			let position = tree.source.getTokenPosition(cursor)
-			const tokens = tree.source.tokens
-			let token = tokens[position]
-			if (!token.isTrivia()) {
-				position++
-				token = tokens[position]
-			}
-			while (token.isTrivia() && position < tokens.length) {
-				position++
-				token = tokens[position]
-			}
-			cursor = Math.min(token.span.start, currentLine.span.end)
-		}
+		let position = tree.source.getTokenPosition(cursor)
+		cursor = tree.source.tokens[position].span.end
 		prevColumn = column
 	}
 
