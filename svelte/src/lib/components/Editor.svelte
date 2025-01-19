@@ -323,17 +323,6 @@
 		<!-- FIXME: squigglie fails to render when in multiple lines -->
 		<Squigglie start={diagnostic.span.start} end={diagnostic.span.end} text={diagnostic.message}></Squigglie>
 	{/each}
-	<!-- TODO: Remove this template after it has served its purpose in development -->
-	<!-- <br /> -->
-	<!-- <br /> -->
-	<!-- <br /> -->
-	<!-- <div style="display: flex; flex-direction: column">
-		{#each actions as stage}
-			<span>{JSON.stringify(stage)}</span>
-		{/each}
-	</div> -->
-	<br />
-	{line}:{column}:{cursor}
 </div>
 
 <style scoped lang="scss">
