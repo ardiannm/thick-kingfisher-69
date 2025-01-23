@@ -9,7 +9,7 @@ export class Lexer {
 
   private constructor(private readonly source: SourceText) {}
 
-  static createFrom(source: SourceText) {
+  static create(source: SourceText) {
     return new Lexer(source)
   }
 

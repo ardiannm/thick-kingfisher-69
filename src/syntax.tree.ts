@@ -1,12 +1,9 @@
+import { CompilerOptions } from "./compiler.options"
 import { Binder } from "./phases/binding/binder"
 import { BoundCompilationUnit } from "./phases/binding/bound.compilation.unit"
 import { SourceText } from "./phases/lexing/source.text"
 import { Parser } from "./phases/parsing/parser"
 import { SyntaxCompilationUnit } from "./phases/parsing/syntax.compilation.unit"
-
-export class CompilerOptions {
-  constructor(public explicitDeclarations: boolean) {}
-}
 
 export class SyntaxTree {
   compilationUnit: SyntaxCompilationUnit
@@ -17,8 +14,8 @@ export class SyntaxTree {
     this.boundCompilationUnit = Binder.bindCompilationUnit(this.compilationUnit, configuration)
   }
 
-  static createFrom(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {
-    const sourceText = text instanceof SourceText ? text : SourceText.createFrom(text)
+  static create(text: string | SourceText = "", configuration: CompilerOptions = new CompilerOptions(true)) {
+    const sourceText = text instanceof SourceText ? text : SourceText.create(text)
     return new SyntaxTree(sourceText, configuration)
   }
 }

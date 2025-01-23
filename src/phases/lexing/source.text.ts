@@ -1,5 +1,4 @@
 import { DiagnosticsBag } from "../../diagnostics/diagnostics.bag"
-import { SyntaxTree } from "../../syntax.tree"
 import { Parser } from "../parsing/parser"
 import { SyntaxToken } from "./syntax.token"
 import { Lexer } from "./lexer"
@@ -14,20 +13,16 @@ export class SourceText {
     this.generateTokens()
   }
 
-  static createFrom(text: string): SourceText {
+  static create(text: string): SourceText {
     return new SourceText(text, new DiagnosticsBag())
   }
 
   static parse(text: string) {
-    return Parser.parseCompilationUnit(SourceText.createFrom(text)).source
-  }
-
-  static bind(text: string) {
-    return SyntaxTree.createFrom(text).source
+    return Parser.parseCompilationUnit(SourceText.create(text)).source
   }
 
   private generateTokens() {
-    const lexer = Lexer.createFrom(this)
+    const lexer = Lexer.create(this)
     for (const token of lexer.lex()) this.tokens.push(token)
   }
 
@@ -38,12 +33,12 @@ export class SourceText {
       const char = this.text[position]
       position++
       if (char === "\n") {
-        const span = Line.createFrom(this, this.lines.length + 1, start, position, 1)
+        const span = Line.create(this, this.lines.length + 1, start, position, 1)
         this.lines.push(span)
         start = position
       }
     }
-    const span = Line.createFrom(this, this.lines.length + 1, start, position, 0)
+    const span = Line.create(this, this.lines.length + 1, start, position, 0)
     this.lines.push(span)
     start = position
   }

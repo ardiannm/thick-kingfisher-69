@@ -19,8 +19,8 @@ export class Parser {
     for (const token of this.source.tokens) if (!token.isTrivia()) this.tokens.push(token)
   }
 
-  static parseCompilationUnit(sourceText: SourceText) {
-    return new Parser(sourceText).parseCompilationUnit()
+  static parseCompilationUnit(source: SourceText) {
+    return new Parser(source).parseCompilationUnit()
   }
 
   private parseCompilationUnit() {

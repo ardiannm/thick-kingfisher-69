@@ -5,7 +5,7 @@ import { Span } from "./span"
 export class Line {
   private constructor(public source: SourceText, public number: number, public fullSpan: Span, private lineBreakLength: number) {}
 
-  static createFrom(source: SourceText, number: number, start: number, end: number, lineBreakLength: number) {
+  static create(source: SourceText, number: number, start: number, end: number, lineBreakLength: number) {
     return new Line(source, number, Span.createFrom(source, start, end), lineBreakLength)
   }
 

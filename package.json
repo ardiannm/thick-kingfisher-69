@@ -7,8 +7,8 @@
     "url": "https://github.com/ardiannm/parser.ts.git"
   },
   "scripts": {
-    "dev": "nodemon",
-    "ui": "cd svelte && yarn dev --open"
+    "dev": "cd svelte && yarn dev --open",
+    "parser": "nodemon"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",

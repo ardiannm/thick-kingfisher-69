@@ -9,7 +9,7 @@
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
 
-	const tree = $derived(SyntaxTree.createFrom(text))
+	const tree = $derived(SyntaxTree.create(text))
 	const lines = $derived(tree.source.getLines())
 	const diagnostics = $derived(tree.source.diagnostics.bag)
 

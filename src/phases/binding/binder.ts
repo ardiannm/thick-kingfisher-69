@@ -1,5 +1,5 @@
 import { Cell } from "../evaluating/cell"
-import { CompilerOptions } from "../../syntax.tree"
+import { CompilerOptions } from "../../compiler.options"
 import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind"
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment"
 import { SyntaxCellReference } from "../parsing/syntax.cell.reference"
@@ -24,6 +24,10 @@ import { Span } from "../lexing/span"
 export class Binder {
   private constructor(private configuration: CompilerOptions, private scope: BoundScope) {}
 
+  static bindCompilationUnit(node: SyntaxCompilationUnit, configuration: CompilerOptions) {
+    return new Binder(configuration, new BoundScope(node.source.diagnostics)).bindCompilationUnit(node)
+  }
+
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
     switch (node.kind) {
       case SyntaxKind.SyntaxCompilationUnit:
@@ -46,10 +50,6 @@ export class Binder {
         this.scope.diagnostics.reportMissingBinderMethod(node.kind, node.span)
         return new BoundSyntaxError(node.kind, node.span)
     }
-  }
-
-  static bindCompilationUnit(node: SyntaxCompilationUnit, configuration: CompilerOptions) {
-    return new Binder(configuration, new BoundScope(node.source.diagnostics)).bindCompilationUnit(node)
   }
 
   private bindCompilationUnit(node: SyntaxCompilationUnit) {

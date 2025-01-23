@@ -25,6 +25,5 @@
     "index.ts",
     "src/**/*.ts",
     "types/**/*.d.ts",
-    "ui/**/*"
   ],
 }
