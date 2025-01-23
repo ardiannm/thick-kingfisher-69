@@ -1,4 +1,3 @@
-import { SyntaxTree } from "../../.."
 import { DiagnosticsBag } from "../../diagnostics/diagnostics.bag"
 import { BoundBinaryExpression } from "../binding/bound.binary.expression"
 import { BoundCellAssignment } from "../binding/bound.cell.assignment"
@@ -13,12 +12,6 @@ export class Evaluator {
   private value = 0
 
   private constructor(private diagnostics: DiagnosticsBag) {}
-
-  static evaluate(tree: SyntaxTree) {
-    const diagnostics = tree.source.diagnostics
-    if (diagnostics.bag.length) return 0
-    return new Evaluator(diagnostics).evaluate(tree.bound)
-  }
 
   evaluate<Kind extends BoundNode>(node: Kind): number {
     switch (node.kind) {

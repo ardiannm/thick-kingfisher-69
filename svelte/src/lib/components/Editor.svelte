@@ -4,7 +4,7 @@
 
 	import { focus } from '$lib/actions'
 	import { onMount } from 'svelte'
-	import { SyntaxKind, SyntaxToken, SyntaxTree } from '../../../..'
+	import { SyntaxTree } from '../../../..'
 	import { Action, ActionType, EditorService } from '$lib/services'
 
 	let { text, style = '', startTyping = false }: { text: string; style?: string; startTyping?: boolean } = $props()
