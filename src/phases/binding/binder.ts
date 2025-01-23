@@ -82,7 +82,7 @@ export class Binder {
   private bindCell(node: SyntaxCellReference): Cell {
     const name = node.name
     if (this.scope.assignments.has(name)) {
-      return this.scope.assignments.get(name)!.store
+      return this.scope.assignments.get(name)!.cell
     }
     return new Cell(name, 0, false)
   }

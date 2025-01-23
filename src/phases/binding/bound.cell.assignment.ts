@@ -7,7 +7,7 @@ import { Span } from "../lexing/span"
 
 export class BoundCellAssignment extends BoundNode {
   public observers?: Array<BoundCellAssignment>
-  constructor(public scope: BoundScope, public store: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
+  constructor(public scope: BoundScope, public cell: Cell, public expression: BoundNode, public dependencies: Array<BoundCellReference>, public override span: Span) {
     super(BoundKind.BoundCellAssignment, span)
 
     this.cleanupExistingNode()
@@ -19,7 +19,7 @@ export class BoundCellAssignment extends BoundNode {
   }
 
   private cleanupExistingNode(): void {
-    const existingNode = this.scope.assignments.get(this.store.name)
+    const existingNode = this.scope.assignments.get(this.cell.name)
     if (!existingNode) return
     for (const dependency of existingNode.dependencies) {
       const observers = dependency.observers
@@ -33,7 +33,7 @@ export class BoundCellAssignment extends BoundNode {
   }
 
   private storeAssignment() {
-    this.scope.assignments.set(this.store.name, this)
+    this.scope.assignments.set(this.cell.name, this)
     const obs = this.generate
     if (obs.size) {
       this.observers = []
@@ -43,11 +43,11 @@ export class BoundCellAssignment extends BoundNode {
 
   get generate() {
     var observers: Set<BoundCellAssignment>
-    if (this.scope.observers.has(this.store.name)) {
-      observers = this.scope.observers.get(this.store.name)!
+    if (this.scope.observers.has(this.cell.name)) {
+      observers = this.scope.observers.get(this.cell.name)!
     } else {
       observers = new Set<BoundCellAssignment>()
-      this.scope.observers.set(this.store.name, observers)
+      this.scope.observers.set(this.cell.name, observers)
     }
     return observers
   }
@@ -63,7 +63,7 @@ export class BoundCellAssignment extends BoundNode {
       } else {
         const node = DependencyLink.createFrom(dependency.assignment)
         chain.push(node)
-        if (this.store.name === dependency.name) {
+        if (this.cell.name === dependency.name) {
           this.scope.diagnostics.reportCircularDependencyDetected(this.dependencies[index].span, chain)
           chain.length = 1
           correct = false

@@ -48,7 +48,7 @@ export class DiagnosticsBag {
   }
 
   reportCircularDependencyDetected(span: Span, path: DependencyLink[]) {
-    const text = path.map((node) => `${node.node.store.name}`).join(" > ")
+    const text = path.map((node) => `${node.node.cell.name}`).join(" > ")
     const node = Diagnostic.createFrom(`circular dependency detected. ${text}.`, Severity.CantEvaluate, span)
     this.bag.push(node)
   }

@@ -38,7 +38,7 @@ export class Evaluator {
   }
 
   private evaluateBoundCellAssignment(node: BoundCellAssignment) {
-    this.value = node.store.value = this.evaluate(node.expression)
+    this.value = node.cell.value = this.evaluate(node.expression)
     return this.value
   }
 
@@ -70,7 +70,7 @@ export class Evaluator {
   }
 
   private evaluateBoundCellReference(node: BoundCellReference): number {
-    const store = node.assignment.store
+    const store = node.assignment.cell
     if (store.evaluated) {
       return store.value
     }
