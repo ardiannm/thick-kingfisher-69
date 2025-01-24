@@ -1,5 +1,4 @@
 import { Cell } from "../evaluating/cell"
-import { CompilerOptions } from "../../compiler.options"
 import { SyntaxBinaryOperatorKind, SyntaxKind, SyntaxUnaryOperatorKind } from "../parsing/syntax.kind"
 import { SyntaxCellAssignment } from "../parsing/syntax.cell.assignment"
 import { SyntaxCellReference } from "../parsing/syntax.cell.reference"
@@ -22,10 +21,10 @@ import { BoundBinaryExpression } from "./bound.binary.expression"
 import { Span } from "../lexing/span"
 
 export class Binder {
-  private constructor(private configuration: CompilerOptions, private scope: BoundScope) {}
+  private constructor(private scope: BoundScope) {}
 
-  static bindCompilationUnit(node: SyntaxCompilationUnit, configuration: CompilerOptions) {
-    return new Binder(configuration, new BoundScope(node.source.diagnostics)).bindCompilationUnit(node)
+  static bindCompilationUnit(node: SyntaxCompilationUnit) {
+    return new Binder(new BoundScope(node.source.diagnostics)).bindCompilationUnit(node)
   }
 
   private bind<Kind extends SyntaxNode>(node: Kind): BoundNode {
@@ -97,9 +96,7 @@ export class Binder {
       const dependencies = new Array<BoundCellReference>()
       const value = this.bindCell(node)
       assigment = new BoundCellAssignment(this.scope, value, number, dependencies, node.span)
-      if (this.configuration.explicitDeclarations) {
-        this.scope.diagnostics.reportUndeclaredCell(name, node.span)
-      }
+      this.scope.diagnostics.reportUndeclaredCell(name, node.span)
     }
     const bound = new BoundCellReference(assigment, node.span)
     this.scope.references.push(bound)
