@@ -26,7 +26,6 @@
 	const handleKeyboard = async (event: KeyboardEvent) => {
 		const input = event.key
 		if (input === 'c' && event.ctrlKey) {
-			// TODO: differentiate internal copy events from external ones when copy pasting the line or text content
 			copyFromClipboard()
 		} else if (input === 'v' && event.ctrlKey) {
 			await pasteFromClipboard()
