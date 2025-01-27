@@ -120,7 +120,6 @@
 	const insertText = (newText: string, position: number, registerState: boolean) => {
 		if (registerState) {
 			if (prevActions.length) prevActions.length = 0
-			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
 			const action = new Action(ActionType.insertText, position, newText, cursor)
 			actions.push(action)
 		}
@@ -135,7 +134,6 @@
 		if (registerState) {
 			if (prevActions.length) prevActions.length = 0
 			const deletedText = text.substring(cursor, cursor + length)
-			// TODO: implement debouncing to group consecutive changes and minimize excessive state updates
 			const action = new Action(ActionType.deleteText, position, deletedText, originalPosition)
 			actions.push(action)
 		}
