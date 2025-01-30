@@ -64,7 +64,8 @@ export class BoundCellAssignment extends BoundNode {
         const node = DependencyLink.createFrom(dependency.assignment)
         chain.push(node)
         if (this.cell.name === dependency.name) {
-          this.scope.diagnostics.reportCircularDependencyDetected(this.dependencies[index].span, chain)
+          const path = chain.map((x) => x.node.cell.name).join(" > ")
+          this.scope.diagnostics.reportCircularDependencyDetected(this.dependencies[index].span, path)
           chain.length = 1
           correct = false
         }

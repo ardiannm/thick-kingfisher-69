@@ -70,7 +70,7 @@ export class Binder {
     } else {
       if (node.left.kind === SyntaxKind.SyntaxError) {
         this.bind(node.left)
-        const span = Span.createFrom(node.source, node.left.span.start, node.operator.span.end)
+        const span = Span.create(node.left.span.start, node.operator.span.end)
         this.scope.diagnostics.reportCantAssignTo(node.left.kind, span)
       }
       this.bind(node.expression)
@@ -149,7 +149,7 @@ export class Binder {
   }
 
   private bindNumber(node: SyntaxToken<SyntaxKind.NumberToken>) {
-    const value = parseFloat(node.span.text)
+    const value = parseFloat(node.text)
     return new BoundNumericLiteral(value, node.span)
   }
 }

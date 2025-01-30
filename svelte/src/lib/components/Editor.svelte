@@ -167,8 +167,8 @@
 		}
 		const firstLine = tree.source.getLine(currentLine.fullSpan.start - 1)
 		const secondLine = currentLine
-		const text1 = firstLine.span.text
-		const text2 = secondLine.span.text
+		const text1 = firstLine.text
+		const text2 = secondLine.text
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
@@ -188,8 +188,8 @@
 			return
 		}
 		const secondLine = tree.source.getLine(firstLine.fullSpan.end)
-		const text1 = firstLine.span.text
-		const text2 = secondLine.span.text
+		const text1 = firstLine.text
+		const text2 = secondLine.text
 		const atPosition = cursor
 		const editedText = text2 + '\n' + text1
 		if (text1 === text2) {
@@ -214,12 +214,12 @@
 	const duplicateLineAbove = () => {
 		const lineNext = line
 		const columnNext = column
-		insertText(currentLine.fullSpan.text, currentLine.span.start, true)
+		insertText(currentLine.fullText, currentLine.span.start, true)
 		cursor = tree.source.getPosition(lineNext, columnNext)
 	}
 
 	const duplicateLineBelow = () => {
-		insertText(currentLine.fullSpan.text, currentLine.fullSpan.end, true)
+		insertText(currentLine.fullText, currentLine.fullSpan.end, true)
 	}
 
 	const moveDownTheLine = (step: number) => {
@@ -261,7 +261,7 @@
 	}
 
 	const copyFromClipboard = () => {
-		EditorService.copyToClipboard(currentLine.span.text)
+		EditorService.copyToClipboard(currentLine.text)
 	}
 
 	const pasteFromClipboard = async () => {
@@ -298,7 +298,7 @@
 			{#each ln.getTokens() as token}
 				<!-- TODO: refactor this template to avoid adding unnecessary HTML span elements for tokens without styling -->
 				{#if token.span.length}
-					<span class="token {token.class}">{token.span.text}</span>
+					<span class="token {token.class}">{token.text}</span>
 				{:else}
 					<span class="token {token.class}">&nbsp;</span>
 				{/if}

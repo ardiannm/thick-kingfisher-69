@@ -14,11 +14,11 @@ export abstract class SyntaxNode<K extends SyntaxKind = SyntaxKind> {
   }
 
   get span() {
-    return Span.createFrom(this.source, this.getFirstChild().span.start, this.getLastChild().span.end)
+    return Span.create(this.getFirstChild().span.start, this.getLastChild().span.end)
   }
 
   get fullSpan() {
-    return Span.createFrom(this.source, this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end)
+    return Span.create(this.getFirstChild().fullSpan.start, this.getLastChild().fullSpan.end)
   }
 
   get class() {

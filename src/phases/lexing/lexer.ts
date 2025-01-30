@@ -66,7 +66,7 @@ export class Lexer {
 
   private lexBadToken() {
     const token = this.advanceAndCreateNewToken(SyntaxKind.BadToken)
-    this.source.diagnostics.reportBadCharacterFound(token.span.text, token.span)
+    this.source.diagnostics.reportBadCharacterFound(token.text, token.span)
     return token
   }
 
@@ -80,7 +80,7 @@ export class Lexer {
   }
 
   private get span() {
-    return Span.createFrom(this.source, this.start, this.position)
+    return Span.create(this.start, this.position)
   }
 
   private lexIdentifier(): SyntaxToken {

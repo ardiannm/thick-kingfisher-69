@@ -8,6 +8,18 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
     super(source, kind)
   }
 
+  get fromLine() {
+    return this.source.getLine(this.textSpan.start)
+  }
+
+  get toLine() {
+    return this.source.getLine(this.textSpan.end)
+  }
+
+  get text() {
+    return this.source.text.substring(this.textSpan.start, this.textSpan.end)
+  }
+
   override hasTrivia(): boolean {
     if (this.position > 0) {
       return this.source.tokens[this.position - 1].isTrivia()
@@ -42,35 +54,6 @@ export class SyntaxToken<K extends SyntaxKind = SyntaxKind> extends SyntaxNode {
       case SyntaxKind.SpaceTrivia:
       case SyntaxKind.CommentTrivia:
       case SyntaxKind.BadToken:
-        return true
-      default:
-        return false
-    }
-  }
-
-  isMultiLine() {
-    switch (this.kind) {
-      case SyntaxKind.CommentTrivia:
-        return true
-      default:
-        return false
-    }
-  }
-
-  isPunctuation() {
-    switch (this.kind) {
-      case SyntaxKind.PlusToken:
-      case SyntaxKind.MinusToken:
-      case SyntaxKind.SlashToken:
-      case SyntaxKind.StarToken:
-      case SyntaxKind.HatToken:
-      case SyntaxKind.OpenParenthesisToken:
-      case SyntaxKind.CloseParenthesisToken:
-      case SyntaxKind.OpenBraceToken:
-      case SyntaxKind.CloseBraceToken:
-      case SyntaxKind.ColonColonToken:
-      case SyntaxKind.ColonToken:
-      case SyntaxKind.SpaceTrivia:
         return true
       default:
         return false

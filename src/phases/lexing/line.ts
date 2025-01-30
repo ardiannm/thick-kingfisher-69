@@ -6,11 +6,20 @@ export class Line {
   private constructor(public source: SourceText, public number: number, public fullSpan: Span, private lineBreakLength: number) {}
 
   static create(source: SourceText, number: number, start: number, end: number, lineBreakLength: number) {
-    return new Line(source, number, Span.createFrom(source, start, end), lineBreakLength)
+    const span = Span.create(start, end)
+    return new Line(source, number, span, lineBreakLength)
+  }
+
+  get text() {
+    return this.source.text.substring(this.span.start, this.span.end)
+  }
+
+  get fullText() {
+    return this.source.text.substring(this.fullSpan.start, this.fullSpan.end)
   }
 
   get span() {
-    return Span.createFrom(this.source, this.fullSpan.start, this.fullSpan.end - this.lineBreakLength)
+    return Span.create(this.fullSpan.start, this.fullSpan.end - this.lineBreakLength)
   }
 
   *getTokens(): Generator<SyntaxToken> {
@@ -41,6 +50,7 @@ export class Line {
     }
     if (tokenStart < lineStart) tokenStart = lineStart
     if (tokenEnd > lineEnd) tokenEnd = lineEnd
-    return new SyntaxToken(this.source, token.kind, Span.createFrom(this.source, tokenStart, tokenEnd))
+    const span = Span.create(tokenStart, tokenEnd)
+    return new SyntaxToken(this.source, token.kind, span)
   }
 }

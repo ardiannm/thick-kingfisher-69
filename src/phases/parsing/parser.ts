@@ -83,7 +83,7 @@ export class Parser {
       if (this.match(SyntaxKind.CloseParenthesisToken) || this.match(SyntaxKind.EndOfFileToken)) {
         const errorToken = this.parseErrorToken()
         const right = this.getNextToken<SyntaxKind.CloseParenthesisToken>()
-        this.source.diagnostics.reportExpectedInParenthesis(this.source, left.span.end, right.span.start)
+        this.source.diagnostics.reportExpectedInParenthesis(left.span.end, right.span.start)
         return new SyntaxParenthesis(left, errorToken, right)
       }
       const expression = this.parseBinaryExpression()
@@ -115,14 +115,13 @@ export class Parser {
       case SyntaxKind.NumberToken:
         return this.getNextToken()
     }
-    this.source.diagnostics.reportUnexpectedTokenFound(token.span)
+    this.source.diagnostics.reportUnexpectedTokenFound(token.text, token.span)
     return this.parseErrorToken()
   }
 
   private parseErrorToken<K extends SyntaxKind = SyntaxKind>() {
     const node = this.peekToken()
-    const span = Span.createFrom(this.source, node.span.end, node.span.end)
-    return new SyntaxToken<K>(this.source, SyntaxKind.SyntaxError as K, span)
+    return new SyntaxToken<K>(this.source, SyntaxKind.SyntaxError as K, Span.create(node.span.end, node.span.end))
   }
 
   private peekToken<K extends SyntaxKind = SyntaxKind>(offset: number = 0): SyntaxToken<K> {
@@ -151,7 +150,7 @@ export class Parser {
   private peekNextLine(report = false) {
     const token = this.tokens[this.position - 1 > 0 ? this.position - 1 : this.position]
     const peek = this.peekToken()
-    const nextLine = peek.span.to.line > token.span.to.line || peek.kind === SyntaxKind.EndOfFileToken
+    const nextLine = peek.toLine > token.toLine || peek.kind === SyntaxKind.EndOfFileToken
     if (nextLine && report) {
       this.source.diagnostics.reportUnexpectedEndOfLine(token)
     }
